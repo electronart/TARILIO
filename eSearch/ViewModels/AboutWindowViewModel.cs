@@ -144,6 +144,7 @@ namespace eSearch.ViewModels
 #if LITE
                 return "";
 #endif
+#if TARILIO
                 if (!Program.ProgramConfig.IsProgramRegistered())
                 {
                     return S.Get("Serial: None");
@@ -151,6 +152,10 @@ namespace eSearch.ViewModels
                 {
                     return Program.ProgramConfig.Serial;
                 }
+#else
+                // eSearch Pro Open Source
+                return string.Empty;
+#endif
             }
         }
 

@@ -159,7 +159,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Toxy.NetCore-netcore\Toxy.NetCore-netcore\ToxyFramework\ToxyFramework_dotnetcore.csproj" />
     <ProjectReference Include="..\eSearchInterop\eSearch.Interop.csproj" />
-    <ProjectReference Include="..\TARILIO\TARILIO.csproj" />
+	
+	<Reference Condition="$(DefineConstants.Contains('TARILIO'))" Include="TARILIO">
+		<!-- TARILIO_SOLUTION_PATH is an environment variable on the system. -->
+		<HintPath>$(TARILIO_SOLUTION_PATH)\TARILIO\bin\$(Configuration)\net8.0\TARILIO.dll</HintPath>
+	</Reference>
   </ItemGroup>
 	<ItemGroup>
 		<Content Include="pdf_viewer\**">
@@ -230,7 +234,7 @@
       <SubType>Designer</SubType>
     </AvaloniaXaml>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(DefineConstants.Contains('STANDALONE'))">
     <Exec Command="call ..\PortableBuilder\bin\Debug\PortableBuilder.exe &quot;$(DefineConstants)&quot;" />
   </Target>
 </Project>
