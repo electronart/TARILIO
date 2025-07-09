@@ -1,0 +1,248 @@
+﻿using DesktopSearch2.Models.Configuration;
+using DesktopSearch2.Views;
+using eSearch.Interop.AI;
+using eSearch.Models.AI.MCP;
+using eSearch.Models.AI.MCP.Tools;
+using eSearch.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using S = eSearch.ViewModels.TranslationsViewModel;
+
+namespace eSearch.Models.Configuration
+{
+    public class ProgramConfig
+    {
+        public string LangFile = null;
+
+        /// <summary>
+        /// When non-null, the application searches based on terms in the file instead of query text box.
+        /// </summary>
+        public string         SearchTermsListFile = null;
+
+        /// <summary>
+        /// Whether or not the index contents should be listed when the query is empty.
+        /// </summary>
+        public bool ListContentsOnEmptyQuery = true;
+
+        public SynonymsConfig SynonymsConfig = new SynonymsConfig();
+
+        public StemmingConfig StemmingConfig = new StemmingConfig();
+
+        public PhoneticConfig PhoneticConfig = new PhoneticConfig();
+
+        public AppDataContext AppDataContext = new AppDataContext();
+
+        public ExportConfig   ExportConfig = new ExportConfig();
+
+        public string? CopyResultsFolderPath = null;
+
+        public CopyDocumentConfig CopyDocumentConfig = new CopyDocumentConfig();
+
+        public CopyDocumentConfig CopyDocumentConfigAIMode = new CopyDocumentConfig();
+
+        public string? SelectedAISearchConfigurationID = null;
+
+        /// <summary>
+        /// May return null if not configured.
+        /// </summary>
+        /// <returns></returns>
+        public AISearchConfiguration? GetSelectedConfiguration()
+        {
+            return AISearchConfigurations.FirstOrDefault(x => x.Id == SelectedAISearchConfigurationID, null);
+        }
+
+        public List<AISearchConfiguration> AISearchConfigurations = new List<AISearchConfiguration>();
+
+        public List<string> EnabledMCPServerNames = new List<string>();
+
+        public List<UserConfiguredMCPServer> UserConfiguredMCPServers = new List<UserConfiguredMCPServer>();
+
+        public bool SearchAsYouType = true;
+
+        public SearchReportConfig SearchReportConfig = new SearchReportConfig();
+
+        public ViewerConfig ViewerConfig = new ViewerConfig();
+
+
+        /// <summary>
+        /// List of Plugin Guids that are currently active.
+        /// The guid is generated when the plugin is installed. It is the folder name inside the plugins folder.
+        /// </summary>
+        public List<string> InstalledPlugins = new List<string>();
+
+        public bool? IsThemeDark = true;
+
+        public bool IsThemeHighContrast = false;
+
+        public string FirstRun = null;
+
+
+        public DateTime GetFirstRunDate()
+        {
+            string iso_8601 = "yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz";
+            if (FirstRun == null)
+            {
+                // This is the first run.
+                var dateTimeUTC_Now = DateTime.UtcNow;
+                string strDateTime = dateTimeUTC_Now.ToString(iso_8601, CultureInfo.InvariantCulture);
+                FirstRun = Utils.Base64Encode(strDateTime);
+                Program.SaveProgramConfig();
+            }
+
+            string strDateTimeFirstRun = Utils.Base64Decode(FirstRun);
+            var dateTimeUTCFirstRun = DateTime.ParseExact(strDateTimeFirstRun, iso_8601, CultureInfo.InvariantCulture);
+            return dateTimeUTCFirstRun;
+        }
+
+        public IEnumerable<IESearchMCPServer> GetAllAvailableMCPServers()
+        {
+            // yield return Program.MCPSearchServer;
+            foreach (var userConfiguredServer in UserConfiguredMCPServers.OrderBy(o => o.DisplayName))
+            {
+                yield return userConfiguredServer;
+            }
+        }
+
+        public bool LaunchAtStartup
+        {
+            get
+            {
+                if (OperatingSystem.IsWindows()) {
+                    if (Microsoft.Win32.Registry.GetValue("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "eSearch", null) == null)
+                    {
+                        return false;
+                    } else
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            set 
+            {
+                if (OperatingSystem.IsWindows())
+                {
+                    Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                    if (value == true)
+                    {
+                        string location = Environment.ProcessPath;
+                        key.SetValue("eSearch", location);
+                    } else
+                    {
+                        key.DeleteValue("eSearch", false);
+                    }
+                }
+            }
+        }
+
+
+        public string Serial = "";
+
+        /// <summary>
+        /// Note this method currently ALSO returns true if the application is currently in evaluation mode.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsProgramRegistered()
+        {
+#if LITE
+            return false;
+#endif
+#if TARILIO
+            if (string.IsNullOrEmpty(Serial))
+            {
+                if (IsProgramInEvaluationPeriod(out int daysRemaining))
+                {
+                    return true;
+                }
+                return false;
+            }
+            var serialValidity = TARILIO.ProductSerials.isValidSerial(Serial, out string year);
+            if (serialValidity == TARILIO.ProductSerials.SerialValidationResult.Valid
+             || serialValidity == TARILIO.ProductSerials.SerialValidationResult.SearchOnly   
+                )
+            {
+                return true;
+            } else
+            {
+                if (IsProgramInEvaluationPeriod(out int daysRemaining))
+                {
+                    return true;
+                }
+                return false;
+            }
+#else
+            // eSearch Pro
+            return true;
+#endif
+        }
+
+        #region Preferences around Exporting Conversations
+        // Path to directory.
+        public string? PreferredConversationSaveLocation = null;
+        // "csv" or "jsonl"
+        public string? PreferredConversationFileFormat = null;
+        #endregion
+
+        public string GetProductTagText()
+        {
+#if TARILIO
+            string productVersion = "TARILIO";
+            if (Program.ProgramConfig.IsProgramRegistered())
+            {
+                #if STANDALONE
+                    if (RegistrationWindow.isValidSerial(Program.ProgramConfig.Serial, out var ignored) == RegistrationWindow.SerialValidationResult.SearchOnly)
+                    {
+                        productVersion += " Portable (Search Only)";
+                    } else
+                    {
+                        productVersion += " Portable";
+                    }
+                #else
+                    productVersion += " Pro";
+                #endif
+            }
+            else
+            {
+                // Not registered
+                #if STANDALONE
+                    productVersion += " Portable";
+                #else
+                    productVersion += " Lite";
+                #endif
+            }
+            #else
+                string productVersion = "eSearch Pro";
+                #if STANDALONE
+                    productVersion += " Portable"
+                #endif
+            #endif
+
+#if DEBUG
+            productVersion += " (Debug)";
+#endif
+            return productVersion;
+        }
+
+        public bool IsProgramInEvaluationPeriod(out int daysRemaining)
+        {
+            DateTime periodEnd  = GetFirstRunDate().AddDays(30);
+            DateTime utcNow     = DateTime.UtcNow;
+            if (utcNow < periodEnd)
+            {
+                daysRemaining = (int)Math.Ceiling((periodEnd - utcNow).TotalDays);
+                return true;
+            } else
+            {
+                daysRemaining = 0;
+                return false;
+            }
+        }
+
+
+
+    }
+}

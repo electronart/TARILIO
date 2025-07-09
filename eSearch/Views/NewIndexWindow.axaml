@@ -1,0 +1,153 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:eSearch.ViewModels"
+        mc:Ignorable="d"
+		Width="900" Height="550"
+        x:Class="eSearch.Views.NewIndexWindow"
+        Title="New Index"
+		ExtendClientAreaToDecorationsHint="True"
+		WindowStartupLocation="CenterOwner"
+>
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:NewIndexWindowViewModel/>
+	</Design.DataContext>
+	<Window.Styles>
+		<Style Selector="Label.Error">
+			<Setter Property="Foreground" Value="Red"/>
+		</Style>
+	</Window.Styles>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding WindowTitle}"></Label>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				<DockPanel x:Name="BottomPanel" Margin="15" DockPanel.Dock="Bottom">
+					<StackPanel HorizontalAlignment="Stretch" DockPanel.Dock="Right" Orientation="Horizontal">
+						<Button HorizontalAlignment="Right"
+								Content="{Binding S[OK]}"
+								MinWidth="150"
+								HorizontalContentAlignment="Center"
+								x:Name="BtnOK"
+						/>
+						<Button 
+							HorizontalAlignment="Right"
+							Content="{Binding S[Cancel]}"
+							MinWidth="150"
+							HorizontalContentAlignment="Center"
+							Margin="10"
+							x:Name="BtnCancel"
+						/>
+					</StackPanel>
+					<Label Classes="Error" HorizontalAlignment="Left" Content="{Binding ValidationError}"/>
+				</DockPanel>
+				<DockPanel>
+					<StackPanel DockPanel.Dock="Left" Spacing="3" Orientation="Vertical"  MinWidth="500" Margin="5" VerticalAlignment="Stretch">
+						<DockPanel VerticalAlignment="Stretch"
+								   HorizontalAlignment="Stretch"
+								   MinHeight="300">
+							<Panel DockPanel.Dock="Top" Margin="5">
+								<StackPanel Orientation="Vertical">
+									<TextBlock Text="{Binding S[Index~Name]}" />
+									<StackPanel Orientation="Horizontal" Spacing="20">
+									<MaskedTextBox 
+										Margin="0,5" 
+										Width="250" 
+										HorizontalAlignment="Left"
+										Text="{Binding Index.Name}"
+										x:Name="txtBoxIndexName"
+										MaxLength="40"
+										IsEnabled="{Binding !UpdatingExistingIndex}"
+									/>
+									<Button
+										Margin="0,5"
+										Width="35"
+										Height="35"
+										HorizontalContentAlignment="Center" HorizontalAlignment="Right"
+										Command="{Binding ClickIndexSettings}"
+									>
+										<Image Width="16" Height="16"
+												Source="{Binding $parent[Window].DataContext.I[icons8-settings-16.png]}"
+										/>
+									</Button>
+									</StackPanel>
+								</StackPanel>
+							</Panel>
+							<Panel>
+								<DockPanel x:Name="IndexContentsPanel" VerticalAlignment="Stretch">
+									<ScrollViewer MaxHeight="350">
+									<StackPanel Spacing="5" Orientation="Vertical" DockPanel.Dock="Left" Margin="5" x:Name="StackPanelDataSourceButtons">
+											<Button Width="50" Height="50" Margin="0,20,0,0" Command="{Binding ClickAddFolder}">
+												<Image Width="30" Height="30" Source="/Assets/icons8-add-folder-48.png"/>
+											</Button>
+											<Button Width="50" Height="50" Command="{Binding ClickAddFile}">
+												<Image Width="30" Height="30" Source="/Assets/icons8-add-file-48.png"></Image>
+											</Button>
+										</StackPanel>
+									</ScrollViewer>
+									<DockPanel Margin="5">
+										<TextBlock DockPanel.Dock="Top" Text="{Binding S[Index~Contents]}"/>
+										<ListBox Margin="0,5,0,0" 
+												 Height="300" Width="425" 
+												 HorizontalAlignment="Stretch" 
+												 VerticalAlignment="Stretch" 
+												 x:Name="IndexContentsListBox" 
+												 ItemsSource="{Binding DataSources}">
+
+											<ItemsControl.ItemTemplate>
+												<DataTemplate>
+													<DockPanel>
+														<Button 
+															x:Name="DeleteDataSourceBtn"
+															Click="DeleteDataSourceBtn_Click"
+															CommandParameter="{Binding}"
+															DockPanel.Dock="Right" Margin="5,0,0,0">
+															<Image Width="16" Height="16" 
+																   Source="{Binding $parent[Window].DataContext.I[icons8-close-32.png]}"
+															/>
+														</Button>
+														<ToolTip.Tip>
+															<TextBlock Text="{Binding}"></TextBlock>
+														</ToolTip.Tip>
+														<TextBlock Text="{Binding}" Margin="0,5"></TextBlock>
+														
+													</DockPanel>
+												</DataTemplate> 
+											</ItemsControl.ItemTemplate>
+										</ListBox>
+									</DockPanel>
+								</DockPanel>
+							</Panel>
+						</DockPanel>
+					</StackPanel>
+					<StackPanel>
+						<DockPanel Margin="0,20">
+							<CheckBox DockPanel.Dock="Top" Content="{Binding S[Include~All]}"
+									  IsChecked="{Binding IsIncludeAllChecked}"
+									  IsEnabled="{Binding IsIncludeAllEnabled}"
+									  x:Name="checkBoxIncludeAll"
+									  />
+							<TreeView ItemsSource="{Binding TreeViewFileTypes}"
+									  Height="310"
+									  IsEnabled="{Binding !IsIncludeAllChecked}">
+								<TreeView.ItemTemplate>
+									<TreeDataTemplate ItemsSource="{Binding SubNodes}">
+										<Panel Height="40">
+											<CheckBox IsChecked="{Binding IsChecked}" IsEnabled="{Binding !IsIncludeAllChecked}" Content="{Binding Title}"/>
+										</Panel>
+									</TreeDataTemplate>
+								</TreeView.ItemTemplate>
+							</TreeView>
+						</DockPanel>
+						
+					</StackPanel>
+				</DockPanel>
+				
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

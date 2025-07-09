@@ -1,0 +1,69 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="550"
+		Width="600" Height="550"
+		WindowStartupLocation="CenterOwner"
+        x:Class="eSearch.Views.SearchResultsReportWindow"
+		xmlns:viewmodels="clr-namespace:eSearch.ViewModels;assembly=eSearch"
+        Title="Search Results Report"
+		ExtendClientAreaToDecorationsHint="True">
+	<Design.DataContext>
+		<viewmodels:SessionViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[Search~Results~Report]}">Search Results Report</Label>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+					<Button Width="150" HorizontalContentAlignment="Center" Content="{Binding S[OK]}"/>
+					<Button Width="150" HorizontalContentAlignment="Center" Content="{Binding S[Cancel]}"/>
+				</StackPanel>
+				<StackPanel Margin="5" Spacing="5" Orientation="Vertical">
+					<Grid Margin="5" ColumnDefinitions="250,*" RowDefinitions="*">
+						<StackPanel Grid.Column="0" Grid.Row="0" Margin="5" Spacing="5">
+							<Label Content="{Binding S[Rows]}"/>
+							<StackPanel Margin="10" Spacing="5">
+								<RadioButton Content="{Binding S[All]}"/>
+								<RadioButton Content="{Binding S[Selected]}"/>
+							</StackPanel>
+							<Panel Height="10">
+							</Panel>
+							<Label Content="{Binding S[Include]}"/>
+							<StackPanel Margin="10" Spacing="5">
+								<RadioButton Content="{Binding S[File~list~only]}"/>
+								<RadioButton Content="{Binding S[Full~text]}"/>
+								<RadioButton Content="{Binding S[Hits~in~context]}"/>
+								<StackPanel Margin="25,0" Spacing="5">
+									<RadioButton Content="{Binding S[Words]}"/>
+									<RadioButton Content="{Binding S[Paragraphs]}"/>
+									<TextBox Width="100" HorizontalAlignment="Left" Margin="25,0">30</TextBox>
+								</StackPanel>
+							</StackPanel>
+						</StackPanel>
+						<DockPanel Grid.Column="1" Grid.Row="0" Margin="5">
+							<StackPanel DockPanel.Dock="Top" Margin="5" Spacing="5">
+								<Label Content="{Binding S[Output~template]}"/>
+								<DockPanel Margin="5">
+									<Button Margin="5" DockPanel.Dock="Right">...</Button>
+									<TextBox Margin="5"></TextBox>
+								</DockPanel>
+							</StackPanel>
+							<StackPanel DockPanel.Dock="Bottom" Spacing="5" Margin="10">
+								<Label Content="{Binding S[Run~report...]}"/>
+								<StackPanel Margin="10" Spacing="5">
+									<Button Width="150" HorizontalContentAlignment="Center" Content="{Binding S[Run]}"/>
+									<CheckBox Content="{Binding S[Open~when~done]}"/>
+								</StackPanel>
+							</StackPanel>
+							<Panel></Panel>
+						</DockPanel>
+					</Grid>
+				</StackPanel>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

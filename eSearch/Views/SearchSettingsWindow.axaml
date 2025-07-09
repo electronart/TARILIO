@@ -1,0 +1,116 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="850"
+        x:Class="eSearch.Views.SearchSettingsWindow"
+        Title="Search Settings"
+		Width="600" Height="850" CanResize="False"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaToDecorationsHint="True"
+		xmlns:viewmodels="clr-namespace:eSearch.ViewModels;assembly=eSearch"
+		>
+	<Design.DataContext>
+		<viewmodels:SearchSettingsViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[Search~Settings]}"></Label>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel>
+				<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+					<Button x:Name="BtnOK" Width="150" HorizontalContentAlignment="Center" Content="{Binding S[OK]}"/>
+					<Button x:Name="BtnCancel" Width="150" HorizontalContentAlignment="Center" Content="{Binding S[Cancel]}"/>
+				</StackPanel>
+				<ScrollViewer Margin="0,10">
+				<StackPanel Orientation="Vertical" Margin="5" Spacing="5">
+				<CheckBox Margin="5,5,0,0" Content="{Binding S[Use~List]}" IsChecked="{Binding UseList}"/>
+				<DockPanel Margin="5,0,5,5" Width="400" HorizontalAlignment="Left">
+					<Button x:Name="BtnBrowseForList" Margin="5" DockPanel.Dock="Right">...</Button>
+					<TextBox Margin="5" Text="{Binding ListPath}"></TextBox>
+				</DockPanel>
+				<Panel Height="10"></Panel>
+				<Label Content="{Binding S[Stemming~Language]}"/>
+				<StackPanel Margin="10">
+					<RadioButton Margin="5" GroupName="StemmingMethod" Content="{Binding S[English~Porter]}" IsChecked="{Binding StemmingUseEnglishPorter}"/>
+					<RadioButton Margin="5" GroupName="StemmingMethod" IsChecked="{Binding !StemmingUseEnglishPorter}">
+						<ComboBox ItemsSource="{Binding StemmingFiles}" SelectedItem="{Binding SelectedStemmingFile}" Width="300" IsEnabled="{Binding !StemmingUseEnglishPorter}"/>
+					</RadioButton>
+				</StackPanel>
+				<Panel Height="10"/>
+				<CheckBox Margin="5,0"
+							Content="{Binding S[List~Index~Contents~on~Empty~Query]}"
+							IsChecked="{Binding ListContentsOnEmptyQuery}"
+						/>
+				<Panel Height="5"/>
+				<CheckBox Margin="5,0" 
+						  Content="{Binding S[Search~as~you~Type]}"
+						  IsChecked="{Binding SearchAsYouType}"
+						  />
+				<Panel Height="10"></Panel>
+				<Label Content="{Binding S[Synonyms]}"/>
+				<StackPanel Margin="5">
+					<StackPanel Margin="5" Width="400" HorizontalAlignment="Left">
+						<!--<CheckBox Margin="5" DockPanel.Dock="Left" Content="{Binding S[English~WordNet]}" IsChecked="{Binding UseWordNet}"/>-->
+						<CheckBox Margin="5" DockPanel.Dock="Left" Content="{Binding S[Synonym~files:]}" IsChecked="{Binding UseSynonymFiles}" IsEnabled="{Binding !IsUsingSynonyms}"/>
+					</StackPanel>
+					<DockPanel Margin="30,5" Width="400" HorizontalAlignment="Left">
+						<ComboBox x:Name="ComboBoxSynonymFiles" Margin="5" HorizontalAlignment="Stretch" ItemsSource="{Binding SynonymsFiles}" SelectedItem="{Binding SelectedSynonymFile}">
+							<ComboBox.Styles>
+								<Style Selector="ComboBox CheckBox">
+									<Setter Property="IsVisible" Value="True"/>
+								</Style>
+
+								<Style Selector="ComboBox /template/ ContentControl#ContentPresenter CheckBox">
+									<Setter Property="IsVisible" Value="False"/>
+								</Style>
+							</ComboBox.Styles>
+							<ComboBox.ItemTemplate>
+								<DataTemplate>
+									<DockPanel>
+										<CheckBox DockPanel.Dock="Left" IsChecked="{Binding IsActive}"/>
+										<Label Content="{Binding Name}"/>
+									</DockPanel>
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+					</DockPanel>
+					<Panel Margin="30,5" Height="250">
+						<Grid ColumnDefinitions="*,*" RowDefinitions="*">
+							<DockPanel>
+								<Label Margin="5" DockPanel.Dock="Top" Content="{Binding S[Synonym~Groups]}"/>
+								<DockPanel Grid.Column="0" Grid.Row="0" Margin="5">
+									<StackPanel DockPanel.Dock="Right" Width="90" Margin="5" Spacing="5">
+										<Button HorizontalAlignment="Stretch" x:Name="BtnSynonymGroupsNew" Content="{Binding S[New...]}" IsEnabled="{Binding SynonymFileIsSelected}"/>
+										<Button HorizontalAlignment="Stretch" x:Name="BtnSynonymGroupsRename" Content="{Binding S[Rename...]}" IsEnabled="{Binding IsSynonymGroupSelected}"/>
+										<Button HorizontalAlignment="Stretch" x:Name="BtnSynonymGroupsSort" Content="{Binding S[Sort]}" IsEnabled="{Binding SynonymFileIsSelected}"/>
+										<Button HorizontalAlignment="Stretch" x:Name="BtnSynonymGroupsDelete" Content="{Binding S[Delete]}" IsEnabled="{Binding IsSynonymGroupSelected}"/>
+									</StackPanel>
+									<ListBox Margin="5" x:Name="listBoxSynonymGroups" IsEnabled="{Binding SynonymFileIsSelected}" ItemsSource="{Binding DisplayedSynonymGroups}" SelectedItem="{Binding SelectedSynonymGroup}">
+										<ListBox.ItemTemplate>
+											<DataTemplate>
+												<Label Content="{Binding Name}"></Label>
+											</DataTemplate>
+										</ListBox.ItemTemplate>
+									</ListBox>
+								</DockPanel>
+							</DockPanel>
+							<DockPanel Grid.Column="1" Grid.Row="0">
+								<Label Margin="5" DockPanel.Dock="Top" Content="{Binding S[Expansion]}"/>
+								<DockPanel Margin="5">
+									<DockPanel DockPanel.Dock="Top">
+										<!--<Button DockPanel.Dock="Right" Margin="5" Width="80" Content="{Binding S[Edit...]}" IsEnabled="{Binding SynonymFileIsSelected}"/>-->
+										<TextBox Margin="5" x:Name="textBoxExpansion" IsEnabled="{Binding SynonymFileIsSelected}" Text="{Binding SynonymsTextBoxText}" AcceptsReturn="True"/>
+									</DockPanel>
+								</DockPanel>
+							</DockPanel>
+						</Grid>
+					</Panel>
+				</StackPanel>
+			</StackPanel>
+				</ScrollViewer>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

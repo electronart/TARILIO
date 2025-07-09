@@ -1,0 +1,176 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:eSearch.ViewModels"
+        mc:Ignorable="d" 
+		Width="850" Height="550"
+        x:Class="eSearch.MCPConnectionConfigurationWindow"
+        Title="MCP Connections"
+		ExtendClientAreaToDecorationsHint="True"
+		xmlns:utils="clr-namespace:eSearch.Utils;assembly=eSearch"
+		WindowStartupLocation="CenterOwner"
+		CanResize="False">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:MCPConnectionConfigurationWindowViewModel/>
+	</Design.DataContext>
+	<Window.Resources>
+		<utils:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
+	</Window.Resources>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[Configure~MCP~Servers]}"/>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				
+				<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+					
+					<Button Width="150" 
+							x:Name="BtnClose"
+							HorizontalContentAlignment="Center"
+							Content="{Binding S[Close]}"/>
+				</StackPanel>
+				
+				<DockPanel>
+					<StackPanel DockPanel.Dock="Left" Width="175" Margin="5" Spacing="5">
+						<Label>Configured Servers</Label>
+						<ListBox Height="350"
+								 ItemsSource="{Binding  AvailableMCPServers}"
+								 SelectedItem="{Binding SelectedMCPServer}"
+								 x:Name="ListBoxConfiguredServers"
+								 >
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<StackPanel>
+										<TextBlock Text="{Binding DisplayName}"/>
+										<TextBlock Classes="ServerStatus"/>
+									</StackPanel>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+						<StackPanel Orientation="Horizontal"  Spacing="5" HorizontalAlignment="Left">
+							
+							<Button 
+								x:Name="BtnAddConnection"
+								Width="55" 
+								Height="35"
+								HorizontalContentAlignment="Center"
+								>
+								<Image Source="{Binding I[icons8-add-32.png]}"
+												  Width="16"
+												  Height="16"
+												   />
+							</Button>
+							<Button 
+								x:Name="BtnRemoveConnection"
+								Width="55" 
+								Height="35"
+								HorizontalContentAlignment="Center" 
+								>
+								<Button.IsEnabled>
+									<MultiBinding Converter="{x:Static BoolConverters.And}">
+										<Binding Path="SelectedMCPServer" Converter="{x:Static ObjectConverters.IsNotNull}"/>
+										<Binding Path="!IsFormEditMode"/>
+									</MultiBinding>
+								</Button.IsEnabled>
+								<Image Source="{Binding I[icons8-subtract-32.png]}"
+								Width="16"
+								Height="16"
+								/>
+							</Button>
+						</StackPanel>
+					</StackPanel>
+					<StackPanel Margin="5" Spacing="20" Orientation="Vertical" IsVisible="{Binding ShowServerConfigurationPanel}">
+						<Label Content="{Binding S[Configuration]}"/>
+						<StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Top">
+							<TextBox
+								Text="{Binding CurrentConfigurationJson}"
+								Height="225"
+								Width="575"
+								TextWrapping="WrapWithOverflow"
+								Watermark="{Binding ConfigurationWatermark}"
+								FontFamily="Consolas"
+								AcceptsReturn="True"
+								FontSize="12"
+								IsReadOnly="{Binding !IsFormEditMode}"
+								Classes="ConsoleDisplay"
+								x:Name="TextBoxConfigJson"
+								/>
+							<Button VerticalAlignment="Top" 
+									Height="45"
+									Width="45"
+									IsVisible="{Binding IsFormEditMode}"
+									x:Name="BtnPasteConfiguration">
+								<Image Source="{Binding I[icons8-paste-32.png]}"
+										Width="16"	   
+										Height="16"
+								/>
+							</Button>
+						</StackPanel>
+						<Label MinHeight="35" Classes="Error" Content="{Binding ValidationErrorMessage}"/>
+						<StackPanel 
+							Orientation="Horizontal" 
+							Spacing="5"
+							IsVisible="{Binding IsFormEditMode}"
+							>
+							<Button x:Name="BtnSaveConfiguration" 
+									Content="{Binding S[Save]}"
+									MinWidth="125"
+									Height="35"
+									HorizontalContentAlignment="Center"/>
+							<Button x:Name="BtnCancelEditConfiguration" 
+									Content="{Binding S[Cancel]}"
+									MinWidth="125"
+									Height="35"
+									HorizontalContentAlignment="Center"/>
+							
+						</StackPanel>
+						<StackPanel 
+							Orientation="Horizontal" 
+							Spacing="5"
+							IsVisible="{Binding !IsFormEditMode}"
+							>
+							<Button x:Name="BtnEditConnection"
+								Width="55"
+								Height="35"
+								HorizontalContentAlignment="Center"
+								HorizontalAlignment="Right"
+								IsVisible="{Binding !IsEditing}"
+							>
+								<Image Source="{Binding I[icons8-edit-32.png]}"
+													   Width="16"
+													   Height="16"
+												   />
+							</Button>
+							<Button x:Name="BtnStartServer"
+								Width="55"
+								Height="35"
+								HorizontalContentAlignment="Center"
+								HorizontalAlignment="Right"
+							>
+								<Image Source="{Binding I[icons8-play-32.png]}"
+													   Width="16"
+													   Height="16"
+												   />
+							</Button>
+							<Button x:Name="BtnStopServer"
+								Width="55"
+								Height="35"
+								HorizontalContentAlignment="Center"
+								HorizontalAlignment="Right"
+							>
+								<Image Source="{Binding I[icons8-stop-32.png]}"
+													   Width="16"
+													   Height="16"
+												   />
+							</Button>
+						</StackPanel>
+					</StackPanel>
+				</DockPanel>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

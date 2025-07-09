@@ -1,0 +1,521 @@
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.ReactiveUI;
+using System;
+using System.IO;
+using Avalonia.Themes.Fluent;
+using Avalonia.Platform;
+using System.Diagnostics;
+using eSearch.ViewModels;
+using eSearch.Models.Localization;
+using Xilium.CefGlue.Common;
+using System.Collections.Generic;
+using System.Linq;
+using eSearch.Models.Documents.Parse;
+using System.Reflection;
+using System.Text;
+using eSearch.Models.Configuration;
+using Newtonsoft.Json;
+using Avalonia.Controls.Primitives;
+using System.Timers;
+using ReactiveUI;
+using com.sun.istack.@internal;
+using eSearch.Models.Plugins;
+using S = eSearch.ViewModels.TranslationsViewModel;
+using eSearch.Interop.AI;
+using eSearch.Models.AI.MCP.Tools;
+using Xilium.CefGlue;
+
+namespace eSearch
+{
+    internal class Program
+    {
+
+        static Timer timer;
+
+        public static bool WasLaunchedWithSearchOnlyArgument           = false;
+
+        public static bool WasLaunchedWithAIDisabledArgument           = false;
+
+        public static bool WasLaunchedWithCreateLLMConnectionsDisabled = false;
+
+
+        // Initialization code. Don't use any Avalonia, third-party APIs or any
+        // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
+        // yet and stuff might break.
+        [STAThread]
+        public static void Main(string[] args)
+        {
+            WasLaunchedWithSearchOnlyArgument =           args.Contains("-s");
+            WasLaunchedWithAIDisabledArgument =           args.Contains("-a");
+            WasLaunchedWithCreateLLMConnectionsDisabled = args.Contains("-x");
+            BuildAvaloniaApp()
+            .StartWithClassicDesktopLifetime(args);
+            timer = new Timer(60000);
+            timer.Elapsed += Timer_Elapsed;
+            timer.Start();
+        }
+
+        private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                if (Program.GetMainWindow().DataContext is MainWindowViewModel vm)
+                {
+                    vm.RaisePropertyChanged(nameof(vm.ProductTagText));
+                }
+            } catch (Exception ex)
+            {
+                // Non fatal.
+                Debug.WriteLine("Exception in UI Update Timer ");
+                Debug.WriteLine(ex);
+            }
+        }
+
+        static Dictionary<string, string> cefFlags = new Dictionary<string, string>
+        {
+            {"allow-file-access-from-files",  "true"}
+        };
+
+        // Avalonia configuration, don't remove; also used by visual designer.
+        public static AppBuilder BuildAvaloniaApp()
+        {
+            var cachePath = Path.Combine(Path.GetTempPath(), "CefGlue_" + Guid.NewGuid().ToString().Replace("-", null));
+
+            AppDomain.CurrentDomain.ProcessExit += delegate { Cef_Cleanup(cachePath); };
+            return AppBuilder.Configure<App>()
+                            .UsePlatformDetect()
+                            .LogToTrace()
+                            .UseReactiveUI()
+            .AfterSetup(_ =>
+            {
+                CefRuntimeLoader.Initialize(new Xilium.CefGlue.CefSettings()
+                {
+                    RootCachePath = cachePath,
+                    Locale = "en-US",
+                    LogSeverity = Xilium.CefGlue.CefLogSeverity.Verbose,
+                    LogFile = "CEF.log",
+                    LocalesDirPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "cef_locale_files"),
+                    WindowlessRenderingEnabled = true
+                }, cefFlags.ToArray());
+            });
+        }
+
+        private static void Cef_Cleanup(string cachePath)
+        {
+            CefRuntime.Shutdown(); // must shutdown cef to free cache files (so that cleanup is able to delete files)
+
+            try
+            {
+                var dirInfo = new DirectoryInfo(cachePath);
+                if (dirInfo.Exists)
+                {
+                    dirInfo.Delete(true);
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // ignore
+            }
+            catch (IOException)
+            {
+                // ignore
+            }
+        }
+
+        public static event EventHandler OnLanguageChanged;
+
+        public static Avalonia.Controls.Window? GetMainWindow()
+        {
+            if (Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                return desktop.MainWindow;
+            }
+            return null;
+        }
+
+        public static void SetTheme(bool light)
+        {
+            Debug.WriteLine("Set Theme light: " + light);
+            ProgramConfig.IsThemeDark = !light;
+            {
+                if (GetIsThemeDark()) Program.ProgramConfig.AppDataContext.FluentTheme = "Dark";
+                else Program.ProgramConfig.AppDataContext.FluentTheme = "Light";
+                DarkModeIconsViewModel.ThemeChangeNotice();
+            }
+            
+            Program.SaveProgramConfig();
+            
+        }
+
+        public static MCPSearchServer MCPSearchServer
+        {
+            get
+            {
+                if (_mcpSearchServer == null)
+                {
+                    _mcpSearchServer = new MCPSearchServer();
+                }
+                return _mcpSearchServer;
+            }
+        }
+
+        private static MCPSearchServer _mcpSearchServer = null;
+
+
+        public static PluginLoader PluginLoader
+        {
+            get
+            {
+                if (_pluginLoader == null)
+                {
+                    _pluginLoader = new PluginLoader();
+                }
+                return _pluginLoader;
+            }
+        }
+
+        private static PluginLoader? _pluginLoader = null;
+
+        public static int MAX_RESULTS_LITE                  = 10;
+        public static int DEFAULT_MAX_RESULTS_REGISTERED    = 100;
+
+        public static bool GetIsThemeDark()
+        {
+            if (ProgramConfig.IsThemeDark == null)
+            {
+                return false;
+            }
+            return (bool)ProgramConfig.IsThemeDark;
+        }
+
+        public static string ESEARCH_PROGRAM_DATA_DIR
+        {
+            get
+            {
+#if STANDALONE
+                return Path.Combine( Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "ProgramData" );
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch");
+#endif
+            }
+        }
+
+        public static string ESEARCH_INDEX_DIR
+        {
+            get
+            {
+#if STANDALONE
+                return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "Indexes");    
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "Indexes");
+#endif
+            }
+        }
+
+        public static string ESEARCH_INDEX_LIB_FILE
+        {
+            get
+            {
+#if STANDALONE
+                return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "IndexLibrary.json");
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "IndexLibrary.json");
+#endif
+            }
+        }
+
+        public static string ESEARCH_PLUGINS_DIR
+        {
+            get
+            {
+#if STANDALONE
+                return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "Plugins");
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "Plugins");
+#endif
+
+            }
+        }
+
+        public static string ESEARCH_SYNONYMS_DIR
+        {
+            get
+            {
+#if STANDALONE
+                return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "Synonyms");
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "Synonyms");
+#endif
+            }
+        }
+
+        public static string ESEARCH_i18N_DIR
+        {
+            get
+            {
+#if STANDALONE
+                return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "i18n");
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "i18n");
+#endif
+            }
+        }
+
+        public static string ESEARCH_STOP_FILE_DIR
+        {
+            get
+            {
+#if STANDALONE
+                return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "Stop");
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "Stop");
+#endif
+            }
+        }
+
+        public static string ESEARCH_STEMMING_DIR
+        {
+            get
+            {
+#if STANDALONE
+                return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "Stemming");
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "Stemming");
+#endif
+            }
+        }
+
+        public static string ESEARCH_SESSION_FILE
+        {
+            get
+            {
+#if STANDALONE
+                return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "Session.json");
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "Session.json");
+#endif
+            }
+        }
+
+        public static string ESEARCH_CONFIG_FILE
+        {
+            get
+            {
+#if STANDALONE
+                return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "Config.json");
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "Config.json");
+#endif
+            }
+        }
+
+        public static string DEBUG_TEST_LANG_PATH
+        {
+            get
+            {
+                return @"C:\Users\Tommer\source\repos\eSearch\Lang Testing\psuedolocale.lang";
+            }
+        }
+
+        public static string ESEARCH_TEMP_FILES_PATH
+        {
+            get
+            {
+                return Path.Combine(System.IO.Path.GetTempPath(), "eSearch");
+            }
+        }
+
+        public static TranslationsViewModel TranslationsViewModel { 
+            get
+            {
+                if (_translationsViewModel == null)
+                {
+                    _translationsViewModel = new TranslationsViewModel(GetPreferredLanguage());
+                }
+                return _translationsViewModel;
+            }
+        }
+
+        public static DarkModeIconsViewModel DarkModeIconsViewModel
+        {
+            get
+            {
+                if (_darkModeIconsViewModel == null)
+                {
+                    _darkModeIconsViewModel = new DarkModeIconsViewModel();
+                }
+                return _darkModeIconsViewModel;
+            }
+        }
+
+        private static DarkModeIconsViewModel _darkModeIconsViewModel = null;
+
+        public static void PsuedoLang()
+        {
+            Language language = Language.DynamicPsuedolocalisationLanguage();
+            TranslationsViewModel.SetLanguage(language);
+        }
+
+        public static void LoadLang(string langFile)
+        {
+            if (langFile != null)
+            {
+                if (File.Exists(langFile))
+                {
+                    Debug.WriteLine("Loading " + langFile);
+                    Language language = Language.LoadLanguage(langFile);
+                    var tvm = TranslationsViewModel;
+                    tvm.SetLanguage(language);
+                    
+                }
+            } else
+            {
+                var tvm = TranslationsViewModel;
+                tvm.SetLanguage(null);
+            }
+            OnLanguageChanged?.Invoke(null, null); // This event is hooked by view models to get the language to update in realtime.
+        }
+
+        public static Language GetPreferredLanguage()
+        {
+            try
+            {
+                string file = ProgramConfig.LangFile; // may be null. null is supported, means english.
+                if (file == null) return null;
+                return Language.LoadLanguage(file);
+            } catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                return null;
+            }
+        }
+
+        public static void SetPreferredLanguage(string langFile)
+        {
+            ProgramConfig.LangFile = langFile;
+            SaveProgramConfig();
+        }
+
+        public static ProgramConfig ProgramConfig
+        {
+            get
+            {
+                if (_programConfig == null)
+                {
+                    if (_loadingProgramConfig == true)
+                    {
+                        throw new Exception("Already loading program config...");
+                    }
+                    _loadingProgramConfig = true;
+                    if (File.Exists(ESEARCH_CONFIG_FILE))
+                    {
+                        var config = JsonConvert.DeserializeObject<ProgramConfig>(File.ReadAllText(ESEARCH_CONFIG_FILE));
+                        if (config != null)
+                        {
+                            _programConfig = config;
+                        }
+                    }
+                }
+                if (_programConfig == null)
+                {
+                    _programConfig = new ProgramConfig();
+                }
+                _loadingProgramConfig = false;
+                return _programConfig;
+            }
+        }
+
+        private static bool _loadingProgramConfig = false;
+        private static ProgramConfig _programConfig = null;
+
+        public static void SaveProgramConfig()
+        {
+            var config = ProgramConfig;
+            string output = JsonConvert.SerializeObject(ProgramConfig, Formatting.Indented);
+            Directory.CreateDirectory(Path.GetDirectoryName(ESEARCH_CONFIG_FILE));
+            File.WriteAllText(ESEARCH_CONFIG_FILE, output);
+        }
+
+        /// <summary>
+        /// Returns metadata key _eSearchVersion value ProgramVersion
+        /// Useful to know which version of eSearch indexed a document.
+        /// </summary>
+        /// <returns></returns>
+        public static Metadata GetProgramVersionMetadata()
+        {
+
+            if (_programVersionMetadata == null)
+            {
+                _programVersionMetadata = new Metadata { Key = "_eSearchVersion", Value = GetProgramVersion() };
+            }
+            return _programVersionMetadata;
+        }
+
+        /// <summary>
+        /// Returns the version number/build of eSearch.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetProgramVersion()
+        {
+            Assembly asm = Assembly.GetExecutingAssembly();
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append(asm.GetName().Version.Major).Append(".");
+            sb.Append(asm.GetName().Version.Minor).Append(".");
+            sb.Append(asm.GetName().Version.Build.ToString("0"));
+            sb.Append(" (");
+            sb.Append(asm.GetName().Version.Revision);
+            sb.Append(")");
+            return sb.ToString();
+        }
+
+        private static Metadata _programVersionMetadata = null;
+
+        private static TranslationsViewModel _translationsViewModel;
+
+        private static string[] metadata_hidden_fields =
+        {
+            "Content", // The actual text content of the document shouldn't show up in metadata.
+            "_IDocumentType",
+            "_DateCreated",
+            "_"
+        };
+
+
+        public static IndexLibrary IndexLibrary
+        {
+            get
+            {
+                if (_indexLibrary == null)
+                {
+                    _indexLibrary = IndexLibrary.LoadLibrary(Program.ESEARCH_INDEX_LIB_FILE);
+                }
+                return _indexLibrary;
+            }
+        }
+
+        private static IndexLibrary _indexLibrary = null;
+
+
+        public static string OnlineHelpLinkLocation
+        {
+            get
+            {
+                if (!Program.ProgramConfig.IsProgramRegistered())
+                {
+                    // Unregistered.
+                    return "https://searchcloudone.com/esearch-lite-user-guide/";
+                }
+                else
+                {
+                    // Registered.
+                    return "https://searchcloudone.com/esearch-pro-user-guide/";
+
+                }
+            }
+        }
+
+    }
+}

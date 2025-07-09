@@ -1,0 +1,52 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="eSearch.Views.CopyResultsWindow"
+        Title="CopyResultsWindow"
+		Width="650"
+		Height="600"
+		ExtendClientAreaToDecorationsHint="True"
+		WindowStartupLocation="CenterOwner"
+		CanResize="False">
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30">Copy Results</Label>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+					<Button Width="150" HorizontalContentAlignment="Center">OK</Button>
+					<Button Width="150" HorizontalContentAlignment="Center">Cancel</Button>
+				</StackPanel>
+				<StackPanel Margin="5" Spacing="5" Orientation="Vertical">
+					<Label>Include</Label>
+					<StackPanel Margin="10" Spacing="5" Orientation="Vertical">
+						<CheckBox>Search Query</CheckBox>
+						<CheckBox>Date/Time</CheckBox>
+					</StackPanel>
+					<Panel Height="15"></Panel>
+					<Label>Copy to:</Label>
+					<StackPanel Margin="10" Spacing="5">
+						<RadioButton>Clipboard</RadioButton>
+						<StackPanel Spacing="20" Orientation="Horizontal">
+							<RadioButton>File:</RadioButton>
+							
+						</StackPanel>
+						<Label>Name</Label>
+						<StackPanel Orientation="Horizontal" Spacing="20">
+							<TextBox Width="200" HorizontalAlignment="Left">clip</TextBox>
+							<CheckBox IsChecked="{Binding AppendDateIsChecked}">Append Date</CheckBox>
+						</StackPanel>
+						<Label>Output Directory</Label>
+						<DockPanel>
+							<Button Margin="5" DockPanel.Dock="Right">...</Button>
+							<TextBox Margin="0,5"></TextBox>
+						</DockPanel>
+					</StackPanel>
+				</StackPanel>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

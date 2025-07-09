@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:viewmodels="clr-namespace:eSearch.ViewModels;assembly=eSearch"
+        mc:Ignorable="d" Width="450" Height="450"
+        x:Class="DesktopSearch2.Views.ColorPickerWindow"
+        Title="Highlight Color"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaToDecorationsHint="True"
+		>
+	<Design.DataContext>
+		<viewmodels:ViewerSettingsWindowViewModel/>
+	</Design.DataContext>
+
+	<DockPanel>
+		<DockPanel Margin="15" x:Name="PanelButtons" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+			<Button Margin="5,0"  x:Name="BtnOK" Content="{Binding S[OK]}" Padding="15,5"
+					MinWidth="110" HorizontalContentAlignment="Center" ></Button>
+			<Button Margin="5,0" x:Name="BtnCancel"  Content="{Binding S[Cancel]}" Padding="15,5"
+					MinWidth="110" HorizontalContentAlignment="Center">Button 2</Button>
+		</DockPanel>
+		<DockPanel x:Name="PanelMainInstructionAndText" Margin="45">
+			<ColorView HsvColor="{Binding SelectedColor}"></ColorView>
+		</DockPanel>
+	</DockPanel>
+</Window>

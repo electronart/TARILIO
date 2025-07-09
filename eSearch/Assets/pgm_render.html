@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>PGM Render Test</title>
+	<script>
+		function renderPGM(pgmData, canvas, isBinary = false) {
+		    const ctx = canvas.getContext("2d");
+
+		    let width = 0, height = 0, maxVal = 0;
+		    let pixelData;
+		    
+		    if (!isBinary) {
+		        // ASCII (P2) format
+		        const lines = pgmData.split('\n');
+		        let magicNumber = lines[0].trim();
+
+		        if (magicNumber !== 'P2') {
+		            throw new Error("Expected P2 format for ASCII PGM");
+		        }
+
+		        // Handling comments (lines starting with #)
+		        let index = 1;
+		        while (lines[index].startsWith('#')) {
+		            index++;
+		        }
+
+		        // Read width and height
+		        [width, height] = lines[index].trim().split(' ').map(Number);
+		        index++;
+
+		        // Read max grayscale value (usually 255)
+		        maxVal = parseInt(lines[index].trim());
+		        index++;
+
+		        // Parse the pixel data
+		        pixelData = lines.slice(index).join(' ').split(/\s+/).map(Number);
+		    } else 
+		    {
+		        // Binary (P5) format
+		        const uint8View = new Uint8Array(pgmData);
+		        let header = '';
+		        let index = 0;
+
+		        // Read magic number (P5)
+		        while (uint8View[index] !== 10) {  // 10 is newline ('\n')
+		            header += String.fromCharCode(uint8View[index++]);
+		        }
+		        index++;  // Skip the newline character
+		        if (header.trim() !== 'P5') {
+		            throw new Error("Expected P5 format for binary PGM");
+		        }
+
+		        // Read any comment lines
+		        while (uint8View[index] === 35) { // 35 is '#'
+		            while (uint8View[index] !== 10) { // Skip to the end of the line
+		                index++;
+		            }
+		            index++;  // Skip the newline character
+		        }
+
+		        // Read width and height
+		        let widthHeight = '';
+		        while (uint8View[index] !== 10) {
+		            widthHeight += String.fromCharCode(uint8View[index++]);
+		        }
+		        [width, height] = widthHeight.trim().split(' ').map(Number);
+		        index++;  // Skip the newline character
+
+		        // Read max grayscale value
+		        let maxValStr = '';
+		        while (uint8View[index] !== 10) {
+		            maxValStr += String.fromCharCode(uint8View[index++]);
+		        }
+		        maxVal = parseInt(maxValStr.trim());
+		        index++;  // Skip the newline character
+
+		        // Pixel data starts here
+		        pixelData = uint8View.slice(index);
+		    }
+
+		    // Resize the canvas to match the image dimensions
+		    canvas.width = width;
+		    canvas.height = height;
+
+		    // Create an ImageData object to hold pixel values
+		    let imageData = ctx.createImageData(width, height);
+
+		    // Fill ImageData with pixel values
+		    for (let i = 0; i < width * height; i++) {
+		        let value = Math.floor((pixelData[i] / maxVal) * 255); // Normalize grayscale value
+		        let offset = i * 4;
+		        imageData.data[offset] = value; // Red
+		        imageData.data[offset + 1] = value; // Green
+		        imageData.data[offset + 2] = value; // Blue
+		        imageData.data[offset + 3] = 255; // Alpha (fully opaque)
+		    }
+
+		    // Draw the image data to the canvas
+		    ctx.putImageData(imageData, 0, 0);
+		}
+
+	function base64ToArrayBuffer(base64) {
+		let binaryString = window.atob(base64);
+		let len = binaryString.length;
+		let bytes = new Uint8Array(len);
+		for (let i = 0; i < len; i++) {
+			bytes[i] = binaryString.charCodeAt(i);
+		}
+		return bytes.buffer; // This is your ArrayBuffer
+	}
+	</script>
+</head>
+<body>
+	<p> PGM Render</p>
+	<canvas id="pgmCanvas"></canvas>
+	<script>
+		function loadPGM() {
+			try {
+				window.Search.getPGMText().then(function (result) {
+					const header = result.split('\n')[0].trim();
+					if (header === 'P2') {
+						// txt file
+						renderPGM(result, document.getElementById('pgmCanvas'), false);
+					} else if (header === 'P5') {
+						// binary
+						window.Search.getPGMAsBase64().then(function (result) {
+							let buff = base64ToArrayBuffer(result);
+							renderPGM(buff, document.getElementById('pgmCanvas'), true);
+						});
+					}
+				});
+			} catch (e) {
+                setTimeout(loadPGM, 1000);
+			}
+		}
+
+		loadPGM();
+
+	</script>
+</body>
+</html>

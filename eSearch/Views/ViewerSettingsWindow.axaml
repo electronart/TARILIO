@@ -1,0 +1,99 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="550"
+        x:Class="eSearch.Views.ViewerSettingsWindow"
+		xmlns:viewmodels="clr-namespace:eSearch.ViewModels;assembly=eSearch"
+        Title="Viewer Settings"
+		Width="750"
+		Height="550"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaToDecorationsHint="True"
+		CanResize="False">
+	<Design.DataContext>
+		<viewmodels:ViewerSettingsWindowViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[Viewer~Settings]}"/>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+					<Button Width="150" HorizontalContentAlignment="Center" Content="{Binding S[OK]}" x:Name="BtnOK"/>
+					<Button Width="150" HorizontalContentAlignment="Center" Content="{Binding S[Cancel]}" x:Name="BtnCancel"/>
+				</StackPanel>
+				<Grid ColumnDefinitions="*,*" RowDefinitions="*" Margin="5">
+					<StackPanel Grid.Column="0" Margin="5" Spacing="5">
+						<Label Content="{Binding S[View~Large~Files]}"/>
+						<StackPanel Orientation="Vertical" Margin="10" Spacing="5">
+							<StackPanel Orientation="Horizontal">
+								<Label Margin="5">></Label>
+									<NumericUpDown DockPanel.Dock="Left" Margin="5" Value="{Binding ViewerMaxFileSizeMB}" ShowButtonSpinner="False" Minimum="1" Maximum="9999"></NumericUpDown>
+								<Label Margin="5" Content="{Binding S[Mb]}"/>
+							</StackPanel>
+							<RadioButton Content="{Binding S[Fully]}"			IsChecked="{Binding IsRadioViewLargeFileFullyChecked}" GroupName="RadioLargeFileView"/>
+							<!--<RadioButton Content="{Binding S[First~page~only]}" IsChecked="{Binding IsRadioViewLargeFileFirstPageChecked}" GroupName="RadioLargeFileView"/>-->
+							<RadioButton Content="{Binding S[In~Report~View]}"	IsChecked="{Binding IsRadioViewLargeFileReportViewChecked}" GroupName="RadioLargeFileView"/>
+							<StackPanel Width="250" Margin="0,10" Spacing="5">
+								<Label Content="{Binding S[Amount~of~context]}"/>
+								<DockPanel>
+									<NumericUpDown DockPanel.Dock="Left" Margin="5" Value="{Binding ReportViewContextAmount}" ShowButtonSpinner="False" Minimum="1" Maximum="9999"></NumericUpDown>
+									<ComboBox ItemsSource="{Binding ComboBoxContextTypeItems}" SelectedIndex="{Binding ComboBoxContextTypeSelectedIndex}" HorizontalAlignment="Stretch" Margin="5"></ComboBox>
+								</DockPanel>
+							</StackPanel>
+						</StackPanel>
+						
+						<Panel Height="15"></Panel>
+						
+						<Label Content="{Binding S[PDF]}"/>
+						<StackPanel Orientation="Vertical" Margin="5">
+							<RadioButton Content="{Binding S[Viewer]}" IsChecked="{Binding IsRadioPDFViewerChecked}" GroupName="RadioPDF"/>
+							<!--<RadioButton Content="{Binding S[Adobe~Acrobat]}" IsChecked="{Binding IsRadioPDFAcrobatChecked}" GroupName="RadioPDF"/>-->
+							<RadioButton Content="{Binding S[Plain~Text]}" IsChecked="{Binding IsRadioPDFPlainTextChecked}" GroupName="RadioPDF"/>
+						</StackPanel>
+					</StackPanel>
+					<StackPanel Grid.Column="1" Margin="5">
+						<!--
+						<Label Content="{Binding S[View~File~Types]}"/>
+						<StackPanel Orientation="Vertical" Margin="10" Spacing="5">
+							<DockPanel>
+								<StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="5" Spacing="5">
+									<Button HorizontalAlignment="Stretch" Content="{Binding S[New...]}"/>
+									<Button HorizontalAlignment="Stretch" Content="{Binding S[Delete...]}"/>
+									<Button HorizontalAlignment="Stretch" Content="{Binding S[Rename...]}"/>
+								</StackPanel>
+								<ListBox Margin="5" Height="150"></ListBox>
+							</DockPanel>
+						</StackPanel>
+						-->
+						<Panel Height="15">
+							<Grid ColumnDefinitions="*,*" RowDefinitions="*">
+								<StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical" Margin="5" Spacing="5">
+									<Label Content="{Binding S[Hit~Highlight]}"/>
+									<StackPanel Orientation="Vertical" Margin="10" Spacing="5">
+										<Button x:Name="BtnSelectHighlightColor" Width="50">
+											<Image Width="30" Height="30" Source="/Assets/icons8-highlight-48.png"/>
+										</Button>
+										<Label Background="{Binding HighlightColorBackground}" Content="{Binding HighlightColorHex}">00FF00</Label>
+									</StackPanel>
+								</StackPanel>
+								<StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical" Margin="5" Spacing="5">
+									<Label Content="{Binding S[Unformatted~Text]}"/>
+									<StackPanel Orientation="Vertical" Margin="10" Spacing="5">
+										<Button x:Name="BtnSelectViewerFont" Width="50">
+											<Image Width="30" Height="30" Source="/Assets/icons8-font-48.png"/>
+										</Button>
+										<Label Content="{Binding FontFamilyName}"></Label>
+										<CheckBox Content="{Binding S[No~word~wrap]}"/>
+									</StackPanel>
+								</StackPanel>
+							</Grid>
+						</Panel>
+					</StackPanel>
+				</Grid>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

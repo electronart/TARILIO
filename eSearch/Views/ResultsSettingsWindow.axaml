@@ -1,0 +1,118 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="780" d:DesignHeight="550"
+        x:Class="eSearch.Views.ResultsSettingsWindow"
+		xmlns:viewmodels="clr-namespace:eSearch.ViewModels;assembly=eSearch"
+		xmlns:behaviours="clr-namespace:eSearch.Behaviours;assembly=eSearch"
+        Title="Results Settings"
+		Width="780"
+		Height="550"
+		ExtendClientAreaToDecorationsHint="True"
+		WindowStartupLocation="CenterOwner"
+		CanResize="False">
+	<Window.Styles>
+	</Window.Styles>
+	<Design.DataContext>
+		<viewmodels:ResultsSettingsWindowViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[Results~Settings]}"/>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				<DockPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" >
+					<StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="5">
+						<Button Width="150" HorizontalContentAlignment="Center" x:Name="BtnOK" Content="{Binding S[OK]}"/>
+						<Button Width="150" HorizontalContentAlignment="Center" x:Name="BtnCancel" Content="{Binding S[Cancel]}"/>
+					</StackPanel>
+					<Label Classes="Error" 
+						   x:Name="LabelValidationErrors"
+						   Margin="0,5,0,0"
+						   >
+						Validation Error
+					</Label>
+					
+				</DockPanel>
+				<Grid ColumnDefinitions="*,*" RowDefinitions="*">
+					<StackPanel Margin="5" Grid.Column="0" Orientation="Vertical" Spacing="5">
+						<Label Content="{Binding S[Columns]}"/>
+						<ListBox Margin="5" Height="400" ItemsSource="{Binding AvailableColumns}" 
+								 Classes="draggableVirtualizing">
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<StackPanel Orientation="Horizontal" Spacing="10">
+										<Image Width="16" Height="16"
+											   Source="{Binding $parent[Window].DataContext.I[icons8-drag-handle-48.png]}"
+											   Cursor="SizeNorthSouth"
+											   VerticalAlignment="Center" Classes="Faded">
+											</Image>
+										<CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Header}" FontSize="12"/>
+									</StackPanel>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+						
+					</StackPanel>
+					<StackPanel Margin="5" Grid.Column="1" Spacing="5">
+						<StackPanel Spacing="5" Margin="5">
+							<Label Content="{Binding S[Column~Width]}"/>
+							<RadioButton Margin="10,0" Content="{Binding S[Fit~to~content]}" IsChecked="{Binding IsRadioColumnWidthFitToContentChecked}" GroupName="ColWidth"/>
+							<RadioButton Margin="10,0" Content="{Binding S[Fit~to~window]}" IsChecked="{Binding IsRadioColumnWidthFitToWindowChecked}" GroupName="ColWidth"/>
+							<RadioButton Margin="10,0" Content="{Binding S[Set~Manually]}"  IsChecked="{Binding IsRadioColumnWidthSetManuallyChecked}" GroupName="ColWidth"/>
+						</StackPanel>
+						<!--
+						<StackPanel Spacing="5" Margin="5">
+							<Label Content="{Binding S[Key~Words~in~Context]}"/>
+							<Grid ColumnDefinitions="*,*" RowDefinitions="*,*" Margin="10,5">
+								<CheckBox Grid.Column="0" Grid.Row="0" Content="{Binding S[Show]}"/>
+								<Button Grid.Column="1" Grid.Row="0" 
+										HorizontalAlignment="Stretch"
+										HorizontalContentAlignment="Center" Content="{Binding S[Colour...]}"/>
+								<DockPanel Grid.Column="0" Grid.Row="1">
+									<NumericUpDown DockPanel.Dock="Left"></NumericUpDown>
+									<Label Margin="5" Content="{Binding S[Words]}"/>
+								</DockPanel>
+								<TextBox Grid.Column="1" Grid.Row="1" Background="#00FF00" HorizontalContentAlignment="Center">00FF00</TextBox>
+							</Grid>
+						</StackPanel>
+						-->
+						<StackPanel Spacing="5" Margin="5">
+							<Label Content="{Binding S[Rows]}"/>
+							<CheckBox Margin="10,0" Content="{Binding S[Limit~Results]}" 
+									  IsChecked="{Binding IsLimitResultsChecked}"
+									  IsEnabled="{Binding IsLimitResultsAvailable}"/>
+							<NumericUpDown
+								HorizontalAlignment="Left"
+								Margin="20,0"
+								Width="150"
+								Value="{Binding LimitResultsStartAt}"
+								Minimum="1"
+								ParsingNumberStyle="Integer"
+								FormatString="N0"
+								IsEnabled="{Binding IsLimitResultsStartAtControlEnabled}"
+								IsVisible="False"
+								ClipValueToMinMax="True"
+							/>
+							<NumericUpDown 
+								HorizontalAlignment="Left"
+								Margin="20,0"
+								Width="150"
+								Value="{Binding LimitResultsEndAt}" 
+								IsEnabled="{Binding IsLimitResultsEndAtControlEnabled}"
+								Minimum="10"
+								Maximum="5000"
+								ClipValueToMinMax="True"
+								Increment="10"
+								ParsingNumberStyle="Integer"
+								FormatString="N0"
+							/>
+						</StackPanel>
+					</StackPanel>
+				</Grid>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

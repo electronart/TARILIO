@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Label="MultilingualAppToolkit">
+    <MultilingualAppToolkitVersion>4.0</MultilingualAppToolkitVersion>
+    <MultilingualFallbackLanguage>en</MultilingualFallbackLanguage>
+    <TranslationReport Condition="'$(Configuration)' == 'Release'">true</TranslationReport>
+    <TranslationReport Condition="'$(Configuration)'=='Release - Portable'">true</TranslationReport>
+    <SuppressPseudoWarning Condition="'$(Configuration)' == 'Debug'">true</SuppressPseudoWarning>
+    <SuppressPseudoWarning Condition="'$(Configuration)'=='Debug - Portable'">true</SuppressPseudoWarning>
+    <Configurations>eSearch DEBUG;eSearch PORTABLE;eSearch PORTABLE DEBUG;eSearch RELEASE;TARILIO DEBUG;TARILIO RELEASE;TARILIO PORTABLE;TARILIO PORTABLE DEBUG;eSearch PORTABLE DEBUG</Configurations>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+	<SelfContained>true</SelfContained>
+	<ApplicationIcon>esearch-icon.ico</ApplicationIcon>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+	<NeutralLanguage>en</NeutralLanguage>
+	<AssemblyName>eSearch</AssemblyName>
+	  <Deterministic>false</Deterministic>
+	  <AssemblyVersion>1.1.*</AssemblyVersion>
+	  <AssemblyInformationalVersion>cats</AssemblyInformationalVersion>
+	  <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+
+	  <AvaloniaNameGeneratorIsEnabled>false</AvaloniaNameGeneratorIsEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='eSearch DEBUG'">
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='eSearch PORTABLE'">
+    <DefineConstants>$(DefineConstants);STANDALONE</DefineConstants>
+  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='eSearch PORTABLE DEBUG'">
+        <DefineConstants>$(DefineConstants);STANDALONE;DEBUG</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='eSearch RELEASE'">
+        <DefineConstants>$(DefineConstants);</DefineConstants>
+    </PropertyGroup>
+<!-- No longer used
+  <PropertyGroup Condition="'$(Configuration)'=='LITE - Debug'">
+		<DefineConstants>$(DefineConstants);LITE;DEBUG</DefineConstants>
+  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='LITE - Release'">
+		<DefineConstants>$(DefineConstants);LITE;</DefineConstants>
+	</PropertyGroup>
+-->
+	<PropertyGroup Condition="'$(Configuration)' == 'TARILIO DEBUG'">
+        <DefineConstants>$(DefineConstants);TARILIO;DEBUG</DefineConstants>
+    </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'TARILIO RELEASE'">
+		<DefineConstants>$(DefineConstants);TARILIO;RELEASE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'TARILIO PORTABLE'">
+		<DefineConstants>$(DefineConstants);TARILIO;STANDALONE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'TARILIO PORTABLE DEBUG'">
+		<DefineConstants>$(DefineConstants);TARILIO;STANDALONE;DEBUG</DefineConstants>
+	</PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets" Label="MultilingualAppToolkit" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\v$(MultilingualAppToolkitVersion)\Microsoft.Multilingual.ResxResources.targets')" />
+  <Target Name="MATPrerequisite" BeforeTargets="PrepareForBuild" Condition="!Exists('$(MSBuildExtensionsPath)\Microsoft\Multilingual App Toolkit\Microsoft.Multilingual.ResxResources.targets')" Label="MultilingualAppToolkit">
+    <Warning Text="$(MSBuildProjectFile) is Multilingual build enabled, but the Multilingual App Toolkit is unavailable during the build. If building with Visual Studio, please check to ensure that toolkit is properly installed." />
+  </Target>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+    <None Remove=".gitignore" />
+    <None Remove="Assets\browser_init.js" />
+    <None Remove="Assets\esearch-icon.ico" />
+    <None Remove="Assets\hit_navigator.css" />
+    <None Remove="Assets\hit_navigator.htm" />
+    <None Remove="Assets\hit_navigator.js" />
+    <None Remove="Assets\icons8-folder-16.png" />
+    <None Remove="Assets\pgm_render.html" />
+    <None Remove="Assets\postload_highlighter.js" />
+    <None Remove="Assets\postload_highlighter2.js" />
+    <None Remove="Assets\prism-keep-highlights.js" />
+    <None Remove="Assets\result_style.css" />
+    <None Remove="Assets\result_style_dark.css" />
+    <None Remove="Assets\result_style_plaintext.css" />
+    <None Remove="Assets\result_style_src_code.css" />
+    <None Remove="Assets\StyleOverrides.xaml" />
+    <None Remove="Assets\text_contrast.js" />
+    <None Remove="Assets\tiff_esearch_render.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Tika\tika-app-2.9.0.jar" Link="tika-app-2.9.0.jar">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Tika\tika-server-standard-2.9.0.jar" Link="tika-server-standard-2.9.0.jar">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <TrimmerRootDescriptor Include="Roots.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.2.6" />
+    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.2.6" />
+    <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.1.5" />
+    <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.1.1" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.6" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.6" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.6" />
+    <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Debug - Portable'">
+      <Version>11.0.10</Version>
+    </PackageReference>
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.6" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.6" />
+    <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.0.3" />
+    <PackageReference Include="CefGlue.Avalonia" Version="120.6099.210" />
+    <PackageReference Include="CefGlue.Common" Version="120.6099.210" />
+    <PackageReference Include="CsvHelper" Version="31.0.4" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.19.0" />
+    <PackageReference Include="DocumentFormat.OpenXml.Features" Version="2.19.0" />
+    <PackageReference Include="DocumentFormat.OpenXml.Linq" Version="2.19.0" />
+    <PackageReference Include="FileSignatures" Version="5.0.2" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00016" />
+    <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
+    <PackageReference Include="Lucene.Net.Analysis.Phonetic" Version="4.8.0-beta00016" />
+    <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
+    <PackageReference Include="Lucene.Net.Highlighter" Version="4.8.0-beta00016" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.0.0" />
+    <PackageReference Include="Magick.NET.Core" Version="14.0.0" />
+    <PackageReference Include="Markdig" Version="0.38.0" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.54.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.54.0" />
+    <PackageReference Include="MimeKit" Version="4.10.0" />
+    <PackageReference Include="ModelContextProtocol" Version="0.2.0-preview.1" />
+    <PackageReference Include="NetOdt" Version="1.0.0-alpha" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NPOI" Version="2.4.1" />
+    <PackageReference Include="NPOI.HWPFCore" Version="2.3.0.1" />
+    <PackageReference Include="OpenXmlPowerTools.NetStandard" Version="4.6.0" />
+    <PackageReference Include="PdfPig" Version="0.1.9" />
+    <PackageReference Include="PseudoLocalizer" Version="1.3.0" />
+    <PackageReference Include="ReactiveUI.Validation" Version="3.1.7" />
+    <PackageReference Include="Sep" Version="0.11.0" />
+    <PackageReference Include="SharpCompress" Version="0.38.0" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="System.Speech" Version="9.0.2" />
+    <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
+    <PackageReference Include="TikaOnDotNet" Version="1.17.1" />
+    <PackageReference Include="TikaOnDotnet.TextExtractor" Version="1.17.1" />
+    <PackageReference Include="UTF.Unknown" Version="2.5.1" />
+    <PackageReference Include="VersOne.Epub" Version="3.3.1" />
+    <PackageReference Include="Xaml.Behaviors" Version="11.2.6" />
+    <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
+    <PackageReference Include="XstReader.Api" Version="1.0.6" />
+    <!--<PackageReference Include="Avalonia.HtmlRenderer" Version="11.0.0-preview6" />-->
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\Toxy.NetCore-netcore\Toxy.NetCore-netcore\ToxyFramework\ToxyFramework_dotnetcore.csproj" />
+    <ProjectReference Include="..\eSearchInterop\eSearch.Interop.csproj" />
+    <ProjectReference Include="..\TARILIO\TARILIO.csproj" />
+  </ItemGroup>
+	<ItemGroup>
+		<Content Include="pdf_viewer\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="cef_locale_files\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="openjdk-22.0.1_windows-x64_bin\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Original\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="..\eSearch_installer\Include Files\Docs\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>docs\%(Filename)%(Extension)</TargetPath>
+		</Content>
+		
+	</ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Update="Assets\result_style.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Update="Assets\StyleOverrides.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\CopyConversationWindow.axaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>CopyConversationWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MCPConnectionConfigurationWindow.axaml.cs">
+      <DependentUpon>MCPConnectionConfigurationWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ResultsSettingsWindow.axaml.cs">
+      <DependentUpon>ResultsSettingsWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SearchSettingsWindow.axaml.cs">
+      <DependentUpon>SearchSettingsWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\TaskDialogWindow.axaml.cs">
+      <DependentUpon>TaskDialogWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\NewIndexWindow.axaml.cs">
+      <DependentUpon>NewIndexWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ProgressControl.axaml.cs">
+      <DependentUpon>ProgressControl.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\SearchResultsReportWindow.axaml.cs">
+      <DependentUpon>SearchResultsReportWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\UpdateIndexWindow.axaml.cs">
+      <DependentUpon>UpdateIndexWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ViewerSettingsWindow.axaml.cs">
+      <DependentUpon>ViewerSettingsWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaXaml Update="Views\CopyConversationWindow.axaml">
+      <SubType>Designer</SubType>
+    </AvaloniaXaml>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="call ..\PortableBuilder\bin\Debug\PortableBuilder.exe &quot;$(DefineConstants)&quot;" />
+  </Target>
+</Project>

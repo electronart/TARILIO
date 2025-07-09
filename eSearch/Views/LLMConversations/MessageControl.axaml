@@ -1,0 +1,129 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:localView="clr-namespace:eSearch.Views;assembly=eSearch"
+			 xmlns:myConverters="clr-namespace:eSearch.Converters;assembly=eSearch"
+			 xmlns:vm="using:eSearch.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800"
+			 MinHeight="50"
+             x:Class="eSearch.Views.LLMConversations.MessageControl">
+	<UserControl.Resources>
+		<myConverters:TitleCaseConverter x:Key="TitleCaseConverter"/>
+	</UserControl.Resources>
+	<Design.DataContext>
+		<vm:DesignLLMMessageViewModel/>
+	</Design.DataContext>
+	<Border 
+		Background="{DynamicResource SystemChromeLowColor}"
+		CornerRadius="10"
+		Padding="15"
+		Margin="5">
+		<StackPanel>
+			<DockPanel>
+				<StackPanel 
+					DockPanel.Dock="Right"
+					Orientation="Horizontal">
+					<Button x:Name="buttonBrowserDebug"
+							Width="30"
+							Height="30"
+							Classes="TransparentBtn"
+							IsVisible="True"
+							ToolTip.Tip="{Binding S[Browser~Debug...]}">
+						<Image Source="{Binding I[icons8-information-16.png]}"
+							   Width="16"
+							   Height="16"/>
+					</Button>
+					<Button x:Name="buttonStopGeneration"
+							Width="30"
+							Height="30"
+							Classes="TransparentBtn"
+							IsVisible="{Binding !IsFinishedStreaming}"
+							ToolTip.Tip="{Binding S[Stop~Generation]}">
+						<Image Source="{Binding I[icons8-stop-32.png]}"
+							   Width="16"
+							   Height="16"/>
+					</Button>
+					<ToggleButton 
+							x:Name="buttonUserNote"
+							Width="30"
+							Height="30"
+							IsChecked="{Binding IsEditingNote}"
+							Classes="TransparentBtn"
+							IsVisible="{Binding IsFinishedStreaming}"
+							ToolTip.Tip="{Binding S[Notes]}">
+						<Image Source="{Binding I[icons8-note-32.png]}"
+							   Width="16" 
+							   Height="16"/>
+					</ToggleButton>
+					<Button x:Name="buttonDeleteMessage"
+							Width="30"
+							Height="30"
+							Classes="TransparentBtn"
+							IsVisible="{Binding IsFinishedStreaming}"
+							ToolTip.Tip="{Binding S[Delete~Message]}">
+						<Image Source="{Binding I[icons8-delete-32.png]}"
+							   Width="16"
+							   Height="16"/>
+					</Button>
+					<Button x:Name="buttonCopyMessage"
+							Width="30"
+							Height="30"
+							Classes="TransparentBtn"
+							IsVisible="{Binding IsFinishedStreaming}"
+							ToolTip.Tip="{Binding S[Copy~Message]}">
+						<StackPanel>
+						<Image Source="{Binding I[icons8-copy-16.png]}"
+							   IsVisible="{Binding !JustCopiedMessage}"
+							   Width="16"
+							   Height="16"/>
+						<Image Source="{Binding I[icons8-done-32.png]}"
+							   IsVisible="{Binding JustCopiedMessage}"
+							   Width="16"
+							   Height="16"/>
+						</StackPanel>
+					</Button>
+				</StackPanel>
+				<Label 
+					Content="{Binding Role, Converter={StaticResource TitleCaseConverter}}"
+					
+				/>
+
+			</DockPanel>
+			<localView:HtmlDocumentControl 
+				x:Name="MessageCEFViewer"
+				MinHeight="25"/>
+			<Grid>
+				<DockPanel 
+					x:Name="NotesView"
+					Opacity="0.75"
+					>
+					<DockPanel.IsVisible>
+						<MultiBinding Converter="{x:Static BoolConverters.And}">
+							<Binding Path="!IsEditingNote"/>
+							<Binding Path="Note" Converter="{x:Static StringConverters.IsNotNullOrEmpty}"/>
+						</MultiBinding>
+					</DockPanel.IsVisible>
+					<Image Source="{Binding I[icons8-note-32.png]}"
+							Width="16"
+							Height="16"
+							DockPanel.Dock="Left"
+							VerticalAlignment="Top"
+							Margin="10"
+						   />
+					<Label Margin="5" 
+						   Content="{Binding Note}"
+						   VerticalAlignment="Top"/>
+				</DockPanel>
+				<TextBox x:Name="NotesEditTextBox"
+						 Text="{Binding Note}"
+						 IsVisible="{Binding IsEditingNote}"
+						 Watermark="{Binding S[Note]}"
+						 Margin="5"
+						 MinHeight="35"
+						 MaxLines="12" 
+						 MaxLength="512"/>
+			</Grid>
+		</StackPanel>
+	</Border>
+</UserControl>

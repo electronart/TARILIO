@@ -1,0 +1,69 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:eSearch.ViewModels"
+        mc:Ignorable="d" 
+		Width="800" Height="450"
+        x:Class="eSearch.PluginsWindow"
+        Title="{Binding S[Plugins]}"
+		ExtendClientAreaToDecorationsHint="True"
+		WindowStartupLocation="CenterOwner"
+		CanResize="False"
+		>
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:PluginsWindowViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[Plugins]}"></Label>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				<DockPanel x:Name="BottomPanel" Margin="15" DockPanel.Dock="Bottom">
+					<StackPanel HorizontalAlignment="Stretch" DockPanel.Dock="Right" Orientation="Horizontal">
+						<Button HorizontalAlignment="Right"
+								Content="{Binding S[Close]}"
+								MinWidth="150"
+								HorizontalContentAlignment="Center"
+								x:Name="BtnClose"
+						/>
+					</StackPanel>
+					<Label Classes="Error" HorizontalAlignment="Left" Content="{Binding ValidationError}"/>
+				</DockPanel>
+				<DockPanel>
+					<StackPanel Spacing="10">
+						<ListBox
+							Width="250"
+							Height="300"
+							SelectedItem="{Binding SelectedPlugin}"
+							ItemsSource="{Binding AvailablePlugins}"
+							DockPanel.Dock="Left"
+							x:Name="ListBoxPlugins"
+						/>
+						<StackPanel Orientation="Horizontal" Spacing="10">
+							<Button Width="120" 
+									HorizontalContentAlignment="Center"
+									Content="{Binding S[Add...]}"
+									x:Name="BtnInstallPlugin"/>
+							<Button Width="120" 
+									HorizontalContentAlignment="Center"
+									x:Name="BtnUninstallPlugin"
+									Content="{Binding S[Remove]}"
+									>Remove</Button>
+						</StackPanel>
+					</StackPanel>
+					<StackPanel Margin="10" Spacing="20">
+						<TextBlock FontSize="32" Text="{Binding PluginName}">Plugin Name</TextBlock>
+						<TextBlock FontSize="12" Text="{Binding PluginVersion}">ElectronArt Design Ltd</TextBlock>
+						<TextBlock FontSize="12" Text="{Binding PluginAuthor}">ElectronArt Design Ltd</TextBlock>
+						<TextBlock Text="{Binding PluginDescription}"> Description </TextBlock>
+					</StackPanel>
+					
+				</DockPanel>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

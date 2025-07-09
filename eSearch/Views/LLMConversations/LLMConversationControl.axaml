@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="450"
+             x:Class="eSearch.Views.LLMConversations.LLMConversationControl"
+			 xmlns:vm="using:eSearch.ViewModels"
+			 xmlns:llmCtl="using:eSearch.Views.LLMConversations">
+	<Design.DataContext>
+		<vm:DesignLLMConversationViewModel/>
+	</Design.DataContext>
+	<ScrollViewer 
+		VerticalScrollBarVisibility="Auto"
+		ClipToBounds="True">
+		<ItemsRepeater 
+			x:Name="itemsRepeaterMessages"
+			ItemsSource="{Binding Messages}"
+			MaxWidth="800"
+			>
+			<ItemsRepeater.ItemTemplate>
+				<DataTemplate>
+					<llmCtl:MessageControl RemoveRequested="MessageControl_RemoveRequested"/>
+				</DataTemplate>
+			</ItemsRepeater.ItemTemplate>
+			<ItemsRepeater.Layout>
+				<StackLayout Orientation="Vertical"/>
+			</ItemsRepeater.Layout>
+		</ItemsRepeater>
+	</ScrollViewer>
+</UserControl>

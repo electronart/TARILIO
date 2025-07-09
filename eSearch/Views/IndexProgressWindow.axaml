@@ -1,0 +1,54 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:eSearch.ViewModels"
+        mc:Ignorable="d"
+        x:Class="eSearch.Views.IndexProgressWindow"
+        Title="IndexProgressWindow"
+		ExtendClientAreaToDecorationsHint="True"
+		Width="450"
+		Height="240"
+		WindowStartupLocation="CenterOwner"
+		CanResize="False"
+	>
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:ProgressViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30">Indexing</Label>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<StackPanel Orientation="Vertical" Margin="5">
+				<DockPanel>
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="Auto"/>
+						</Grid.RowDefinitions>
+						<ProgressBar Grid.Row="0" IsVisible="{Binding !IsFinished}" Value="{Binding Progress}" Minimum="0" Maximum="{Binding MaxProgress}" Height="20" Margin="10">
+						</ProgressBar>
+						<TextBlock Grid.Row="1" Text="{Binding Status}" Margin="10" Height="75"/>
+						
+					</Grid>
+				</DockPanel>
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+					<Button 
+						HorizontalAlignment="Right" Grid.Row="2" Margin="10" MinWidth="100" HorizontalContentAlignment="Center" 
+						x:Name="BtnViewLog" Content="{Binding S[View~log]}"
+						/>
+					<Button 
+						HorizontalAlignment="Right" Grid.Row="2" Margin="10" MinWidth="100" HorizontalContentAlignment="Center"
+						x:Name="BtnClose"   Content="{Binding S[Close]}"/>
+					<Button 
+						HorizontalAlignment="Right" Grid.Row="2" Margin="10" MinWidth="100" HorizontalContentAlignment="Center"
+						x:Name="BtnCancel"  Content="{Binding S[Cancel]}"/>
+				</StackPanel>
+			</StackPanel>
+		</Border>
+	</DockPanel>
+</Window>

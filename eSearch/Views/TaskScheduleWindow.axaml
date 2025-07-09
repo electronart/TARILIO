@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:eSearch.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+        x:Class="eSearch.Views.TaskScheduleWindow"
+        Title="New Index"
+		ExtendClientAreaToDecorationsHint="True">
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30">Schedule</Label>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<StackPanel Orientation="Vertical" Margin="15" Spacing="5">
+				<Label Height="30">Set Task Schedule</Label>
+
+				<Label Margin="0,20,0,0">Starting:</Label>
+				<DockPanel>
+					<TimePicker DockPanel.Dock="Right" Width="250"></TimePicker>
+					<DatePicker></DatePicker>	
+				</DockPanel>
+				<Label Margin="0,20,0,0">Repeat Every:</Label>
+				<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+					<NumericUpDown Width="150" DockPanel.Dock="Left"></NumericUpDown>
+					<ComboBox Margin="15,0,0,0" HorizontalAlignment="Stretch"></ComboBox>
+				</DockPanel>
+			</StackPanel>
+		</Border>
+	</DockPanel>
+</Window>

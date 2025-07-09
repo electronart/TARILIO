@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:viewmodels="clr-namespace:eSearch.ViewModels;assembly=eSearch"
+        mc:Ignorable="d" Width="350" Height="180"
+		WindowStartupLocation="CenterOwner"
+        x:Class="eSearch.Views.SearchFilterWindow2"
+        Title="Filters"
+		ExtendClientAreaToDecorationsHint="True"
+		>
+	<Design.DataContext>
+		<viewmodels:SearchFilterWindowViewModel2/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel DockPanel.Dock="Top" x:Name="TitleOnly" >
+			<Label Height="30" Content="{Binding S[Filters]}"/>
+		</DockPanel>
+		<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button x:Name="BtnOK" Width="150" HorizontalContentAlignment="Center" IsEnabled="{Binding TextValid}" Content="{Binding S[OK]}" IsDefault="True"/>
+			<Button x:Name="BtnCancel" Width="150" HorizontalContentAlignment="Center" Content="{Binding S[Cancel]}"/>
+		</StackPanel>
+		<StackPanel Orientation="Vertical" VerticalAlignment="Stretch" Margin="15">
+
+			<ComboBox
+								Width="250"
+								ItemsSource="{Binding AvailableFields}"
+								SelectedItem="{Binding SelectedField}">
+			</ComboBox>
+		</StackPanel>
+	</DockPanel>
+</Window>

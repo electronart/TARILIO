@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:eSearch.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
+        x:Class="eSearch.Views.ListContentsWindow"
+        Title="{Binding S[List~Contents]}"
+		Width="500" Height="400"
+		ExtendClientAreaToDecorationsHint="True"
+		WindowStartupLocation="CenterOwner"
+		>
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:TaskDialogWindowViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[List~Contents]}"/>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+					<Button Width="150" HorizontalContentAlignment="Center" Content="{Binding S[OK]}"/>
+					<Button Width="150" HorizontalContentAlignment="Center" Content="{Binding S[Cancel]}"/>
+				</StackPanel>
+				<Grid ColumnDefinitions="*,*" RowDefinitions="*" Margin="20,0">
+					<StackPanel Margin="5" Spacing="5" Orientation="Vertical"
+								Grid.Column="0" Grid.Row="0">
+						<RadioButton Content="{Binding S[Words~Found]}"/>
+					</StackPanel>
+					<StackPanel Margin="5" Spacing="5" Orientation="Vertical"
+								Grid.Column="1" Grid.Row="0">
+						<RadioButton Content="{Binding S[Words~in~index]}"/>
+						<Button Width="125" HorizontalContentAlignment="Center" Content="{Binding S[Save~as...]}"/>
+						<Panel Height="10"></Panel>
+						<Label Content="{Binding S[Include]}"/>
+						<StackPanel Margin="10" Spacing="5" Orientation="Vertical">
+							<CheckBox Content="{Binding S[Word~count]}"/>
+							<CheckBox Content="{Binding S[File~count]}"/>
+							<CheckBox Content="{Binding S[Field~count]}"/>
+						</StackPanel>
+					</StackPanel>
+				</Grid>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

@@ -1,0 +1,75 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+		Width="500" Height="350"
+		WindowStartupLocation="CenterOwner"
+        x:Class="eSearch.Views.AboutWindow"
+        Title="About"
+		xmlns:vm="using:eSearch.ViewModels"
+		ExtendClientAreaToDecorationsHint="True"
+		Icon="{Binding ApplicationIcon}"
+	>
+	<Window.Styles>
+		<Style Selector="Button.hyperlink">
+			<Setter Property="Template">
+				<ControlTemplate>
+					<TextBlock Text="{TemplateBinding Content}" Foreground="{StaticResource SystemAccentColor}" TextDecorations="Underline">
+						<TextBlock.Styles>
+							<Style Selector="TextBlock:pointerover">
+								<Setter Property="Foreground" Value="{StaticResource SystemAccentColorLight1}"/>
+							</Style>
+						</TextBlock.Styles>
+					</TextBlock>
+				</ControlTemplate>
+			</Setter>
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="0"/>
+		</Style>
+	</Window.Styles>
+
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:AboutWindowViewModel/>
+	</Design.DataContext>
+	<DockPanel>
+		<StackPanel DockPanel.Dock="Bottom" Margin="20">
+			<Button Content="{Binding S[Serial...]}" 
+					HorizontalAlignment="Right"
+					MinWidth="100" 
+					HorizontalContentAlignment="Center"
+					Command="{Binding ClickSerial}"
+					IsVisible="{Binding IsSerialButtonVisible}"
+					></Button>
+			<DockPanel Margin="0,20,0,0">
+				<Button 
+					DockPanel.Dock="Right" 
+					Content="{Binding S[OK]}" 
+					MinWidth="100" HorizontalContentAlignment="Center"
+					x:Name="BtnClose"
+					/>
+				
+				<Label Content="{Binding CopyrightString}"></Label>
+			</DockPanel>
+		</StackPanel>
+		<StackPanel HorizontalAlignment="Center" Margin="20">
+			<DockPanel Margin="5">
+				<Image Source="/Assets/esearch-icon.ico" Width="50" Height="50">
+				</Image>
+				<StackPanel Margin="10">
+					<Label Content="{Binding ProductTag}"/>
+					<Label Content="{Binding ApplicationVersion}"/>
+					<Button Margin="3" Command="{Binding ClickOnlineHelp}" Classes="hyperlink" Content="{Binding S[Online~Help]}"/>
+				</StackPanel>
+			</DockPanel>
+			<Label Margin="5" Content="{Binding DisplayedSerial}"></Label>
+			<Label Margin="5" Content="{Binding ExpiryString}"></Label>
+			<Button Margin="5" 
+					Command="{Binding ClickLicensesAndAcknowledgements}" 
+					Content="{Binding S[Licenses~and~acknowledgements]}"
+				/>
+		</StackPanel>
+	</DockPanel>
+</Window>

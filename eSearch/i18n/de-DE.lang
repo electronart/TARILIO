@@ -1,0 +1,459 @@
+# Product:  eSearch
+# Language: German sample
+# Filename: de-DE.lang
+#
+#
+# -- Translation File Notes --
+# Translation files are read line by line
+# First line  = Identifier/Fallback String (Do not edit or remove!)
+# Second line = Translation (Remove test word in brackets and replace with translation of word above.)
+# Comments start with a # and no other character must precede #
+# Blank lines are not permitted unless they have a # at the start to comment them out.
+# {0} {1} etc represents a variable value
+#
+# RFC 4646 Language Code. Used for Localisation of date strings Eg. en-GB, de-DE etc.
+RFC4646
+de-DE
+# --- Common ---
+Title
+Titel
+Score
+Punktzahl
+Created
+Erstellt
+Modified
+Geändert
+Indexed
+Indiziert
+Path
+Pfad
+File not found
+Datei nicht gefunden
+Something went wrong
+Etwas ist schief gelaufen
+OK
+OK
+Cancel
+Abbrechen
+Append Date
+Datum anhangen
+Words
+Wörter
+Filters
+Filter
+Rows
+Reihen
+All
+Alle
+Selected
+Ausgewählt
+Include
+Einschließen
+Synonyms
+Synonyme
+New...
+Neu...
+Name
+Name
+eSearch
+eSearch
+Delete
+Löschen
+Update Index
+Index aktualisieren
+Update...
+Aktualisieren...
+Rename...
+Umbenennen...
+Delete...
+Löschen...
+# --- AboutWindow.axaml ---
+Serial...
+Seriell...
+Online Help
+Online-Hilfe
+Licenses and acknowledgments
+Lizenzen & Danksagungen
+# --- AboutWindowViewModel.cs ---
+Serial: None
+Seriennummer: keine
+# --- ColorPickerWindow.axaml ---
+# --- CopyDocumentWindow.axaml ---
+Copy Document
+Dokument kopieren
+Copied text:
+Kopierter Text:
+Append Note:
+Hinweis anhängen:
+Append File name:
+Dateinamen anhängen:
+Copy
+Kopieren
+Copy to:
+Kopieren nach:
+Clipboard
+Zwischenablage
+File:
+Datei:
+# --- DataColumn.cs ---
+Accessed
+Zugegriffen
+File Size
+Dateigröße
+Parser
+Parser
+# --- ExportSearchResultsViewModel.cs ---
+Select output file type
+Wahlen Sie den Ausgabedateityp
+XML (.xml)
+XML (.xml)
+Comma Separated Values (.csv)
+Durch Trennzeichen getrennte (.csv)
+Tab Separated (.csv)
+Tab-getrennt (.csv)
+Results
+Ergebnisse
+# --- ExportSearchResultsWindow.axaml ---
+Export Search Results
+Suchergebnisse exportieren
+Save...
+Speichern...
+All rows
+Alle Zeilen
+Output as
+Ausgabeformat
+Type
+Typ
+Columns
+Spalten
+All columns
+Alle Spalten
+Output Directory
+Ausgabeverzeichnis
+# --- ExportSearchResultsWindow.axaml.cs ---
+Select at least one Column to export
+Wählen Sie mindestens eine Spalte zum Exportieren aus
+Select output format
+Ausgabeformat auswählen
+No results are checked
+Es werden keine Ergebnisse uberpruft
+Select an output directory.
+Wählen Sie ein Ausgabeverzeichnis.
+Output Directory not found
+Ausgabeverzeichnis nicht gefunden
+Must enter a file name
+Geben Sie einen Dateinamen ein
+File name contains illegal characters
+Ungültige Zeichen im Dateinamen
+# --- HtmlDocumentControl.axaml.cs ---
+Search Report
+Bericht durchsuchen
+Document Information
+Informationen zum Dokument
+Size
+Größe
+Hits in Context
+Treffer im Kontext
+# --- ListContentsWindow.axaml ---
+List Contents
+Inhalt auflisten
+Words Found
+Gefundene Wörter
+Words in index
+Wörter im Index
+Save as...
+Speichern unter...
+Word count
+Anzahl der Wörter
+File count
+Anzahl der Dateien
+Field count
+Anzahl der Felder
+# --- MainWindow.axaml ---
+File
+Datei
+View...
+Ansicht...
+Export Search Results...
+Suchergebnisse exportieren
+Search Report...
+Bericht "Suche"
+Print...
+Drucken...
+_Exit
+_Ausgang
+_Search
+_Suchen
+History...
+Geschichte...
+Report...
+Bericht...
+_Index
+_Index
+_View
+_Ansehen
+Appearance
+Aussehen
+Dark
+Dunkel
+Light
+Licht
+System
+System
+Layout
+Orientierung
+Horizontal
+Horizontal
+Vertical
+Senkrecht
+Language
+Sprache
+English
+Englisch
+Pseudo Locale
+Pseudo-Gebietsschema
+From File...
+Aus Datei...
+Word List
+Wortliste
+Help
+Hilfe
+About
+Um
+List...
+Auflisten...
+Register...
+Registieren...
+Results Settings...
+Ergebniseinstellungen...
+Copy Results...
+Ergebnisse kopieren...
+Created
+Erstellt
+Modified
+Geändert
+Indexed
+Indiziert
+Path
+Pfad
+Viewer Settings...
+Bildschirmeinstellungen...
+Copy Document...
+Dokument kopieren...
+Document Metadata
+Dokumentmetadaten
+View in folder
+Im Ordner anzeigen
+Previous Hit
+Vorheriger Treffer
+Next Hit
+Nächster Treffer 
+Key
+Schlüssel
+Value
+Wert
+# --- MainWindow.axaml.cs ---
+Something went wrong
+Etwas ist schief gelaufen
+There is no metadata to display.
+Es sind keine Metadaten zum Anzeigen vorhanden.
+# --- MainWindowViewModel.cs ---
+Filename:
+Dateiname:
+Note:
+Notiz:
+File \"%s\" not found
+Datei \"%s\" nicht gefunden
+# --- NewIndexWindow.axaml ---
+Index Name
+Indexname
+Index Contents
+Indexinhalte
+Include All
+Alles inklusive
+# --- NewIndexWindowViewModel.cs ---
+Create Index
+Index erstellen
+# --- RegistrationWindow.axaml ---
+Serial
+Seriell
+Order Online
+Online bestellen
+Enter your Serial Number
+Geben Sie Ihre Seriennummer ein
+Invalid Serial Number
+Ungültig
+# --- ResultsSettingsWindow.axaml ---
+Results Settings
+Ergebniseinstellungen
+Show Columns
+Spalten anzeigen
+Column Width
+Spaltenbreite
+Fit to content
+Passend zum Inhalt
+Fit to window
+An Fenster anpassen
+Set Manually
+Manuell einstellen
+Key Words in Context
+Schlüsselwörter im Kontext
+Show
+Zeigen
+Colour...
+Farbe...
+Number of Results
+Anzahl der Ergebnisse
+Limit Results
+Begrenzen Sie die Ergebnisse
+# --- SearchControl.axaml ---
+AND
+UND
+OR
+ODER
+NOT
+NICHT
+Stemming
+Stammsuche
+Any
+Beliebig
+Boolean
+Aussageenlogisch
+# --- SearchFilterWindow.axaml ---
+# --- SearchFilterWindow2.axaml ---
+# --- SearchResultsReportWindow.axaml ---
+Search Results Report
+Suchergebnisse-Bericht
+File list only
+Nur Dateiliste
+Full text
+Voller Text
+Hits in context
+Treffer im Kontext
+Words
+Wörter
+Paragraphs
+Absätze
+Output template
+Ausgabevorlage
+Run report...
+Run ausführen...
+Run
+Laufen
+Open when done
+Öffnen nach Erledigung
+# --- SearchSettingsViewModel.cs ---
+None
+Nichts
+Soundex
+Soundex
+Double Metaphone
+Doppeltes Metaphon
+# --- SearchSettingsWindow.axaml ---
+Search Settings
+Sucheinstellungen
+Use List
+Verwenden Sie eine Liste
+Stemming Language
+Stammsprache
+English Porter
+Porter
+Phonetic Analysis
+Phonetische Analyse
+English WordNet
+Englisches WordNet
+Synonym files:
+Synonymdateien:
+Synonym Groups
+Synonymgruppen
+Sort
+Sortieren
+Expansion
+Erweiterung
+Edit...
+Bearbeiten...
+# --- SearchSettingsWindow.axaml.cs ---
+%GROUP% will be deleted.
+%GROUP% wird gelöscht
+Delete Synonyms Group?
+Synonymgruppe löschen?
+Rename Synonyms Group
+Synonymgruppe umbenennen
+Synonym Group Name
+Name der Synonymgruppe
+New Synonyms Group
+Neue Synonymgruppe
+Name
+Name
+Check at least one Synonym file from the drop down.
+Wählen Sie mindestens eine Synonymdatei aus
+No list file supplied
+Keine Listendatei
+File does not exist
+Datei existiert nicht
+# --- TaskDialogWindow.axaml.cs ---
+Something went wrong. Retry?
+Etwas ist schief gelaufen. Wiederholen?
+Retry
+Wiederholen
+# --- TikaServer.cs ---
+Close
+Schließen
+# --- UpdateIndexWindow.axaml ---
+Indexes
+Indexe
+Automatic...
+Automatisch...
+Rebuild
+Wiederaufbau
+Verify
+Beglaubigen
+# --- UpdateIndexWindowViewModel.cs ---
+No Index Selected.
+Kein Index ausgewählt.
+Delete {0}?
+Löschen »{0}?«
+Delete this index.
+Löschen Sie diesen Index.
+Rename Index
+Index umbenennen
+# --- ViewerSettingsWindow.axaml ---
+Viewer Settings
+Viewer-Einstellungen
+OK
+OK
+Cancel
+Abbrechen
+View Large Files
+Große Dateien anzeigen
+Mb
+MB
+Fully
+Völlig
+First page only
+Nur erste Seite
+In Report View
+In der Berichtsansicht
+Amount of context
+Umfang des Kontexts
+PDF
+PDF
+Viewer
+Beschauer
+Adobe Acrobat
+Adobe Acrobat
+Plain Text
+Klartext
+View File Types
+Dateitypen anzeigen
+New...
+Neu...
+Rename...
+Umbenennen...
+Hit Highlight
+Hervorhebungsfarbe
+Unformatted Text
+Unformatierter Text
+No word wrap
+Kein Zeilenumbruch
+# --- ViewerSettingsWindowViewModel.cs ---

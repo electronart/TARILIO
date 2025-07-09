@@ -1,0 +1,63 @@
+﻿
+#doc-toolbar {
+    width: 100%;
+    border-bottom: 1px solid #595959;
+    border-left: 1px solid #595959;
+    border-right: 1px solid #595959;
+    border-radius: 0px 0px 0px 0px;
+    padding: 0.25em;
+}
+
+#hit-navigator {
+    /*width: 12em;*/
+    margin: auto;
+    margin-top: 0;
+    padding: 0.25em;
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+    opacity: 0.6;
+    font-family: Arial, Helvetica, sans-serif;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    user-select: none;
+}
+
+
+
+#hit-navigator:hover {
+    opacity: 1.0;
+}
+
+
+
+.hit-btn {
+    border: none;
+    background-color: transparent;
+    min-width: 2.0em;
+    padding: 0.25em display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    .hit-btn:hover {
+        background-color: #e6e6e6;
+    }
+
+#hit-number {
+    width: 3.5em;
+}
+
+#hit-of-x {
+    font-size: 0.95em;
+    padding: 0.25em;
+}
+
+
+.background-test {
+    background-color: green;
+    height: 800px;
+    margin: 0;
+    padding: 0;
+}

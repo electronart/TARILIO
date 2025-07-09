@@ -1,0 +1,74 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <!-- Add Controls for Previewer Here -->
+    </Border>
+  </Design.PreviewWith>
+	<!--
+	<Style Selector="MenuItem:focus,
+					MenuItem:pointerover,
+					MenuItem:selected,
+					MenuItem:focus-within,
+					MenuItem:pointerover:selected">
+		<Setter Property="Background" Value="Green"/>
+	</Style>
+	-->
+	<!--
+	<Style Selector="MenuItem:selected /template/ ContentPresenter#PART_LayoutRoot">
+		<Setter Property="Border.Background" Value="Pink" />
+	</Style>-->
+  <!-- Add Styles Here -->
+	<!--
+	<Style Selector="MenuItem:selected /template/ ContentPresenter#PART_HeaderPresenter">
+		<Setter Property="TextBlock.Foreground" Value="Red" />
+	</Style>
+	<Style Selector="MenuItem:open /template/ ContentPresenter#PART_HeaderPresenter">
+		<Setter Property="TextBlock.Foreground" Value="Violet" />
+	</Style>
+	<Style Selector="MenuItem > MenuItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
+		<Setter Property="TextBlock.Background" Value="Green" />
+	</Style>
+	-->
+	<Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+		<Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+	</Style>
+	<Style Selector="MenuItem:pointerover">
+		<Setter Property="Foreground" Value="White" />
+	</Style>
+	
+	<Style Selector="MenuItem:selected /template/ Border#PART_LayoutRoot">
+		<Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+	</Style>
+	<Style Selector="MenuItem:selected">
+		<Setter Property="Foreground" Value="White" />
+	</Style>
+	
+	<Style Selector="MenuItem:open /template/ Border#PART_LayoutRoot">
+		<Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+	</Style>
+	<Style Selector="MenuItem:open">
+		<Setter Property="Foreground" Value="White" />
+	</Style>
+	<!--
+	<Style Selector="MenuItem > MenuItem /template/ Border#PART_LayoutRoot">
+		<Setter Property="BorderBrush" Value="Purple" />
+	</Style>
+	<Style Selector="MenuItem:separator">
+		<Setter Property="Background" Value="Blue" />
+	</Style>
+	<Style Selector="MenuItem > Separator">
+		<Setter Property="Background" Value="Orange" />
+	</Style>
+	<Style Selector="MenuItem /template/ Popup#PART_Popup">
+		<Setter Property="Border.Background" Value="Pink" />
+	</Style>
+
+	<Style Selector="MenuItem:open /template/ Popup#PART_Popup > Border">
+		<Setter Property="BorderBrush" Value="red" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="CornerRadius" Value="0" />
+		<Setter Property="Background" Value="blue"></Setter>
+	</Style>
+	-->
+</Styles>

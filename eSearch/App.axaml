@@ -1,0 +1,209 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:customCtrl="clr-namespace:eSearch.CustomControls;assembly=eSearch"
+             xmlns:local="using:eSearch"
+             x:Class="eSearch.App"
+			 RequestedThemeVariant="{Binding FluentTheme}"
+			 >
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+	<Application.Resources>
+		<SolidColorBrush x:Key="AppMainPanelBackground">#1F1F1F</SolidColorBrush>
+	</Application.Resources>
+    <Application.Styles>
+		<StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>
+		<FluentTheme>
+			<FluentTheme.Palettes>
+				<ColorPaletteResources x:Key="Light" AltHigh="White" AltLow="White" AltMedium="White" AltMediumHigh="White" AltMediumLow="White" BaseHigh="Black" BaseLow="#ffc6c6c6" BaseMedium="#ff858585" BaseMediumHigh="#ff5a5a5a" BaseMediumLow="#ff707070" ChromeAltLow="#ff5a5a5a" ChromeBlackHigh="Black" ChromeBlackLow="#ffc6c6c6" ChromeBlackMedium="#ff5a5a5a" ChromeBlackMediumLow="#ff858585" ChromeDisabledHigh="#ffc6c6c6" ChromeDisabledLow="#ff858585" ChromeGray="#ff707070" ChromeHigh="#ffc6c6c6" ChromeLow="#ffeaeaea" ChromeMedium="#ffe3e3e3" ChromeMediumLow="#ffeaeaea" ChromeWhite="White" ListLow="#ffe3e3e3" ListMedium="#ffc6c6c6" RegionColor="#ffdde2e9" />
+				<ColorPaletteResources x:Key="Dark" AltHigh="Black" AltLow="Black" AltMedium="Black" AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff383838" BaseMedium="#ff9c9c9c" BaseMediumHigh="#ffb5b5b5" BaseMediumLow="#ff6a6a6a" ChromeAltLow="#ffb5b5b5" ChromeBlackHigh="Black" ChromeBlackLow="#ffb5b5b5" ChromeBlackMedium="Black" ChromeBlackMediumLow="Black" ChromeDisabledHigh="#ff383838" ChromeDisabledLow="#ff9c9c9c" ChromeGray="#ff838383" ChromeHigh="#ff838383" ChromeLow="#ff171717" ChromeMedium="#ff1f1f1f" ChromeMediumLow="#ff303030" ChromeWhite="White" ListLow="#ff1f1f1f" ListMedium="#ff383838" RegionColor="#ff111112" />
+			</FluentTheme.Palettes>
+		</FluentTheme>
+
+
+
+		<StyleInclude Source="avares://eSearch/Assets/StyleOverrides.xaml" />
+		<StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
+		<StyleInclude Source="avares://eSearch/Views/ViewStyles/KeyboardShortCut.axaml"/>
+		
+		<!--<FluentTheme Mode="Dark"/>
+		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+		<Style Selector="Border.MainPanel">
+			<Setter Property="Background" Value="{DynamicResource AppMainPanelBackground}"></Setter>
+			<Setter Property="CornerRadius" Value="3"></Setter>
+		</Style>-->
+		<!-- Tool Window Styling -->
+		<Style Selector="Window.tool_window Panel#PART_MinimiseButton">
+			<Setter Property="IsVisible" Value="False"></Setter>
+		</Style>
+
+		<!--TreeDataGrid Styling-->
+		<Style Selector="TreeDataGridRow:focus-within">
+			<Setter Property="BorderBrush" Value="{DynamicResource SystemBaseHighColor}"/>
+			<Setter Property="BorderThickness" Value="2,2,2,2"/>
+		</Style>
+		<Style Selector="TreeDataGridColumnHeadersPresenter">
+			<Setter Property="Background" Value="{DynamicResource SystemAltHighColor}"/>
+		</Style>
+		<Style Selector="TreeDataGridColumnHeader">
+			<Setter Property="Padding" Value="6,6,6,6"/>
+		</Style>
+
+
+		<Style Selector="TextBox.ConsoleDisplay">
+			<Setter Property="Background" Value="Black" />
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+		<Style Selector="TextBox.ConsoleDisplay:focus-within /template/ Border">
+			<Setter Property="Background" Value="Black" />
+		</Style>
+		<Style Selector="TextBox.ConsoleDisplay:focus /template/ Border">
+			<Setter Property="Background" Value="Black" />
+		</Style>
+		<Style Selector="TextBox.ConsoleDisplay:disabled /template/ Border">
+			<Setter Property="Background" Value="Black" />
+		</Style>
+		<Style Selector="TextBox.ConsoleDisplay:pointerover /template/ Border">
+			<Setter Property="Background" Value="Black" />
+		</Style>
+
+		<!--WIP Experiment with Window Borders-->
+		<!--
+		<Style Selector="Window[ExtendClientAreaToDecorationsHint=True]">
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border BorderBrush="Gray"
+                            BorderThickness="1"
+                            >
+						<WindowChrome/>
+						<ContentPresenter Content="{TemplateBinding Content}"/>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		-->
+		<!--
+		<Style Selector="Menu#MainMenu MenuItem:focus,Menu#MainMenu MenuItem:pointerover,Menu#MainMenu MenuItem:selected">
+			<Setter Property="Background" Value="Green"></Setter>
+		</Style>
+		-->
+		
+		<Style Selector="Window.tool_window Panel#PART_RestoreButton">
+			<Setter Property="IsVisible" Value="False"></Setter>
+		</Style>
+		<Style Selector="Label.Error">
+			<Setter Property="Foreground" Value="Red"/>
+		</Style>
+		<Style Selector="Button[IsEnabled=False] Image">
+			<Setter Property="Opacity" Value="0.35"/>
+		</Style>
+		<Style Selector="ToggleButton[IsEnabled=False] Image">
+			<Setter Property="Opacity" Value="0.35"/>
+		</Style>
+		
+		<Style Selector="Image.Faded">
+			<Setter Property="Opacity" Value="0.5"/>
+		</Style>
+		
+		<Style Selector="Button.TransparentBtn">
+			<Setter Property="Background" Value="Transparent"/>
+		</Style>
+		<Style Selector="Button.TransparentBtn:disabled /template/ ContentPresenter">
+			<Setter Property="Background" Value="Transparent"/>
+		</Style>
+		
+		<Style Selector="ToggleButton.TransparentBtn">
+			<Setter Property="Background" Value="Transparent"/>
+		</Style>
+		<Style Selector="ToggleButton.TransparentBtn:disabled  /template/ ContentPresenter">
+			<Setter Property="Background" Value="Transparent"/>
+		</Style>
+		<Style Selector="TextBox.Clearable">
+			
+			<Setter Property="InnerRightContent">
+				<Template>
+					<Button Content="Clear" 
+							Focusable="False"
+							Command="{Binding $parent[customCtrl:ClearableTextBox].Cleary}" 
+							Background="Transparent"
+							IsVisible="{Binding $parent[customCtrl:ClearableTextBox].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+							>
+						<Image Source="{Binding I[icons8-close-32.png]}"
+							Width="16"
+							Height="16"
+						/>
+					</Button>
+				</Template>
+			</Setter>
+		</Style>
+		<Style Selector="TextBox.ClearableVoice">
+			<!--
+			<Setter Property="InnerLeftContent">
+				<Template>
+						<Border Classes="Shortcut" Margin="5"
+								IsVisible="{Binding !$parent[customCtrl:ClearableTextBox].IsFocused}">
+							<TextBlock>/</TextBlock>
+						</Border>
+				</Template>
+			</Setter>
+			-->
+			<Setter Property="InnerRightContent">
+				<Template>
+					<StackPanel Orientation="Horizontal" Spacing="5">
+						<Button Content="Clear"
+								Command="{Binding $parent[customCtrl:ClearableTextBox].Cleary}"
+								Background="Transparent"
+								IsVisible="{Binding $parent[customCtrl:ClearableTextBox].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+								TabIndex="1"
+								>
+							<Image Source="{Binding I[icons8-close-32.png]}"
+								Width="16"
+								Height="16"
+							/>
+						</Button>
+						<ToggleButton Content="Voice"
+									  Background="Transparent"
+									  IsChecked="{Binding $parent[Window].DataContext.IsVoiceInputActive}"
+									  TabIndex="2"
+						>
+							<Image Source="{Binding I[icons8-microphone-32.png]}"
+								Width="16"
+								Height="16"
+							/>
+						</ToggleButton>
+					</StackPanel>
+				</Template>
+			</Setter>
+		</Style>
+
+
+		<!-- ListBox Drag Styles - Virtualizing -->
+
+		<Style Selector=":is(ListBox).draggableVirtualizing">
+			<Setter Property="ItemsPanel">
+				<Setter.Value>
+					<ItemsPanelTemplate>
+						<VirtualizingStackPanel Orientation="Vertical" />
+					</ItemsPanelTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<Style Selector=":is(ListBox).draggableVirtualizing > :is(ListBoxItem)">
+			<Setter Property="ZIndex" Value="0" />
+			<Setter Property="(Interaction.Behaviors)">
+				<BehaviorCollectionTemplate>
+					<BehaviorCollection>
+						<ItemDragBehavior HorizontalDragThreshold="3" VerticalDragThreshold="3" Orientation="Vertical" />
+					</BehaviorCollection>
+				</BehaviorCollectionTemplate>
+			</Setter>
+		</Style>
+
+		<Style Selector=":is(ListBox).draggableVirtualizing > :is(ListBoxItem):pressed">
+			<Setter Property="ZIndex" Value="1" />
+		</Style>
+		
+    </Application.Styles>
+	
+</Application>

@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="clr-namespace:eSearch.ViewModels;assembly=eSearch"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+             x:Class="eSearch.Views.WordWheelControl">
+	
+	<UserControl.DataContext>
+		<viewmodels:MainWindowViewModel/>
+	</UserControl.DataContext>
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<viewmodels:WheelViewModel/>
+	</Design.DataContext>
+	<Panel>
+		<ListBox x:Name="wordWheelListBox" ItemsSource="{Binding Wheel.WheelWords,Mode=OneWay}">
+			<ListBox.Styles>
+				<Style Selector="ListBoxItem">
+					<Setter Property="Height" Value="25"/>
+					<Setter Property="Padding" Value="15,0,15,0"></Setter>
+					<Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+				</Style>
+			</ListBox.Styles>
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Horizontal"
+								ToolTip.Tip="{Binding Word}"
+								Spacing="15">
+						<TextBlock 
+							Text="{Binding FrequencyShortString}" 
+							MinWidth="30"
+							IsVisible="{Binding !DataContext.Wheel.HideFrequency,
+							RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+							TextAlignment="Right"
+							/>
+						<TextBlock Text="{Binding Word}"></TextBlock>
+					</StackPanel>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+		<!--
+		<Grid>
+			<DataGrid Name="MyDataGrid" Items="{Binding WheelWords}" Background="Yellow">
+				
+			</DataGrid>
+		</Grid>
+		-->
+	</Panel>
+</UserControl>

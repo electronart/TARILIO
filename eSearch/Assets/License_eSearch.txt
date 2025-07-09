@@ -1,0 +1,58 @@
+(License_eSearch.txt)
+
+
+License Agreement for eSearch 1.0 Desktop search application ("The Licensed Software")
+
+By installing this software, you (the Licensee) agree to the terms of this License Agreement, if you do not agree then do not proceed with the installation. "Licensor" is ElectronArt Design Ltd. Registered in England & Wales: 0796515 Registered Office: 124 City Road, London EC1V 2NX. United Kingdom. www.electronart.co.uk, SearchCloudOne.com
+
+
+1 License Scope.
+1.0 This product is an end-user application only, in the absence of a signed written agreement with the Licensor it may not be distributed with any other product. If wider distribution is needed, please contact sales@electronart.co.uk.
+1.1 The software license covers use on a per computer basis (a hard disk partition, virtual machine or blade is considered a separate computer). One copy per computer.
+1.2 The software license is assigned to the computer on which the software is installed, that computer is the “licensed computer”. You may transfer the software to another computer provided you uninstall the copy from the previous licensed computer.
+
+2 General Use Limitations.
+2.1 The Licensed Software is protected by copyright laws and other international treaties, as well as other intellectual property laws and treaties. The Licensed Software is licensed, not sold, according to the terms of this License Agreement.
+2.2 Licensor grants, and Licensee hereby accepts, an irrevocable, non-exclusive, and world-wide license to use the Licensed Software.
+2.3 Except as expressly provided herein, Licensee may not distribute, copy, reproduce, sub-license, sell or otherwise transfer the Licensed Software. Licensee may make backup copies of the Licensed Software strictly for Licensee's archival purposes.
+2.4 Licensee may not modify, adapt, translate or create derivative works based on the Licensed Software, except for those Re-distributable files identified as being Modifiable, and only to the extent specified in the documentation accompanying the Licensed Software. Any copies that Licensee is permitted to make pursuant to this License Agreement must contain the same copyright and other proprietary notices that appear on or in the Licensed Software.
+2.5 Licensee may not assign or otherwise transfer its rights under this agreement without written permission from the Licensor, which permission shall not be unreasonably withheld, except in the case of a sale of substantially all assets of Licensee's company or the merger or acquisition of Licensee's company into a new company, in which case Licensee may transfer its rights under this agreement to the acquiring party.
+
+3. Maintenance and Support
+3.1 Licensor agrees to make available to Licensee any maintenance releases, new and enhanced versions or upgrades of the Licensed Software for a period of one year.
+3.2 Licensor agrees to provide technical support via email to a single point of contact designated by the Licensee for a period of one year from the date of this license.
+
+4 Limitations on Warranty and Liability.
+4.1 The Licensed Software is provided AS IS. To the extent permitted by applicable law, ANY AND ALL OTHER REPRESENTATIONS AND WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT, except as stated in section 4.4, below, ARE EXPRESSLY EXCLUDED AND DISCLAIMED. LICENSOR AND ITS SUPPLIERS DO NOT AND CANNOT WARRANT THE PERFORMANCE OR RESULTS LICENSEE OR LICENSEE’S END-USERS MAY OBTAIN BY USING THE SOFTWARE.
+4.2 IN NO EVENT SHALL LICENSOR BE LIABLE FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES, including lost profits, lost savings, lost opportunities or other incidental or consequential damages arising out of the use
+of or inability to use the Licensed Software, even if Licensor has been advised of the possibility of such damages.
+4.3 UNDER NO CIRCUMSTANCE MAY LICENSOR'S LIABILITY TO LICENSEE, UNDER ANY AND ALL PROVISIONS OF THIS AGREEMENT, EXCEED THE LICENSE FEE.
+4.4 To the extent that Licensor remains legally liable to Licensee, such liability shall expire one year from the date of this Agreement.
+4.5 Subject to the limitations on liability contained in sections 4.1, 4.2, 4.3, and 4.4 Licensor represents and warrants: that it owns the Licensed Software or has requisite authority to enter into this transaction; that the Licensed Software, when properly used as contemplated herein, will not infringe or misappropriate any copyright, trademark, or the trade secrets of any third persons; and that to the best of Licensor’s knowledge, the Licensed Software does not infringe any patents of third persons.
+
+5 General Terms.
+5.1 The failure to immediately enforce any provisions, rights or remedies under this contract shall not constitute a waiver by the party failing to enforce such provision, even if the party failing to enforce such provisions, rights or remedies is aware of the other party's contractual breach.
+5.2 This agreement shall be interpreted under English Law.
+5.3 Either party may terminate this agreement upon written notice if the other party materially violates any provision of this agreement and fails to remedy such violation within twenty-eight (28) days of receipt of a second written notice thereof, if such violation has not already been remedied following twenty-eight (28) days from receipt of a first written notice thereof. Evidence of delivery of such written notice, by recorded delivery for instance, is required.
+5.4 This agreement contains the entire agreement between the parties, superseding all previous agreements. This agreement may not be amended other than by a written agreement.
+5.5 If any portion of this agreement is found to be invalid, the remainder shall continue in force.
+
+6 Notices & acknowledgements
+==========================
+eSearch 1.0 uses some 3rd party software in binary form:
+
+1) Lucene .NET 4.8.0 (https://lucenenet.apache.org/) 
+
+
+Details of the licences are below:
+
+1) Lucene .NET 4.8.0 (https://www.apache.org/licenses/LICENSE-2.0)
+
+
+-------------------------------------------------------------
+Copyright © 2023 ElectronArt Design Ltd. All Rights Reserved.
+
+------------oOo-------------
+
+
+

@@ -1,0 +1,106 @@
+﻿<button id="ai-cancel-btn" onclick="cancelStreaming()">Cancel</button>
+<span id="output" class="loading"></span>
+<script>
+    if (!window.aiStream) { console.error('C# Binding object not found'); }
+    console.log('ai_message_streaming_display is running');
+    const outputDiv = document.getElementById('output');
+    let cancelled = false;
+
+    function cancelStreaming() {
+        cancelled = true;
+        window.aiStream.requestCancel().then(function () {
+            document.getElementById('ai-cancel-btn').style.display = 'none';
+            outputDiv.textContent = 'Cancelled';
+            outputDiv.classList.remove('loading');
+        });
+    }
+
+    function appendToTextOutput(str) {
+        getLastElement(outputDiv).textContent += str;
+    }
+
+    function renderMarkDownAsHtml(strMarkDown) {
+        window.aiStream.markdown2Html(strMarkDown).then(function (html) {
+            outputDiv.innerHTML = html;
+            window.Prism.highlightAll();
+        });
+    }
+
+    function getLastElement(el) {
+        if (!el.lastElementChild) return el;
+        return getLastElement(el.lastElementChild);
+    }
+
+    let currentRawOutput = '';
+
+    async function startStreaming(textReq = null) {
+
+        try {
+
+            var eSearchRenderTimer = new Date();
+
+            function runCharacterStream() {
+                console.log('runCharacterStream started');
+                window.aiStream.isFinishedStreaming().then(function (isFinished) {
+                    if (!isFinished) {
+                        // More to go
+                        window.aiStream.getNextCharacters().then(function (nextChars) {
+                            currentRawOutput += nextChars;
+                            if (nextChars.includes("\n")) {
+                                if (!cancelled) renderMarkDownAsHtml(currentRawOutput);
+                            } else {
+                                if (!cancelled) appendToTextOutput(nextChars);
+                            }
+                            window.setTimeout(runCharacterStream, 10); // Gives thread some room to breath avoids tight loop
+                        }).catch((error) => {
+                            console.error(error);
+                        });
+                    } else {
+                        // Finished or error
+                        window.aiStream.getErrorString().then(function (errorStr) {
+
+                            if (errorStr != '') {
+                                // Stream ended with an error.
+                                console.error('An error ocurred');
+                                const outputDiv = document.getElementById('output');
+                                outputDiv.textContent = errorStr;
+
+                            } else {
+                                // Stream ended successfully. Fetch any last characters in the buffer then perform a final render.
+                                window.aiStream.getNextCharacters().then(function (nextChars) {
+                                    currentRawOutput += nextChars;
+                                    renderMarkDownAsHtml(currentRawOutput);
+                                    console.info('The final output was', currentRawOutput);
+                                });
+                            }
+                            outputDiv.classList.remove('loading');
+                            document.getElementById('ai-cancel-btn').remove();
+                        });
+                    }
+                });
+            }
+
+
+
+
+            runCharacterStream();
+
+        } catch (error) {
+            console.error('Error during streaming:', error);
+            const outputDiv = document.getElementById('output');
+            outputDiv.textContent = 'Error: ' + error.message;
+        }
+    }
+
+    function heightUpdate() {
+        window.Search.pageHeightUpdate(
+            document.getElementById('doc-area').scrollHeight
+            + 20
+        );  // TODO this is the only way I could get a consistent height but I don't like it.
+    }
+
+    startStreaming();
+
+    setInterval(heightUpdate, 50)
+    
+</script>

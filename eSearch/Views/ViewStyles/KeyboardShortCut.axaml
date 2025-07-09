@@ -1,0 +1,29 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="256">
+		<StackPanel Orientation="Horizontal" Spacing="5">
+			<Border Classes="Shortcut">
+				<TextBlock Classes="Shortcut">CTRL</TextBlock>
+			</Border>
+			<Border Classes="Shortcut">
+				<TextBlock Classes="Shortcut">/</TextBlock>
+			</Border>
+			<TextBox></TextBox>
+		</StackPanel>
+    </Border>
+  </Design.PreviewWith>
+    <Style Selector="Border.Shortcut TextBlock">
+		<Setter Property="Padding" Value="8,4"></Setter>
+		<Setter Property="FontWeight" Value="SemiBold"></Setter>
+		<Setter Property="FontSize" Value="9"></Setter>
+    </Style>
+	<Style Selector="Border.Shortcut">
+		<Setter Property="Height" Value="22"></Setter>
+		<Setter Property="Background"   Value="{DynamicResource SystemControlBackgroundBaseLowBrush}"></Setter>
+		<Setter Property="CornerRadius" Value="8"></Setter>
+		<Setter Property="BorderThickness" Value="0,0,0,2"></Setter>
+		<Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"></Setter>
+	</Style>
+  <!-- Add Styles Here -->
+</Styles>

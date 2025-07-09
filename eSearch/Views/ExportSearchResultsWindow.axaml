@@ -1,0 +1,92 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+		Width="600" Height="600"
+        x:Class="eSearch.Views.ExportSearchResultsWindow"
+		xmlns:viewmodels="clr-namespace:eSearch.ViewModels;assembly=eSearch"
+        Title="{Binding S[Export~Search~Results]}"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaToDecorationsHint="True">
+	<Window.Styles>
+		<Style Selector="Label.Error">
+			<Setter Property="Foreground" Value="Red"/>
+		</Style>
+	</Window.Styles>
+	<Design.DataContext>
+		<viewmodels:ExportSearchResultsViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[Export~Search~Results]}"/>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				<DockPanel DockPanel.Dock="Bottom" Margin="5,5,15,15">
+					<StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="5">
+						<Button Width="150" x:Name="BtnOK"		HorizontalContentAlignment="Center" Content="{Binding S[Save]}"/>
+						<Button Width="150" x:Name="BtnCancel"	HorizontalContentAlignment="Center" Content="{Binding S[Cancel]}"/>
+					</StackPanel>
+					<Label Classes="Error" Width="240" x:Name="LabelValidationErrors">Validation Error</Label>
+				</DockPanel>
+				<StackPanel x:Name="OutputLocationAndNamePanel">
+					<Grid ColumnDefinitions="*,250" RowDefinitions="325" VerticalAlignment="Stretch">
+					
+						<DockPanel Grid.Column="0" Grid.Row="0">
+							<StackPanel DockPanel.Dock="Top" Margin="5" Spacing="5" Orientation="Vertical">
+								<Label Content="{Binding S[Rows]}"/>
+								<StackPanel Margin="10,0" Spacing="5" Orientation="Vertical">
+									<RadioButton Content="{Binding S[All~rows]}" IsChecked="{Binding !SelectedRowsOnly}"/>
+									<RadioButton Content="{Binding S[Selected]}" IsChecked="{Binding SelectedRowsOnly}"/>
+								</StackPanel>
+							</StackPanel>
+							<StackPanel DockPanel.Dock="Bottom" Margin="5,100" Spacing="5" Orientation="Vertical">
+								<Label Content="{Binding S[Output~as]}"/>
+								<StackPanel Margin="10,0" Spacing="5" Orientation="Vertical">
+									<!--<Label Content="{Binding S[Type]}">Type</Label>-->
+									<ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding OutputFileTypes}" SelectedIndex="{Binding SelectedOutputFileTypeIndex}"></ComboBox>
+									<Panel Height="10"></Panel>
+									<!--
+									<Label Content="{Binding S[Name]}">Name</Label>
+									<DockPanel>
+										<Button Margin="5" DockPanel.Dock="Right">...</Button>
+										<TextBox Margin="0,10"></TextBox>
+									</DockPanel>
+									-->
+								</StackPanel>
+							</StackPanel>
+						
+							<Panel></Panel>
+						</DockPanel>
+						<StackPanel Grid.Column="1" Grid.Row="0" Margin="5" Spacing="5">
+							<Label Content="{Binding S[Columns]}"/>
+							<StackPanel Margin="10,0" Spacing="5" Orientation="Vertical">
+								<CheckBox Content="{Binding S[All~columns]}" IsChecked="{Binding ExportAllColumns}"/>
+								<ListBox Height="250" ItemsSource="{Binding AvailableColumns}" 
+										 SelectionMode="Multiple,Toggle" Selection="{Binding SelectedColumnsModel}"
+										 IsEnabled="{Binding !ExportAllColumns}">
+								
+								</ListBox>
+							</StackPanel>
+						</StackPanel>
+					</Grid>
+					<StackPanel Margin="5">
+						<Label Content="{Binding S[Name]}"/>
+						<StackPanel Margin="5" Orientation="Horizontal">
+							<TextBox Width="250" HorizontalAlignment="Left" Text="{Binding FileNameInput}" MaxLength="50"></TextBox>
+							<CheckBox Margin="20,0" Content="{Binding S[Append~Date]}" IsChecked="{Binding AppendDateChecked}"/>
+						</StackPanel>
+						<Label Content="{Binding S[Output~Directory]}"/>
+						<DockPanel Margin="5">
+							<Button Command="{Binding BrowseForOutputDirectory}" DockPanel.Dock="Right" Margin="10,0">...</Button>
+							<TextBox Text="{Binding OutputDirectoryInput}"></TextBox>
+						</DockPanel>
+					</StackPanel>
+				</StackPanel>
+				
+			</DockPanel>
+			
+		</Border>
+	</DockPanel>
+</Window>

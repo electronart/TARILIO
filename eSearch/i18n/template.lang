@@ -1,0 +1,544 @@
+# Product:  eSearch
+# RFC 4646 Language Code. Used for Localisation of date strings Eg. en-GB, de-DE etc.  
+RFC4646
+en-GB
+# --- Common ---
+File not found
+[Ƒîîļéé ñööţ ƒööûûñð]
+Something went wrong
+[Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ]
+OK
+[ÖÖĶ]
+Cancel
+[Çååñçééļ]
+Name
+[Ñååɱéé]
+Append Date
+[ÅÅþþééñð Ðååţéé]
+Title
+[Ţîîţļéé]
+Size
+[Šîîžéé]
+Score
+[Šçööŕéé]
+Close
+[Çļööšéé]
+Created
+[Çŕééååţééð]
+Modified
+[Ṁööðîîƒîîééð]
+Indexed
+[ÎÎñðééẋééð]
+Path
+[Þååţĥ]
+Settings...
+[Šééţţîîñĝš···]
+Columns
+[Çööļûûɱñš]
+Words
+[Ŵööŕðš]
+Rows
+[Ŕööŵš]
+Filters
+[Ƒîîļţééŕš]
+All
+[ÅÅļļ]
+Selected
+[Šééļééçţééð]
+Include
+[ÎÎñçļûûðéé]
+Paragraphs
+[Þååŕååĝŕååþĥš]
+Synonyms
+[Šýýñööñýýɱš]
+New...
+[Ñééŵ···]
+eSearch
+[ééŠééååŕçĥ]
+Delete
+[Ðééļééţéé]
+Update Index
+[ÛÛþðååţéé ÎÎñðééẋ]
+Update...
+[ÛÛþðååţéé···]
+Rename...
+[Ŕééñååɱéé···]
+Delete...
+[Ðééļééţéé···]
+# --- AboutWindow.axaml --- 
+Serial...
+[Šééŕîîååļ···]
+Online Help
+[ÖÖñļîîñéé Ĥééļþ]
+Licenses and acknowledgements
+[Ļîîçééñšééš ååñð ååçķñööŵļééðĝééɱééñţš]
+# --- AboutWindowViewModel.cs --- 
+Evaluation ({0} days remaining)
+[ÉÉṽååļûûååţîîööñ ({0} ðååýýš ŕééɱååîîñîîñĝ)]
+Expires {0}
+[ÉÉẋþîîŕééš {0}]
+Expired {0}
+[ÉÉẋþîîŕééð {0}]
+Serial: None
+[Šééŕîîååļ∶ Ñööñéé]
+# --- ColorPickerWindow.axaml --- 
+# --- CopyDocumentWindow.axaml --- 
+Copy Document
+[Çööþýý Ðööçûûɱééñţ]
+Copied text:
+[Çööþîîééð ţééẋţ∶]
+Append Note:
+[ÅÅþþééñð Ñööţéé∶]
+Append File name:
+[ÅÅþþééñð Ƒîîļéé ñååɱéé∶]
+Copy
+[Çööþýý]
+Copy to:
+[Çööþýý ţöö∶]
+Clipboard
+[Çļîîþƀööååŕð]
+File:
+[Ƒîîļéé∶]
+# --- DataColumn.cs --- 
+Accessed
+[ÅÅççééššééð]
+Parser
+[Þååŕšééŕ]
+# --- DocumentType.cs --- 
+Documents
+[Ðööçûûɱééñţš]
+Presentations
+[Þŕééšééñţååţîîööñš]
+Publications
+[Þûûƀļîîçååţîîööñš]
+Text
+[Ţééẋţ]
+Emails
+[ÉÉɱååîîļš]
+Spreadsheets
+[Šþŕééååðšĥééééţš]
+Audio
+[ÅÅûûðîîöö]
+Images
+[ÎÎɱååĝééš]
+Videos
+[Ṽîîðééööš]
+Data
+[Ðååţåå]
+Archives
+[ÅÅŕçĥîîṽééš]
+Source Code
+[Šööûûŕçéé Çööðéé]
+# --- ExportSearchResultsViewModel.cs --- 
+Select output file type
+[Šééļééçţ ööûûţþûûţ ƒîîļéé ţýýþéé]
+XML (.xml)
+[ẊṀĻ (·ẋɱļ)]
+Comma Separated Values (.csv)
+[Çööɱɱåå Šééþååŕååţééð Ṽååļûûééš (·çšṽ)]
+Tab Separated (.txt)
+[Ţååƀ Šééþååŕååţééð (·ţẋţ)]
+Results
+[Ŕééšûûļţš]
+# --- ExportSearchResultsWindow.axaml --- 
+Export Search Results
+[ÉÉẋþööŕţ Šééååŕçĥ Ŕééšûûļţš]
+Save
+[Šååṽéé]
+All rows
+[ÅÅļļ ŕööŵš]
+Output as
+[ÖÖûûţþûûţ ååš]
+Type
+[Ţýýþéé]
+All columns
+[ÅÅļļ çööļûûɱñš]
+Output Directory
+[ÖÖûûţþûûţ Ðîîŕééçţööŕýý]
+# --- ExportSearchResultsWindow.axaml.cs --- 
+Select at least one Column to export
+[Šééļééçţ ååţ ļééååšţ ööñéé Çööļûûɱñ ţöö ééẋþööŕţ]
+Select output format
+[Šééļééçţ ööûûţþûûţ ƒööŕɱååţ]
+No results are checked
+[Ñöö ŕééšûûļţš ååŕéé çĥééçķééð]
+Select an output directory.
+[Šééļééçţ ååñ ööûûţþûûţ ðîîŕééçţööŕýý·]
+Output Directory not found
+[ÖÖûûţþûûţ Ðîîŕééçţööŕýý ñööţ ƒööûûñð]
+Must enter a file name
+[Ṁûûšţ ééñţééŕ åå ƒîîļéé ñååɱéé]
+File name contains illegal characters
+[Ƒîîļéé ñååɱéé çööñţååîîñš îîļļééĝååļ çĥååŕååçţééŕš]
+# --- HtmlDocumentControl.axaml.cs --- 
+Search Report
+[Šééååŕçĥ Ŕééþööŕţ]
+Document Information
+[Ðööçûûɱééñţ ÎÎñƒööŕɱååţîîööñ]
+Hits in Context
+[Ĥîîţš îîñ Çööñţééẋţ]
+# --- IndexProgressWindow.axaml --- 
+View log
+[Ṽîîééŵ ļööĝ]
+# --- IndexProgressWindow.axaml.cs --- 
+Paused
+[Þååûûšééð]
+Cancel Indexing?
+[Çååñçééļ ÎÎñðééẋîîñĝ¿]
+Index will only contain partial results.
+[ÎÎñðééẋ ŵîîļļ ööñļýý çööñţååîîñ þååŕţîîååļ ŕééšûûļţš·]
+Cancelling
+[Çååñçééļļîîñĝ]
+# --- IndexSettingsWindow.axaml --- 
+Index Settings
+[ÎÎñðééẋ Šééţţîîñĝš]
+Stop words
+[Šţööþ ŵööŕðš]
+Maximum word length
+[Ṁååẋîîɱûûɱ ŵööŕð ļééñĝţĥ]
+Maximum file size (mb)
+[Ṁååẋîîɱûûɱ ƒîîļéé šîîžéé (ɱƀ)]
+Case sensitive
+[Çååšéé šééñšîîţîîṽéé]
+# --- IndexTask.cs --- 
+Opening Index
+[ÖÖþééñîîñĝ ÎÎñðééẋ]
+Indexing {0}
+[ÎÎñðééẋîîñĝ {0}]
+Cleaning up...
+[Çļééååñîîñĝ ûûþ···]
+Finished
+[Ƒîîñîîšĥééð]
+{0} Document(s) Indexed
+[{0} Ðööçûûɱééñţ(š) ÎÎñðééẋééð]
+Error(s) during indexing. Check log for details.
+[ÉÉŕŕööŕ(š) ðûûŕîîñĝ îîñðééẋîîñĝ· Çĥééçķ ļööĝ ƒööŕ ðééţååîîļš·]
+# --- ListContentsWindow.axaml --- 
+List Contents
+[Ļîîšţ Çööñţééñţš]
+Words Found
+[Ŵööŕðš Ƒööûûñð]
+Words in index
+[Ŵööŕðš îîñ îîñðééẋ]
+Save as...
+[Šååṽéé ååš···]
+Word count
+[Ŵööŕð çööûûñţ]
+File count
+[Ƒîîļéé çööûûñţ]
+Field count
+[Ƒîîééļð çööûûñţ]
+# --- MainWindow.axaml --- 
+_File
+[‿Ƒîîļéé]
+View...
+[Ṽîîééŵ···]
+Export Search Results...
+[ÉÉẋþööŕţ Šééååŕçĥ Ŕééšûûļţš···]
+Search Report...
+[Šééååŕçĥ Ŕééþööŕţ···]
+Print...
+[Þŕîîñţ···]
+_Exit
+[‿ÉÉẋîîţ]
+_Search
+[‿Šééååŕçĥ]
+History...
+[Ĥîîšţööŕýý···]
+Report...
+[Ŕééþööŕţ···]
+_Index
+[‿ÎÎñðééẋ]
+_View
+[‿Ṽîîééŵ]
+Theme
+[Ţĥééɱéé]
+Dark
+[Ðååŕķ]
+Light
+[Ļîîĝĥţ]
+System
+[Šýýšţééɱ]
+Layout
+[Ļååýýööûûţ]
+Horizontal
+[Ĥööŕîîžööñţååļ]
+Vertical
+[Ṽééŕţîîçååļ]
+Language
+[Ļååñĝûûååĝéé]
+English
+[ÉÉñĝļîîšĥ]
+Pseudo Locale
+[Þšééûûðöö Ļööçååļéé]
+From File...
+[Ƒŕööɱ Ƒîîļéé···]
+Word List
+[Ŵööŕð Ļîîšţ]
+Help
+[Ĥééļþ]
+About
+[ÅÅƀööûûţ]
+List...
+[Ļîîšţ···]
+Register...
+[Ŕééĝîîšţééŕ···]
+Results Settings...
+[Ŕééšûûļţš Šééţţîîñĝš···]
+Copy Results...
+[Çööþýý Ŕééšûûļţš···]
+Title
+[Ţîîţļéé]
+Score
+[Šçööŕéé]
+Viewer Settings...
+[Ṽîîééŵééŕ Šééţţîîñĝš···]
+Copy Document...
+[Çööþýý Ðööçûûɱééñţ···]
+Document Metadata
+[Ðööçûûɱééñţ Ṁééţååðååţåå]
+View in folder
+[Ṽîîééŵ îîñ ƒööļðééŕ]
+Previous Hit
+[Þŕééṽîîööûûš Ĥîîţ]
+Next Hit
+[Ñééẋţ Ĥîîţ]
+Key
+[Ķééýý]
+Value
+[Ṽååļûûéé]
+# --- MainWindow.axaml.cs --- 
+Something went wrong
+[Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ]
+There is no metadata to display.
+[Ţĥééŕéé îîš ñöö ɱééţååðååţåå ţöö ðîîšþļååýý·]
+# --- MainWindowViewModel.cs --- 
+Rebuild index now?
+[Ŕééƀûûîîļð îîñðééẋ ñööŵ¿]
+A rebuild is required for the new settings to take effect.
+[ÅÅ ŕééƀûûîîļð îîš ŕééǫûûîîŕééð ƒööŕ ţĥéé ñééŵ šééţţîîñĝš ţöö ţååķéé ééƒƒééçţ·]
+Filename:
+[Ƒîîļééñååɱéé∶]
+Note:
+[Ñööţéé∶]
+Show location
+[Šĥööŵ ļööçååţîîööñ]
+Location not available
+[Ļööçååţîîööñ ñööţ ååṽååîîļååƀļéé]
+File \"%s\" not found
+[Ƒîîļéé ∖″‰š∖″ ñööţ ƒööûûñð]
+# --- NewIndexWindow.axaml --- 
+Index Name
+[ÎÎñðééẋ Ñååɱéé]
+Index Contents
+[ÎÎñðééẋ Çööñţééñţš]
+Include All
+[ÎÎñçļûûðéé ÅÅļļ]
+# --- NewIndexWindow.axaml.cs --- 
+Index name required.
+[ÎÎñðééẋ ñååɱéé ŕééǫûûîîŕééð·]
+Select data to be indexed.
+[Šééļééçţ ðååţåå ţöö ƀéé îîñðééẋééð·]
+Select at least one content type to index.
+[Šééļééçţ ååţ ļééååšţ ööñéé çööñţééñţ ţýýþéé ţöö îîñðééẋ·]
+# --- NewIndexWindowViewModel.cs --- 
+Create Index
+[Çŕééååţéé ÎÎñðééẋ]
+# --- ProgressCalculator.cs --- 
+Calculating...
+[Çååļçûûļååţîîñĝ···]
+{0} day(s) remaining
+[{0} ðååýý(š) ŕééɱååîîñîîñĝ]
+{0} hour(s) remaining
+[{0} ĥööûûŕ(š) ŕééɱååîîñîîñĝ]
+{0} minute(s) remaining
+[{0} ɱîîñûûţéé(š) ŕééɱååîîñîîñĝ]
+{0} second(s) remaining
+[{0} šééçööñð(š) ŕééɱååîîñîîñĝ]
+# --- RegistrationWindow.axaml --- 
+Serial
+[Šééŕîîååļ]
+Order Online
+[ÖÖŕðééŕ ÖÖñļîîñéé]
+Enter your Serial Number
+[ÉÉñţééŕ ýýööûûŕ Šééŕîîååļ Ñûûɱƀééŕ]
+Invalid Serial Number
+[ÎÎñṽååļîîð Šééŕîîååļ Ñûûɱƀééŕ]
+# --- ResultsSettingsWindow.axaml --- 
+Results Settings
+[Ŕééšûûļţš Šééţţîîñĝš]
+Column Width
+[Çööļûûɱñ Ŵîîðţĥ]
+Fit to content
+[Ƒîîţ ţöö çööñţééñţ]
+Fit to window
+[Ƒîîţ ţöö ŵîîñðööŵ]
+Set Manually
+[Šééţ Ṁååñûûååļļýý]
+Key Words in Context
+[Ķééýý Ŵööŕðš îîñ Çööñţééẋţ]
+Show
+[Šĥööŵ]
+Colour...
+[Çööļööûûŕ···]
+Limit Results
+[Ļîîɱîîţ Ŕééšûûļţš]
+# --- ResultsSettingsWindow.axaml.cs --- 
+Select at least one column
+[Šééļééçţ ååţ ļééååšţ ööñéé çööļûûɱñ]
+# --- SearchControl.axaml --- 
+AND
+[ÅÅÑÐ]
+OR
+[ÖÖŔ]
+NOT
+[ÑÖÖŢ]
+Stemming
+[Šţééɱɱîîñĝ]
+Any
+[ÅÅñýý]
+Boolean
+[Ɓööööļééååñ]
+# --- SearchFilterWindow.axaml --- 
+# --- SearchFilterWindow2.axaml --- 
+# --- SearchResultsReportWindow.axaml --- 
+Search Results Report
+[Šééååŕçĥ Ŕééšûûļţš Ŕééþööŕţ]
+Rows
+[Ŕööŵš]
+File list only
+[Ƒîîļéé ļîîšţ ööñļýý]
+Full text
+[Ƒûûļļ ţééẋţ]
+Hits in context
+[Ĥîîţš îîñ çööñţééẋţ]
+Words
+[Ŵööŕðš]
+Output template
+[ÖÖûûţþûûţ ţééɱþļååţéé]
+Run report...
+[Ŕûûñ ŕééþööŕţ···]
+Run
+[Ŕûûñ]
+Open when done
+[ÖÖþééñ ŵĥééñ ðööñéé]
+# --- SearchSettingsViewModel.cs --- 
+None
+[Ñööñéé]
+Soundex
+[Šööûûñðééẋ]
+Double Metaphone
+[Ðööûûƀļéé Ṁééţååþĥööñéé]
+# --- SearchSettingsWindow.axaml --- 
+Search Settings
+[Šééååŕçĥ Šééţţîîñĝš]
+Use List
+[ÛÛšéé Ļîîšţ]
+Stemming Language
+[Šţééɱɱîîñĝ Ļååñĝûûååĝéé]
+English Porter
+[ÉÉñĝļîîšĥ Þööŕţééŕ]
+List Index Contents on Empty Query
+[Ļîîšţ ÎÎñðééẋ Çööñţééñţš ööñ ÉÉɱþţýý Ǫûûééŕýý]
+Phonetic Analysis
+[Þĥööñééţîîç ÅÅñååļýýšîîš]
+English WordNet
+[ÉÉñĝļîîšĥ ŴööŕðÑééţ]
+Synonym files:
+[Šýýñööñýýɱ ƒîîļééš∶]
+Synonym Groups
+[Šýýñööñýýɱ Ĝŕööûûþš]
+Sort
+[Šööŕţ]
+Expansion
+[ÉÉẋþååñšîîööñ]
+Edit...
+[ÉÉðîîţ···]
+# --- SearchSettingsWindow.axaml.cs --- 
+%GROUP% will be deleted.
+[‰ĜŔÖÖÛÛÞ‰ ŵîîļļ ƀéé ðééļééţééð·]
+Delete Synonyms Group?
+[Ðééļééţéé Šýýñööñýýɱš Ĝŕööûûþ¿]
+Rename Synonyms Group
+[Ŕééñååɱéé Šýýñööñýýɱš Ĝŕööûûþ]
+Synonym Group Name
+[Šýýñööñýýɱ Ĝŕööûûþ Ñååɱéé]
+New Synonyms Group
+[Ñééŵ Šýýñööñýýɱš Ĝŕööûûþ]
+Name
+[Ñååɱéé]
+Check at least one Synonym file from the drop down.
+[Çĥééçķ ååţ ļééååšţ ööñéé Šýýñööñýýɱ ƒîîļéé ƒŕööɱ ţĥéé ðŕööþ ðööŵñ·]
+No list file supplied
+[Ñöö ļîîšţ ƒîîļéé šûûþþļîîééð]
+File does not exist
+[Ƒîîļéé ðööééš ñööţ ééẋîîšţ]
+# --- TaskDialogWindow.axaml.cs --- 
+Something went wrong. Retry?
+[Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ· Ŕééţŕýý¿]
+Retry
+[Ŕééţŕýý]
+# --- TikaServer.cs --- 
+# --- UpdateIndexWindow.axaml --- 
+Indexes
+[ÎÎñðééẋééš]
+Automatic...
+[ÅÅûûţööɱååţîîç···]
+Rebuild
+[Ŕééƀûûîîļð]
+Verify
+[Ṽééŕîîƒýý]
+# --- UpdateIndexWindowViewModel.cs --- 
+No Index Selected.
+[Ñöö ÎÎñðééẋ Šééļééçţééð·]
+{0} Document(s)
+[{0} Ðööçûûɱééñţ(š)]
+Delete {0}?
+[Ðééļééţéé {0}¿]
+Delete this index.
+[Ðééļééţéé ţĥîîš îîñðééẋ·]
+Rename Index
+[Ŕééñååɱéé ÎÎñðééẋ]
+# --- Utils.cs --- 
+RFC4646
+[ŔƑÇ④⑥④⑥]
+# --- ViewerSettingsWindow.axaml --- 
+Viewer Settings
+[Ṽîîééŵééŕ Šééţţîîñĝš]
+OK
+[ÖÖĶ]
+Cancel
+[Çååñçééļ]
+View Large Files
+[Ṽîîééŵ Ļååŕĝéé Ƒîîļééš]
+Mb
+[Ṁƀ]
+Fully
+[Ƒûûļļýý]
+First page only
+[Ƒîîŕšţ þååĝéé ööñļýý]
+In Report View
+[ÎÎñ Ŕééþööŕţ Ṽîîééŵ]
+Amount of context
+[ÅÅɱööûûñţ ööƒ çööñţééẋţ]
+PDF
+[ÞÐƑ]
+Viewer
+[Ṽîîééŵééŕ]
+Adobe Acrobat
+[ÅÅðööƀéé ÅÅçŕööƀååţ]
+Plain Text
+[Þļååîîñ Ţééẋţ]
+View File Types
+[Ṽîîééŵ Ƒîîļéé Ţýýþééš]
+New...
+[Ñééŵ···]
+Rename...
+[Ŕééñååɱéé···]
+Hit Highlight
+[Ĥîîţ Ĥîîĝĥļîîĝĥţ]
+Unformatted Text
+[ÛÛñƒööŕɱååţţééð Ţééẋţ]
+No word wrap
+[Ñöö ŵööŕð ŵŕååþ]
+# --- ViewerSettingsWindowViewModel.cs --- 

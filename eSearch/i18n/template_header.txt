@@ -1,0 +1,4 @@
+# Product:  eSearch
+# RFC 4646 Language Code. Used for Localisation of date strings Eg. en-GB, de-DE etc.  
+RFC4646
+en-GB

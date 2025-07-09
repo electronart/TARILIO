@@ -1,0 +1,92 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:eSearch.ViewModels"
+		xmlns:converters="clr-namespace:eSearch.Converters;assembly=eSearch"
+        mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="750"
+        x:Class="eSearch.Views.CopyDocumentWindow"
+		Width="650"
+		Height="750"
+		ExtendClientAreaToDecorationsHint="True"
+		WindowStartupLocation="CenterOwner"
+		CanResize="False"
+		>
+	<Window.Title>
+		<MultiBinding Converter="{x:Static converters:FuncConverters.SelectString}">
+			<Binding Path="IsAIExport"/>
+			<Binding Path="S[Copy~Response]"/>
+			<Binding Path="S[Copy~Document]"/>
+		</MultiBinding>
+	</Window.Title>
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:CopyDocumentWindowViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30">
+				<Label.Content>
+					<MultiBinding Converter="{x:Static converters:FuncConverters.SelectString}">
+						<Binding Path="IsAIExport"/>
+						<Binding Path="S[Copy~Response]"/>
+						<Binding Path="S[Copy~Document]"/>
+					</MultiBinding>
+				</Label.Content>	
+			</Label>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+					<Button Width="150" HorizontalContentAlignment="Center" x:Name="ButtonOK" Content="{Binding DialogOKButtonText}"/>
+					<Button Width="150" HorizontalContentAlignment="Center" x:Name="ButtonCancel" Content="{Binding S[Cancel]}"/>
+				</StackPanel>
+				<StackPanel Margin="5" Spacing="5" Orientation="Vertical">
+					<Label Content="{Binding S[Copied~text:]}"/>
+					<TextBox Height="150" Text="{Binding DocumentTextToCopy}" TextWrapping="Wrap"/>
+					<Panel Height="10"></Panel>
+					<CheckBox IsChecked="{Binding AppendNoteChecked}" Content="{Binding S[Append~Note:]}"/>
+					<TextBox Height="90" Text="{Binding AppendNoteText}" TextWrapping="Wrap"></TextBox>
+					<Panel Height="10"></Panel>
+					<StackPanel IsVisible="{Binding !IsAIExport}">
+						<CheckBox IsChecked="{Binding AppendFileNameChecked}" Content="{Binding S[Append~File~name:]}"/>
+						<DockPanel>
+							<Button Margin="5" DockPanel.Dock="Right" Content="{Binding S[Copy]}"/>
+							<TextBox Margin="5"
+									 Text="{Binding AppendFileNameText}"
+									 ></TextBox>
+						</DockPanel>
+					</StackPanel>
+					<StackPanel IsVisible="{Binding IsAIExport}">
+						<CheckBox IsChecked="{Binding AppendAIQueryChecked}" Content="{Binding S[Append~Query:]}"/>
+						<DockPanel>
+							<Button Margin="5" DockPanel.Dock="Right" Content="{Binding S[Copy]}"/>
+							<TextBox Margin="5"
+									 Text="{Binding AppendAIQueryText}"
+									 Height="60" 
+									 TextWrapping="Wrap"
+									 ></TextBox>
+						</DockPanel>
+					</StackPanel>
+					<Panel Height="10"></Panel>
+					<Label Content="{Binding S[Copy~to:]}"/>
+					<StackPanel Margin="10" Spacing="5">
+						<RadioButton IsChecked="{Binding IsRadioClipBoardChecked}" Content="{Binding S[Clipboard]}"/>
+						<StackPanel Spacing="20" Orientation="Horizontal">
+							<RadioButton IsChecked="{Binding IsRadioFileChecked}" Content="{Binding S[File:]}"/>
+							<StackPanel Orientation="Horizontal" Spacing="20">
+								<TextBox Width="350" Text="{Binding CopyToFileName}" IsEnabled="{Binding IsRadioFileChecked}"></TextBox>
+								<CheckBox IsChecked="{Binding AppendDateIsChecked}" IsEnabled="{Binding IsRadioFileChecked}" Content="{Binding S[Append~Date]}"/>
+							</StackPanel>
+						</StackPanel>
+						<DockPanel Margin="10">
+							<Button Margin="5" DockPanel.Dock="Right" IsEnabled="{Binding IsRadioFileChecked}" x:Name="ButtonBrowseForSavePath">...</Button>
+							<TextBox Margin="5" Text="{Binding SavePath}" IsEnabled="{Binding IsRadioFileChecked}"></TextBox>
+						</DockPanel>
+					</StackPanel>
+				</StackPanel>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

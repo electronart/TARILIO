@@ -1,0 +1,68 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="500" Height="300"
+		WindowStartupLocation="CenterOwner"
+        x:Class="DesktopSearch2.Views.RegistrationWindow"
+		xmlns:vm="using:eSearch.ViewModels"
+        Title="{Binding S[Serial]}"
+		ExtendClientAreaToDecorationsHint="True"
+		>
+	<Window.Styles>
+		<Style Selector="Button.hyperlink">
+			<Setter Property="Template">
+				<ControlTemplate>
+					<TextBlock Text="{TemplateBinding Content}" Foreground="{StaticResource SystemAccentColor}" TextDecorations="Underline">
+						<TextBlock.Styles>
+							<Style Selector="TextBlock:pointerover">
+								<Setter Property="Foreground" Value="{StaticResource SystemAccentColorLight1}"/>
+							</Style>
+						</TextBlock.Styles>
+					</TextBlock>
+				</ControlTemplate>
+			</Setter>
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="0"/>
+		</Style>
+	</Window.Styles>
+
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:AboutWindowViewModel/>
+	</Design.DataContext>
+	<DockPanel>
+		<StackPanel DockPanel.Dock="Bottom" Margin="20">
+			<DockPanel>
+				<Button
+					DockPanel.Dock="Right"
+					Content="{Binding S[Cancel]}"
+					MinWidth="100" HorizontalContentAlignment="Center"
+					Margin="5,0"
+					x:Name="buttonCancel"/>
+				<Button
+					x:Name="buttonOK"
+					DockPanel.Dock="Right"
+					Content="{Binding S[OK]}"
+					MinWidth="100" HorizontalContentAlignment="Center"/>
+				
+
+				<Button Margin="3" IsVisible="False" Command="{Binding ClickOrderOnline}" Classes="hyperlink" Content="{Binding S[Order~Online]}"/>
+			</DockPanel>
+		</StackPanel>
+		<StackPanel HorizontalAlignment="Center" Margin="20">
+				<StackPanel Margin="10,50" Width="380">
+					<Label Content="{Binding S[Enter~your~Serial~Number]}" IsVisible="False"/>
+					<DockPanel Margin="0,20">
+						<TextBox x:Name="textBoxSerial1" Margin="2" Width="160" MaxLength="6"></TextBox>
+						<Label Margin="2,4">-</Label>
+						<TextBox x:Name="textBoxSerial2" Margin="2" Width="80" MaxLength="4"></TextBox>
+						<Label Margin="2,4">-</Label>
+						<TextBox x:Name="textBoxSerial3" Margin="2" MaxLength="5"></TextBox>
+					</DockPanel>
+					<Label Content="{Binding S[Invalid~Serial~Number]}" IsVisible="False" x:Name="labelSerialError"></Label>
+				</StackPanel>
+		</StackPanel>
+	</DockPanel>
+</Window>

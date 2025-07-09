@@ -1,0 +1,169 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:eSearch.ViewModels"
+        mc:Ignorable="d" 
+		Width="650" Height="660"
+        x:Class="eSearch.LLMConnectionConfigurationWindow"
+        Title="LLMConnectionConfigurationWindow"
+		ExtendClientAreaToDecorationsHint="True"
+		xmlns:utils="clr-namespace:eSearch.Utils;assembly=eSearch"
+		WindowStartupLocation="CenterOwner"
+		CanResize="False">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:LLMConnectionWindowViewModel/>
+	</Design.DataContext>
+	<Window.Resources>
+		<utils:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
+	</Window.Resources>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[Connect~to~API]}"/>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				
+				<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+					
+					<Button Width="150" 
+							x:Name="ButtonClose"
+							HorizontalContentAlignment="Center"
+							Content="{Binding S[Close]}"/>
+				</StackPanel>
+				
+				<DockPanel>
+					<StackPanel DockPanel.Dock="Left" Width="175" Margin="5" Spacing="5">
+						<Label>Connections</Label>
+						<ListBox Height="350"
+								 ItemsSource="{Binding AvailableConnections}"
+								 SelectedItem="{Binding SelectedConnection}">
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+										<TextBlock Text="{Binding}"/>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+						<StackPanel Orientation="Horizontal"  Spacing="5" HorizontalAlignment="Left">
+							
+							<Button 
+								x:Name="BtnAddConnection"
+								Width="55" 
+								Height="35"
+								HorizontalContentAlignment="Center"
+								>
+								<Image Source="{Binding I[icons8-add-32.png]}"
+												  Width="16"
+												  Height="16"
+												   />
+							</Button>
+							<Button 
+								x:Name="BtnRemoveConnection"
+								Width="55" 
+								Height="35"
+								HorizontalContentAlignment="Center" 
+								IsEnabled="False">
+								<Image Source="{Binding I[icons8-subtract-32.png]}"
+								Width="16"
+								Height="16"
+								/>
+							</Button>
+							<Button
+								x:Name="BtnRenameConnection"
+								Width="55"
+								Height="35"
+								HorizontalContentAlignment="Center"
+								IsEnabled="False">
+
+								<Image Source="{Binding I[icons8-rename-32.png]}"
+												   Width="16"
+												   Height="16"
+												   />
+							</Button>
+						</StackPanel>
+					</StackPanel>
+					<StackPanel Margin="5" Spacing="5" Orientation="Vertical" IsVisible="{Binding ShowConnectionForm}">
+						
+						<Label Content="{Binding S[Service]}"></Label>
+						<ComboBox Width="400" ItemsSource="{Binding AvailableServices}" SelectedItem="{Binding SelectedService}" IsEnabled="{Binding EnableConnectionForm}">
+							<ComboBox.ItemTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"/>
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+						<Label Content="{Binding S[Server~URL]}" IsVisible="{Binding !HideServerURL}"></Label>
+						<TextBox Width="400" HorizontalAlignment="Left"
+								 IsEnabled="{Binding EnableConnectionForm}"
+								 IsVisible="{Binding !HideServerURL}" Text="{Binding ServerURL}"/>
+						<Label Content="{Binding S[API~Key]}"/>
+						<TextBox
+							IsEnabled="{Binding EnableConnectionForm}"
+							Width="400" HorizontalAlignment="Left" Text="{Binding APIKey}" PasswordChar="•"/>
+						<Label Content="{Binding S[Model]}"/>
+						<ComboBox Width="400"
+								  SelectedItem="{Binding SelectedPerplexityModel}"
+								  ItemsSource="{Binding AvailablePerplexityModels}"
+								  IsEnabled="{Binding EnableConnectionForm}"
+								  IsVisible="{Binding !HidePerplexityModelSelectionDropDown}"
+							  />
+						<TextBox Width="400" HorizontalAlignment="Left"
+								 Text="{Binding EnteredModelName}"
+								 IsEnabled="{Binding EnableConnectionForm}"
+								 IsVisible="{Binding HidePerplexityModelSelectionDropDown}"
+							 />
+						<Label Content="Custom System Prompt"></Label>
+						<ComboBox 
+							Width="400"
+							ItemsSource="{Binding SystemPromptRoles}"
+							SelectedItem="{Binding SelectedSystemPromptRole}"
+							IsEnabled="{Binding EnableConnectionForm}"
+						/>
+						<TextBox
+							Text="{Binding CustomSystemPrompt}"
+							Width="400" 
+							HorizontalAlignment="Left" 
+							Height="80" 
+							Watermark="{Binding DefaultSystemPrompt}"
+							IsEnabled="{Binding EnableConnectionForm}"
+							TextWrapping="Wrap"
+							AcceptsReturn="True"
+							/>
+						<Label Margin="10" Content="{Binding ValidationError}" Classes="Error" DockPanel.Dock="Bottom"/>
+						<StackPanel Orientation="Horizontal" Spacing="5" Margin="10,10" HorizontalAlignment="Left">
+							<Button x:Name="BtnEditConnection"
+								Width="55"
+								Height="35"
+								HorizontalContentAlignment="Center"
+								HorizontalAlignment="Right"
+								IsVisible="{Binding !IsEditing}"
+							>
+								<Image Source="{Binding I[icons8-edit-32.png]}"
+													   Width="16"
+													   Height="16"
+												   />
+							</Button>
+							<StackPanel>
+								<Button IsEnabled="{Binding EnableConnectionForm}" Width="150" Height="35"
+										IsVisible="{Binding IsEditing}"
+										HorizontalContentAlignment="Center" x:Name="ButtonSetupTest" Content="{Binding S[Test]}"/>
+								<ProgressBar IsVisible="{Binding IsTesting}" MaxWidth="150" MinWidth="150"  IsIndeterminate="True"> </ProgressBar>
+							</StackPanel>
+							<Button Width="150" 
+									Height="35"
+									IsEnabled="{Binding EnableConnectionForm}" 
+									IsVisible="{Binding IsEditing}"
+									HorizontalContentAlignment="Center" x:Name="ButtonSetupCancel" Content="{Binding S[Cancel]}"/>
+						</StackPanel>
+						
+						
+					</StackPanel>
+					
+				</DockPanel>
+				
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

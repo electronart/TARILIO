@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:eSearch.ViewModels"
+		mc:Ignorable="d" 
+		Width="450" Height="450"
+        x:Class="eSearch.IndexSettingsWindow"
+        Title="{Binding S[Index~Settings]}"
+		ExtendClientAreaToDecorationsHint="True"
+		WindowStartupLocation="CenterOwner"
+		>
+	<Design.DataContext>
+		<vm:IndexSettingsWindowViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[Index~Settings]}"></Label>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				<DockPanel x:Name="BottomPanel" Margin="15" DockPanel.Dock="Bottom">
+					<StackPanel HorizontalAlignment="Stretch" DockPanel.Dock="Right" Orientation="Horizontal">
+						<Button HorizontalAlignment="Right"
+								Content="{Binding S[OK]}"
+								MinWidth="150"
+								HorizontalContentAlignment="Center"
+								x:Name="BtnOK"
+						/>
+						<Button
+							HorizontalAlignment="Right"
+							Content="{Binding S[Cancel]}"
+							MinWidth="150"
+							HorizontalContentAlignment="Center"
+							Margin="10"
+							x:Name="BtnCancel"
+						/>
+					</StackPanel>
+					<Label Classes="Error" HorizontalAlignment="Left" Content="{Binding ValidationError}"/>
+				</DockPanel>
+				<StackPanel Margin="5,20" Spacing="10">
+					<Label Content="{Binding S[Stop~words]}"/>
+					<ComboBox 
+						x:Name="comboBoxStopWords"
+						ItemsSource="{Binding AvailableStopWordFileNames}"
+						SelectedItem="{Binding SelectedStopWordFileName}"
+						Width="200"
+					/>
+					<Label Content="{Binding S[Maximum~word~length]}" />
+					<NumericUpDown Width="200" HorizontalAlignment="Left" HorizontalContentAlignment="Left" 
+								   Value="{Binding MaximumIndexedWordLength}" Minimum="0" Maximum="125" ClipValueToMinMax="True"/>
+					<Label Content="{Binding S[Maximum~file~size~(MB)]}"/>
+					<NumericUpDown Width="200" HorizontalAlignment="Left" HorizontalContentAlignment="Left" 
+								   Value="{Binding MaximumIndexedFileSizeMB}" Minimum="0" Maximum="100000" ClipValueToMinMax="True"/>					
+					<CheckBox Margin="0,10" IsChecked="{Binding IsIndexCaseSensitive}" Content="{Binding S[Case~sensitive]}"/>
+				</StackPanel>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

@@ -1,0 +1,19 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Add Resources Here -->
+	<Design.PreviewWith>
+		<Border Padding="20">
+			<StackPanel>
+				<Label>Test</Label>
+				<Button>Preview</Button>
+			</StackPanel>
+		</Border>
+	</Design.PreviewWith>
+
+	<SolidColorBrush x:Key="SystemControlBackgroundBaseLowBrush" Color="#FF1A1A1A"/>
+	<!-- Dark gray instead of black -->
+	<SolidColorBrush x:Key="SystemChromeLowColor" Color="#FF2D2D2D"/>
+	<!-- Slightly lighter gray -->
+	<SolidColorBrush x:Key="SystemControlForegroundBaseHighBrush" Color="#FFD3D3D3"/>
+	<!-- Light gray instead of white -->
+</ResourceDictionary>
