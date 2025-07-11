@@ -1,2 +1,2 @@
 # eSearch project 
-See Wiki - Introduction
+See Wiki - Introduction : https://github.com/electronart/esearch-project/wiki
