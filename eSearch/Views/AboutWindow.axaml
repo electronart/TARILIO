@@ -56,7 +56,7 @@
 		</StackPanel>
 		<StackPanel HorizontalAlignment="Center" Margin="20">
 			<DockPanel Margin="5">
-				<Image Source="/Assets/esearch-icon.ico" Width="50" Height="50">
+				<Image Source="{Binding ProductIcon}" Width="50" Height="50">
 				</Image>
 				<StackPanel Margin="10">
 					<Label Content="{Binding ProductTag}"/>
