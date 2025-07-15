@@ -11,7 +11,7 @@ using S = eSearch.ViewModels.TranslationsViewModel;
 
 namespace eSearch.ViewModels
 {
-    public class CopyDocumentWindowViewModel : ViewModelBase
+    public class CopyConversationWindowViewModel : ViewModelBase
     {
 
         private string documentTextToCopy = string.Empty;
@@ -52,26 +52,6 @@ namespace eSearch.ViewModels
             set => this.RaiseAndSetIfChanged(ref appendNoteText, value);
         }
 
-        private bool appendFileNameChecked = true;
-
-
-        public bool IsAIExport
-        {
-            get => _isAIExport;
-            set => this.RaiseAndSetIfChanged(ref _isAIExport, value);
-        }
-
-        private bool _isAIExport = false;
-
-
-        public bool AppendFileNameChecked
-        {
-            get => appendFileNameChecked;
-            set => this.RaiseAndSetIfChanged(ref appendFileNameChecked, value);
-        }
-
-        private string appendFileNameText = string.Empty;
-
 
         public bool AppendAIQueryChecked
         {
@@ -89,11 +69,6 @@ namespace eSearch.ViewModels
 
         private string _appendAIQueryText = string.Empty;
 
-        public string AppendFileNameText
-        {
-            get => appendFileNameText;
-            set => this.RaiseAndSetIfChanged(ref appendFileNameText, value);
-        }
 
         public enum CopySetting
         {

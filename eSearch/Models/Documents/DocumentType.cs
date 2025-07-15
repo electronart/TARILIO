@@ -241,7 +241,8 @@ namespace eSearch.Models.Documents
                     new DocumentType("tbx", "TermBase eXchange"),
                     new DocumentType("json", "JavaScript Object Notation"),
                     new DocumentType("jsonl", "JSON Lines"),
-                    new DocumentType("csv", "Comma-Separated Values")
+                    new DocumentType("csv", "Comma-Separated Values"),
+                    new DocumentType("econvo", "eSearch Conversation")
                 };
             }
         }

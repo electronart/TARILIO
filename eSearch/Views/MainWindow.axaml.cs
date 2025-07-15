@@ -9,7 +9,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using DynamicData.Binding;
 using eSearch.CustomControls;
 using eSearch.Models;
 using eSearch.Models.AI;
@@ -21,9 +20,8 @@ using eSearch.Models.Voice;
 using eSearch.Utils;
 using eSearch.ViewModels;
 using ModelContextProtocol.Client;
-using ModelContextProtocol.Server;
+using Newtonsoft.Json;
 using ReactiveUI;
-using sun.misc;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -32,7 +30,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Threading;
@@ -131,6 +128,10 @@ namespace eSearch.Views
                     {
                         importedConversation = Conversation.ImportFromJsonLFile(localPath);
                     }
+                    if (extension == ".json" || extension == ".econvo")
+                    {
+                        importedConversation = JsonConvert.DeserializeObject<Conversation>(localPath);
+                    }
                     if (importedConversation == null) throw new Exception("Imported Conversation null?");
 
                     if (mwvm.SelectedSearchSource?.Source is AISearchConfiguration aiSearchConfiguration)
@@ -168,7 +169,21 @@ namespace eSearch.Views
                     MimeTypes = new[] { "application/jsonl" }
                 };
 
-                return[csv,jsonl];
+                var json = new FilePickerFileType("JSON (.json)")
+                {
+                    Patterns = new[] { "*.json" },
+                    AppleUniformTypeIdentifiers = new[] { "public.json" },
+                    MimeTypes = new[] { "application/json" }
+                };
+
+                var econvo = new FilePickerFileType("eSearch Conversation (.econvo)")
+                {
+                    Patterns = new[] { "*.econvo" },
+                    AppleUniformTypeIdentifiers = new[] { "public.json" },
+                    MimeTypes = new[] { "application/json" }
+                };
+
+                return [econvo, csv, json, jsonl];
             }
         }
 
@@ -186,20 +201,6 @@ namespace eSearch.Views
 
                     var topLevel = TopLevel.GetTopLevel(this);
                     if (topLevel == null) throw new Exception("Unexpected - TopLevel is null");
-
-                    var csv = new FilePickerFileType("Comma Seperated Values (.csv)")
-                    {
-                        Patterns = new[] { "*.csv" },
-                        AppleUniformTypeIdentifiers = new[] { "public.csv" },
-                        MimeTypes = new[] { "text/csv" }
-                    };
-
-                    var jsonl = new FilePickerFileType("JSON Lines (.jsonl)")
-                    {
-                        Patterns = new[] { "*.jsonl" },
-                        AppleUniformTypeIdentifiers = new[] { "public.jsonl" },
-                        MimeTypes = new[] { "application/jsonl" }
-                    };
 
                     IStorageFolder? startFolder = await topLevel.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Documents);
 
@@ -232,6 +233,12 @@ namespace eSearch.Views
                     if (Path.GetExtension(localPath).ToLower() == ".jsonl")
                     {
                         conversation.ExportAsJsonLFile(localPath);
+                    }
+                    if (Path.GetExtension(localPath).ToLower() == ".json"
+                     || Path.GetExtension(localPath).ToLower() == ".econvo")
+                    {
+                        string json = JsonConvert.SerializeObject(conversation, Formatting.Indented);
+                        File.WriteAllText(localPath, json);
                     }
                 }
             } catch (Exception ex)
@@ -616,39 +623,107 @@ namespace eSearch.Views
             }
         }
 
+        private async void ConversationCopyButton_Click(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var messageVM in
+                    mwvm.CurrentLLMConversation?.Messages ?? new ObservableCollection<LLMMessageViewModel>())
+                {
+                    var msg = messageVM.GetFinalMessage(); // If a message is still streaming, will return null.
+                    if (msg != null)
+                    {
+                        string role = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(msg.Role);
+                        sb.Append(role.Trim()).Append(": ").AppendLine(msg.Content.Trim()).AppendLine();
+                    }
+                }
+                string txtToCopy = sb.ToString();
+                string aiQuery = mwvm.Session.Query.Query;
+                var copyContext = Program.ProgramConfig.CopyConvoConfig.ToViewModel();
+                copyContext.DocumentTextToCopy = txtToCopy;
+                var copyConvoWindow = new CopyConversationWindow { DataContext = copyContext };
+                await copyConvoWindow.ShowDialog(this);
+                if (copyConvoWindow.DidPressOK())
+                {
+                    Program.ProgramConfig.CopyConvoConfig = CopyConversationConfig.FromViewModel(copyContext);
+                    Program.SaveProgramConfig();
+                    StringBuilder copyBuffer = new StringBuilder();
+                    copyBuffer.AppendLine(copyContext.DocumentTextToCopy);
+                    if (copyContext.AppendNoteChecked)
+                    {
+                        copyBuffer.AppendLine();
+                        copyBuffer.Append(S.Get("Note:")).Append(" ");
+                        copyBuffer.AppendLine(copyContext.AppendNoteText);
+                    }
+                retryPoint:
+                    try
+                    {
+
+                        switch (copyContext.GetCopySetting())
+                        {
+                            case CopyConversationWindowViewModel.CopySetting.Clipboard:
+                                await Program.GetMainWindow().Clipboard.SetTextAsync(copyBuffer.ToString());
+                                break;
+                            case CopyConversationWindowViewModel.CopySetting.File:
+                                string filePath = copyContext.SavePath;
+
+
+                                if (!System.IO.Directory.Exists(filePath))
+                                {
+                                    System.IO.Directory.CreateDirectory(filePath);
+                                }
+
+                                string fileName =
+                                    copyContext.CopyToFileName
+                                    + " " +
+                                    (copyContext.AppendDateIsChecked ? DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") : string.Empty);
+                                fileName = fileName.Trim();
+
+                                if (string.IsNullOrWhiteSpace(fileName))
+                                {
+                                    throw new Exception(S.Get("Must provide a filename or check append date."));
+                                }
+
+                                filePath = Path.Combine(filePath, fileName);
+                                filePath = filePath.Trim() + ".txt";
+                                filePath.TrimStart(' ');
+                                System.IO.File.WriteAllText(filePath, copyBuffer.ToString());
+                                break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        var res = await TaskDialogWindow.RetryCancel(ex, Program.GetMainWindow());
+                        switch (res)
+                        {
+                            case TaskDialogResult.Retry:
+                                goto retryPoint;
+                            case TaskDialogResult.Cancel:
+                                break;
+                        }
+                    }
+
+                }
+            }
+        }
+
         private async void DocumentCopyButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             if (DataContext is MainWindowViewModel mwvm)
             {
                 try
                 {
-                    string txtToCopy;
+                    string txtToCopy = string.Empty;
                     string docFileName = string.Empty;
                     string aiQuery     = string.Empty;
                     string note = string.Empty;
 
-                    if (mwvm.SelectedResult != null && !mwvm.Session.Query.UseAISearch)
-                    {
-                        txtToCopy = mwvm.SelectedResult.ExtractHtmlRender();
-                        txtToCopy = eSearch.Models.Utils.HtmlToText.ConvertFromString(txtToCopy);
-                        docFileName = Path.GetFileName(mwvm.SelectedResult.FilePath);
-                        note = S.Get("Query: ") + mwvm.Session.Query.Query;
-                    } else
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        foreach (var messageVM in 
-                            mwvm.CurrentLLMConversation?.Messages ?? new ObservableCollection<LLMMessageViewModel>())
-                        {
-                            var msg = messageVM.GetFinalMessage(); // If a message is still streaming, will return null.
-                            if (msg != null)
-                            {
-                                string role = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(msg.Role);
-                                sb.Append(role.Trim()).Append(": ").AppendLine(msg.Content.Trim()).AppendLine();
-                            }
-                        }
-                        txtToCopy = sb.ToString();
-                        aiQuery = mwvm.Session.Query.Query;
-                    }
+
+                    txtToCopy = mwvm.SelectedResult.ExtractHtmlRender();
+                    txtToCopy = eSearch.Models.Utils.HtmlToText.ConvertFromString(txtToCopy);
+                    docFileName = Path.GetFileName(mwvm.SelectedResult.FilePath);
+                    note = S.Get("Query: ") + mwvm.Session.Query.Query;
 
                     
                     if (mwvm.Session.Query.UseAISearch && mwvm.SelectedSearchSource != null)
@@ -656,23 +731,20 @@ namespace eSearch.Views
                         note = mwvm.SelectedSearchSource.DisplayName;
                     }
 
-                    CopyDocumentWindowViewModel copyContext;
-                    if (mwvm.Session.Query.UseAISearch) copyContext = Program.ProgramConfig.CopyDocumentConfigAIMode.ToViewModel();
-                    else copyContext = Program.ProgramConfig.CopyDocumentConfig.ToViewModel();
+                    CopyDocumentWindowViewModel copyContext = Program.ProgramConfig.CopyDocumentConfig.ToViewModel();
 
                     copyContext.DocumentTextToCopy      = txtToCopy;
                     copyContext.AppendFileNameText      = docFileName;
                     copyContext.AppendAIQueryText       = aiQuery;
                     copyContext.AppendNoteText          = note;
-                    copyContext.IsAIExport              = mwvm.Session.Query.UseAISearch;
+                    copyContext.IsAIExport = false; // We no longer use this dialog for copying AI output.
 
                     var documentCopyDialog = new CopyDocumentWindow();
                     documentCopyDialog.DataContext = copyContext;
                     await documentCopyDialog.ShowDialog(Program.GetMainWindow());
                     if (documentCopyDialog.DidPressOK())
                     {
-                        if (mwvm.Session.Query.UseAISearch) Program.ProgramConfig.CopyDocumentConfigAIMode = CopyDocumentConfig.FromViewModel(copyContext);
-                        else Program.ProgramConfig.CopyDocumentConfig = CopyDocumentConfig.FromViewModel(copyContext);
+                        Program.ProgramConfig.CopyDocumentConfig = CopyDocumentConfig.FromViewModel(copyContext);
                         Program.SaveProgramConfig();
                         StringBuilder copyBuffer = new StringBuilder();
                         copyBuffer.AppendLine(copyContext.DocumentTextToCopy);
@@ -681,12 +753,6 @@ namespace eSearch.Views
                             copyBuffer.AppendLine();
                             copyBuffer.Append(S.Get("Filename:")).Append(" "); 
                             copyBuffer.AppendLine(copyContext.AppendFileNameText);
-                        }
-                        if (copyContext.AppendAIQueryChecked && mwvm.Session.Query.UseAISearch)
-                        {
-                            copyBuffer.AppendLine();
-                            copyBuffer.Append(S.Get("Query:")).Append(" ");
-                            copyBuffer.AppendLine(aiQuery);
                         }
                         if (copyContext.AppendNoteChecked)
                         {
@@ -754,146 +820,9 @@ namespace eSearch.Views
         }
 
 
-        private void ConversationCopyButton_Click(object? sender, RoutedEventArgs e)
-        {
-            if (DataContext is MainWindowViewModel mwvm)
-            {
-                StringBuilder sb = new StringBuilder();
-                foreach (var messageVM in
-                    mwvm.CurrentLLMConversation?.Messages ?? new ObservableCollection<LLMMessageViewModel>())
-                {
-                    var msg = messageVM.GetFinalMessage(); // If a message is still streaming, will return null.
-                    if (msg != null)
-                    {
-                        string role = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(msg.Role);
-                        sb.Append(role.Trim()).Append(": ").AppendLine(msg.Content.Trim()).AppendLine();
-                    }
-                }
-                string txtToCopy = sb.ToString();
-                string aiQuery = mwvm.Session.Query.Query;
-            }
-        }
+        
 
         bool handlingColumn0 = false;
-
-        //private void ResultsGrid_CellPointerPressed(object? sender, DataGridCellPointerPressedEventArgs e)
-        //{
-        //    if (e.Column.DisplayIndex == 0)
-        //    {
-        //        handlingColumn0 = true;
-                
-        //        #region Special uncheck handling
-        //        if (e.Row.DataContext is ResultViewModel rvm)
-        //        {
-        //            rvm.SetResultChecked(!rvm.IsResultChecked);
-        //            if (rvm.IsResultChecked && !resultsGrid.SelectedItems.Contains(rvm)) { resultsGrid.SelectedItems.Add(rvm); return; }
-        //            if (!rvm.IsResultChecked && resultsGrid.SelectedItems.Contains(rvm)) { resultsGrid.SelectedItems.Remove(rvm); return; }
-        //        }
-        //        #endregion
-        //    } else
-        //    {
-        //        handlingColumn0 = false;
-        //    }
-        //}
-
-        //private void ResultsGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-        //{
-        //    if (this.DataContext is MainWindowViewModel viewModel)
-        //    {
-        //        #region Handle Checkbox syncing
-
-        //        if (handlingColumn0 || resultsGrid.CurrentColumn?.DisplayIndex == 0)        // The first Column is the Checkbox Selection. Clicking in here won't unselect other records, only add.
-        //        {
-        //            e.RemovedItems.Clear();
-        //            e.AddedItems.Clear();
-        //        }
-
-        //        foreach (ResultViewModel addedItem in e.AddedItems)
-        //        {
-        //            addedItem.SetResultChecked(true);
-        //        }
-
-        //        foreach (ResultViewModel removedItem in e.RemovedItems)
-        //        {
-        //            removedItem.SetResultChecked(false);
-        //        }
-
-        //        foreach (ResultViewModel _rvm in resultsGrid.ItemsSource)
-        //        {
-        //            if (_rvm.IsResultChecked)
-        //            {
-        //                if (!resultsGrid.SelectedItems.Contains(_rvm))
-        //                {
-        //                    resultsGrid.SelectedItems.Add(_rvm);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                if (resultsGrid.SelectedItems.Contains(_rvm))
-        //                {
-        //                    resultsGrid.SelectedItems.Remove(_rvm);
-        //                }
-        //            }
-        //        }
-        //        #endregion
-
-        //        {
-        //            ResultsCopyButton.IsEnabled =  ResultsGrid2.RowSelection?.Count > 0;
-        //            DocumentCopyButton.IsEnabled = ResultsGrid2.RowSelection?.Count > 0;
-        //            viewModel.ShowDocumentLocation = false;
-
-        //            viewModel.RaisePropertyChanged(nameof(viewModel.IsDocumentLocationAvailable));
-        //            viewModel.RaisePropertyChanged(nameof(viewModel.DocumentLocationButtonToolTip));
-        //        }
-
-        //        #region Update Geolocation UI
-        //        bool isGeolocationAvailable = false;
-        //        if (ResultsGrid2.RowSelection?.SelectedItem is ResultViewModel rvm)
-        //        {
-        //            viewModel.SelectedResult = rvm;
-        //            if (Program.ProgramConfig.IsProgramRegistered())
-        //            {
-        //                var latitude = rvm.GetMetadataValue("Latitude");
-        //                var longitude = rvm.GetMetadataValue("Longitude");
-        //                if (latitude != null && longitude != null)
-        //                {
-        //                    isGeolocationAvailable = true;
-        //                }
-        //            }
-        //        } else
-        //        {
-        //            viewModel.SelectedResult = null;
-        //        }
-        //        viewModel.IsDocumentLocationAvailable   = isGeolocationAvailable;
-        //        viewModel.DocumentLocationButtonToolTip = isGeolocationAvailable ? S.Get("Show location") : S.Get("Location not available");
-
-        //        #endregion
-        //    }
-        //    if (resultsGrid.SelectedItem != null && resultsGrid.SelectedItem is ResultViewModel)
-        //    {
-        //        ResultViewModel rvm = (ResultViewModel)resultsGrid.SelectedItem;
-        //        //var render = rvm.ExtractHtmlRender();
-        //        htmlDocumentControl.renderResultAccordingToSettings((ResultViewModel)resultsGrid.SelectedItem, this.DataContext as MainWindowViewModel);
-
-        //        if (rvm.DocumentMetaData != null)
-        //        {
-        //            MetadataDataGrid.ItemsSource = rvm.VisibleDocumentMetaData;
-        //        }
-        //        else
-        //        {
-        //            var metaData = new List<Metadata>();
-        //            metaData.Add(new Metadata { Key = " ---- ", Value = S.Get("There is no metadata to display.") });
-        //            MetadataDataGrid.ItemsSource = new List<Metadata>();
-        //        }
-
-        //    }
-        //    else
-        //    {
-        //        Debug.WriteLine("Unselected");
-        //    }
-        //}
-
-        
 
         private async void ResultsCopyButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {

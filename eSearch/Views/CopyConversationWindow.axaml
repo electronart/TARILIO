@@ -29,32 +29,11 @@
 					<Button Width="150" HorizontalContentAlignment="Center" x:Name="ButtonCancel" Content="{Binding S[Cancel]}"/>
 				</StackPanel>
 				<StackPanel Margin="5" Spacing="5" Orientation="Vertical">
-					<Label Content="{Binding S[Copied~text:]}"/>
-					<TextBox Height="150" Text="{Binding DocumentTextToCopy}" TextWrapping="Wrap"/>
+					<Label Content="{Binding S[Transcript:]}"/>
+					<TextBox Height="250" Text="{Binding DocumentTextToCopy}" TextWrapping="Wrap"/>
 					<Panel Height="10"></Panel>
 					<CheckBox IsChecked="{Binding AppendNoteChecked}" Content="{Binding S[Append~Note:]}"/>
 					<TextBox Height="90" Text="{Binding AppendNoteText}" TextWrapping="Wrap"></TextBox>
-					<Panel Height="10"></Panel>
-					<StackPanel IsVisible="{Binding !IsAIExport}">
-						<CheckBox IsChecked="{Binding AppendFileNameChecked}" Content="{Binding S[Append~File~name:]}"/>
-						<DockPanel>
-							<Button Margin="5" DockPanel.Dock="Right" Content="{Binding S[Copy]}"/>
-							<TextBox Margin="5"
-									 Text="{Binding AppendFileNameText}"
-									 ></TextBox>
-						</DockPanel>
-					</StackPanel>
-					<StackPanel IsVisible="{Binding IsAIExport}">
-						<CheckBox IsChecked="{Binding AppendAIQueryChecked}" Content="{Binding S[Append~Query:]}"/>
-						<DockPanel>
-							<Button Margin="5" DockPanel.Dock="Right" Content="{Binding S[Copy]}"/>
-							<TextBox Margin="5"
-									 Text="{Binding AppendAIQueryText}"
-									 Height="60" 
-									 TextWrapping="Wrap"
-									 ></TextBox>
-						</DockPanel>
-					</StackPanel>
 					<Panel Height="10"></Panel>
 					<Label Content="{Binding S[Copy~to:]}"/>
 					<StackPanel Margin="10" Spacing="5">

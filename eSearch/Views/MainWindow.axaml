@@ -22,8 +22,8 @@
 		<!-- TransparencyLevelHint="AcrylicBlur" -->
 		<!-- Background="Transparent" -->
 		<Style Selector="Button.ProductTag">
-			<Setter Property="Background" Value="#529136"/>
-			<Setter Property="Foreground" Value="#fff"/>
+			<Setter Property="Background" Value="{Binding ApplicationBrandPrimaryColor}"/>
+			<Setter Property="Foreground" Value="{Binding ApplicationBrandTextColor}"/>
 			<Setter Property="CornerRadius" Value="0"/>
 		</Style>
 		
@@ -43,7 +43,7 @@
 	<DockPanel>
 		<DockPanel DockPanel.Dock="Top" x:Name="MenuOnly">
 			<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="10,5" Spacing="5">
-				<Image Source="/Assets/esearch-icon.ico" Width="20" Height="20"/>
+				<Image Source="{Binding ProductIcon}" Width="20" Height="20"/>
 				<Menu x:Name="MainMenu" MinWidth="340" Height="35" HorizontalAlignment="Left" TabIndex="0">
 					<MenuItem Header="{Binding S[_File]}">
 						<!--<MenuItem Header="{Binding S[View...]}"/>-->

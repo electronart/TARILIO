@@ -41,6 +41,7 @@ namespace eSearch.Models.Documents
                     _parsers = new List<IParser>()
                     {
                         new CSVParser_Sep(),
+                        new EconvoParser(),
                         //new CSVParser(),
                         new DocParser(),
                         new DocXParser(),
@@ -63,6 +64,7 @@ namespace eSearch.Models.Documents
                         new MarkDownParserMarkDig(),
                         new IpynbParser(),
                         new JsonLParser(),
+                        
                         new TikaParser3() // TikaParser should always be last. It will be used as fallback.
                     };
                 }

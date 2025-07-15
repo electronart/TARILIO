@@ -11,7 +11,7 @@ using S = eSearch.ViewModels.TranslationsViewModel;
 
 namespace eSearch.ViewModels
 {
-    public class CopyConversationWindowViewModel : ViewModelBase
+    public class CopyDocumentWindowViewModel : ViewModelBase
     {
 
         private string documentTextToCopy = string.Empty;

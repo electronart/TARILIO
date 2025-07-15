@@ -42,7 +42,7 @@ namespace eSearch.Models.Configuration
 
         public CopyDocumentConfig CopyDocumentConfig = new CopyDocumentConfig();
 
-        public CopyDocumentConfig CopyDocumentConfigAIMode = new CopyDocumentConfig();
+        public CopyConversationConfig CopyConvoConfig = new CopyConversationConfig();
 
         public string? SelectedAISearchConfigurationID = null;
 
@@ -183,7 +183,7 @@ namespace eSearch.Models.Configuration
         #region Preferences around Exporting Conversations
         // Path to directory.
         public string? PreferredConversationSaveLocation = null;
-        // "csv" or "jsonl"
+        // "csv" or "jsonl" or "json"
         public string? PreferredConversationFileFormat = null;
         #endregion
 
@@ -209,7 +209,7 @@ namespace eSearch.Models.Configuration
             {
                 // Not registered
                 #if STANDALONE
-                    productVersion += " Portable";
+                    productVersion += " Portable Lite";
                 #else
                     productVersion += " Lite";
                 #endif
