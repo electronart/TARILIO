@@ -1,0 +1,935 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dtSearchUserThesaurus>
+  <Item>
+    <Name>abide</Name>
+    <Synonyms>abide abode</Synonyms>
+  </Item>
+  <Item>
+    <Name>arise</Name>
+    <Synonyms>arise arose arisen</Synonyms>
+  </Item>
+  <Item>
+    <Name>awake</Name>
+    <Synonyms>awake awoke awoken awaked</Synonyms>
+  </Item>
+  <Item>
+    <Name>be</Name>
+    <Synonyms>be been being am is are was were</Synonyms>
+  </Item>
+  <Item>
+    <Name>bear</Name>
+    <Synonyms>bear bore borne born</Synonyms>
+  </Item>
+  <Item>
+    <Name>beat</Name>
+    <Synonyms>beat beaten</Synonyms>
+  </Item>
+  <Item>
+    <Name>become</Name>
+    <Synonyms>become became</Synonyms>
+  </Item>
+  <Item>
+    <Name>befall</Name>
+    <Synonyms>befall befell</Synonyms>
+  </Item>
+  <Item>
+    <Name>beget</Name>
+    <Synonyms>beget begot begotten</Synonyms>
+  </Item>
+  <Item>
+    <Name>begin</Name>
+    <Synonyms>begin began begun</Synonyms>
+  </Item>
+  <Item>
+    <Name>behold</Name>
+    <Synonyms>behold beheld</Synonyms>
+  </Item>
+  <Item>
+    <Name>belay</Name>
+    <Synonyms>belay belayed belaid</Synonyms>
+  </Item>
+  <Item>
+    <Name>bend</Name>
+    <Synonyms>bend bent</Synonyms>
+  </Item>
+  <Item>
+    <Name>bereave</Name>
+    <Synonyms>bereave bereft bereaved</Synonyms>
+  </Item>
+  <Item>
+    <Name>beseech</Name>
+    <Synonyms>beseech besought</Synonyms>
+  </Item>
+  <Item>
+    <Name>bestrew</Name>
+    <Synonyms>bestrew bestrewed bestrewn</Synonyms>
+  </Item>
+  <Item>
+    <Name>bestride</Name>
+    <Synonyms>bestride bestrode bestridden</Synonyms>
+  </Item>
+  <Item>
+    <Name>bind</Name>
+    <Synonyms>bind bound</Synonyms>
+  </Item>
+  <Item>
+    <Name>bite</Name>
+    <Synonyms>bite bit bitten</Synonyms>
+  </Item>
+  <Item>
+    <Name>bleed</Name>
+    <Synonyms>bleed bled</Synonyms>
+  </Item>
+  <Item>
+    <Name>bless</Name>
+    <Synonyms>bless blest</Synonyms>
+  </Item>
+  <Item>
+    <Name>blow</Name>
+    <Synonyms>blow blew blown</Synonyms>
+  </Item>
+  <Item>
+    <Name>break</Name>
+    <Synonyms>break broke broken</Synonyms>
+  </Item>
+  <Item>
+    <Name>breed</Name>
+    <Synonyms>breed bred</Synonyms>
+  </Item>
+  <Item>
+    <Name>bring</Name>
+    <Synonyms>bring brought</Synonyms>
+  </Item>
+  <Item>
+    <Name>build</Name>
+    <Synonyms>build built</Synonyms>
+  </Item>
+  <Item>
+    <Name>burn</Name>
+    <Synonyms>burn burned burnt</Synonyms>
+  </Item>
+  <Item>
+    <Name>buy</Name>
+    <Synonyms>buy bought</Synonyms>
+  </Item>
+  <Item>
+    <Name>can</Name>
+    <Synonyms>can could</Synonyms>
+  </Item>
+  <Item>
+    <Name>catch</Name>
+    <Synonyms>catch caught</Synonyms>
+  </Item>
+  <Item>
+    <Name>choose</Name>
+    <Synonyms>choose chose chosen</Synonyms>
+  </Item>
+  <Item>
+    <Name>cling</Name>
+    <Synonyms>cling clung clang</Synonyms>
+  </Item>
+  <Item>
+    <Name>cloth</Name>
+    <Synonyms>cloth clothed clad</Synonyms>
+  </Item>
+  <Item>
+    <Name>come</Name>
+    <Synonyms>come came</Synonyms>
+  </Item>
+  <Item>
+    <Name>creep</Name>
+    <Synonyms>creep crept</Synonyms>
+  </Item>
+  <Item>
+    <Name>dare</Name>
+    <Synonyms>dare dared</Synonyms>
+  </Item>
+  <Item>
+    <Name>deal</Name>
+    <Synonyms>deal dealt</Synonyms>
+  </Item>
+  <Item>
+    <Name>die</Name>
+    <Synonyms>die died dying</Synonyms>
+  </Item>
+  <Item>
+    <Name>dig</Name>
+    <Synonyms>dig dug</Synonyms>
+  </Item>
+  <Item>
+    <Name>dive</Name>
+    <Synonyms>dive dove dived</Synonyms>
+  </Item>
+  <Item>
+    <Name>do</Name>
+    <Synonyms>do does doing did done</Synonyms>
+  </Item>
+  <Item>
+    <Name>draw</Name>
+    <Synonyms>draw drawn drew</Synonyms>
+  </Item>
+  <Item>
+    <Name>dream</Name>
+    <Synonyms>dream dreamt dreamed</Synonyms>
+  </Item>
+  <Item>
+    <Name>drink</Name>
+    <Synonyms>drink drank drunk</Synonyms>
+  </Item>
+  <Item>
+    <Name>drive</Name>
+    <Synonyms>drive drove driven</Synonyms>
+  </Item>
+  <Item>
+    <Name>dwell</Name>
+    <Synonyms>dwell dwelt dwelled</Synonyms>
+  </Item>
+  <Item>
+    <Name>eat</Name>
+    <Synonyms>eat eaten ate</Synonyms>
+  </Item>
+  <Item>
+    <Name>fall</Name>
+    <Synonyms>fall fell fallen</Synonyms>
+  </Item>
+  <Item>
+    <Name>feed</Name>
+    <Synonyms>feed fed</Synonyms>
+  </Item>
+  <Item>
+    <Name>feel</Name>
+    <Synonyms>feel felt</Synonyms>
+  </Item>
+  <Item>
+    <Name>fight</Name>
+    <Synonyms>fight fought</Synonyms>
+  </Item>
+  <Item>
+    <Name>find</Name>
+    <Synonyms>find found</Synonyms>
+  </Item>
+  <Item>
+    <Name>flee</Name>
+    <Synonyms>flee fled</Synonyms>
+  </Item>
+  <Item>
+    <Name>fling</Name>
+    <Synonyms>fling flung</Synonyms>
+  </Item>
+  <Item>
+    <Name>fly</Name>
+    <Synonyms>fly flew flown</Synonyms>
+  </Item>
+  <Item>
+    <Name>forbear</Name>
+    <Synonyms>forbear forbore forborne</Synonyms>
+  </Item>
+  <Item>
+    <Name>forbid</Name>
+    <Synonyms>forbid forbidden forbade</Synonyms>
+  </Item>
+  <Item>
+    <Name>forego</Name>
+    <Synonyms>forego foregone forwent</Synonyms>
+  </Item>
+  <Item>
+    <Name>foretell</Name>
+    <Synonyms>foretell foretold</Synonyms>
+  </Item>
+  <Item>
+    <Name>forget</Name>
+    <Synonyms>forget forgot forgotten</Synonyms>
+  </Item>
+  <Item>
+    <Name>forgive</Name>
+    <Synonyms>forgive forgave forgiven</Synonyms>
+  </Item>
+  <Item>
+    <Name>forsake</Name>
+    <Synonyms>forsake forsaken forsook</Synonyms>
+  </Item>
+  <Item>
+    <Name>freeze</Name>
+    <Synonyms>freeze froze frozen</Synonyms>
+  </Item>
+  <Item>
+    <Name>frostbite</Name>
+    <Synonyms>frostbite frostbit frostbitten</Synonyms>
+  </Item>
+  <Item>
+    <Name>get</Name>
+    <Synonyms>get got gotten</Synonyms>
+  </Item>
+  <Item>
+    <Name>gild</Name>
+    <Synonyms>gild gilt gilded</Synonyms>
+  </Item>
+  <Item>
+    <Name>give</Name>
+    <Synonyms>give gave given</Synonyms>
+  </Item>
+  <Item>
+    <Name>go</Name>
+    <Synonyms>go goes going went gone</Synonyms>
+  </Item>
+  <Item>
+    <Name>grind</Name>
+    <Synonyms>grind ground</Synonyms>
+  </Item>
+  <Item>
+    <Name>grow</Name>
+    <Synonyms>grow grew grown</Synonyms>
+  </Item>
+  <Item>
+    <Name>handwrite</Name>
+    <Synonyms>handwrite handwrote handwritten</Synonyms>
+  </Item>
+  <Item>
+    <Name>hang</Name>
+    <Synonyms>hang hung hanged</Synonyms>
+  </Item>
+  <Item>
+    <Name>have</Name>
+    <Synonyms>have has had</Synonyms>
+  </Item>
+  <Item>
+    <Name>hear</Name>
+    <Synonyms>hear heard</Synonyms>
+  </Item>
+  <Item>
+    <Name>heave</Name>
+    <Synonyms>heave hove heaved</Synonyms>
+  </Item>
+  <Item>
+    <Name>hew</Name>
+    <Synonyms>hew hewn hewed</Synonyms>
+  </Item>
+  <Item>
+    <Name>hide</Name>
+    <Synonyms>hide hid hidden</Synonyms>
+  </Item>
+  <Item>
+    <Name>hold</Name>
+    <Synonyms>hold held</Synonyms>
+  </Item>
+  <Item>
+    <Name>inbreed</Name>
+    <Synonyms>inbreed inbred</Synonyms>
+  </Item>
+  <Item>
+    <Name>inlay</Name>
+    <Synonyms>inlay inlaid</Synonyms>
+  </Item>
+  <Item>
+    <Name>interbreed</Name>
+    <Synonyms>interbreed interbred</Synonyms>
+  </Item>
+  <Item>
+    <Name>interweave</Name>
+    <Synonyms>interweave interweaved interwove interwoven</Synonyms>
+  </Item>
+  <Item>
+    <Name>interwind</Name>
+    <Synonyms>interwind interwound</Synonyms>
+  </Item>
+  <Item>
+    <Name>keep</Name>
+    <Synonyms>keep kept</Synonyms>
+  </Item>
+  <Item>
+    <Name>kneel</Name>
+    <Synonyms>kneel knelt kneeled</Synonyms>
+  </Item>
+  <Item>
+    <Name>knit</Name>
+    <Synonyms>knit knitted</Synonyms>
+  </Item>
+  <Item>
+    <Name>know</Name>
+    <Synonyms>know knew known</Synonyms>
+  </Item>
+  <Item>
+    <Name>lay</Name>
+    <Synonyms>lay laid</Synonyms>
+  </Item>
+  <Item>
+    <Name>lead</Name>
+    <Synonyms>lead led</Synonyms>
+  </Item>
+  <Item>
+    <Name>lean</Name>
+    <Synonyms>lean leant leaned</Synonyms>
+  </Item>
+  <Item>
+    <Name>leap</Name>
+    <Synonyms>leap leapt leaped</Synonyms>
+  </Item>
+  <Item>
+    <Name>learn</Name>
+    <Synonyms>learn learnt learned</Synonyms>
+  </Item>
+  <Item>
+    <Name>lend</Name>
+    <Synonyms>lend lent</Synonyms>
+  </Item>
+  <Item>
+    <Name>lie</Name>
+    <Synonyms>lie lay lain lying</Synonyms>
+  </Item>
+  <Item>
+    <Name>light</Name>
+    <Synonyms>light lit lighted</Synonyms>
+  </Item>
+  <Item>
+    <Name>lose</Name>
+    <Synonyms>lose lost</Synonyms>
+  </Item>
+  <Item>
+    <Name>make</Name>
+    <Synonyms>made make</Synonyms>
+  </Item>
+  <Item>
+    <Name>mean</Name>
+    <Synonyms>mean meant</Synonyms>
+  </Item>
+  <Item>
+    <Name>meet</Name>
+    <Synonyms>meet met</Synonyms>
+  </Item>
+  <Item>
+    <Name>melt</Name>
+    <Synonyms>melt melted molten</Synonyms>
+  </Item>
+  <Item>
+    <Name>misdeal</Name>
+    <Synonyms>misdeal misdealt</Synonyms>
+  </Item>
+  <Item>
+    <Name>misdo</Name>
+    <Synonyms>misdo misdid misdone</Synonyms>
+  </Item>
+  <Item>
+    <Name>mishear</Name>
+    <Synonyms>mishear misheard</Synonyms>
+  </Item>
+  <Item>
+    <Name>mislay</Name>
+    <Synonyms>mislay mislaid</Synonyms>
+  </Item>
+  <Item>
+    <Name>mislead</Name>
+    <Synonyms>mislead misled</Synonyms>
+  </Item>
+  <Item>
+    <Name>misspell</Name>
+    <Synonyms>misspell misspelled misspelt</Synonyms>
+  </Item>
+  <Item>
+    <Name>mistake</Name>
+    <Synonyms>mistake mistook mistaken</Synonyms>
+  </Item>
+  <Item>
+    <Name>misunderstand</Name>
+    <Synonyms>misunderstand misunderstood</Synonyms>
+  </Item>
+  <Item>
+    <Name>mow</Name>
+    <Synonyms>mow mown mowed</Synonyms>
+  </Item>
+  <Item>
+    <Name>outbreed</Name>
+    <Synonyms>outbreed outbred</Synonyms>
+  </Item>
+  <Item>
+    <Name>outdo</Name>
+    <Synonyms>outdo outdid outdone</Synonyms>
+  </Item>
+  <Item>
+    <Name>outdraw</Name>
+    <Synonyms>outdraw outdrew outdrawn</Synonyms>
+  </Item>
+  <Item>
+    <Name>outgrow</Name>
+    <Synonyms>outgrow outgrew outgrown</Synonyms>
+  </Item>
+  <Item>
+    <Name>outrun</Name>
+    <Synonyms>outrun outran</Synonyms>
+  </Item>
+  <Item>
+    <Name>outsell</Name>
+    <Synonyms>outsell outsold</Synonyms>
+  </Item>
+  <Item>
+    <Name>outshine</Name>
+    <Synonyms>outshine outshone</Synonyms>
+  </Item>
+  <Item>
+    <Name>outspeak</Name>
+    <Synonyms>outspeak outspoke outspoken</Synonyms>
+  </Item>
+  <Item>
+    <Name>overbreed</Name>
+    <Synonyms>overbreed overbred</Synonyms>
+  </Item>
+  <Item>
+    <Name>overbuild</Name>
+    <Synonyms>overbuild overbuilt</Synonyms>
+  </Item>
+  <Item>
+    <Name>overcome</Name>
+    <Synonyms>overcome overcame</Synonyms>
+  </Item>
+  <Item>
+    <Name>overdo</Name>
+    <Synonyms>overdo overdid overdone</Synonyms>
+  </Item>
+  <Item>
+    <Name>overdraw</Name>
+    <Synonyms>overdraw overdrew ovedrawn</Synonyms>
+  </Item>
+  <Item>
+    <Name>overdrink</Name>
+    <Synonyms>overdrink overdrank overdrunk</Synonyms>
+  </Item>
+  <Item>
+    <Name>overfeed</Name>
+    <Synonyms>overfeed overfed</Synonyms>
+  </Item>
+  <Item>
+    <Name>overhang</Name>
+    <Synonyms>overhang overhung</Synonyms>
+  </Item>
+  <Item>
+    <Name>overhear</Name>
+    <Synonyms>overhear overheard</Synonyms>
+  </Item>
+  <Item>
+    <Name>overlay</Name>
+    <Synonyms>overlay overlaid</Synonyms>
+  </Item>
+  <Item>
+    <Name>oversleep</Name>
+    <Synonyms>oversleep overslept</Synonyms>
+  </Item>
+  <Item>
+    <Name>overtake</Name>
+    <Synonyms>overtake overtook overtaken</Synonyms>
+  </Item>
+  <Item>
+    <Name>overthrow</Name>
+    <Synonyms>overthrow overthrew overthrown</Synonyms>
+  </Item>
+  <Item>
+    <Name>overwrote</Name>
+    <Synonyms>overwrote overwrite overwritten</Synonyms>
+  </Item>
+  <Item>
+    <Name>pay</Name>
+    <Synonyms>pay paid</Synonyms>
+  </Item>
+  <Item>
+    <Name>plea</Name>
+    <Synonyms>plea plead pleaded</Synonyms>
+  </Item>
+  <Item>
+    <Name>prove</Name>
+    <Synonyms>prove proved proven</Synonyms>
+  </Item>
+  <Item>
+    <Name>rebuild</Name>
+    <Synonyms>rebuild rebuilt</Synonyms>
+  </Item>
+  <Item>
+    <Name>rehear</Name>
+    <Synonyms>rehear reheard</Synonyms>
+  </Item>
+  <Item>
+    <Name>remake</Name>
+    <Synonyms>remake remade</Synonyms>
+  </Item>
+  <Item>
+    <Name>repay</Name>
+    <Synonyms>repay repaid</Synonyms>
+  </Item>
+  <Item>
+    <Name>resell</Name>
+    <Synonyms>resell resold</Synonyms>
+  </Item>
+  <Item>
+    <Name>ride</Name>
+    <Synonyms>ride rode ridden</Synonyms>
+  </Item>
+  <Item>
+    <Name>ring</Name>
+    <Synonyms>ring rang rung</Synonyms>
+  </Item>
+  <Item>
+    <Name>rise</Name>
+    <Synonyms>rise rose risen</Synonyms>
+  </Item>
+  <Item>
+    <Name>run</Name>
+    <Synonyms>run ran</Synonyms>
+  </Item>
+  <Item>
+    <Name>saw</Name>
+    <Synonyms>saw sawed sawn</Synonyms>
+  </Item>
+  <Item>
+    <Name>say</Name>
+    <Synonyms>say says said</Synonyms>
+  </Item>
+  <Item>
+    <Name>see</Name>
+    <Synonyms>see saw seen</Synonyms>
+  </Item>
+  <Item>
+    <Name>seek</Name>
+    <Synonyms>seek sought</Synonyms>
+  </Item>
+  <Item>
+    <Name>sell</Name>
+    <Synonyms>sell sold</Synonyms>
+  </Item>
+  <Item>
+    <Name>send</Name>
+    <Synonyms>send sent</Synonyms>
+  </Item>
+  <Item>
+    <Name>sew</Name>
+    <Synonyms>sew sewed sewn</Synonyms>
+  </Item>
+  <Item>
+    <Name>shake</Name>
+    <Synonyms>shake shook shaken</Synonyms>
+  </Item>
+  <Item>
+    <Name>shave</Name>
+    <Synonyms>shave shaved shaven</Synonyms>
+  </Item>
+  <Item>
+    <Name>shear</Name>
+    <Synonyms>shear shorn sheared</Synonyms>
+  </Item>
+  <Item>
+    <Name>shine</Name>
+    <Synonyms>shine shone</Synonyms>
+  </Item>
+  <Item>
+    <Name>shoe</Name>
+    <Synonyms>shoe shoed shod</Synonyms>
+  </Item>
+  <Item>
+    <Name>shoot</Name>
+    <Synonyms>shoot shot</Synonyms>
+  </Item>
+  <Item>
+    <Name>show</Name>
+    <Synonyms>show shown showed</Synonyms>
+  </Item>
+  <Item>
+    <Name>shrink</Name>
+    <Synonyms>shrink shrank shrunk shrunken</Synonyms>
+  </Item>
+  <Item>
+    <Name>sing</Name>
+    <Synonyms>sing sang sung</Synonyms>
+  </Item>
+  <Item>
+    <Name>sink</Name>
+    <Synonyms>sink sank sunk sunken</Synonyms>
+  </Item>
+  <Item>
+    <Name>sit</Name>
+    <Synonyms>sit sat</Synonyms>
+  </Item>
+  <Item>
+    <Name>slay</Name>
+    <Synonyms>slay slew slain</Synonyms>
+  </Item>
+  <Item>
+    <Name>sleep</Name>
+    <Synonyms>sleep slept</Synonyms>
+  </Item>
+  <Item>
+    <Name>slide</Name>
+    <Synonyms>slide slid</Synonyms>
+  </Item>
+  <Item>
+    <Name>sling</Name>
+    <Synonyms>sling slung</Synonyms>
+  </Item>
+  <Item>
+    <Name>slink</Name>
+    <Synonyms>slink slunk</Synonyms>
+  </Item>
+  <Item>
+    <Name>smell</Name>
+    <Synonyms>smell smelt smelled</Synonyms>
+  </Item>
+  <Item>
+    <Name>smite</Name>
+    <Synonyms>smite smote smitten</Synonyms>
+  </Item>
+  <Item>
+    <Name>sneak</Name>
+    <Synonyms>sneak snuck sneaked snook</Synonyms>
+  </Item>
+  <Item>
+    <Name>sow</Name>
+    <Synonyms>sow sown sowed</Synonyms>
+  </Item>
+  <Item>
+    <Name>speak</Name>
+    <Synonyms>speak spoke spoken</Synonyms>
+  </Item>
+  <Item>
+    <Name>speed</Name>
+    <Synonyms>speed sped speeded</Synonyms>
+  </Item>
+  <Item>
+    <Name>spell</Name>
+    <Synonyms>spell spelt spelled</Synonyms>
+  </Item>
+  <Item>
+    <Name>spend</Name>
+    <Synonyms>spend spent</Synonyms>
+  </Item>
+  <Item>
+    <Name>spill</Name>
+    <Synonyms>spill spilt spilled</Synonyms>
+  </Item>
+  <Item>
+    <Name>spin</Name>
+    <Synonyms>spin spun span</Synonyms>
+  </Item>
+  <Item>
+    <Name>spit</Name>
+    <Synonyms>spit spat</Synonyms>
+  </Item>
+  <Item>
+    <Name>spoil</Name>
+    <Synonyms>spoil spoilt spoiled</Synonyms>
+  </Item>
+  <Item>
+    <Name>spring</Name>
+    <Synonyms>spring sprang sprung</Synonyms>
+  </Item>
+  <Item>
+    <Name>stand</Name>
+    <Synonyms>stand stood</Synonyms>
+  </Item>
+  <Item>
+    <Name>steal</Name>
+    <Synonyms>steal stole stolen</Synonyms>
+  </Item>
+  <Item>
+    <Name>stick</Name>
+    <Synonyms>stick stuck</Synonyms>
+  </Item>
+  <Item>
+    <Name>sting</Name>
+    <Synonyms>sting stung stang</Synonyms>
+  </Item>
+  <Item>
+    <Name>stink</Name>
+    <Synonyms>stink stank stunk</Synonyms>
+  </Item>
+  <Item>
+    <Name>strew</Name>
+    <Synonyms>strew strewed strewn</Synonyms>
+  </Item>
+  <Item>
+    <Name>strike</Name>
+    <Synonyms>strike struck strack stricken</Synonyms>
+  </Item>
+  <Item>
+    <Name>string</Name>
+    <Synonyms>string strung</Synonyms>
+  </Item>
+  <Item>
+    <Name>strive</Name>
+    <Synonyms>strive striven strove</Synonyms>
+  </Item>
+  <Item>
+    <Name>sunburn</Name>
+    <Synonyms>sunburn sunburned sunburnt</Synonyms>
+  </Item>
+  <Item>
+    <Name>swear</Name>
+    <Synonyms>swear swore sworn</Synonyms>
+  </Item>
+  <Item>
+    <Name>sweep</Name>
+    <Synonyms>sweep swept</Synonyms>
+  </Item>
+  <Item>
+    <Name>swell</Name>
+    <Synonyms>swell swelled swollen</Synonyms>
+  </Item>
+  <Item>
+    <Name>swim</Name>
+    <Synonyms>swim swam swum</Synonyms>
+  </Item>
+  <Item>
+    <Name>swing</Name>
+    <Synonyms>swing swung</Synonyms>
+  </Item>
+  <Item>
+    <Name>take</Name>
+    <Synonyms>take took taken</Synonyms>
+  </Item>
+  <Item>
+    <Name>teach</Name>
+    <Synonyms>teach taught</Synonyms>
+  </Item>
+  <Item>
+    <Name>tear</Name>
+    <Synonyms>tear torn tore</Synonyms>
+  </Item>
+  <Item>
+    <Name>tell</Name>
+    <Synonyms>tell told</Synonyms>
+  </Item>
+  <Item>
+    <Name>think</Name>
+    <Synonyms>think thought</Synonyms>
+  </Item>
+  <Item>
+    <Name>thrive</Name>
+    <Synonyms>thrive thriven throve</Synonyms>
+  </Item>
+  <Item>
+    <Name>throw</Name>
+    <Synonyms>throw threw thrown</Synonyms>
+  </Item>
+  <Item>
+    <Name>tie</Name>
+    <Synonyms>tie tied tying</Synonyms>
+  </Item>
+  <Item>
+    <Name>tread</Name>
+    <Synonyms>tread trod trodden</Synonyms>
+  </Item>
+  <Item>
+    <Name>typewrite</Name>
+    <Synonyms>typewrite typewrote typewritten</Synonyms>
+  </Item>
+  <Item>
+    <Name>unbend</Name>
+    <Synonyms>unbend unbent</Synonyms>
+  </Item>
+  <Item>
+    <Name>unbind</Name>
+    <Synonyms>unbind unbound</Synonyms>
+  </Item>
+  <Item>
+    <Name>unclothe</Name>
+    <Synonyms>unclothe unclothed unclad</Synonyms>
+  </Item>
+  <Item>
+    <Name>undergo</Name>
+    <Synonyms>undergo underwent</Synonyms>
+  </Item>
+  <Item>
+    <Name>understand</Name>
+    <Synonyms>understand understood</Synonyms>
+  </Item>
+  <Item>
+    <Name>undertake</Name>
+    <Synonyms>undertake undertook undertaken</Synonyms>
+  </Item>
+  <Item>
+    <Name>underwrite</Name>
+    <Synonyms>underwrite underwrote underwritten</Synonyms>
+  </Item>
+  <Item>
+    <Name>undo</Name>
+    <Synonyms>undo undid undone</Synonyms>
+  </Item>
+  <Item>
+    <Name>unfreeze</Name>
+    <Synonyms>unfreeze unfroze unfrozen</Synonyms>
+  </Item>
+  <Item>
+    <Name>unhang</Name>
+    <Synonyms>unhang unhung</Synonyms>
+  </Item>
+  <Item>
+    <Name>unhide</Name>
+    <Synonyms>unhide unhid unhidden</Synonyms>
+  </Item>
+  <Item>
+    <Name>unstick</Name>
+    <Synonyms>unstick unstuck</Synonyms>
+  </Item>
+  <Item>
+    <Name>unwind</Name>
+    <Synonyms>unwind unwound</Synonyms>
+  </Item>
+  <Item>
+    <Name>uphold</Name>
+    <Synonyms>uphold upheld</Synonyms>
+  </Item>
+  <Item>
+    <Name>vie</Name>
+    <Synonyms>vie vying</Synonyms>
+  </Item>
+  <Item>
+    <Name>wake</Name>
+    <Synonyms>wake woke woken waked</Synonyms>
+  </Item>
+  <Item>
+    <Name>wax</Name>
+    <Synonyms>wax waxen waxed</Synonyms>
+  </Item>
+  <Item>
+    <Name>waylay</Name>
+    <Synonyms>waylay waylaid</Synonyms>
+  </Item>
+  <Item>
+    <Name>wear</Name>
+    <Synonyms>wear wore worn</Synonyms>
+  </Item>
+  <Item>
+    <Name>weave</Name>
+    <Synonyms>weave wove woven</Synonyms>
+  </Item>
+  <Item>
+    <Name>wed</Name>
+    <Synonyms>wed wedded</Synonyms>
+  </Item>
+  <Item>
+    <Name>weep</Name>
+    <Synonyms>weep wept</Synonyms>
+  </Item>
+  <Item>
+    <Name>win</Name>
+    <Synonyms>win won</Synonyms>
+  </Item>
+  <Item>
+    <Name>wind</Name>
+    <Synonyms>wind wound</Synonyms>
+  </Item>
+  <Item>
+    <Name>withdraw</Name>
+    <Synonyms>withdraw withdrew withdrawn</Synonyms>
+  </Item>
+  <Item>
+    <Name>withhold</Name>
+    <Synonyms>withhold withheld</Synonyms>
+  </Item>
+  <Item>
+    <Name>withstand</Name>
+    <Synonyms>withstand withstood</Synonyms>
+  </Item>
+  <Item>
+    <Name>wring</Name>
+    <Synonyms>wring wrung wrang</Synonyms>
+  </Item>
+  <Item>
+    <Name>write</Name>
+    <Synonyms>write wrote written</Synonyms>
+  </Item>
+</dtSearchUserThesaurus>

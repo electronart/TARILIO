@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dtSearchUserThesaurus>
+  <Item>
+    <Name>brandy</Name>
+    <Synonyms>brandy cognac</Synonyms>
+  </Item>
+  <Item>
+    <Name>coffee</Name>
+    <Synonyms>coffee mocha espresso latte americano cappuccino "caffè macchiato" "caffè latte" "Caffè Americano"</Synonyms>
+  </Item>
+  <Item>
+    <Name>Guilder</Name>
+    <Synonyms>ƒ Guilder florin</Synonyms>
+  </Item>
+  <Item>
+    <Name>PC</Name>
+    <Synonyms>PC "Personal computer" "the laptop"</Synonyms>
+  </Item>
+  <Item>
+    <Name>tea</Name>
+    <Synonyms>tea Assam Bohea Ceylon Darjeeling "Dian Hong" "Earl Gray" Keemun "Lapsang Souchong" 拉普山小種/正山小种 Nepalese Nilgiri "Orange pekoe" "Red tea" "Turkish tea" çay "Ying De Hong" 英德红茶 "Bai Ji Guan" 白鸡冠 "Red Robe" "Darjeeling Oolong" Dongding "Dong Fang Mei Ren" "Huangjin Gui" "Golden Osmanthus" "Qilan tea" Pouchong "Rou Gui" "Shui Jin Gui" "Shui Hsien" "Shui Xian" "Tie Luohan" Tieguanyin Aracha 荒茶 Bancha 番茶 "Bi Luo Chun" 碧螺春 "Chun Mee" 珍眉 "Da Fang" 大方茶 Genmaicha 玄米茶 "Liu An Gua Pian" 六安瓜片 "Liuan Leaf" Gyokuro 玉露 Hojicha ほうじ茶 "Hou Kui" 太平猴魁 "Huang Shan Mao Feng" "Hyson tea" Kabusecha 冠茶 Kamairicha 釜炒り茶 Konacha 粉茶 Kukicha 茎茶 Longjing 龙井 Matcha 抹茶 Mecha 芽茶 Sencha 煎茶 Shincha 新茶 Tamaryokucha 玉緑茶</Synonyms>
+  </Item>
+  <Item>
+    <Name>whisky</Name>
+    <Synonyms>whisky bourbon scotch</Synonyms>
+  </Item>
+</dtSearchUserThesaurus>

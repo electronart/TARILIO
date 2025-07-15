@@ -373,3 +373,7 @@ Bug Tests
 /Test Data
 /Indexes
 /eSearch_installer/Release - Portable
+/eSearchInstaller/LITE - Debug
+/eSearchInstaller/Release - Portable
+/eSearchInstaller/eSearch DEBUG
+/TARILIOInstaller/TARILIO DEBUG

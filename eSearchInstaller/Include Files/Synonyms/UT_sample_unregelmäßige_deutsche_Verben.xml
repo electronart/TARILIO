@@ -1,0 +1,735 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dtSearchUserThesaurus>
+  <Item>
+    <Name>aufschrecken</Name>
+    <Synonyms>aufschrecken schrickst schrickt schrak schreckte aufgeschreckt</Synonyms>
+  </Item>
+  <Item>
+    <Name>ausbedingen</Name>
+    <Synonyms>ausbedingen ausbedungen bedingst bedingt bedingte bedang</Synonyms>
+  </Item>
+  <Item>
+    <Name>backen</Name>
+    <Synonyms>backen gebacken backte buk bäckt bäckst</Synonyms>
+  </Item>
+  <Item>
+    <Name>befehlen</Name>
+    <Synonyms>befehlen befohlen befahl befiehlst befiehlt</Synonyms>
+  </Item>
+  <Item>
+    <Name>beginnen</Name>
+    <Synonyms>beginnen beginnst beginnt begann begonnen</Synonyms>
+  </Item>
+  <Item>
+    <Name>beißen</Name>
+    <Synonyms>beißen beißt biß gebissen</Synonyms>
+  </Item>
+  <Item>
+    <Name>bergen</Name>
+    <Synonyms>bergen geborgen barg birgt birgst</Synonyms>
+  </Item>
+  <Item>
+    <Name>bersten</Name>
+    <Synonyms>bersten geborsten birst barst</Synonyms>
+  </Item>
+  <Item>
+    <Name>bescheißen</Name>
+    <Synonyms>bescheißen beschissen beschiss bescheißt</Synonyms>
+  </Item>
+  <Item>
+    <Name>bewegen</Name>
+    <Synonyms>bewegen bewegst bewegt bewog bewogen</Synonyms>
+  </Item>
+  <Item>
+    <Name>biegen</Name>
+    <Synonyms>biegen biegst biegt bog gebogen</Synonyms>
+  </Item>
+  <Item>
+    <Name>bieten</Name>
+    <Synonyms>bieten bietest bietet bot geboten</Synonyms>
+  </Item>
+  <Item>
+    <Name>binden</Name>
+    <Synonyms>binden bindest bindet band gebunden</Synonyms>
+  </Item>
+  <Item>
+    <Name>bitten</Name>
+    <Synonyms>bitten bittest bittet bat gebeten</Synonyms>
+  </Item>
+  <Item>
+    <Name>blasen</Name>
+    <Synonyms>blasen geblasen bläst blies</Synonyms>
+  </Item>
+  <Item>
+    <Name>bleiben</Name>
+    <Synonyms>bleiben gebleiben bleib bleibst bleibt</Synonyms>
+  </Item>
+  <Item>
+    <Name>braten</Name>
+    <Synonyms>braten gebraten briet brät brätst</Synonyms>
+  </Item>
+  <Item>
+    <Name>brechen</Name>
+    <Synonyms>brechen gebrochen brach brichst bricht</Synonyms>
+  </Item>
+  <Item>
+    <Name>brennen</Name>
+    <Synonyms>brennen gebrannt brannte brennst brennt</Synonyms>
+  </Item>
+  <Item>
+    <Name>bringen</Name>
+    <Synonyms>bringen bringst bringt brach gebrochen</Synonyms>
+  </Item>
+  <Item>
+    <Name>denken</Name>
+    <Synonyms>denken dengst dengt dachte gedacht</Synonyms>
+  </Item>
+  <Item>
+    <Name>dreschen</Name>
+    <Synonyms>dreschen gedroschen drosch drisch drischt drischest drischst</Synonyms>
+  </Item>
+  <Item>
+    <Name>dringen</Name>
+    <Synonyms>dringen gedrungen drang dringst dringt</Synonyms>
+  </Item>
+  <Item>
+    <Name>dürfen</Name>
+    <Synonyms>dürfen durfte darfst darf dedurft</Synonyms>
+  </Item>
+  <Item>
+    <Name>empfangen</Name>
+    <Synonyms>empfangen empfängst empfängt empfing</Synonyms>
+  </Item>
+  <Item>
+    <Name>empfehlen</Name>
+    <Synonyms>empfehlen empfohlen empfahl empfiehlst empfiehlt</Synonyms>
+  </Item>
+  <Item>
+    <Name>erbleichen</Name>
+    <Synonyms>erbleichen erblichen erbleicht erbleichst erbleichte</Synonyms>
+  </Item>
+  <Item>
+    <Name>erlöschen</Name>
+    <Synonyms>erlöschen erloschen erlosch erlischst erlischt</Synonyms>
+  </Item>
+  <Item>
+    <Name>erschrecken</Name>
+    <Synonyms>erschrecken erschrocken erschrickst erschrickt erschrak</Synonyms>
+  </Item>
+  <Item>
+    <Name>essen</Name>
+    <Synonyms>essen gegessen isst aß</Synonyms>
+  </Item>
+  <Item>
+    <Name>fahren</Name>
+    <Synonyms>fahren gefahren fährst fährt fuhr</Synonyms>
+  </Item>
+  <Item>
+    <Name>fallen</Name>
+    <Synonyms>fallen gefallen fällst fällt fiel</Synonyms>
+  </Item>
+  <Item>
+    <Name>fangen</Name>
+    <Synonyms>fangen gefangen fängst fängt fing</Synonyms>
+  </Item>
+  <Item>
+    <Name>fechten</Name>
+    <Synonyms>fechten gefochten fichtst ficht focht</Synonyms>
+  </Item>
+  <Item>
+    <Name>finden</Name>
+    <Synonyms>finden gefunden findest findet fand</Synonyms>
+  </Item>
+  <Item>
+    <Name>flechten</Name>
+    <Synonyms>flechten geflochten flichtst flicht flocht</Synonyms>
+  </Item>
+  <Item>
+    <Name>fliegen</Name>
+    <Synonyms>fliegen geflogen fliegst fliegt flog</Synonyms>
+  </Item>
+  <Item>
+    <Name>fliehen</Name>
+    <Synonyms>fliehen geflohen fliehst flieht floh</Synonyms>
+  </Item>
+  <Item>
+    <Name>fließen</Name>
+    <Synonyms>fließen geflossen fließt floss</Synonyms>
+  </Item>
+  <Item>
+    <Name>fressen</Name>
+    <Synonyms>fressen gefressen frisst fraß</Synonyms>
+  </Item>
+  <Item>
+    <Name>frieren</Name>
+    <Synonyms>frieren gefroren frierst friert fror</Synonyms>
+  </Item>
+  <Item>
+    <Name>gären</Name>
+    <Synonyms>gären gegoren gärst gärt gor</Synonyms>
+  </Item>
+  <Item>
+    <Name>gebären</Name>
+    <Synonyms>gebären geboren gebierst gebiert gebar</Synonyms>
+  </Item>
+  <Item>
+    <Name>geben</Name>
+    <Synonyms>geben gegeben gibst gibt gab</Synonyms>
+  </Item>
+  <Item>
+    <Name>gedeihen</Name>
+    <Synonyms>gedeihen gedeihst gedeiht gedeih</Synonyms>
+  </Item>
+  <Item>
+    <Name>gehen</Name>
+    <Synonyms>gehen gegangen gehst geht ging</Synonyms>
+  </Item>
+  <Item>
+    <Name>gelingen</Name>
+    <Synonyms>gelingen gelungen gelingt gelang</Synonyms>
+  </Item>
+  <Item>
+    <Name>gelten</Name>
+    <Synonyms>gelten gegolten giltst gilt galt</Synonyms>
+  </Item>
+  <Item>
+    <Name>genesen</Name>
+    <Synonyms>genesen genest genesest genas</Synonyms>
+  </Item>
+  <Item>
+    <Name>genießen</Name>
+    <Synonyms>genießen genossen genießt genoss</Synonyms>
+  </Item>
+  <Item>
+    <Name>geraten</Name>
+    <Synonyms>geraten gerätst gerät geriet</Synonyms>
+  </Item>
+  <Item>
+    <Name>geschehen</Name>
+    <Synonyms>geschehen geschieht geschah</Synonyms>
+  </Item>
+  <Item>
+    <Name>gewinnen</Name>
+    <Synonyms>gewinnen gewonnen gewinnst gewinnt gewann</Synonyms>
+  </Item>
+  <Item>
+    <Name>gießen</Name>
+    <Synonyms>gießen gegossen gießt goss</Synonyms>
+  </Item>
+  <Item>
+    <Name>gleichen</Name>
+    <Synonyms>gleichen geglichen gleichst gleicht glich</Synonyms>
+  </Item>
+  <Item>
+    <Name>gleiten</Name>
+    <Synonyms>gleiten geglitten gleitest gleitet glitt</Synonyms>
+  </Item>
+  <Item>
+    <Name>glimmen</Name>
+    <Synonyms>glimmen geglommen glimmst glimmt glomm</Synonyms>
+  </Item>
+  <Item>
+    <Name>graben</Name>
+    <Synonyms>graben gegraben gräbst gräbt grub</Synonyms>
+  </Item>
+  <Item>
+    <Name>greifen</Name>
+    <Synonyms>greifen gegriffen greifst greift griff</Synonyms>
+  </Item>
+  <Item>
+    <Name>haben</Name>
+    <Synonyms>haben gehabt hast hat hatte</Synonyms>
+  </Item>
+  <Item>
+    <Name>halten</Name>
+    <Synonyms>halten gehalten hältst hält hielt</Synonyms>
+  </Item>
+  <Item>
+    <Name>hängen</Name>
+    <Synonyms>hängen gehangen hängst hängt hing</Synonyms>
+  </Item>
+  <Item>
+    <Name>hauen</Name>
+    <Synonyms>hauen gehauen haust haut hieb</Synonyms>
+  </Item>
+  <Item>
+    <Name>heben</Name>
+    <Synonyms>heben gehoben hebst hebt hob</Synonyms>
+  </Item>
+  <Item>
+    <Name>heißen</Name>
+    <Synonyms>heißen geheißen heißt heiß</Synonyms>
+  </Item>
+  <Item>
+    <Name>helfen</Name>
+    <Synonyms>helfen geholfen hilfst hilft half</Synonyms>
+  </Item>
+  <Item>
+    <Name>kennen</Name>
+    <Synonyms>kennen kannte gekannt</Synonyms>
+  </Item>
+  <Item>
+    <Name>klingen</Name>
+    <Synonyms>klingen klang geklungen</Synonyms>
+  </Item>
+  <Item>
+    <Name>kneifen</Name>
+    <Synonyms>kneifen kniff gekniffen</Synonyms>
+  </Item>
+  <Item>
+    <Name>kommen</Name>
+    <Synonyms>kommen kam gekommen komme kommst kommt kamst kamen kamt</Synonyms>
+  </Item>
+  <Item>
+    <Name>können</Name>
+    <Synonyms>können kann konnte gekonnt</Synonyms>
+  </Item>
+  <Item>
+    <Name>kriechen</Name>
+    <Synonyms>kriechen kroch gekrochen</Synonyms>
+  </Item>
+  <Item>
+    <Name>laden</Name>
+    <Synonyms>laden lädt lud geladen</Synonyms>
+  </Item>
+  <Item>
+    <Name>lassen</Name>
+    <Synonyms>lassen lässt ließ gelassen</Synonyms>
+  </Item>
+  <Item>
+    <Name>laufen</Name>
+    <Synonyms>laufen läuft lief gelaufen</Synonyms>
+  </Item>
+  <Item>
+    <Name>leiden</Name>
+    <Synonyms>leiden litt gelitten</Synonyms>
+  </Item>
+  <Item>
+    <Name>leihen</Name>
+    <Synonyms>leihen lieh geliehen</Synonyms>
+  </Item>
+  <Item>
+    <Name>lesen</Name>
+    <Synonyms>lesen liest las gelesen</Synonyms>
+  </Item>
+  <Item>
+    <Name>liegen</Name>
+    <Synonyms>liegen lag gelegen</Synonyms>
+  </Item>
+  <Item>
+    <Name>lügen</Name>
+    <Synonyms>lügen log gelogen</Synonyms>
+  </Item>
+  <Item>
+    <Name>mahlen</Name>
+    <Synonyms>mahlen mahlte gemahlen</Synonyms>
+  </Item>
+  <Item>
+    <Name>meiden</Name>
+    <Synonyms>meiden mied gemieden</Synonyms>
+  </Item>
+  <Item>
+    <Name>melken</Name>
+    <Synonyms>melken milkt melkt melkte molk gemelkt gemolken</Synonyms>
+  </Item>
+  <Item>
+    <Name>messen</Name>
+    <Synonyms>messen misst maß gemessen</Synonyms>
+  </Item>
+  <Item>
+    <Name>misslingen</Name>
+    <Synonyms>misslingen misslang misslungen</Synonyms>
+  </Item>
+  <Item>
+    <Name>mögen</Name>
+    <Synonyms>mögen mag mochte gemocht</Synonyms>
+  </Item>
+  <Item>
+    <Name>müssen</Name>
+    <Synonyms>müssen muss musste gemusst</Synonyms>
+  </Item>
+  <Item>
+    <Name>nehmen</Name>
+    <Synonyms>nehmen nimmt nahm genommen</Synonyms>
+  </Item>
+  <Item>
+    <Name>nennen</Name>
+    <Synonyms>nennen nannte genannt</Synonyms>
+  </Item>
+  <Item>
+    <Name>pfeifen</Name>
+    <Synonyms>pfeifen pfiff gepfiffen</Synonyms>
+  </Item>
+  <Item>
+    <Name>preisen</Name>
+    <Synonyms>preisen pries gepriesen</Synonyms>
+  </Item>
+  <Item>
+    <Name>quellen</Name>
+    <Synonyms>quellen quillt quoll gequollen</Synonyms>
+  </Item>
+  <Item>
+    <Name>raten</Name>
+    <Synonyms>raten rät riet geraten</Synonyms>
+  </Item>
+  <Item>
+    <Name>reiben</Name>
+    <Synonyms>reiben rieb gerieben</Synonyms>
+  </Item>
+  <Item>
+    <Name>reißen</Name>
+    <Synonyms>reißen riss gerissen</Synonyms>
+  </Item>
+  <Item>
+    <Name>reiten</Name>
+    <Synonyms>reiten ritt geritten</Synonyms>
+  </Item>
+  <Item>
+    <Name>rennen</Name>
+    <Synonyms>rennen rannte gerannt</Synonyms>
+  </Item>
+  <Item>
+    <Name>riechen</Name>
+    <Synonyms>riechen roch gerochen</Synonyms>
+  </Item>
+  <Item>
+    <Name>ringen</Name>
+    <Synonyms>ringen rang gerungen</Synonyms>
+  </Item>
+  <Item>
+    <Name>rinnen</Name>
+    <Synonyms>rinnen rann geronnen</Synonyms>
+  </Item>
+  <Item>
+    <Name>rufen</Name>
+    <Synonyms>rufen rief gerufen</Synonyms>
+  </Item>
+  <Item>
+    <Name>salzen</Name>
+    <Synonyms>salzen salzte gesalzen</Synonyms>
+  </Item>
+  <Item>
+    <Name>saufen</Name>
+    <Synonyms>saufen säuft soff gesoffen</Synonyms>
+  </Item>
+  <Item>
+    <Name>saugen</Name>
+    <Synonyms>saugen sog gesogen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schaffen</Name>
+    <Synonyms>schaffen schuf geschaffen</Synonyms>
+  </Item>
+  <Item>
+    <Name>scheiden</Name>
+    <Synonyms>scheiden schied geschieden</Synonyms>
+  </Item>
+  <Item>
+    <Name>scheinen</Name>
+    <Synonyms>scheinen schien geschienen</Synonyms>
+  </Item>
+  <Item>
+    <Name>scheißen</Name>
+    <Synonyms>scheißen schiss geschissen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schelten</Name>
+    <Synonyms>schelten schilt schalt gescholten</Synonyms>
+  </Item>
+  <Item>
+    <Name>scheren</Name>
+    <Synonyms>scheren schor geschoren</Synonyms>
+  </Item>
+  <Item>
+    <Name>schieben</Name>
+    <Synonyms>schieben schob geschoben</Synonyms>
+  </Item>
+  <Item>
+    <Name>schießen</Name>
+    <Synonyms>schießen schoss geschossen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schinden</Name>
+    <Synonyms>schinden schindete geschunden</Synonyms>
+  </Item>
+  <Item>
+    <Name>schlafen</Name>
+    <Synonyms>schlafen schläft schlief geschlafen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schlagen</Name>
+    <Synonyms>schlagen schlägt schlug geschlagen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schleichen</Name>
+    <Synonyms>schleichen schlich geschlichen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schleifen</Name>
+    <Synonyms>schleifen schliff geschliffen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schließen</Name>
+    <Synonyms>schließen schloss geschlossen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schlingen</Name>
+    <Synonyms>schlingen schlang geschlungen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schmeißen</Name>
+    <Synonyms>schmeißen schmiss geschmissen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schmelzen</Name>
+    <Synonyms>schmelzen schmilzt schmolz geschmolzen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schneiden</Name>
+    <Synonyms>schneiden schnitt geschnitten</Synonyms>
+  </Item>
+  <Item>
+    <Name>schreiben</Name>
+    <Synonyms>schreiben schrieb geschrieben</Synonyms>
+  </Item>
+  <Item>
+    <Name>schreien</Name>
+    <Synonyms>schreien schrie geschrien</Synonyms>
+  </Item>
+  <Item>
+    <Name>schreiten</Name>
+    <Synonyms>schreiten schritt geschritten</Synonyms>
+  </Item>
+  <Item>
+    <Name>schweigen</Name>
+    <Synonyms>schweigen schwieg geschwiegen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schwellen</Name>
+    <Synonyms>schwellen schwillt schwoll geschwollen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schwimmen</Name>
+    <Synonyms>schwimmen schwamm geschwommen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schwinden</Name>
+    <Synonyms>schwinden schwand geschwunden</Synonyms>
+  </Item>
+  <Item>
+    <Name>schwingen</Name>
+    <Synonyms>schwingen schwang geschwungen</Synonyms>
+  </Item>
+  <Item>
+    <Name>schwören</Name>
+    <Synonyms>schwören schwor geschworen</Synonyms>
+  </Item>
+  <Item>
+    <Name>sehen</Name>
+    <Synonyms>sehen sieht sah gesehen</Synonyms>
+  </Item>
+  <Item>
+    <Name>sein</Name>
+    <Synonyms>sein ist war gewesen</Synonyms>
+  </Item>
+  <Item>
+    <Name>senden</Name>
+    <Synonyms>senden sandte gesandt</Synonyms>
+  </Item>
+  <Item>
+    <Name>sieden</Name>
+    <Synonyms>sieden siedete sott gesotten</Synonyms>
+  </Item>
+  <Item>
+    <Name>singen</Name>
+    <Synonyms>singen sang gesungen</Synonyms>
+  </Item>
+  <Item>
+    <Name>sinken</Name>
+    <Synonyms>sinken sank gesunken</Synonyms>
+  </Item>
+  <Item>
+    <Name>sinnen</Name>
+    <Synonyms>sinnen sann gesonnen</Synonyms>
+  </Item>
+  <Item>
+    <Name>sitzen</Name>
+    <Synonyms>sitzen saß gesessen</Synonyms>
+  </Item>
+  <Item>
+    <Name>sollen</Name>
+    <Synonyms>sollen soll sollte gesollt</Synonyms>
+  </Item>
+  <Item>
+    <Name>spalten</Name>
+    <Synonyms>spalten spaltete gespalten gespaltet</Synonyms>
+  </Item>
+  <Item>
+    <Name>speien</Name>
+    <Synonyms>speien spie gespien</Synonyms>
+  </Item>
+  <Item>
+    <Name>spinnen</Name>
+    <Synonyms>spinnen spann gesponnen</Synonyms>
+  </Item>
+  <Item>
+    <Name>sprechen</Name>
+    <Synonyms>sprechen spricht sprach gesprochen</Synonyms>
+  </Item>
+  <Item>
+    <Name>sprießen</Name>
+    <Synonyms>sprießen sproß gesprossen</Synonyms>
+  </Item>
+  <Item>
+    <Name>springen</Name>
+    <Synonyms>springen sprang gesprungen</Synonyms>
+  </Item>
+  <Item>
+    <Name>stechen</Name>
+    <Synonyms>stechen sticht stach gestochen</Synonyms>
+  </Item>
+  <Item>
+    <Name>stehen</Name>
+    <Synonyms>stehen stand gestanden</Synonyms>
+  </Item>
+  <Item>
+    <Name>stehlen</Name>
+    <Synonyms>stehlen stiehlt stahl gestohlen</Synonyms>
+  </Item>
+  <Item>
+    <Name>steigen</Name>
+    <Synonyms>steigen stieg gestiegen</Synonyms>
+  </Item>
+  <Item>
+    <Name>sterben</Name>
+    <Synonyms>sterben stirbt starb gestorben</Synonyms>
+  </Item>
+  <Item>
+    <Name>stinken</Name>
+    <Synonyms>stinken stank gestunken</Synonyms>
+  </Item>
+  <Item>
+    <Name>stoßen</Name>
+    <Synonyms>stoßen stößt stieß gestoßen</Synonyms>
+  </Item>
+  <Item>
+    <Name>streichen</Name>
+    <Synonyms>streichen strich gestrichen</Synonyms>
+  </Item>
+  <Item>
+    <Name>streiten</Name>
+    <Synonyms>streiten stritt gestritten</Synonyms>
+  </Item>
+  <Item>
+    <Name>tragen</Name>
+    <Synonyms>tragen trägt trug getragen</Synonyms>
+  </Item>
+  <Item>
+    <Name>treffen</Name>
+    <Synonyms>treffen trifft traf getroffen</Synonyms>
+  </Item>
+  <Item>
+    <Name>treiben</Name>
+    <Synonyms>treiben trieb getrieben</Synonyms>
+  </Item>
+  <Item>
+    <Name>treten</Name>
+    <Synonyms>treten tritt getreten</Synonyms>
+  </Item>
+  <Item>
+    <Name>trinken</Name>
+    <Synonyms>trinken trank getrunken</Synonyms>
+  </Item>
+  <Item>
+    <Name>trügen</Name>
+    <Synonyms>trügen trog getrogen</Synonyms>
+  </Item>
+  <Item>
+    <Name>tun</Name>
+    <Synonyms>tun tat getan</Synonyms>
+  </Item>
+  <Item>
+    <Name>verderben</Name>
+    <Synonyms>verderben verdirbt verdarb verdorben</Synonyms>
+  </Item>
+  <Item>
+    <Name>verdrießen</Name>
+    <Synonyms>verdrießen verdross verdrossen</Synonyms>
+  </Item>
+  <Item>
+    <Name>vergessen</Name>
+    <Synonyms>vergessen vergisst vergaß</Synonyms>
+  </Item>
+  <Item>
+    <Name>verlieren</Name>
+    <Synonyms>verlieren verlor verloren</Synonyms>
+  </Item>
+  <Item>
+    <Name>verzeihen</Name>
+    <Synonyms>verzeihen verzieh verziehen</Synonyms>
+  </Item>
+  <Item>
+    <Name>wachsen</Name>
+    <Synonyms>wachsen wächst wuchs gewachsen</Synonyms>
+  </Item>
+  <Item>
+    <Name>wägen</Name>
+    <Synonyms>wägen wog gewogen</Synonyms>
+  </Item>
+  <Item>
+    <Name>waschen</Name>
+    <Synonyms>waschen wäscht wusch gewaschen</Synonyms>
+  </Item>
+  <Item>
+    <Name>weichen</Name>
+    <Synonyms>weichen wich gewichen</Synonyms>
+  </Item>
+  <Item>
+    <Name>weisen</Name>
+    <Synonyms>weisen wies gewiesen</Synonyms>
+  </Item>
+  <Item>
+    <Name>wenden</Name>
+    <Synonyms>wenden wandte gewandt</Synonyms>
+  </Item>
+  <Item>
+    <Name>werben</Name>
+    <Synonyms>werben wirbt warb geworben</Synonyms>
+  </Item>
+  <Item>
+    <Name>werden</Name>
+    <Synonyms>werden wird wurde geworden</Synonyms>
+  </Item>
+  <Item>
+    <Name>werfen</Name>
+    <Synonyms>werfen warf warfst wirft wirfst geworfen</Synonyms>
+  </Item>
+  <Item>
+    <Name>wiegen</Name>
+    <Synonyms>wiegen wog gewogen</Synonyms>
+  </Item>
+  <Item>
+    <Name>winden</Name>
+    <Synonyms>winden wand gewunden</Synonyms>
+  </Item>
+  <Item>
+    <Name>wissen</Name>
+    <Synonyms>wissen weiß wusste gewusst</Synonyms>
+  </Item>
+  <Item>
+    <Name>wollen</Name>
+    <Synonyms>wollen will wollte gewollt</Synonyms>
+  </Item>
+  <Item>
+    <Name>wringen</Name>
+    <Synonyms>wringen wrang gewrungen</Synonyms>
+  </Item>
+  <Item>
+    <Name>ziehen</Name>
+    <Synonyms>ziehen zog gezogen</Synonyms>
+  </Item>
+  <Item>
+    <Name>zwingen</Name>
+    <Synonyms>zwingen zwang gezwungen</Synonyms>
+  </Item>
+</dtSearchUserThesaurus>
