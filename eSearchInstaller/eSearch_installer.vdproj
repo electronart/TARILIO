@@ -700,6 +700,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
     }
@@ -1995,7 +2003,7 @@
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A49811A732E448C9BA22E00EE38E70D2"
             {
             "SourcePath" = "8:..\\eSearch\\i18n\\fr_FR.lang"
-            "TargetName" = "8:fr_FR.lang"
+            "TargetName" = "8:fr-FR.lang"
             "Tag" = "8:"
             "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
             "Condition" = "8:"
