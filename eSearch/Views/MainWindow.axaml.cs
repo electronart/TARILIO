@@ -130,7 +130,7 @@ namespace eSearch.Views
                     }
                     if (extension == ".json" || extension == ".econvo")
                     {
-                        importedConversation = JsonConvert.DeserializeObject<Conversation>(localPath);
+                        importedConversation = JsonConvert.DeserializeObject<Conversation>(File.ReadAllText(localPath));
                     }
                     if (importedConversation == null) throw new Exception("Imported Conversation null?");
 
