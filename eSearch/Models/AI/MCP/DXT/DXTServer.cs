@@ -1,7 +1,9 @@
 ﻿using eSearch.Interop.AI;
 using ModelContextProtocol.Client;
+using org.quartz;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,7 +16,10 @@ namespace eSearch.Models.AI.MCP.DXT
     {
 
         private DXTManifest Manifest;
-
+        private string   _displayName;
+        private Process? _serverProcess;
+        private StdioClientTransport _transport;
+        private List<string> _consoleOutput = new List<string>();
 
         /// <summary>
         /// Load DXT Server from DXT File Extracted Contents
@@ -36,9 +41,11 @@ namespace eSearch.Models.AI.MCP.DXT
 
         public string DisplayName { get; set; }
 
-        public bool IsServerRunning => throw new NotImplementedException();
+        public bool IsServerRunning => _serverProcess != null && !_serverProcess.HasExited;
 
-        public bool IsErrorState => throw new NotImplementedException();
+        public bool IsErrorState =>    _serverProcess != null 
+                                    && _serverProcess.HasExited
+                                    && _serverProcess.ExitCode != 0;
 
         public IReadOnlyList<string> ConsoleOutputDisplayLines => throw new NotImplementedException();
 
@@ -47,9 +54,21 @@ namespace eSearch.Models.AI.MCP.DXT
             throw new NotImplementedException();
         }
 
-        public Task<bool> StartServer()
+        public async Task<bool> StartServer()
         {
-            throw new NotImplementedException();
+            if (IsServerRunning) return true;
+            if (_serverProcess != null)
+            {
+                _serverProcess.Dispose();
+                _serverProcess = null;
+                _transport = null;
+                _consoleOutput.Clear();
+            }
+            var cmd = Manifest.Server.McpConfig.Command;
+            var args = Manifest.Server.McpConfig.Args;
+            var env = Manifest.Server.McpConfig.Env;
+
+
         }
 
         public Task<bool> StopServer()
