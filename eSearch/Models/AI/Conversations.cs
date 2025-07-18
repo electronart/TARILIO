@@ -3,6 +3,7 @@ using nietras.SeparatedValues;
 using org.mp4parser.aspectj.lang.reflect;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -82,7 +83,7 @@ namespace eSearch.Models.AI
             {
                 using var row = writer.NewRow();
                 row["Role"].Set(message.Role);
-                row["Time"].Set(message.Time.ToString());
+                row["Time"].Set(message.Time.ToString("yyyy-MM-dd HH:mm:ss"));
                 row["Content"].Set(message.Content);
                 row["Model"].Set(message.Model);
                 row["User"].Set(message.User);
@@ -114,11 +115,24 @@ namespace eSearch.Models.AI
                 var user    = row["User"];
                 var machine = row["Machine"];
                 var note    = row["Note"];
+
+                DateTime dt;
+                if (time.ToString().Contains("-"))
+                {
+                    // New Format
+                    dt = DateTime.ParseExact(time.ToString(), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                } else
+                {
+                    // Old format
+                    dt = DateTime.Parse(time.ToString());
+                }
+
+
                 importedMessages.Add(new Message
                 {
                     Role = role.ToString(),
                     Content = content.ToString(),
-                    Time = DateTime.Parse(time.ToString()),
+                    Time = dt,
                     Model = model.ToString(),
                     User = user.ToString(),
                     Machine = machine.ToString(),
