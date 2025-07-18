@@ -28,11 +28,18 @@ namespace Installer_Helper
             return versionString;
         }
 
+        public static string GeteSearchVersionMSIFriendly(string filePath)
+        {
+            AssemblyName assemblyName = AssemblyName.GetAssemblyName(filePath);
+            Version version = assemblyName.Version;
+            return $"{version.Major}.{version.Minor}.{version.Build}";
+        }
+
         public static void SetMSIProductVersion(string msiPath, string newVersion)
         {
                 var installer = MsiLib.Installer.Open(msiPath, 1);
-                installer.SetProperty("ProductVersion", newVersion);
-                installer.SetProperty("ProductCode", Guid.NewGuid().ToString());
+                installer.SetProperty("ProductVersion", newVersion.Replace(" (",".").Replace(")",""));
+                // installer.SetProperty("ProductCode", Guid.NewGuid().ToString());
                 installer.SetProperty("Publisher", "ElectronArt Design Ltd"); // Shows in Add / Remove Programs.
                 installer.Save();
         }

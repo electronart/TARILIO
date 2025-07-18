@@ -31,7 +31,8 @@ if (!File.Exists(dll_path)) throw new FileNotFoundException(dll_path);
 if (!File.Exists(msi_file)) throw new FileNotFoundException(msi_file);
 
 string dll_version = Utils.GeteSearchVersion(dll_path);
-Utils.SetMSIProductVersion(msi_file, dll_version);
+string dll_version_msi_version = Utils.GeteSearchVersionMSIFriendly(dll_path);
+Utils.SetMSIProductVersion(msi_file, dll_version_msi_version);
 
 string new_msi_file_path = Path.Combine( Path.GetDirectoryName(msi_file), 
                                          configuration + " " + dll_version + ".msi");
