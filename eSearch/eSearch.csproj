@@ -178,11 +178,20 @@
 		<Content Include="Original\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+		<!--
 		<Content Include="..\eSearch_installer\Include Files\Docs\**">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<TargetPath>docs\%(Filename)%(Extension)</TargetPath>
 		</Content>
-		
+		-->
+		<Content Include="docs_eSearch\**" Condition="!$(DefineConstants.Contains('TARILIO'))">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>docs\%(Filename)%(Extension)</TargetPath>
+		</Content>
+		<Content Include="docs_TARILIO\**" Condition="$(DefineConstants.Contains('TARILIO'))">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>docs\%(Filename)%(Extension)</TargetPath>
+		</Content>
 	</ItemGroup>
   <ItemGroup>
     <AvaloniaResource Update="Assets\result_style.css">
@@ -227,6 +236,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="docs_eSearch\" />
+    <Folder Include="docs_TARILIO\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
