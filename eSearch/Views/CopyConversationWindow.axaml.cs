@@ -66,7 +66,7 @@ namespace eSearch.Views
         {
             var openFolderDialog = new OpenFolderDialog();
             var initialDiretory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            if (DataContext != null && DataContext is CopyDocumentWindowViewModel copyContext)
+            if (DataContext != null && DataContext is CopyConversationWindowViewModel copyContext)
             {
                 if (Directory.Exists(copyContext.SavePath)) initialDiretory = copyContext.SavePath;
 
