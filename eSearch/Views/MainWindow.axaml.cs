@@ -196,49 +196,40 @@ namespace eSearch.Views
                     var conversation    = mwvm.CurrentLLMConversation?.ExtractConversation() ?? null;
                     if (conversation == null) throw new Exception("Conversation null");
                     if (!conversation.HasMessages()) throw new Exception("Conversation has no messages to export");
-                    var suggestExportToFolder = Program.ProgramConfig.PreferredConversationSaveLocation;
-                    var suggestExportToFormat = Program.ProgramConfig.PreferredConversationFileFormat ?? "csv";
-
-                    var topLevel = TopLevel.GetTopLevel(this);
-                    if (topLevel == null) throw new Exception("Unexpected - TopLevel is null");
-
-                    IStorageFolder? startFolder = await topLevel.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Documents);
-
-                    if (suggestExportToFolder != null)
+                    var exportConvoViewModel = Program.ProgramConfig.ExportConversationConfig.ToViewModel();
+                    var exportWindow = new ExportConversationWindow { DataContext = exportConvoViewModel };
+                    var res = await exportWindow.ShowDialog<object>(this);
+                    if (res is TaskDialogResult tdr && tdr == TaskDialogResult.OK)
                     {
-                        startFolder = await topLevel.StorageProvider.TryGetFolderFromPathAsync(suggestExportToFolder);
-                    }
+                        Program.ProgramConfig.ExportConversationConfig = ExportConversationConfig.FromViewModel(exportConvoViewModel);
+                        Program.SaveProgramConfig();
+                        string dateStr = exportConvoViewModel.AppendDate ? 
+                            $" {DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}" : string.Empty;
+                        if (!System.IO.Directory.Exists(exportConvoViewModel.ExportDirectory))
+                        {
+                            System.IO.Directory.CreateDirectory(exportConvoViewModel.ExportDirectory);
+                        }
+                        string localPath = Path.Combine(exportConvoViewModel.ExportDirectory, $"{exportConvoViewModel.FileName}{dateStr}.{exportConvoViewModel.SelectedExportFormat.Extension.ToLower()}");
 
-                    string fileName = "Conversation " + conversation.GetTimeOfFirstMessage().ToShortDateString();
+                        if (Path.GetExtension(localPath).ToLower() == ".csv")
+                        {
+                            conversation.ExportAsCSVFile(localPath);
+                        }
+                        if (Path.GetExtension(localPath).ToLower() == ".jsonl")
+                        {
+                            conversation.ExportAsJsonLFile(localPath);
+                        }
+                        if (Path.GetExtension(localPath).ToLower() == ".json"
+                         || Path.GetExtension(localPath).ToLower() == ".econvo")
+                        {
+                            string json = JsonConvert.SerializeObject(conversation, Formatting.Indented);
+                            File.WriteAllText(localPath, json);
+                        }
 
-
-                    var save = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-                    {
-                        Title = S.Get("Export Conversation"),
-                        DefaultExtension = suggestExportToFormat,
-                        FileTypeChoices = AIImportExportFileTypes,
-                        SuggestedStartLocation = startFolder,
-                    });
-                    if (save == null) return; // User cancelled saving.
-                    string localPath = save.TryGetLocalPath();
-                    if (localPath == null) throw new Exception("Failed to get local path");
-                    Program.ProgramConfig.PreferredConversationSaveLocation = Path.GetDirectoryName(localPath);
-                    Program.ProgramConfig.PreferredConversationFileFormat = Path.GetExtension(localPath).Replace(".","");
-                    Program.SaveProgramConfig();
-                    
-                    if (Path.GetExtension(localPath).ToLower() == ".csv")
-                    {
-                        conversation.ExportAsCSVFile(localPath);
-                    }
-                    if (Path.GetExtension(localPath).ToLower() == ".jsonl")
-                    {
-                        conversation.ExportAsJsonLFile(localPath);
-                    }
-                    if (Path.GetExtension(localPath).ToLower() == ".json"
-                     || Path.GetExtension(localPath).ToLower() == ".econvo")
-                    {
-                        string json = JsonConvert.SerializeObject(conversation, Formatting.Indented);
-                        File.WriteAllText(localPath, json);
+                        if (File.Exists(localPath))
+                        {
+                            eSearch.Models.Utils.RevealInFolderCrossPlatform(localPath); // TODO why do we have two utils?
+                        }
                     }
                 }
             } catch (Exception ex)

@@ -36,6 +36,7 @@ namespace eSearch.Models.Configuration
 
         public AppDataContext AppDataContext = new AppDataContext();
 
+        // This is for exporting search results..
         public ExportConfig   ExportConfig = new ExportConfig();
 
         public string? CopyResultsFolderPath = null;
@@ -45,6 +46,8 @@ namespace eSearch.Models.Configuration
         public CopyConversationConfig CopyConvoConfig = new CopyConversationConfig();
 
         public string? SelectedAISearchConfigurationID = null;
+
+        public ExportConversationConfig ExportConversationConfig = new ExportConversationConfig();
 
         /// <summary>
         /// May return null if not configured.

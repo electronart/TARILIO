@@ -1,0 +1,56 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:eSearch.ViewModels"
+        mc:Ignorable="d" 
+		ExtendClientAreaToDecorationsHint="True"
+		WindowStartupLocation="CenterOwner"
+		CanResize="False"
+		Width="600" Height="325"
+        x:Class="eSearch.ExportConversationWindow"
+        Title="{Binding S[Export~Conversation]}">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:ExportConversationWindowViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[Export~Conversation]}" />
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel>
+			<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+				<Button Width="150" HorizontalContentAlignment="Center" x:Name="ButtonOK" Content="{Binding S[Export]}"/>
+				<Button Width="150" HorizontalContentAlignment="Center" x:Name="ButtonCancel" Content="{Binding S[Cancel]}"/>
+			</StackPanel>
+			<StackPanel Margin="20,40,20,20" Spacing="20">
+				<StackPanel Orientation="Horizontal" Spacing="20">
+					<Label VerticalContentAlignment="Center" Content="{Binding S[Export~as]}"/>
+					<ComboBox Width="450" 
+							  ItemsSource="{Binding AvailableExportFormats}"
+							  SelectedItem="{Binding SelectedExportFormat}"
+							  />
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Spacing="20">
+					<Label VerticalContentAlignment="Center" Content="{Binding S[File]}"/>
+					<TextBox Width="350" Text="{Binding FileName}"></TextBox>
+					<!--
+					<CheckBox
+						VerticalContentAlignment="Center"
+						IsChecked="{Binding AppendDate}" Content="{Binding S[Append~Date]}"/>
+					-->
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Spacing="20">
+					<TextBox Width="450" Text="{Binding ExportDirectory}"></TextBox>
+					<Button  Width="50" 
+							 HorizontalContentAlignment="Center" 
+							 x:Name="BtnBrowseForExportFolder">...</Button>
+				</StackPanel>
+				
+			</StackPanel>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>
