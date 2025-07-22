@@ -157,7 +157,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\Toxy.NetCore-netcore\Toxy.NetCore-netcore\ToxyFramework\ToxyFramework_dotnetcore.csproj" />
+    <ProjectReference Include="..\..\Toxy.NetCore\ToxyFramework\ToxyFramework_dotnetcore.csproj" /> <!-- TODO Why isn't this using nuget? -->
     <ProjectReference Include="..\eSearchInterop\eSearch.Interop.csproj" />
 	
 	<Reference Condition="$(DefineConstants.Contains('TARILIO'))" Include="TARILIO">

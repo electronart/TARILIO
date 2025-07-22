@@ -2943,7 +2943,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TARILIO"
         "ProductCode" = "8:{F2D52A12-CBA5-41C5-A5EB-FC92C15073E6}"
-        "PackageCode" = "8:{08B76C76-E1E7-413E-BABB-33D3F80A4EDE}"
+        "PackageCode" = "8:{402A5CFC-99B7-46EF-B60D-EA7FFEE9E971}"
         "UpgradeCode" = "8:{11BC409B-4471-4954-B495-6B4D01A099BD}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -2966,7 +2966,7 @@
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:1"
         "PreBuildEvent" = "8:"
-        "PostBuildEvent" = "8:\"C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22000.0\\x64\\signtool.exe\" sign /a /d \"eSearch Installer\" /n \"ELECTRONART DESIGN LIMITED\" /fd SHA256 /tr http://rfc3161timestamp.globalsign.com/advanced /td SHA256 \"$(BuiltOuputPath)\""
+        "PostBuildEvent" = "8:\"$(ProjectDir)..\\Installer Helper\\bin\\Debug\\net8.0\\Installer Helper.exe\" \"$(Configuration)\" \"$(BuiltOuputPath)\""
         "RunPostBuildEvent" = "3:0"
         }
         "Registry"
@@ -3478,7 +3478,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6C7783675FE342F983AA3A89BB77A428"
             {
-            "SourcePath" = "8:..\\eSearch\\obj\\eSearch DEBUG\\net8.0\\win-x64\\apphost.exe"
+            "SourcePath" = "8:..\\eSearch\\obj\\TARILIO RELEASE\\net8.0\\win-x64\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5A28C29878D94098A4424E44BE28C9F8"
