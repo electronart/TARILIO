@@ -17,15 +17,15 @@ namespace eSearch.Views
             ButtonCancel.Click += ButtonCancel_Click;
             ButtonBrowseForSavePath.Click += ButtonBrowseForSavePath_Click;
             KeyUp += CopyDocumentWindow_KeyUp;
-            DataContextChanged += CopyDocumentWindow_DataContextChanged;
+            DataContextChanged += CopyConversationWindow_DataContextChanged;
         }
 
-        private void CopyDocumentWindow_DataContextChanged(object? sender, EventArgs e)
+        private void CopyConversationWindow_DataContextChanged(object? sender, EventArgs e)
         {
-            if (DataContext is CopyDocumentWindowViewModel vm)
+            if (DataContext is CopyConversationWindowViewModel vm)
             {
                 vm.PropertyChanged += Vm_PropertyChanged;
-                if (vm.GetCopySetting() == CopyDocumentWindowViewModel.CopySetting.Clipboard)
+                if (vm.GetCopySetting() == CopyConversationWindowViewModel.CopySetting.Clipboard)
                 {
                     vm.DialogOKButtonText = S.Get("Copy");
                 }
