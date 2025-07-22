@@ -1,4 +1,5 @@
 ﻿using eSearch.Models.AI;
+using J2N.Text;
 using Markdig;
 using Markdig.Parsers;
 using Newtonsoft.Json;
@@ -22,42 +23,72 @@ namespace eSearch.Models.Documents.Parse
         {
             var convo = JsonConvert.DeserializeObject<Conversation>(System.IO.File.ReadAllText(filePath));
             if (convo == null) throw new NullReferenceException("Conversation null");
+            StringBuilder htmlOutput = new StringBuilder();
             StringBuilder markDownOutput = new StringBuilder();
             StringBuilder indexedTextBuilder = new StringBuilder();
-            foreach (var message in convo.Messages)
-            {
-                markDownOutput.AppendLine("****").AppendLine();
-                    
-                markDownOutput.AppendLine("| Time | User | Machine | Notes |");
-                markDownOutput.AppendLine("|-----|-----|--------|------|");
-                markDownOutput.Append("|" + message.Time.ToShortDateString() + " " + message.Time.ToShortTimeString());
-                markDownOutput.Append("|").Append(message.User).Append("|").Append(message.Machine).Append("|").Append(message.Note.Replace("|", "_")).Append("|");
-                markDownOutput.AppendLine().AppendLine();
-                markDownOutput.AppendLine(message.Role);
-                markDownOutput.AppendLine().AppendLine(message.Content).AppendLine().AppendLine();
-
-                indexedTextBuilder.AppendLine("Time: "      + message.Time.ToShortDateString() + message.Time.ToShortTimeString());
-                indexedTextBuilder.AppendLine("User: "      + message.User ?? "");
-                indexedTextBuilder.AppendLine("Machine: "   + message.Machine);
-                indexedTextBuilder.AppendLine("Note: "      + message.Note);
-                indexedTextBuilder.AppendLine("Role: "      + message.Role);
-                indexedTextBuilder.AppendLine("Content: "   + message.Content);
-                indexedTextBuilder.AppendLine().AppendLine();
-
-            }
 
             var pipeline = new MarkdownPipelineBuilder()
                 .UsePipeTables()
                 .Build();
 
-            string output = markDownOutput.ToString();
+            var firstMessage = convo.Messages.First();
+            if (firstMessage != null)
+            {
+                markDownOutput.Append("**User:** ").AppendLine(firstMessage.User).AppendLine();
+                markDownOutput.Append("**Machine:** ").AppendLine(firstMessage.Machine).AppendLine();
 
-            var htmlRender = Markdig.Markdown.ToHtml(output, pipeline);
+                htmlOutput.AppendLine(Markdig.Markdown.ToHtml(markDownOutput.ToString(), pipeline));
+
+
+                indexedTextBuilder.AppendLine("User: ").AppendLine(firstMessage.User).AppendLine();
+                indexedTextBuilder.AppendLine("Machine: ").AppendLine(firstMessage.Machine).AppendLine();
+            }
+
+            
+
+            foreach (var message in convo.Messages)
+            {
+                markDownOutput.Clear();
+                markDownOutput.AppendLine().AppendLine("****").AppendLine().AppendLine();
+                markDownOutput.Append("**Time:** ").AppendLine(message.Time.ToShortDateString() + " " +  message.Time.ToShortTimeString()).AppendLine();
+                markDownOutput.Append("**Role:** ").AppendLine(message.Role ?? "").AppendLine();
+                markDownOutput.Append("**Content:** ").AppendLine(message.Content).AppendLine();
+                if (!string.IsNullOrWhiteSpace(message.Note))
+                {
+                    markDownOutput.Append("**Note:** ").AppendLine(message.Note).AppendLine().Append(" ");
+                }
+                htmlOutput.AppendLine(Markdig.Markdown.ToHtml(markDownOutput.ToString(), pipeline));
+
+
+                indexedTextBuilder.AppendLine("Time: "      + message.Time.ToShortDateString() + message.Time.ToShortTimeString());
+                indexedTextBuilder.AppendLine("Role: " + message.Role);
+                indexedTextBuilder.AppendLine("Content: " + message.Content);
+                indexedTextBuilder.AppendLine("Note: "      + message.Note);
+                
+                indexedTextBuilder.AppendLine().AppendLine();
+
+            }
+
             ParseResult result = new();
             result.ParserName = "econvo Parser";
             result.Title = Path.GetFileNameWithoutExtension(filePath);
-            result.HtmlRender = htmlRender;
+            result.HtmlRender = htmlOutput.ToString();
             result.TextContent = indexedTextBuilder.ToString();
+            result.Metadata =
+            [
+                new Metadata { 
+                    Key = "User", 
+                    Value = firstMessage?.User ?? "???" },
+                new Metadata
+                {
+                    Key = "Machine",
+                    Value = firstMessage?.Machine ?? "???"
+                },
+                new Metadata {
+                    Key     = "Started",
+                    Value   = (firstMessage?.Time ?? DateTime.MinValue).ToString("yyyy-MM-dd HH-mm-ss")
+                }
+            ];
             parseResult = result;
         }
     }
