@@ -377,3 +377,6 @@ Bug Tests
 /eSearchInstaller/Release - Portable
 /eSearchInstaller/eSearch DEBUG
 /TARILIOInstaller/TARILIO DEBUG
+/eSearchInstaller/eSearch RELEASE
+/eSearchInstaller/eSearch RELEASE
+/TARILIOInstaller/TARILIO RELEASE
