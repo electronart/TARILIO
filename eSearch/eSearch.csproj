@@ -192,6 +192,10 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<TargetPath>docs\%(Filename)%(Extension)</TargetPath>
 		</Content>
+		<Content Include="help\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>help\%(Filename)%(Extension)</TargetPath>
+		</Content>
 	</ItemGroup>
   <ItemGroup>
     <AvaloniaResource Update="Assets\result_style.css">
