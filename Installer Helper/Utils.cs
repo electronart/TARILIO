@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Text;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Installer_Helper
 {
@@ -39,7 +40,7 @@ namespace Installer_Helper
         {
                 var installer = MsiLib.Installer.Open(msiPath, 1);
                 installer.SetProperty("ProductVersion", newVersion.Replace(" (",".").Replace(")",""));
-                // installer.SetProperty("ProductCode", Guid.NewGuid().ToString());
+                installer.SetProperty("ProductCode", "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}");
                 installer.SetProperty("Publisher", "ElectronArt Design Ltd"); // Shows in Add / Remove Programs.
                 installer.Save();
         }
@@ -92,6 +93,71 @@ namespace Installer_Helper
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Cross platform method of revealing a file on the filesystem.
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        public static async void RevealInFolderCrossPlatform(string path)
+        {
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    using Process fileOpener = new Process();
+                    fileOpener.StartInfo.FileName = "explorer";
+                    fileOpener.StartInfo.Arguments = "/select," + path + "\"";
+                    fileOpener.Start();
+                    await fileOpener.WaitForExitAsync();
+                    return;
+                }
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    using Process fileOpener = new Process();
+                    fileOpener.StartInfo.FileName = "explorer";
+                    fileOpener.StartInfo.Arguments = "-R " + path;
+                    fileOpener.Start();
+                    await fileOpener.WaitForExitAsync();
+                    return;
+                }
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    using Process dbusShowItemsProcess = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "dbus-send",
+                            Arguments = "--print-reply --dest=org.freedesktop.FileManager1 /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:\"file://" + path + "\" string:\"\"",
+                            UseShellExecute = true
+                        }
+                    };
+                    dbusShowItemsProcess.Start();
+                    await dbusShowItemsProcess.WaitForExitAsync();
+
+                    if (dbusShowItemsProcess.ExitCode == 0)
+                    {
+                        // The dbus invocation can fail for a variety of reasons:
+                        // - dbus is not available
+                        // - no programs implement the service,
+                        // - ...
+                        return;
+                    }
+                }
+
+                using Process folderOpener = new Process();
+                folderOpener.StartInfo.FileName = Path.GetDirectoryName(path);
+                folderOpener.StartInfo.UseShellExecute = true;
+                folderOpener.Start();
+                await folderOpener.WaitForExitAsync();
+
+            }
+            catch (Exception ex)
+            {
+                // TODO Error handling
+                throw;
             }
         }
     }

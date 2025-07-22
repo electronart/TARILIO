@@ -1,6 +1,8 @@
 ﻿using Installer_Helper;
 using System.IO.Compression;
 
+Console.WriteLine("### Installer Helper ###");
+
 /**
  * The installer helper will give the MSI files the correct version, zip them up and also sign release builds.
  */
@@ -26,13 +28,22 @@ if (solutionDir == null) throw new ArgumentNullException(nameof(solutionDir));
 
 if (configuration.Contains("PORTABLE")) return; // portable builds shouldn't run this at all.
 
+
+
 string dll_path = Path.Combine([solutionDir,"eSearch","bin",configuration,"net8.0","win-x64","eSearch.dll"]);
 if (!File.Exists(dll_path)) throw new FileNotFoundException(dll_path);
 if (!File.Exists(msi_file)) throw new FileNotFoundException(msi_file);
 
+
+
 string dll_version = Utils.GeteSearchVersion(dll_path);
 string dll_version_msi_version = Utils.GeteSearchVersionMSIFriendly(dll_path);
+
+Console.WriteLine($"This is a {configuration} Build - The version will be {dll_version}...");
+
 Utils.SetMSIProductVersion(msi_file, dll_version_msi_version);
+
+
 
 string new_msi_file_path = Path.Combine( Path.GetDirectoryName(msi_file), 
                                          configuration + " " + dll_version + ".msi");
@@ -41,15 +52,21 @@ File.Copy(msi_file, new_msi_file_path);
 
 if (configuration.Contains("RELEASE"))
 {
+    Console.WriteLine("Release build has been selected - Follow instructions to sign build when prompted...");
     Utils.SignMSI(new_msi_file_path, configuration);
 }
 
 // Finally, create a zip file.
+
 string zip_path = Path.Combine(Path.GetDirectoryName(msi_file), configuration + " " + dll_version + ".zip");
+Console.WriteLine($"Compressing {zip_path}");
 using (ZipArchive zip = ZipFile.Open(zip_path, ZipArchiveMode.Create))
 {
     zip.CreateEntryFromFile(new_msi_file_path, Path.GetFileName(new_msi_file_path));
 }
+
+Console.WriteLine("Done!");
+Utils.RevealInFolderCrossPlatform(zip_path);
 
 
 
