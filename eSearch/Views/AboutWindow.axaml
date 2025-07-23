@@ -61,7 +61,7 @@
 				<StackPanel Margin="10">
 					<Label Content="{Binding ProductTag}"/>
 					<Label Content="{Binding ApplicationVersion}"/>
-					<Button Margin="3" Command="{Binding ClickOnlineHelp}" Classes="hyperlink" Content="{Binding S[Online~Help]}"/>
+					<Button Margin="3" x:Name="ButtonHelp" Classes="hyperlink" Content="{Binding S[Help]}"/>
 				</StackPanel>
 			</DockPanel>
 			<Label Margin="5" Content="{Binding DisplayedSerial}"></Label>

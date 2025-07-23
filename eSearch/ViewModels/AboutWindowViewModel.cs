@@ -173,7 +173,7 @@ namespace eSearch.ViewModels
             }
             else
             {
-                TaskDialogWindow.OKDialog(S.Get("File not found"), "Expected Location: " + licenseFilePath, Program.GetMainWindow());
+                await TaskDialogWindow.OKDialog(S.Get("File not found"), "Expected Location: " + licenseFilePath, Program.GetMainWindow());
             }
         }
 
