@@ -1,5 +1,4 @@
 ﻿using NPOI.POIFS.FileSystem;
-using NPOI.HWPF;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,8 +23,9 @@ namespace eSearch.Models.Documents.Parse
                 parseResult = new();
                 parseResult.ParserName = "docParser (NPOI.HWPF)";
                 StringBuilder docTextBuilder = new StringBuilder();
-                POIFSFileSystem fs = new POIFSFileSystem(File.OpenRead(filePath));
-                HWPFDocument doc = new HWPFDocument(fs);
+                //POIFSFileSystem fs = new POIFSFileSystem(File.OpenRead(filePath));
+                var doc = new NPOI.HWPF.HWPFDocument(File.OpenRead(filePath));
+                ///HWPFDocument doc = new HWPFDocument(fs);
                 var range = doc.GetRange();
                 var numParagraphs = range.NumParagraphs;
                 int p = 0;

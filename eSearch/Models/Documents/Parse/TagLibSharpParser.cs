@@ -1,26 +1,14 @@
-﻿using DocumentFormat.OpenXml.Linq;
-using eSearch.Interop;
-using FileSignatures.Formats;
-using IKVM.Runtime;
+﻿using eSearch.Interop;
 using J2N;
-using org.apache.poi.hslf.blip;
-using org.apache.tika.metadata;
-using org.bouncycastle.jcajce.provider.symmetric.util;
-using sun.net.www.content.image;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading.Tasks;
 using TagLib;
 using TagLib.IFD;
 using TagLib.Image;
 using TagLib.Xmp;
-using ucar.nc2.dt.point.decode;
 
 namespace eSearch.Models.Documents.Parse
 {

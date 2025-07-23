@@ -19,7 +19,7 @@ namespace eSearch.Models.Documents.Parse.ToxyParsers
         public void Parse(string filePath, out ParseResult parseResult)
         {
             Toxy.ParserContext context = new Toxy.ParserContext(filePath);
-            Toxy.Parsers.RTFTextParser toxyRTFParser = new Toxy.Parsers.RTFTextParser(context);
+            ToxyFramework.Parsers.RTFTextParser toxyRTFParser = new ToxyFramework.Parsers.RTFTextParser(context);
             string strHTML = toxyRTFParser.Parse();
             string strText = strHTML;
             HtmlParser htmlParser = new HtmlParser();
