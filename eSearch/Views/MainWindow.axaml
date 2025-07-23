@@ -47,7 +47,9 @@
 				<Menu x:Name="MainMenu" MinWidth="340" Height="35" HorizontalAlignment="Left" TabIndex="0">
 					<MenuItem Header="{Binding S[_File]}">
 						<!--<MenuItem Header="{Binding S[View...]}"/>-->
-						<MenuItem Header="{Binding S[Export~Search~Results...]}" Command="{Binding MenuFileExportSearchResults}"/>
+						<MenuItem Header="{Binding S[Export~Search~Results...]}" 
+								  Command="{Binding MenuFileExportSearchResults}"
+								  IsEnabled="{Binding !Session.Query.UseAISearch}"/>
 						<MenuItem Header="{Binding S[Print...]}" Command="{Binding MenuFilePrint}"/>
 						<Separator/>
 						<MenuItem Header="{Binding S[Launch~at~Startup]}" x:Name="menuItemLaunchAtStartup">
@@ -69,7 +71,6 @@
 						<MenuItem Header="{Binding S[_MCP~Servers]}"
 								  x:Name="menuItemSearchMCPServers"
 								  IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
-								  IsVisible="{Binding IsDebugBuild}"
 								  />
 						<Separator/>
 						<MenuItem 
@@ -109,7 +110,9 @@
 							</MenuItem>
 						</MenuItem>
 						<MenuItem Header="{Binding S[Layout]}">
-							<MenuItem Header="{Binding S[Horizontal]}" Command="{Binding MenuLayoutHorizontal}">
+							<MenuItem Header="{Binding S[Horizontal]}" 
+									  IsEnabled="{Binding !Session.Query.UseAISearch}"
+									  Command="{Binding MenuLayoutHorizontal}">
 								<MenuItem.Icon>
 									<CheckBox BorderThickness="0"
 											  IsHitTestVisible="False"
@@ -117,7 +120,9 @@
 									</CheckBox>
 								</MenuItem.Icon>
 							</MenuItem>
-							<MenuItem Header="{Binding S[Vertical]}" Command="{Binding MenuLayoutVertical}">
+							<MenuItem Header="{Binding S[Vertical]}"
+									  IsEnabled="{Binding !Session.Query.UseAISearch}"
+									  Command="{Binding MenuLayoutVertical}">
 								<MenuItem.Icon>
 									<CheckBox BorderThickness="0"
 											  IsHitTestVisible="False"

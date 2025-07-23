@@ -69,20 +69,7 @@ namespace eSearch.ViewModels
 
         private WheelViewModel? _wheel = null;
 
-        #region Debug Menu
-        public bool IsDebugBuild
-        {
-            get
-            {
-#if DEBUG
-                return true;
-#else
-                return false;
-#endif
-            }
-        }
 
-        #endregion
 
         public string ProductTagText
         {
