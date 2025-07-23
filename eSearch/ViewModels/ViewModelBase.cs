@@ -52,6 +52,7 @@ namespace eSearch.ViewModels
             }
         }
 
+        [JsonIgnore]
         public Avalonia.Media.Imaging.Bitmap ProductIcon {
 
             get {
@@ -65,6 +66,7 @@ namespace eSearch.ViewModels
             }
         }
 
+        [JsonIgnore]
         public SolidColorBrush ApplicationBrandPrimaryColor
         {
             get
@@ -80,6 +82,7 @@ namespace eSearch.ViewModels
             }
         }
 
+        [JsonIgnore]
         public SolidColorBrush ApplicationBrandTextColor
         {
             get
@@ -100,6 +103,20 @@ namespace eSearch.ViewModels
                 return Program.WasLaunchedWithSearchOnlyArgument;
 #endif
 
+            }
+        }
+
+
+        [JsonIgnore]
+        public bool IsDebugBuild
+        {
+            get
+            {
+#if DEBUG
+                return true;
+#else
+                return false;
+#endif
             }
         }
     }

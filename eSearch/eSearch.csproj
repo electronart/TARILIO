@@ -171,9 +171,13 @@
 		<Content Include="cef_locale_files\**">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		
 		<Content Include="openjdk-22.0.1_windows-x64_bin\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+		
+		
+		
 		<Content Include="Original\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
@@ -251,4 +255,9 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(DefineConstants.Contains('STANDALONE'))">
     <Exec Command="call ..\PortableBuilder\bin\Debug\PortableBuilder.exe &quot;$(DefineConstants)&quot;" />
   </Target>
+	<!-- Make build fail if openjdk isn't present -->
+   <Target Name="CheckOpenJDKDirectory" BeforeTargets="Build">
+	    <Error Text="The directory 'openjdk-22.0.1_windows-x64_bin' does not exist. Please ensure it is present before building. https://jdk.java.net/archive/"
+			    Condition="!Exists('openjdk-22.0.1_windows-x64_bin')" />
+   </Target>
 </Project>
