@@ -192,27 +192,33 @@ namespace eSearch.Models.Configuration
 
         public string GetProductTagText()
         {
-#if TARILIO
+            #if TARILIO
             string productVersion = "TARILIO";
             if (Program.ProgramConfig.IsProgramRegistered())
             {
+                bool search_only = (TARILIO.ProductSerials.isValidSerial(Program.ProgramConfig.Serial, out var ignored) == TARILIO.ProductSerials.SerialValidationResult.SearchOnly);
                 #if STANDALONE
-                    if (RegistrationWindow.isValidSerial(Program.ProgramConfig.Serial, out var ignored) == RegistrationWindow.SerialValidationResult.SearchOnly)
-                    {
-                        productVersion += " Portable (Search Only)";
+                    if (search_only) 
+                    { 
+                        productVersion += " Pro Portable (Search Only)";
                     } else
                     {
-                        productVersion += " Portable";
+                        productVersion += " Pro Portable";
                     }
                 #else
-                    productVersion += " Pro";
+                    if (search_only) 
+                    { 
+                        productVersion += " Pro (Search Only)";
+                    } else {
+                        productVersion += " Pro";
+                    }
                 #endif
             }
             else
             {
                 // Not registered
                 #if STANDALONE
-                    productVersion += " Portable Lite";
+                    productVersion += " Lite Portable";
                 #else
                     productVersion += " Lite";
                 #endif
