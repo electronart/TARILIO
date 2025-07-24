@@ -156,12 +156,12 @@
     <!--<PackageReference Include="Avalonia.HtmlRenderer" Version="11.0.0-preview6" />-->
   </ItemGroup>
   
-  <ItemGroup> <!-- TODO Why isn't this using nuget? -->
+  <ItemGroup>
     <ProjectReference Include="..\eSearchInterop\eSearch.Interop.csproj" />
 	
 	<Reference Condition="$(DefineConstants.Contains('TARILIO'))" Include="TARILIO">
 		<!-- TARILIO_SOLUTION_PATH is an environment variable on the system. -->
-		<HintPath>$(TARILIO_SOLUTION_PATH)\TARILIO\bin\$(Configuration)\net8.0\TARILIO.dll</HintPath>
+		<HintPath>$(TARILIO_SOLUTION_PATH)\TARILIO\bin\TARILIO RELEASE\net8.0\TARILIO.dll</HintPath>
 	</Reference>
   </ItemGroup>
 	<ItemGroup>
