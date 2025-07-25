@@ -109,7 +109,7 @@ namespace Installer_Helper
                 {
                     using Process fileOpener = new Process();
                     fileOpener.StartInfo.FileName = "explorer";
-                    fileOpener.StartInfo.Arguments = "/select," + path + "\"";
+                    fileOpener.StartInfo.Arguments = "/select,\"" + path + "\"";
                     fileOpener.Start();
                     await fileOpener.WaitForExitAsync();
                     return;

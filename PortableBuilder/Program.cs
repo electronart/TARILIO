@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
+using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace PortableBuilder
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("## Portable Builder ##");
             string configuration = args[0];
             if (!configuration.Contains("PORTABLE"))
             {
@@ -28,98 +30,92 @@ namespace PortableBuilder
             List<FolderCopy> FoldersToCopy = new List<FolderCopy>
             {
                 new FolderCopy(
-                    "../eSearch_installer/Include Files/Stemming",
-                    "./bin/Release - Portable/net8.0/win-x64/ProgramData/Stemming"
+                    "../eSearchInstaller/Include Files/Stemming",
+                    $"./bin/{configuration}/net8.0/win-x64/ProgramData/Stemming"
                 ),
                 new FolderCopy(
-                    "../eSearch_installer/Include Files/Synonyms",
-                    "./bin/Release - Portable/net8.0/win-x64/ProgramData/Synonyms"
+                    "../eSearchInstaller/Include Files/Synonyms",
+                    $"./bin/{configuration}/net8.0/win-x64/ProgramData/Synonyms"
                 ),
                 new FolderCopy(
                    "./i18n",
-                   "./bin/Release - Portable/net8.0/win-x64/ProgramData/i18n"
+                   $"./bin/{configuration}/net8.0/win-x64/ProgramData/i18n"
                 ),
                 new FolderCopy(
-                    "../eSearch_installer/Include Files/Stop word files",
-                    "./bin/Release - Portable/net8.0/win-x64/ProgramData/Stop"
+                    "../eSearchInstaller/Include Files/Stop word files",
+                    $"./bin/{configuration}/net8.0/win-x64/ProgramData/Stop"
                 ),
                 new FolderCopy(
-                    "../eSearch_installer/Include Files/Portable Files",
-                    "./bin/Release - Portable/TempDir"
+                    "../eSearchInstaller/Include Files/Portable Files",
+                    $"./bin/{configuration}/TempDir"
                 ),
                 new FolderCopy(
-                    "./bin/Release - Portable/net8.0/win-x64/",
-                    "./bin/Release - Portable/TempDir/eSearchPortable"
+                    $"./bin/{configuration}/net8.0/win-x64/",
+                    $"./bin/{configuration}/TempDir/eSearchPortable"
                 ),                
             };
 
+            Console.WriteLine("Deleting existing configuration and indexes...");
 
-            Console.WriteLine("Postbuild running...");
-            
-
-            if (args.Length > 0 && args[0].Contains("STANDALONE"))
+            if (Directory.Exists($"./bin/{configuration}/net8.0/win-x64/ProgramData/Indexes"))
             {
-                Console.WriteLine("This is a portable build.");
-
-                string version = GetAssemblyVersion2();
-                Console.WriteLine("Version Info of eSearch: " + version);
-                Console.WriteLine("Current Working Directory:");
-                Console.WriteLine(Directory.GetCurrentDirectory());
-                Console.WriteLine("Arguments:");
-                Console.WriteLine(string.Join(Environment.NewLine, args));
-
-
-                Console.WriteLine("Copying Additional Directories...");
-                foreach (var folderToCopy in FoldersToCopy)
-                {
-                    if (!Directory.Exists(folderToCopy.SourceDirectory))
-                    {
-                        throw new Exception("Source folder does not exist: " + folderToCopy.SourceDirectory);
-                    }
-
-                    if (Directory.Exists(folderToCopy.TargetDirectory))
-                    {
-                        Directory.Delete(folderToCopy.TargetDirectory, true);
-                    }
-                    Directory.CreateDirectory(folderToCopy.TargetDirectory);
-                    Console.WriteLine("Copy: " + folderToCopy.SourceDirectory + " -> " + folderToCopy.TargetDirectory);
-                    CopyDirectory(folderToCopy.SourceDirectory, folderToCopy.TargetDirectory, true);
-                }
-
-                if (Directory.Exists("./bin/Release - Portable/net8.0/win-x64/ProgramData/Indexes"))
-                {
-                    Directory.Delete("./bin/Release - Portable/net8.0/win-x64/ProgramData/Indexes", true);
-                }
-                if (File.Exists("./bin/Release - Portable/net8.0/win-x64/ProgramData/Config.json"))
-                {
-                    File.Delete("./bin/Release - Portable/net8.0/win-x64/ProgramData/Config.json");
-                }
-
-
-                Console.WriteLine("Copying Complete.");
-                Console.WriteLine("Packaging Portable Version");
-
-                string SourceDir = "./bin/Release - Portable/TempDir";
-                if (!Directory.Exists("./bin/Portable Releases"))
-                {
-                    Directory.CreateDirectory("./bin/Portable Releases");
-                }
-                string targetZip = "./bin/Portable Releases/eSearch Portable " + version + ".zip";
-                ZipFile.CreateFromDirectory(SourceDir, targetZip);
-                Console.WriteLine("Zip saved to " + targetZip);
-
-            } else
-            {
-                Console.WriteLine("This is a installer build.");
+                Directory.Delete($"./bin/{configuration}/net8.0/win-x64/ProgramData/Indexes", true);
             }
+            if (File.Exists($"./bin/{configuration}/net8.0/win-x64/ProgramData/Config.json"))
+            {
+                File.Delete($"./bin/{configuration}/net8.0/win-x64/ProgramData/Config.json");
+            }
+
+
+            string version = GetAssemblyVersion2(configuration);
+            Console.WriteLine($"Version Info of {configuration}: " + version);
+            Console.WriteLine("Current Working Directory:");
+            Console.WriteLine(Directory.GetCurrentDirectory());
+            Console.WriteLine("Arguments:");
+            Console.WriteLine(string.Join(Environment.NewLine, args));
+
+
+            Console.WriteLine("Copying Additional Directories...");
+            foreach (var folderToCopy in FoldersToCopy)
+            {
+                if (!Directory.Exists(folderToCopy.SourceDirectory))
+                {
+                    throw new Exception("Source folder does not exist: " + folderToCopy.SourceDirectory);
+                }
+
+                if (Directory.Exists(folderToCopy.TargetDirectory))
+                {
+                    Directory.Delete(folderToCopy.TargetDirectory, true);
+                }
+                Directory.CreateDirectory(folderToCopy.TargetDirectory);
+                Console.WriteLine("Copy: " + folderToCopy.SourceDirectory + " -> " + folderToCopy.TargetDirectory);
+                CopyDirectory(folderToCopy.SourceDirectory, folderToCopy.TargetDirectory, true);
+            }
+
+                
+
+
+            Console.WriteLine("Copying Complete.");
+            Console.WriteLine("Packaging Portable Version");
+
+            string SourceDir = $"./bin/{configuration}/TempDir";
+            string TargetDir = $"./bin/{configuration} Releases";
+            if (!Directory.Exists(TargetDir))
+            {
+                Directory.CreateDirectory(TargetDir);
+            }
+            string targetZip = Path.Combine(TargetDir, $"{configuration} {version}.zip");
+            ZipFile.CreateFromDirectory(SourceDir, targetZip);
+            Console.WriteLine("Zip saved to " + targetZip);
+            RevealInFolderCrossPlatform(targetZip);
         }
 
 
-        public static string GetAssemblyVersion2()
+        public static string GetAssemblyVersion2(string configuration)
         {
             try
             {
-                string filePath = "./bin/Release - Portable/net8.0/win-x64/eSearch.dll";
+                string filePath = $"./bin/{configuration}/net8.0/win-x64/eSearch.dll";
                 Console.WriteLine(Path.GetFullPath(filePath));
                 using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
@@ -153,6 +149,71 @@ namespace PortableBuilder
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Cross platform method of revealing a file on the filesystem.
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        public static async void RevealInFolderCrossPlatform(string path)
+        {
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Process fileOpener = new Process();
+                    fileOpener.StartInfo.FileName = "explorer";
+                    fileOpener.StartInfo.Arguments = "/select," + path + "\"";
+                    fileOpener.Start();
+                    fileOpener.WaitForExit();
+                    return;
+                }
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process fileOpener = new Process();
+                    fileOpener.StartInfo.FileName = "explorer";
+                    fileOpener.StartInfo.Arguments = "-R " + path;
+                    fileOpener.Start();
+                    fileOpener.WaitForExit();
+                    return;
+                }
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process dbusShowItemsProcess = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "dbus-send",
+                            Arguments = "--print-reply --dest=org.freedesktop.FileManager1 /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:\"file://" + path + "\" string:\"\"",
+                            UseShellExecute = true
+                        }
+                    };
+                    dbusShowItemsProcess.Start();
+                    dbusShowItemsProcess.WaitForExit();
+
+                    if (dbusShowItemsProcess.ExitCode == 0)
+                    {
+                        // The dbus invocation can fail for a variety of reasons:
+                        // - dbus is not available
+                        // - no programs implement the service,
+                        // - ...
+                        return;
+                    }
+                }
+
+                Process folderOpener = new Process();
+                folderOpener.StartInfo.FileName = Path.GetDirectoryName(path);
+                folderOpener.StartInfo.UseShellExecute = true;
+                folderOpener.Start();
+                folderOpener.WaitForExit();
+
+            }
+            catch (Exception ex)
+            {
+                // TODO Error handling
+                throw;
+            }
         }
 
         //static string GetVersionStr()
