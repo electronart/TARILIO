@@ -21,5 +21,4 @@ NOTE: eSearch Pro and Portable versions 1.1.9288 (6 June 2025) and earlier rever
 TARILIO versions contain additional closed-source code and are for commercial use. They require a serial number or will revert to Lite after 30-days, they also revert to Lite mode after 1 year unless the license/serial is renewed. You can evaluate using the eSearch versions above, and install the TARILIO version later, it will recognise your eSearch configurations, saved settings, indexes, etc.
 
 ## Build Instructions
-
-### TODO
+[View Build Instructions](https://github.com/electronart/esearch-project/wiki/Build-Instructions)
