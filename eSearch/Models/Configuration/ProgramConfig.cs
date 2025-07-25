@@ -225,8 +225,8 @@ namespace eSearch.Models.Configuration
             }
             #else
                 string productVersion = "eSearch Pro";
-                #if STANDALONE
-                    productVersion += " Portable"
+            #if STANDALONE
+                productVersion += " Portable";
                 #endif
             #endif
 
