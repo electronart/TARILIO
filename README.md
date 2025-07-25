@@ -12,9 +12,9 @@ To report an issue or contribute, see [CONTRIBUTING.md](https://github.com/elect
 ## Builds
 If you only want to install and run the latest public releases of eSearch Pro and eSearch Portable, we will continue to post them here:
 
-[eSearch Pro](https://dtsearch.co.uk/news/product/esearch-pro/)
+[eSearch Pro](https://dtsearch.co.uk/news/product/esearch-pro/)  1.1.9337 (Released 25 July 2025)
 
-[eSearch Portable](https://dtsearch.co.uk/news/product/esearch-portable/)
+[eSearch Portable](https://dtsearch.co.uk/news/product/esearch-portable/) 1.1.9336 (Released 24 July 2025)
 
 NOTE: eSearch Pro and Portable versions 1.1.9288 (6 June 2025) and earlier revert to eSearch Lite after 30 days. Later versions under the open-source license no longer require a serial number and will continue to remain fully functional and free of charge for private, non-commercial use or commercial 30-day evaluation use.
 
