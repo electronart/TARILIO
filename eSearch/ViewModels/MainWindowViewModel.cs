@@ -21,6 +21,7 @@ using S = eSearch.ViewModels.TranslationsViewModel;
 using DesktopSearch2.Views;
 using eSearch.Converters;
 using eSearch.Models.AI;
+using System.Reflection;
 
 
 namespace eSearch.ViewModels
@@ -884,8 +885,18 @@ namespace eSearch.ViewModels
 
         public async void PressF1()
         {
-            string url = Program.OnlineHelpLinkLocation;
-            eSearch.Models.Utils.CrossPlatformOpenBrowser(url);
+            string? exeDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? string.Empty);
+            string helpFilePath = Path.Combine(exeDir ?? "", "help", "eSearch-Pro-User-Guide.pdf");
+            if (File.Exists(helpFilePath))
+            {
+                var uri = new System.Uri(helpFilePath);
+                var url = uri.AbsoluteUri;
+                Models.Utils.CrossPlatformOpenBrowser(url);
+            }
+            else
+            {
+                await TaskDialogWindow.OKDialog(S.Get("File not found"), "Expected Location: " + helpFilePath, Program.GetMainWindow());
+            }
         }
 
         public async Task<bool> MenuFileSearchReport()
