@@ -36,7 +36,7 @@ namespace eSearch.ViewModels
             {
                 if (_exportDirectory == null)
                 {
-                    _exportDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "eSearch");
+                    _exportDirectory = Program.ESEARCH_EXPORT_DIR;
                 }
                 return _exportDirectory;
             }

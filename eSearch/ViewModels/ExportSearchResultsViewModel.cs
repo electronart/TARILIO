@@ -226,7 +226,7 @@ namespace eSearch.ViewModels
             {
                 if (_outputDirectory == null)
                 {
-                    _outputDirectory = Program.GetMainWindow().StorageProvider.TryGetWellKnownFolderAsync(Avalonia.Platform.Storage.WellKnownFolder.Documents).Result.Path;
+                    _outputDirectory = new Uri(Program.ESEARCH_EXPORT_DIR);
                 }
                 return _outputDirectory;
             }

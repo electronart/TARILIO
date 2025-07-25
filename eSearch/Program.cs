@@ -327,6 +327,23 @@ namespace eSearch
             }
         }
 
+        public static string ESEARCH_EXPORT_DIR
+        {
+            get
+            {
+                #if STANDALONE
+                string dir = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Exports");
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                return dir;
+                #else
+                return Path.Combine(Program.GetMainWindow().StorageProvider.TryGetWellKnownFolderAsync(Avalonia.Platform.Storage.WellKnownFolder.Documents).Result.Path, "eSearch");
+                #endif
+            }
+        }
+
         public static TranslationsViewModel TranslationsViewModel { 
             get
             {

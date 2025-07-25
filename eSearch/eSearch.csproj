@@ -253,7 +253,7 @@
     </AvaloniaXaml>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(DefineConstants.Contains('STANDALONE'))">
-    <Exec Command="call ..\PortableBuilder\bin\Debug\PortableBuilder.exe &quot;$(DefineConstants)&quot;" />
+    <Exec Command="call ..\PortableBuilder\bin\Debug\PortableBuilder.exe &quot;$(Configuration)&quot;" />
   </Target>
 	<!-- Make build fail if openjdk isn't present -->
    <Target Name="CheckOpenJDKDirectory" BeforeTargets="Build">

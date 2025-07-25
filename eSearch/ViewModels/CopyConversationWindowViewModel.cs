@@ -131,7 +131,7 @@ namespace eSearch.ViewModels
 
         private bool _appendDateIsChecked = true;
 
-        public string savePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "eSearch");
+        public string savePath = Program.ESEARCH_EXPORT_DIR;
 
         public string SavePath
         {
