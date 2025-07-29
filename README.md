@@ -27,5 +27,9 @@ TARILIO versions contain additional closed-source code and are for commercial us
 
 [TARILIO Pro](https://dtsearch.co.uk/news/product/tarilio-pro/) 1.1.9337 (Released 25 July 2025) 
 
+## Support or feedback
+
+If you need technical support, have suggestions for improvement, or want to report bugs, email: [support@electronart.co.uk](support@electronart.co.uk)
+
 ## Build Instructions
 [View Build Instructions](https://github.com/electronart/esearch-project/wiki/Build-Instructions)
