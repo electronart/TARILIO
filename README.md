@@ -1,4 +1,9 @@
 # eSearch project 
+Desktop full-text search information retrieval with integrated AI Assistants and MCP Client
+
+[]([https://badge.mcpx.dev?type=client](https://badge.mcpx.dev/?type=client) 'MCP Client')
+<img src="https://badge.mcpx.dev?type=client" title="MCP Client"/>
+
 See Wiki - [Introduction](https://github.com/electronart/esearch-project/wiki)
 
 
