@@ -72,6 +72,13 @@
 								  x:Name="menuItemSearchMCPServers"
 								  IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
 								  />
+						<MenuItem Header="{Binding S[Show~System~Prompt]}" x:Name="menuItemShowSystemPrompt">
+							<MenuItem.Icon>
+								<CheckBox BorderThickness="0"
+										  IsHitTestVisible="False"
+										  IsChecked="{Binding Session.Query.ShowSystemPrompt}"/>
+							</MenuItem.Icon>
+						</MenuItem>
 						<Separator/>
 						<MenuItem 
 							Header="{Binding S[Export~Conversation...]}"

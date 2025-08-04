@@ -289,6 +289,21 @@ namespace eSearch.ViewModels
             return queryProcessed;
         }
 
+        [JsonProperty]
+        public bool ShowSystemPrompt
+        {
+            get
+            {
+                return _showSystemPrompt;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _showSystemPrompt, value);
+            }
+        }
+
+        private bool _showSystemPrompt = true;
+
         public bool QueryTextBoxEnabled
         {
             get

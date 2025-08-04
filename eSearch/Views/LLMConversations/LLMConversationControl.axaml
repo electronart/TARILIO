@@ -19,7 +19,15 @@
 			>
 			<ItemsRepeater.ItemTemplate>
 				<DataTemplate>
-					<llmCtl:MessageControl RemoveRequested="MessageControl_RemoveRequested"/>
+					<llmCtl:MessageControl 
+						RemoveRequested="MessageControl_RemoveRequested">
+						<llmCtl:MessageControl.IsVisible>
+							<MultiBinding Converter="{x:Static BoolConverters.Or}">
+								<Binding Path="!IsMessageRoleSystem"/>
+								<Binding Path="DataContext.Session.Query.ShowSystemPrompt" RelativeSource="{RelativeSource FindAncestor, AncestorType=Window}"/>
+							</MultiBinding>
+						</llmCtl:MessageControl.IsVisible>
+					</llmCtl:MessageControl>
 				</DataTemplate>
 			</ItemsRepeater.ItemTemplate>
 			<ItemsRepeater.Layout>

@@ -87,8 +87,17 @@ namespace eSearch.Views
             ResultsGrid2.AddHandler(KeyDownEvent, ResultsGrid2_KeyDown, RoutingStrategies.Tunnel);
 
             MenuItemDebugMCPListTools.Click += MenuItemDebugMCPListTools_Click;
+            menuItemShowSystemPrompt.Click += MenuItemShowSystemPrompt_Click;
 
 
+        }
+
+        private void MenuItemShowSystemPrompt_Click(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                mwvm.Session.Query.ShowSystemPrompt = !mwvm.Session.Query.ShowSystemPrompt;
+            }
         }
 
         private async void MenuItemAIImportConversation_Click(object? sender, RoutedEventArgs e)
@@ -616,7 +625,7 @@ namespace eSearch.Views
 
         private async void ConversationCopyButton_Click(object? sender, RoutedEventArgs e)
         {
-            if (DataContext is MainWindowViewModel mwvm)
+            if (DataContext is MainWindowViewModel mwvm && mwvm.SelectedSearchSource?.Source is AISearchConfiguration aiConfig)
             {
                 StringBuilder sb = new StringBuilder();
                 foreach (var messageVM in
@@ -633,6 +642,7 @@ namespace eSearch.Views
                 string aiQuery = mwvm.Session.Query.Query;
                 var copyContext = Program.ProgramConfig.CopyConvoConfig.ToViewModel();
                 copyContext.DocumentTextToCopy = txtToCopy;
+                copyContext.AppendNoteText = aiConfig.Model;
                 var copyConvoWindow = new CopyConversationWindow { DataContext = copyContext };
                 await copyConvoWindow.ShowDialog(this);
                 if (copyConvoWindow.DidPressOK())
