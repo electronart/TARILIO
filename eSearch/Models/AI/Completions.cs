@@ -306,6 +306,11 @@ namespace eSearch.Models.AI
         CancellationToken cancellationToken = default)
         {
             // Set up Semantic Kernel with OpenAI
+
+            var customHttpClient = new HttpClient();
+            customHttpClient.DefaultRequestHeaders.Add("Referer", "https://github.com/electronart/esearch-project");
+            customHttpClient.DefaultRequestHeaders.Add("X-Title", Program.ProgramConfig.GetProductTagText());
+
             var builder = Kernel.CreateBuilder();
 
             string modelId = GetCurrentChatModel(aiConfig);
@@ -314,7 +319,8 @@ namespace eSearch.Models.AI
 
             builder.AddOpenAIChatCompletion(modelId: modelId,
                                             endpoint: endpoint,
-                                            apiKey: apiKey );
+                                            apiKey: apiKey,
+                                            httpClient: customHttpClient);
 
             var kernel = builder.Build();
 
