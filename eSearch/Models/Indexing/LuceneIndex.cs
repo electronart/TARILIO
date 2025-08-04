@@ -272,19 +272,23 @@ namespace eSearch.Models.Indexing
 
             if (document.MetaData != null)
             {
-                foreach (var metadata in document.MetaData)
+                foreach (var metadata in document.MetaData.Where(m => m != null))
                 {
-                    Field field;
-                    if (metadata.Value.Length <= 256)
+                    if (metadata != null && metadata.Key != null && metadata.Value != null)
                     {
-                        field = new StringField(metadata.Key, metadata.Value, Field.Store.YES);
-                    } else
-                    {
-                        field = new TextField(metadata.Key, metadata.Value, Field.Store.YES);
-                    }
+                        Field field;
+                        if (metadata.Value?.Length <= 256)
+                        {
+                            field = new StringField(metadata.Key, metadata.Value, Field.Store.YES);
+                        }
+                        else
+                        {
+                            field = new TextField(metadata.Key, metadata.Value, Field.Store.YES);
+                        }
 
-                    doc.Fields.Add(field);
-                    if (!IsKnownField(metadata.Key)) KnownFieldNames.Add(metadata.Key);
+                        doc.Fields.Add(field);
+                        if (!IsKnownField(metadata.Key)) KnownFieldNames.Add(metadata.Key);
+                    }
                 }
             }
             if (document.HtmlRender != null && document.HtmlRender.Length > 0)
