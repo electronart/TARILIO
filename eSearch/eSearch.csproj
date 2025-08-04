@@ -108,9 +108,9 @@
     <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Debug - Portable'">
       <Version>11.0.10</Version>
     </PackageReference>
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.2.6" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.6" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.6" />
-    <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.0.3" />
     <PackageReference Include="CefGlue.Avalonia" Version="120.6099.210" />
     <PackageReference Include="CefGlue.Common" Version="120.6099.210" />
     <PackageReference Include="CsvHelper" Version="33.1.0" />
@@ -257,7 +257,6 @@
   </Target>
 	<!-- Make build fail if openjdk isn't present -->
    <Target Name="CheckOpenJDKDirectory" BeforeTargets="Build">
-	    <Error Text="The directory 'openjdk-22.0.1_windows-x64_bin' does not exist. Please ensure it is present before building. https://jdk.java.net/archive/"
-			    Condition="!Exists('openjdk-22.0.1_windows-x64_bin')" />
+	    <Error Text="The directory 'openjdk-22.0.1_windows-x64_bin' does not exist. Please ensure it is present before building. https://jdk.java.net/archive/" Condition="!Exists('openjdk-22.0.1_windows-x64_bin')" />
    </Target>
 </Project>
