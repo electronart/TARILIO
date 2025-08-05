@@ -51,10 +51,10 @@ namespace eSearch
             switch (schedule.IntervalSize)
             {
                 case IntervalSize.Day:
-                    td.Triggers.Add(new DailyTrigger { DaysInterval = schedule.Interval, StartBoundary = schedule.StartingFrom });
+                    td.Triggers.Add(new DailyTrigger { DaysInterval = (short)schedule.Interval, StartBoundary = schedule.StartingFrom });
                     break;
                 case IntervalSize.Week:
-                    td.Triggers.Add(new WeeklyTrigger { WeeksInterval = schedule.Interval, StartBoundary = schedule.StartingFrom });
+                    td.Triggers.Add(new WeeklyTrigger { WeeksInterval = (short)schedule.Interval, StartBoundary = schedule.StartingFrom });
                     break;
             }
             string exe_path = Assembly.GetExecutingAssembly().Location;

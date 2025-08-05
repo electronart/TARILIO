@@ -715,6 +715,20 @@
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_2612612BE24D4BEB8DB6854BAAF21759"
+            {
+            "Name" = "8:Publish Items from eSearch (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_6C7783675FE342F983AA3A89BB77A428"
+            "FileType" = "3:2"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:/Install"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_BCC41DDC_2317_45BE_ACD1_CF96240027C8"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -2949,7 +2963,7 @@
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "InstallAllUsers" = "11:FALSE"
+        "InstallAllUsers" = "11:TRUE"
         "ProductVersion" = "8:1.0.0"
         "Manufacturer" = "8:ElectronArt Design Ltd"
         "ARPHELPTELEPHONE" = "8:"
@@ -3478,7 +3492,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6C7783675FE342F983AA3A89BB77A428"
             {
-            "SourcePath" = "8:..\\eSearch\\obj\\TARILIO RELEASE\\net8.0\\win-x64\\apphost.exe"
+            "SourcePath" = "8:..\\eSearch\\obj\\eSearch DEBUG\\net8.0\\win-x64\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5A28C29878D94098A4424E44BE28C9F8"

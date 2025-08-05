@@ -69,7 +69,7 @@ namespace eSearch.Models.Configuration
             return null;
         }
 
-        public LuceneIndexConfiguration GetConfiguration(LuceneIndex index)
+        public LuceneIndexConfiguration? GetConfiguration(LuceneIndex index)
         {
             foreach(var config in LuceneIndexes)
             {
@@ -89,6 +89,7 @@ namespace eSearch.Models.Configuration
             {
                 if (LuceneIndexes[i].LuceneIndex.Id == configuration.LuceneIndex.Id)
                 {
+                    // TODO - Bit of a hack, This updates the configuration but maintains the column display settings
                     var existingColumnDisplaySettings = LuceneIndexes[i].ColumnDisplaySettings;
                     var existingColumnSizingSettings  = LuceneIndexes[i].ColumnSizingMode;
                     LuceneIndexes[i] = configuration;
@@ -103,7 +104,12 @@ namespace eSearch.Models.Configuration
         public IIndex? GetIndex(string indexName)
         {
             var indexes = GetAllIndexes();
-            return indexes.FirstOrDefault(x => x.Name == indexName, null);
+            return indexes.FirstOrDefault(x => x?.Name == indexName, null);
+        }
+
+        public IIndex? GetIndexById(string indexId)
+        {
+            return GetAllIndexes().FirstOrDefault(x => x?.Id == indexId, null);
         }
 
         public List<IIndex> GetAllIndexes()

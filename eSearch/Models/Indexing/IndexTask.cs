@@ -20,7 +20,7 @@ namespace eSearch.Models.Indexing
 {
     public class IndexTask : IProgressQueryableTask
     {
-        IndexTaskLog Log = new IndexTaskLog();
+        ILogger Logger = new IndexTaskLog();
 
         IDataSource Source;
         IIndex Index;
@@ -69,12 +69,16 @@ namespace eSearch.Models.Indexing
         /// <param name="index"></param>
         /// <param name="append">Whether to append to the index, or recreate. True for append.</param>
         /// <param name="removeNotFound">During index update, remove any items that were no longer found during the update</param>
-        public IndexTask(IDataSource source, IIndex index, ProgressViewModel progressView, bool append = true, bool removeNotFound = false)
+        public IndexTask(IDataSource source, IIndex index, ProgressViewModel progressView, bool append = true, bool removeNotFound = false, ILogger? customLogger = null)
         {
             Source = source;
             Index = index;
             this.progressView = progressView;
             this.append = append;
+            if (customLogger != null)
+            {
+                this.Logger = customLogger;
+            }
         }
 
 
@@ -118,14 +122,14 @@ namespace eSearch.Models.Indexing
             System.IO.Directory.CreateDirectory(Index.GetAbsolutePath());
             
             startTime = DateTime.Now;
-            Log.Log(Severity.INFO, "Index Task Started", null);
+            Logger.Log(Severity.INFO, "Index Task Started", null);
             var indexConfig = Program.IndexLibrary.GetConfiguration(Index);
             _batchWatch.Start();
             try
             {
                 progressView.BeginWatching(this);
                 Source.Rewind();
-                Source.UseIndexTaskLog(Log);
+                Source.UseIndexTaskLog(Logger);
                 _progress = 3;
                 _maxProgress = 100;
                 _progressStatus = S.Get("Opening Index");
@@ -146,7 +150,7 @@ namespace eSearch.Models.Indexing
                 bool opened = Index.OpenWrite(!append);
                 if (!opened)
                 {
-                    Log.Log(Severity.ERROR, "Failed to open index for writing - Is it already open?");
+                    Logger.Log(Severity.ERROR, "Failed to open index for writing - Is it already open?");
                     return;
                 }
 
@@ -167,7 +171,7 @@ namespace eSearch.Models.Indexing
                                 _batchWatch.Restart();
                             } catch (Exception ex)
                             {
-                                Log.Log(Severity.ERROR, "Exception whilst adding documents to index " + ex.ToString());
+                                Logger.Log(Severity.ERROR, "Exception whilst adding documents to index " + ex.ToString());
                             }
                         }
                         Source.GetNextDoc(out document, out isDiscoveryComplete);
@@ -182,7 +186,7 @@ namespace eSearch.Models.Indexing
                         
                         if (Cancelling)
                         {
-                            Log.Log(Severity.INFO, "Index task was cancelled");
+                            Logger.Log(Severity.INFO, "Index task was cancelled");
                             Cancelled = true;
                             return;
                         }
@@ -237,10 +241,10 @@ namespace eSearch.Models.Indexing
                                 switch(document.ShouldSkipIndexing)
                                 {
                                     case IDocument.SkipReason.TooLarge:
-                                        Log.Log(Severity.INFO, "Skip " + document.FileName + " - Too large");
+                                        Logger.Log(Severity.INFO, "Skip " + document.FileName + " - Too large");
                                         break;
                                     case IDocument.SkipReason.ParseError:
-                                        Log.Log(Severity.WARNING, "Skip - " + document.FileName + " - Parse Error \n " + document.Text);
+                                        Logger.Log(Severity.WARNING, "Skip - " + document.FileName + " - Parse Error \n " + document.Text);
                                         break;
                                 }
                             }
@@ -308,7 +312,7 @@ namespace eSearch.Models.Indexing
                             }
                             catch (Exception ex)
                             {
-                                Log.Log(Severity.ERROR, "Failed to delete temp file " + tempFile, ex);
+                                Logger.Log(Severity.ERROR, "Failed to delete temp file " + tempFile, ex);
                             }
                         }
                     }
@@ -323,10 +327,10 @@ namespace eSearch.Models.Indexing
                     } catch (Exception ex)
                     {
                         // Treat this as non-fatal.
-                        Log.Log(Severity.WARNING, "Error getting total number of documents in index", ex);
+                        Logger.Log(Severity.WARNING, "Error getting total number of documents in index", ex);
                     }
 
-                    if (Log.NumErrors > 0)
+                    if (Logger.NumErrors > 0)
                     {
                         finishStatus.AppendLine(S.Get("Error(s) during indexing. Check log for details."));
                     }
@@ -335,18 +339,18 @@ namespace eSearch.Models.Indexing
                     _progress = 100;
                     _maxProgress = 100;
                     progressView.IsFinished = true;
-                    Log.Log(Severity.INFO, "Index Task Finished");
+                    Logger.Log(Severity.INFO, "Index Task Finished");
                 }
 
             } catch (Exception ex)
             {
-                Log.Log(Severity.ERROR, "Fatal error during indexing", ex);
+                Logger.Log(Severity.ERROR, "Fatal error during indexing", ex);
                 Index.CloseWrite();
 
             } finally
             {
                 progressView.EndWatching();
-                string indexLog = Log.BuildTxtLog("", "");
+                string indexLog = Logger.BuildTxtLog("", "");
 
 
                 File.WriteAllText(

@@ -27,6 +27,27 @@ namespace eSearch.Views
             BtnDelete.Click += BtnDelete_Click;
             BtnRebuild.Click += BtnRebuild_Click;
             BtnRename.Click += BtnRename_Click;
+            BtnAutomatic.Click += BtnAutomatic_Click;
+        }
+
+        private async void BtnAutomatic_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (DataContext is MainWindowViewModel vm)
+            {
+                if (vm.SelectedIndex == null) return;
+                
+                var config = vm.IndexLibrary.GetConfiguration(vm.SelectedIndex);
+                if (config == null) return; // TODO I'm not sure about this...
+
+                var scheduleVM = TaskScheduleWindowViewModel.FromIndexSchedule(config.AutomaticUpdates);
+                var dialog = new TaskScheduleWindow { DataContext = scheduleVM };
+                var newSchedule = await dialog.ShowDialog<IndexSchedule?>(this);
+                if (newSchedule != null)
+                {
+                    config.AutomaticUpdates = newSchedule;
+                    vm.IndexLibrary.SaveLibrary();
+                }
+            }
         }
 
         private async void BtnRename_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

@@ -26,6 +26,11 @@ using S = eSearch.ViewModels.TranslationsViewModel;
 using eSearch.Interop.AI;
 using eSearch.Models.AI.MCP.Tools;
 using Xilium.CefGlue;
+using DynamicData;
+using UglyToad.PdfPig.Fonts.TrueType.Names;
+using eSearch.Interop;
+using eSearch.Models.Logging;
+using eSearch.Models.Indexing;
 
 namespace eSearch
 {
@@ -33,6 +38,11 @@ namespace eSearch
     {
 
         static Timer timer;
+
+        /// <summary>
+        /// When not null, this is a scheduled index update task, the application should run in the background without disturbing the user.
+        /// </summary>
+        public static string? WasLaunchedAsScheduledIndexUpdate        = null;
 
         public static bool WasLaunchedWithSearchOnlyArgument           = false;
 
@@ -50,11 +60,48 @@ namespace eSearch
             WasLaunchedWithSearchOnlyArgument =           args.Contains("-s");
             WasLaunchedWithAIDisabledArgument =           args.Contains("-a");
             WasLaunchedWithCreateLLMConnectionsDisabled = args.Contains("-x");
+            #region Check if the application has been launched as a scheduled index update
+            int indexOfScheduledArg = args.IndexOf("--scheduled");
+            if (indexOfScheduledArg != -1)
+            {
+                if (args.Length > indexOfScheduledArg + 1)
+                {
+                    string indexId = args[args.IndexOf("--scheduled") + 1];
+                    WasLaunchedAsScheduledIndexUpdate = indexId;
+
+                    List<ILogger> loggers = new List<ILogger>();
+#if DEBUG
+                    loggers.Add(new DebugLogger());
+#endif
+                    var indexTaskLog = new IndexTaskLog();
+
+                    RunScheduledIndexUpdate(indexId)
+                } else
+                {
+                    throw new ArgumentException("`--scheduled` argument passed, but no IndexID supplied");
+                }
+            }
+            #endregion
             BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
             timer = new Timer(60000);
             timer.Elapsed += Timer_Elapsed;
             timer.Start();
+        }
+
+        private static void RunScheduledIndexUpdate(string IndexID, ILogger logger)
+        {
+            var index = Program.IndexLibrary.GetIndexById(IndexID);
+            if (index == null)
+            {
+                logger.Log(ILogger.Severity.ERROR, String.Format(S.Get("Could not find index with ID {0}"), IndexID));
+                return;
+            } else
+            {
+                logger.Log(ILogger.Severity.INFO, String.Format(S.Get("Scheduled Index of {0} is starting..."), index.Name));
+            }
+
+
         }
 
         private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)
@@ -63,6 +110,8 @@ namespace eSearch
             {
                 if (Program.GetMainWindow().DataContext is MainWindowViewModel vm)
                 {
+                    // TODO Non intuitive code - It's detecting expired serials in the case
+                    // The application is left open permanently.
                     vm.RaisePropertyChanged(nameof(vm.ProductTagText));
                 }
             } catch (Exception ex)
