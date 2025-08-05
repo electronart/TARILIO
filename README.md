@@ -29,7 +29,10 @@ TARILIO versions contain additional closed-source code and are for commercial us
 
 ## Translation
 If you want to translate the user interface, use Language File Editor (LFE)
+
 [https://github.com/electronart/esearch-project-translation](https://github.com/electronart/esearch-project-translation)
+
+[https://github.com/electronart/esearch-project/wiki/Translation](https://github.com/electronart/esearch-project/wiki/Translation)
 
 
 
