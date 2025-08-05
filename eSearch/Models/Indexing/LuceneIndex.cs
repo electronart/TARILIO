@@ -110,6 +110,10 @@ namespace eSearch.Models.Indexing
             }
         }
 
+        
+
+
+
         private IWordWheel _wordWheel;
 
         #region Lucene Vars

@@ -134,6 +134,7 @@ namespace eSearch.Models.Indexing
         public List<string> KnownFieldNames { get; set; }
 
         
+        
 
     }
 }

@@ -145,6 +145,7 @@
     <PackageReference Include="System.Speech" Version="9.0.2" />
     <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+    <PackageReference Include="TaskScheduler" Version="2.12.2" />
     <PackageReference Include="TikaOnDotNet" Version="1.17.1" />
     <PackageReference Include="TikaOnDotnet.TextExtractor" Version="1.17.1" />
     <PackageReference Include="Toxy" Version="2.0.0" />

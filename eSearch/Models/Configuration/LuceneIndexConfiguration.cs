@@ -218,5 +218,22 @@ namespace eSearch.Models.Configuration
 
         [JsonIgnore]
         private List<string>? _selectedFileExtensions = null;
+
+        public IndexSchedule? AutomaticUpdates 
+        {
+            get
+            {
+                return _automaticUpdates;
+            }
+            set
+            {
+                ScheduleUtils.CreateUpdateScheduleCrossPlatform(this.LuceneIndex, value);
+                _automaticUpdates = value;
+            }
+        }
+
+        private IndexSchedule? _automaticUpdates = null;
+
+        
     }
 }
