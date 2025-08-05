@@ -27,6 +27,12 @@ TARILIO versions contain additional closed-source code and are for commercial us
 
 [TARILIO Pro](https://dtsearch.co.uk/news/product/tarilio-pro/) 1.1.9337 (Released 25 July 2025) 
 
+## Translation
+If you want to translate the user interface, use Language File Editor (LFE)
+[https://github.com/electronart/esearch-project-translation](https://github.com/electronart/esearch-project-translation)
+
+
+
 ## Support or feedback
 
 If you need technical support, have suggestions for improvement, or want to report bugs, email: [support@electronart.co.uk](support@electronart.co.uk)
