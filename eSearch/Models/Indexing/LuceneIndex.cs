@@ -29,6 +29,7 @@ using System.Linq;
 using eSearch.Interop;
 using eSearch.Models.Search.LuceneCustomFieldComparers;
 using S = eSearch.ViewModels.TranslationsViewModel;
+using eSearch.Interop.Indexing;
 
 namespace eSearch.Models.Indexing
 {
@@ -118,7 +119,7 @@ namespace eSearch.Models.Indexing
 
         #region Lucene Vars
 
-        private bool _open;
+        private bool _openWrite;
         private FSDirectory? _fsDirectory;
         private IndexWriter? _indexWriter;
         private IndexReader? _indexReader;
@@ -337,7 +338,7 @@ namespace eSearch.Models.Indexing
             // TODO Figure out how to close this properly.
             _indexWriter = null;
             _fsDirectory = null;
-            _open = false;
+            _openWrite = false;
             _wordWheel = null; // Invalidates the wheel.
         }
 
@@ -350,7 +351,7 @@ namespace eSearch.Models.Indexing
             _indexReader = null;
             _fsDirectory?.Dispose();
             _fsDirectory = null;
-            _open = false;
+            _openWrite = false;
             _wordWheel = null; // Invalidate the word wheel.
         }
 
@@ -363,35 +364,41 @@ namespace eSearch.Models.Indexing
             return _indexReader;
         }
 
-        public bool OpenWrite(bool create)
+        public void OpenWrite(bool create)
         {
-            if (_open) return false;
-            #region Debugging a crash...  https://stackoverflow.com/questions/65641448/can-not-create-instance-of-lucene-net-standardanalyzer
-            //List<string> list = new List<string>();
-            //list.Add("hello world");
-            #endregion
-            const LuceneVersion AppLuceneVersion = LuceneVersion.LUCENE_48;
-            _fsDirectory = FSDirectory.Open(GetAbsolutePath());
-
-
-            var analyser = GetIndexingAnalyser();
-            var indexConfig = Program.IndexLibrary.GetConfiguration(this);
-
-            var indexWriterConfig = new IndexWriterConfig(AppLuceneVersion, analyser);
-            indexWriterConfig.RAMBufferSizeMB = 256;
-            if (create)
+            try
             {
-                indexWriterConfig.OpenMode = OpenMode.CREATE;
-            }
-            else
+                if (_openWrite) throw new FailedToOpenIndexException("The index is already open.");
+                #region Debugging a crash...  https://stackoverflow.com/questions/65641448/can-not-create-instance-of-lucene-net-standardanalyzer
+                //List<string> list = new List<string>();
+                //list.Add("hello world");
+                #endregion
+                const LuceneVersion AppLuceneVersion = LuceneVersion.LUCENE_48;
+                _fsDirectory = FSDirectory.Open(GetAbsolutePath());
+
+
+                var analyser = GetIndexingAnalyser();
+                var indexConfig = Program.IndexLibrary.GetConfiguration(this);
+
+                var indexWriterConfig = new IndexWriterConfig(AppLuceneVersion, analyser);
+                indexWriterConfig.RAMBufferSizeMB = 256;
+                if (create)
+                {
+                    indexWriterConfig.OpenMode = OpenMode.CREATE;
+                }
+                else
+                {
+                    indexWriterConfig.OpenMode = OpenMode.APPEND;
+                }
+
+
+
+                _indexWriter = new IndexWriter(_fsDirectory, indexWriterConfig);
+                _openWrite = true;
+            } catch (Exception ex)
             {
-                indexWriterConfig.OpenMode = OpenMode.APPEND;
+                throw new FailedToOpenIndexException($"An error occurred opening Lucene Index: {ex.Message}", ex);
             }
-
-
-
-            _indexWriter = new IndexWriter(_fsDirectory, indexWriterConfig);
-            return true;
         }
 
         /// <summary>

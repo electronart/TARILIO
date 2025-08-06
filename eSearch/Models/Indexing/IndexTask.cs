@@ -1,4 +1,5 @@
 ﻿using eSearch.Interop;
+using eSearch.Interop.Indexing;
 using eSearch.Models.Configuration;
 using eSearch.Models.DataSources;
 using eSearch.Models.Documents;
@@ -81,9 +82,6 @@ namespace eSearch.Models.Indexing
             }
         }
 
-
-        
-
         public ProgressViewModel GetProgressViewModel()
         {
             return progressView;
@@ -146,13 +144,11 @@ namespace eSearch.Models.Indexing
                         configurable.UseIndexConfig(indexConfig);
                     }
                 }
-
-                bool opened = Index.OpenWrite(!append);
-                if (!opened)
-                {
-                    Logger.Log(Severity.ERROR, "Failed to open index for writing - Is it already open?");
-                    return;
-                }
+                /*
+                 * Note - This may throw 'FailedToOpenIndexException'.
+                 * It is rethrown intentionally (view catch logic)
+                 */
+                Index.OpenWrite(!append); 
 
                 try
                 {
@@ -175,12 +171,7 @@ namespace eSearch.Models.Indexing
                             }
                         }
                         Source.GetNextDoc(out document, out isDiscoveryComplete);
-#if DEBUG
-                        if (document?.FileName?.Contains("007") ?? false)
-                        {
-                            Debug.WriteLine("007 Found..");
-                        }
-#endif
+
                         #region Check for Pause / Cancel
                         mrse.WaitOne(); // This is the point where the thread will pause if Pause() has been called.
                         
@@ -220,13 +211,6 @@ namespace eSearch.Models.Indexing
 
                             if (document.ShouldSkipIndexing == IDocument.SkipReason.DontSkip) // Some documents are skipped due to parse errors or being ignored file types etc.
                             {
-#if DEBUG
-                                int totalDiscovered = Source.GetTotalDiscoveredDocuments();
-                                if (IndexedDocuments > totalDiscovered)
-                                {
-                                    Debug.WriteLine("???");
-                                }
-#endif
 
                                 documentBatch.Add(document);
                                 
@@ -330,9 +314,12 @@ namespace eSearch.Models.Indexing
                         Logger.Log(Severity.WARNING, "Error getting total number of documents in index", ex);
                     }
 
-                    if (Logger.NumErrors > 0)
+                    if (Logger is ILogger2 logger2)
                     {
-                        finishStatus.AppendLine(S.Get("Error(s) during indexing. Check log for details."));
+                        if (logger2.GetNumErrors() > 0)
+                        {
+                            finishStatus.AppendLine(S.Get("Error(s) during indexing. Check log for details."));
+                        }
                     }
 
                     _progressStatus = finishStatus.ToString();
@@ -342,7 +329,12 @@ namespace eSearch.Models.Indexing
                     Logger.Log(Severity.INFO, "Index Task Finished");
                 }
 
-            } catch (Exception ex)
+            } 
+            catch (FailedToOpenIndexException f)
+            {
+                throw;
+            }
+            catch (Exception ex)
             {
                 Logger.Log(Severity.ERROR, "Fatal error during indexing", ex);
                 Index.CloseWrite();
@@ -350,11 +342,7 @@ namespace eSearch.Models.Indexing
             } finally
             {
                 progressView.EndWatching();
-                string indexLog = Logger.BuildTxtLog("", "");
-
-
-                File.WriteAllText(
-                    Path.Combine(Index.GetAbsolutePath(), "IndexTask.txt"), indexLog );
+                
             }
         }
     }

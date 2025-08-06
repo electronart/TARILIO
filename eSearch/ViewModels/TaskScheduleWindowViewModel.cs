@@ -61,6 +61,7 @@ namespace eSearch.ViewModels
             }
             set
             {
+                // Ugh, avalonia... this is not bound to, instead the window itself handles it
                 this.RaiseAndSetIfChanged(ref _startFrom, value);
             }
         }
@@ -101,5 +102,19 @@ namespace eSearch.ViewModels
                 return [ S.Get("Day(s)"), S.Get("Week(s)")];
             } 
         }
+
+        public string DisplayedErrorMsg
+        {
+            get
+            {
+                return _displayedErrorMsg;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _displayedErrorMsg, value);
+            }
+        }
+
+        private string _displayedErrorMsg = string.Empty;
     }
 }

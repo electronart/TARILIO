@@ -32,7 +32,7 @@ namespace eSearch.Views
 
         private async void BtnAutomatic_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            if (DataContext is MainWindowViewModel vm)
+            if (DataContext is UpdateIndexWindowViewModel vm)
             {
                 if (vm.SelectedIndex == null) return;
                 

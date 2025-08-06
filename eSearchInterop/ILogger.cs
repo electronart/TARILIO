@@ -13,4 +13,12 @@ namespace eSearch.Interop
 
         public void Log(Severity severity, string message, Exception? exception = null);
     }
+
+    public interface ILogger2 : ILogger
+    {
+        public int GetNumErrors();
+
+        public int GetNumWarnings();
+
+    }
 }

@@ -31,6 +31,9 @@ using UglyToad.PdfPig.Fonts.TrueType.Names;
 using eSearch.Interop;
 using eSearch.Models.Logging;
 using eSearch.Models.Indexing;
+using eSearch.Interop.Indexing;
+using System.Threading;
+using Timer = System.Timers.Timer;
 
 namespace eSearch
 {
@@ -68,14 +71,13 @@ namespace eSearch
                 {
                     string indexId = args[args.IndexOf("--scheduled") + 1];
                     WasLaunchedAsScheduledIndexUpdate = indexId;
-
-                    List<ILogger> loggers = new List<ILogger>();
-#if DEBUG
-                    loggers.Add(new DebugLogger());
-#endif
-                    var indexTaskLog = new IndexTaskLog();
-
-                    RunScheduledIndexUpdate(indexId)
+                    var index = Program.IndexLibrary.GetIndexById(indexId);
+                    if (index == null)
+                    {
+                        throw new ArgumentException("Unrecognized IndexID");
+                    }
+                    RunScheduledIndexUpdate(index);
+                    return;
                 } else
                 {
                     throw new ArgumentException("`--scheduled` argument passed, but no IndexID supplied");
@@ -89,19 +91,60 @@ namespace eSearch
             timer.Start();
         }
 
-        private static void RunScheduledIndexUpdate(string IndexID, ILogger logger)
+        private static void RunScheduledIndexUpdate(IIndex index)
         {
-            var index = Program.IndexLibrary.GetIndexById(IndexID);
-            if (index == null)
+            DateTime started = DateTime.Now;
+            List<ILogger> loggers = new List<ILogger>();
+#if DEBUG
+            loggers.Add(new DebugLogger());
+#endif
+            var indexTaskLog = new IndexTaskLog();
+            loggers.Add(indexTaskLog);
+            var logger = new MultiLogger(loggers);
+            try
             {
-                logger.Log(ILogger.Severity.ERROR, String.Format(S.Get("Could not find index with ID {0}"), IndexID));
-                return;
-            } else
-            {
+
                 logger.Log(ILogger.Severity.INFO, String.Format(S.Get("Scheduled Index of {0} is starting..."), index.Name));
+                var indexConfig = Program.IndexLibrary.GetConfiguration(index);
+                if (indexConfig == null)
+                {
+                    throw new Exception("Could not find index configuration");
+                }
+                #region Attempt the Index Task. Opening it may fail if the user is already writing to it, so there is retry logic for this.
+            retryOpenIndex:
+                int openAttempts = 0;
+                try
+                {
+                    var dummyViewModel = new ProgressViewModel(); // TODO Placeholder.... Need a better solution to this.
+                    IndexTask task = new IndexTask(indexConfig.GetMainDataSource(), index, dummyViewModel, false, true, logger);
+                    task.Execute(); // BLOCKING - This one call will keep this thread blocked potentially hours depending on whats to be indexed.
+                                    // It may also throw FailedToOpenIndexException 
+                    
+                }
+                catch (FailedToOpenIndexException ex)
+                {
+                    if (openAttempts < 3)
+                    {
+                        ++openAttempts;
+                        logger.Log(ILogger.Severity.WARNING, $"Failed to open index. It may be locked. Will try again in 5 minutes... (Attempt {openAttempts}/3)", ex);
+                        Thread.Sleep(TimeSpan.FromMinutes(5));
+                        goto retryOpenIndex;
+                    }
+                    else
+                    {
+                        logger.Log(ILogger.Severity.ERROR, "Could not open the index after 3 attempts. The scheduled index task was cancelled.", ex);
+                    }
+                }
+                #endregion
+            } catch (Exception ex)
+            {
+                logger.Log(ILogger.Severity.ERROR, "An unhandled Exception occurred during the scheduled index task.", ex);
+            } finally
+            {
+                string indexLog = indexTaskLog.BuildTxtLog($"Sheduled Task", "");
+                File.WriteAllText(
+                    Path.Combine(index.GetAbsolutePath(), "ScheduledIndexTask.txt"), indexLog);
             }
-
-
         }
 
         private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)
@@ -500,7 +543,7 @@ namespace eSearch
         {
             var config = ProgramConfig;
             string output = JsonConvert.SerializeObject(ProgramConfig, Formatting.Indented);
-            Directory.CreateDirectory(Path.GetDirectoryName(ESEARCH_CONFIG_FILE));
+            System.IO.Directory.CreateDirectory(Path.GetDirectoryName(ESEARCH_CONFIG_FILE));
             File.WriteAllText(ESEARCH_CONFIG_FILE, output);
         }
 
