@@ -25,10 +25,11 @@ namespace eSearch.Views
                 var date = vm.StartFrom;
                 if ( date == null)
                 {
-                    date = DateTime.Now;   
+                    date = DateTime.Now;
+                    vm.StartFrom = date;
                 }
                 // TODO This is ugly...
-                StartDatePicker.SelectedDate = date;
+                StartDatePicker.SelectedDate = new DateTimeOffset((DateTime)date);
 
                 string hours    = ((DateTime)date).ToString("HH", CultureInfo.InvariantCulture);
                 string minutes  = ((DateTime)date).ToString("mm", CultureInfo.InvariantCulture);

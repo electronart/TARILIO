@@ -117,6 +117,7 @@ namespace eSearch
                 {
                     var dummyViewModel = new ProgressViewModel(); // TODO Placeholder.... Need a better solution to this.
                     IndexTask task = new IndexTask(indexConfig.GetMainDataSource(), index, dummyViewModel, false, true, logger);
+                    task.ResumeIndexing();
                     task.Execute(); // BLOCKING - This one call will keep this thread blocked potentially hours depending on whats to be indexed.
                                     // It may also throw FailedToOpenIndexException 
                     

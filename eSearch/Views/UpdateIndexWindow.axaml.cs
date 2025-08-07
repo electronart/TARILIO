@@ -12,6 +12,7 @@ using S = eSearch.ViewModels.TranslationsViewModel;
 using System.Text;
 using ReactiveUI;
 using System.Linq;
+using System.Globalization;
 
 namespace eSearch.Views
 {
@@ -28,6 +29,19 @@ namespace eSearch.Views
             BtnRebuild.Click += BtnRebuild_Click;
             BtnRename.Click += BtnRename_Click;
             BtnAutomatic.Click += BtnAutomatic_Click;
+            BtnCancelSchedule.Click += BtnCancelSchedule_Click;
+        }
+
+        private void BtnCancelSchedule_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (DataContext is UpdateIndexWindowViewModel vm)
+            {
+                if (vm.SelectedIndex == null) return;
+                var config = vm.IndexLibrary?.GetConfiguration(vm.SelectedIndex);
+                config.AutomaticUpdates = null; // This will remove the schedule.
+                vm.IndexLibrary?.SaveLibrary();
+                refreshView();
+            }
         }
 
         private async void BtnAutomatic_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -36,7 +50,7 @@ namespace eSearch.Views
             {
                 if (vm.SelectedIndex == null) return;
                 
-                var config = vm.IndexLibrary.GetConfiguration(vm.SelectedIndex);
+                var config = vm.IndexLibrary?.GetConfiguration(vm.SelectedIndex);
                 if (config == null) return; // TODO I'm not sure about this...
 
                 var scheduleVM = TaskScheduleWindowViewModel.FromIndexSchedule(config.AutomaticUpdates);
@@ -45,7 +59,8 @@ namespace eSearch.Views
                 if (newSchedule != null)
                 {
                     config.AutomaticUpdates = newSchedule;
-                    vm.IndexLibrary.SaveLibrary();
+                    vm.IndexLibrary?.SaveLibrary();
+                    refreshView();
                 }
             }
         }
@@ -243,6 +258,80 @@ namespace eSearch.Views
             if (DataContext is UpdateIndexWindowViewModel viewModel)
             {
                 viewModel.PropertyChanged += ViewModel_PropertyChanged;
+                refreshView();
+            }
+        }
+
+        private void refreshView()
+        {
+            if (DataContext is UpdateIndexWindowViewModel viewModel)
+            {
+                if (viewModel.SelectedIndex != null)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb
+                        .AppendLine(viewModel.SelectedIndex.Name);
+                        
+
+                    var config = viewModel.IndexLibrary?.GetConfiguration(viewModel.SelectedIndex);
+                    if (config?.AutomaticUpdates != null)
+                    {
+                        var schd = config.AutomaticUpdates;
+                        string intervalSizeLocalized = "";
+                        // TODO Hack...
+                        var schdVM = new TaskScheduleWindowViewModel();
+                        switch(schd.IntervalSize)
+                        {
+                            case IntervalSize.Day:
+                                intervalSizeLocalized = schdVM.AvailableIntervalSizes[0];
+                                break;
+                            case IntervalSize.Week:
+                                intervalSizeLocalized = schdVM.AvailableIntervalSizes[1];
+                                break;
+                        }
+
+
+                        var culture = eSearch.Models.Utils.GetPreferredCulture(out var isError);
+
+                        // Eg. Every 3 Days at 12:00 PM from 1st August 2025
+                        sb.AppendLine(String.Format(S.Get("Schedule: Every {0} at {1} from {2}"), [
+                            $"{schd.Interval} {intervalSizeLocalized}",
+                            $"{ schd.StartingFrom.ToString("t", culture)}",
+                            $"{schd.StartingFrom.ToString("D",culture)}"
+                        ]));
+                    } else
+                    {
+                        sb.AppendLine(S.Get("Not Scheduled."));
+
+                    }
+
+                    sb.AppendLine()
+                      .AppendLine(viewModel.SelectedIndex.GetAbsolutePath());
+
+                    try
+                    {
+                        viewModel.SelectedIndex.OpenRead();
+                        sb
+                            .AppendLine()
+                            .AppendLine(String.Format(S.Get("{0} Document(s)"), viewModel.SelectedIndex.GetTotalDocuments().ToString("N0")));
+                        viewModel.SelectedIndex.EnsureClosed();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Non fatal - Failed to open index to retrieve the number of documents");
+                    }
+                    //.AppendLine()
+                    //.AppendLine(SelectedIndex.Description);
+
+                    viewModel.DisplayedIndexInformation = sb.ToString();
+
+                    bool scheduled = viewModel.IndexLibrary?.GetConfiguration(viewModel.SelectedIndex)?.AutomaticUpdates != null;
+                    viewModel.ShowCancelIndexButton = scheduled;
+                } else
+                {
+                    viewModel.DisplayedIndexInformation = S.Get("No Index Selected.");
+                    viewModel.ShowCancelIndexButton = false;
+                }
             }
         }
 
@@ -255,29 +344,10 @@ namespace eSearch.Views
                     if (viewModel.SelectedIndex == null)
                     {
                         viewModel.DisplayedIndexInformation = S.Get("No Index Selected.");
+                        viewModel.ShowCancelIndexButton = false;
                     } else
                     {
-                        StringBuilder sb = new StringBuilder();
-                        sb
-                            .AppendLine(viewModel.SelectedIndex.Name)
-                            .AppendLine()
-                            .AppendLine(viewModel.SelectedIndex.GetAbsolutePath());
-                        try
-                        {
-                            viewModel.SelectedIndex.OpenRead();
-                            sb
-                                .AppendLine()
-                                .AppendLine(String.Format(S.Get("{0} Document(s)"), viewModel.SelectedIndex.GetTotalDocuments().ToString("N0")));
-                            viewModel.SelectedIndex.EnsureClosed();
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine("Non fatal - Failed to open index to retrieve the number of documents");
-                        }
-                        //.AppendLine()
-                        //.AppendLine(SelectedIndex.Description);
-
-                        viewModel.DisplayedIndexInformation = sb.ToString();
+                        refreshView();
                     }
                 }
             }

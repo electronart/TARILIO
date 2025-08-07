@@ -28,16 +28,23 @@ namespace eSearch.Models.Logging
             if (severity == ILogger.Severity.WARNING) ++warnings;
             if (severity == ILogger.Severity.ERROR) ++errors;
 
+            string sev = "INFO";
             switch(severity)
             {
                 case ILogger.Severity.ERROR:
+                    sev = "ERROR";
+                    break;
                 case ILogger.Severity.WARNING:
-                    Debug.WriteLine("ISSUE - " + message + " - Severity - " + severity.ToString());
-                    Debug.WriteLine(exception?.ToString() ?? "");
+                    sev = "WARNING";
                     break;
                 default:
-                    Debug.WriteLine(message + " --- " + exception.Message);
                     break;
+            }
+
+            Debug.WriteLine($"{sev}: {message}");
+            if (exception != null)
+            {
+                Debug.WriteLine($"Exception: {exception.ToString()}");
 
             }
 

@@ -21,11 +21,11 @@ namespace eSearch.ViewModels
         {
             var vm = new TaskScheduleWindowViewModel
             {
-                StartFrom = schedule?.StartingFrom ?? null,
-                RepeatEveryInterval = schedule?.Interval ?? null,
+                StartFrom = schedule?.StartingFrom ?? DateTime.Now,
+                RepeatEveryInterval = schedule?.Interval ?? 1,
             };
 
-            string? selectedIntervalSize = null;
+            string? selectedIntervalSize = vm.AvailableIntervalSizes[0];
             if (schedule?.IntervalSize == IntervalSize.Day)     { selectedIntervalSize = vm.AvailableIntervalSizes[0]; };
             if (schedule?.IntervalSize == IntervalSize.Week)    { selectedIntervalSize = vm.AvailableIntervalSizes[1]; };
 
@@ -35,9 +35,9 @@ namespace eSearch.ViewModels
 
         public bool TryGetValidSchedule(out IndexSchedule? schedule, out string? errorMsg)
         {
-            if (StartFrom == null) { schedule = null; errorMsg = S.Get("Must enter Starting Date."); return false; }
-            if (RepeatEveryInterval == null) { schedule = null; errorMsg = S.Get("Must configure repeats."); return false; };
-            if (RepeatEveryIntervalSize == null) { schedule = null; errorMsg = S.Get("Must configure repeats."); return false; }
+            if (StartFrom == null) { schedule = null; errorMsg = S.Get("Enter starting date."); return false; }
+            if (RepeatEveryInterval == null) { schedule = null; errorMsg = S.Get("Select the repeat interval."); return false; };
+            if (RepeatEveryIntervalSize == null) { schedule = null; errorMsg = S.Get("Select the repeat interval."); return false; }
             schedule = new IndexSchedule
             {
                 StartingFrom = (DateTime)StartFrom,
@@ -80,7 +80,7 @@ namespace eSearch.ViewModels
             }
         }
 
-        private int? _repeatEveryInterval;
+        private int? _repeatEveryInterval = 1;
 
         public string? RepeatEveryIntervalSize
         {
@@ -94,7 +94,7 @@ namespace eSearch.ViewModels
             }
         }
 
-        private string? _repeatEveryIntervalSize;
+        private string? _repeatEveryIntervalSize = S.Get("Day(s)");
 
         public List<string> AvailableIntervalSizes { 
             get

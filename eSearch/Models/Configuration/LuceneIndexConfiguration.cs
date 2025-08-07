@@ -19,7 +19,7 @@ using eSearch.Models.Indexing;
 namespace eSearch.Models.Configuration
 {
     [JsonObject(ItemTypeNameHandling = TypeNameHandling.Arrays)] // Ensure  this object is understood as a LuceneIndexConfiguration, not just an IIndexConfiguration when serialized/deserialized from an array of IIndexConfiguration.
-    public class LuceneIndexConfiguration : ViewModelBase, IIndexConfiguration
+    public class LuceneIndexConfiguration : ReactiveObject, IIndexConfiguration
     {
 
         

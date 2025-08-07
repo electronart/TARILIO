@@ -13,6 +13,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+	  <!-- TODO https://github.com/AvaloniaUI/Avalonia/discussions/9055 I was trying to fix the missing shadows but this did not work-->
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <TargetFramework>net8.0</TargetFramework>
 	<SelfContained>true</SelfContained>
 	<ApplicationIcon>esearch-icon.ico</ApplicationIcon>
