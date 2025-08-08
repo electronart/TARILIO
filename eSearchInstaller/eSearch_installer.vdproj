@@ -75,12 +75,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_30F120E828C2430E94379C0868636617"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_313E77718C854FE88909E217D98EE688"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -136,6 +130,12 @@
         "Entry"
         {
         "MsmKey" = "8:_442B16AC092E492191BA4B5B8DFA663B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_45C29631549444FDBD6B69AECF5BE802"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -721,20 +721,19 @@
     {
         "CustomAction"
         {
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_4B8F042760854CA882344C5D8EBCB7B4"
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_968CDBA763F84902A22EBC832FC35810"
             {
-            "Name" = "8:Primary output from eSearch (Active)"
+            "Name" = "8:Primary output from Installer Custom Actions (Active)"
             "Condition" = "8:"
-            "Object" = "8:_30F120E828C2430E94379C0868636617"
+            "Object" = "8:_45C29631549444FDBD6B69AECF5BE802"
             "FileType" = "3:1"
             "InstallAction" = "3:1"
             "Arguments" = "8:"
             "EntryPoint" = "8:"
             "Sequence" = "3:1"
-            "Identifier" = "8:_2F5E824F_2ABC_437C_BBBD_B891B2BD8DA8"
+            "Identifier" = "8:_F4949290_E54B_4EC9_A628_A0F6DA4DF756"
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:"
-            "Run64Bit" = "11:TRUE"
             }
         }
         "DefaultFeature"
@@ -3497,9 +3496,9 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_30F120E828C2430E94379C0868636617"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_45C29631549444FDBD6B69AECF5BE802"
             {
-            "SourcePath" = "8:..\\eSearch\\obj\\eSearch DEBUG\\net8.0\\win-x64\\eSearch.dll"
+            "SourcePath" = "8:..\\Installer Custom Actions\\obj\\Debug\\DIEventSourceCreator.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5A28C29878D94098A4424E44BE28C9F8"
@@ -3519,7 +3518,7 @@
             "ProjectOutputGroupRegister" = "3:1"
             "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:Built"
-            "OutputProjectGuid" = "8:{61DECB9A-BC60-46F9-A899-3396AC81C51B}"
+            "OutputProjectGuid" = "8:{ABC5E2DD-9C2B-4C2B-8E27-6679B9545AB8}"
             "ShowKeyOutput" = "11:TRUE"
                 "ExcludeFilters"
                 {

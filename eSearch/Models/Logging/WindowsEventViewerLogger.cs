@@ -41,7 +41,7 @@ namespace eSearch.Models.Logging
             {
                 eventLog.Source = SourceName;
                 EventLogEntryType entryType = MapSeverityToEntryType(severity);
-
+                eventLog.WriteEntry(fullMessage, entryType);
             }
         }
 

@@ -273,6 +273,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_788684B13BD84A62B232F3D20AF7B16C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_78B538CB34ED47E9B3FC4FEAC1F01972"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -591,12 +597,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_EFB32D519D8A4FC09318F40B97DAE75E"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_F38F3FE74CC944BDB853346094293920"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -721,31 +721,17 @@
     {
         "CustomAction"
         {
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_2612612BE24D4BEB8DB6854BAAF21759"
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_1E12C31804F74A9284C964B2B92EC7C4"
             {
-            "Name" = "8:Publish Items from eSearch (Active)"
+            "Name" = "8:Primary output from Installer Custom Actions (Active)"
             "Condition" = "8:"
-            "Object" = "8:_6C7783675FE342F983AA3A89BB77A428"
-            "FileType" = "3:2"
-            "InstallAction" = "3:1"
-            "Arguments" = "8:/Install"
-            "EntryPoint" = "8:"
-            "Sequence" = "3:1"
-            "Identifier" = "8:_BCC41DDC_2317_45BE_ACD1_CF96240027C8"
-            "InstallerClass" = "11:FALSE"
-            "CustomActionData" = "8:"
-            }
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_F826F66A1EA44F4580CC7DA15117C93A"
-            {
-            "Name" = "8:Primary output from eSearch (Active)"
-            "Condition" = "8:"
-            "Object" = "8:_EFB32D519D8A4FC09318F40B97DAE75E"
+            "Object" = "8:_788684B13BD84A62B232F3D20AF7B16C"
             "FileType" = "3:1"
             "InstallAction" = "3:1"
             "Arguments" = "8:"
             "EntryPoint" = "8:"
-            "Sequence" = "3:2"
-            "Identifier" = "8:_B07C95BB_D81A_418B_A68E_D2DD21708B0B"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_F05CBAD2_4515_48D9_A6DA_388B118A9857"
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:"
             }
@@ -3538,9 +3524,9 @@
                 {
                 }
             }
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_EFB32D519D8A4FC09318F40B97DAE75E"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_788684B13BD84A62B232F3D20AF7B16C"
             {
-            "SourcePath" = "8:..\\eSearch\\obj\\eSearch DEBUG\\net8.0\\win-x64\\eSearch.dll"
+            "SourcePath" = "8:..\\Installer Custom Actions\\obj\\Debug\\DIEventSourceCreator.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5A28C29878D94098A4424E44BE28C9F8"
@@ -3560,7 +3546,7 @@
             "ProjectOutputGroupRegister" = "3:1"
             "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:Built"
-            "OutputProjectGuid" = "8:{61DECB9A-BC60-46F9-A899-3396AC81C51B}"
+            "OutputProjectGuid" = "8:{ABC5E2DD-9C2B-4C2B-8E27-6679B9545AB8}"
             "ShowKeyOutput" = "11:TRUE"
                 "ExcludeFilters"
                 {
