@@ -29,14 +29,15 @@ namespace eSearch.Models.Logging
             if (severity == Severity.ERROR) ++errors;
             if (severity == Severity.WARNING) ++warnings;
 
-            string fullMessage  = $"Index ID: {index.Id}\n";
-                   fullMessage += $"Index Name: {index.Name}\n";
+            string fullMessage =  $"Index Name: {index.Name}\n";
+                   fullMessage += $"Index ID: {index.Id}\n";
+                   
                    fullMessage += $"{message}";
             if (exception != null)
             {
                 fullMessage += $"\n---\n{exception.ToString()}\n---\n";
             }
-            fullMessage += $"{Program.ProgramConfig.GetProductTagText} {Program.GetProgramVersion()}";
+            fullMessage += $"\n{Program.ProgramConfig.GetProductTagText()} {Program.GetProgramVersion()}";
             using (EventLog eventLog = new EventLog())
             {
                 eventLog.Source = SourceName;

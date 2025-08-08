@@ -100,6 +100,11 @@ namespace eSearch
 #endif
             var indexTaskLog = new IndexTaskLog();
             loggers.Add(indexTaskLog);
+            if (OperatingSystem.IsWindows())
+            {
+                WindowsEventViewerLogger winLogger = new WindowsEventViewerLogger(index);
+                loggers.Add(winLogger);
+            }
             var logger = new MultiLogger(loggers);
             try
             {

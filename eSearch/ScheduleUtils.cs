@@ -57,7 +57,7 @@ namespace eSearch
                     td.Triggers.Add(new WeeklyTrigger { WeeksInterval = (short)schedule.Interval, StartBoundary = schedule.StartingFrom });
                     break;
             }
-            string exe_path = Assembly.GetExecutingAssembly().Location;
+            string exe_path = Assembly.GetExecutingAssembly().Location.Replace(".dll",".exe"); // TODO Ugly hack
             td.Actions.Add(new ExecAction(exe_path, $"--scheduled {index.Id}"));
             return td;
         }

@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using eSearch.ViewModels;
 using System;
 using System.Globalization;
+using ucar.nc2.ft.point.standard;
 
 namespace eSearch.Views
 {
@@ -59,7 +60,9 @@ namespace eSearch.Views
             if (StartDatePicker.SelectedDate == null) return;
             if (StartTimePicker.SelectedTime == null) return;
             DateTime dt = ConvertFromDateTimeOffset(StartDatePicker.SelectedDate ?? new DateTimeOffset());
-            dt.Add(StartTimePicker.SelectedTime ?? new TimeSpan());
+            dt = new DateTime(dt.Year, dt.Month, dt.Day); // Remove existing time
+            var selectedTime = StartTimePicker.SelectedTime;
+            dt = dt.Add(StartTimePicker.SelectedTime ?? new TimeSpan());
             if (DataContext is TaskScheduleWindowViewModel vm)
             {
                 vm.StartFrom = dt; // cursed code..

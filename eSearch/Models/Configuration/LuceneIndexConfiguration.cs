@@ -227,8 +227,11 @@ namespace eSearch.Models.Configuration
             }
             set
             {
-                ScheduleUtils.CreateUpdateScheduleCrossPlatform(this.LuceneIndex, value);
-                _automaticUpdates = value;
+                if (_automaticUpdates != value)
+                {
+                    ScheduleUtils.CreateUpdateScheduleCrossPlatform(this.LuceneIndex, value);
+                    _automaticUpdates = value;
+                }
             }
         }
 
