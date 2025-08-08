@@ -326,7 +326,7 @@ namespace eSearch.Models.Indexing
                     _progress = 100;
                     _maxProgress = 100;
                     progressView.IsFinished = true;
-                    Logger.Log(Severity.INFO, "Index Task Finished");
+                    Logger.Log(Severity.INFO, finishStatus.ToString());
                 }
 
             } 
