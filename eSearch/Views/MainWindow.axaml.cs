@@ -89,7 +89,34 @@ namespace eSearch.Views
             MenuItemDebugMCPListTools.Click += MenuItemDebugMCPListTools_Click;
             menuItemShowSystemPrompt.Click += MenuItemShowSystemPrompt_Click;
 
+            menuItemDebugListModels.Click += MenuItemDebugListModels_Click;
 
+
+        }
+
+        private async void MenuItemDebugListModels_Click(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                if (mwvm.Session.Query.UseAISearch == false) return;
+                var aiConfig = Program.ProgramConfig.GetSelectedConfiguration();
+                if (aiConfig == null)
+                {
+                    return;
+                }
+                Debug.WriteLine("Fetching available models...");
+                CancellationTokenSource cts = new CancellationTokenSource(new TimeSpan(0, 0, 30));
+                var models = await Completions.TryGetAvailableModelIds(aiConfig, aiConfig.APIKey, cts.Token);
+                if (models == null) {
+                    Debug.WriteLine("Error fetching models.");
+                    return;
+                }
+                Debug.WriteLine($"{models.Count} models found:");
+                foreach(var model in models)
+                {
+                    Debug.WriteLine($" - {model}");
+                }
+            }
         }
 
         private void MenuItemShowSystemPrompt_Click(object? sender, RoutedEventArgs e)
@@ -2403,6 +2430,12 @@ namespace eSearch.Views
             return htmlDocumentControl;
         }
 
-        
+        private void MenuItem_Click_1(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+        }
+
+        private void MenuItem_Click_2(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+        }
     }
 }

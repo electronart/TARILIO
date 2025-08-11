@@ -165,6 +165,7 @@
 						<MenuItem Header="MCP">
 							<MenuItem Header="List tools to console" x:Name="MenuItemDebugMCPListTools"/>
 						</MenuItem>
+						<MenuItem Header="List Avail Models" x:Name="menuItemDebugListModels"/>
 					</MenuItem>
 				</Menu>
 			</StackPanel>
