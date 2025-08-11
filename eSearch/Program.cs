@@ -134,7 +134,7 @@ namespace eSearch
                     _scheduledIndexProgressVM = new ProgressViewModel();
                     IndexTask task = new IndexTask(indexConfig.GetMainDataSource(), index, _scheduledIndexProgressVM, false, true, _scheduledIndexLogger);
                     task.ResumeIndexing();
-                    task.Execute(); // BLOCKING - This one call will keep this thread blocked potentially hours depending on whats to be indexed.
+                    task.Execute(true); // BLOCKING - This one call will keep this thread blocked potentially hours depending on whats to be indexed.
                                     // It may also throw FailedToOpenIndexException 
                     
                 }

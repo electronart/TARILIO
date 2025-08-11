@@ -116,9 +116,14 @@ namespace eSearch.Models.Indexing
         /// </summary>
         public void Execute()
         {
+            Execute(false);
+        }
+
+        public void Execute(bool throwOnFailedToOpen = false)
+        {
             // In case the Index Directory previously failed to create...
             System.IO.Directory.CreateDirectory(Index.GetAbsolutePath());
-            
+
             startTime = DateTime.Now;
             Logger.Log(Severity.INFO, "Index Task Started", null);
             var indexConfig = Program.IndexLibrary.GetConfiguration(Index);
@@ -135,7 +140,7 @@ namespace eSearch.Models.Indexing
                 // Null when index all file types.
                 List<string> indexedExtensions = null;
 
-                
+
                 if (indexConfig != null)
                 {
                     indexedExtensions = indexConfig.SelectedFileExtensions;
@@ -148,7 +153,7 @@ namespace eSearch.Models.Indexing
                  * Note - This may throw 'FailedToOpenIndexException'.
                  * It is rethrown intentionally (view catch logic)
                  */
-                Index.OpenWrite(!append); 
+                Index.OpenWrite(!append);
 
                 try
                 {
@@ -165,7 +170,8 @@ namespace eSearch.Models.Indexing
                                 IndexedDocuments += documentBatch.Count;
                                 documentBatch.Clear();
                                 _batchWatch.Restart();
-                            } catch (Exception ex)
+                            }
+                            catch (Exception ex)
                             {
                                 Logger.Log(Severity.ERROR, "Exception whilst adding documents to index " + ex.ToString());
                             }
@@ -174,7 +180,7 @@ namespace eSearch.Models.Indexing
 
                         #region Check for Pause / Cancel
                         mrse.WaitOne(); // This is the point where the thread will pause if Pause() has been called.
-                        
+
                         if (Cancelling)
                         {
                             Logger.Log(Severity.INFO, "Index task was cancelled");
@@ -190,7 +196,7 @@ namespace eSearch.Models.Indexing
                             if (indexedExtensions != null)
                             {
                                 string fileType = document.FileType;
-                                if (!indexedExtensions.Contains(fileType) 
+                                if (!indexedExtensions.Contains(fileType)
                                     && fileType != "Database Record"        // Eg. Contents of a CSV File.
                                     )
                                 {
@@ -213,7 +219,7 @@ namespace eSearch.Models.Indexing
                             {
 
                                 documentBatch.Add(document);
-                                
+
 
                                 if (document.ExtractedFiles != null)
                                 {
@@ -222,7 +228,7 @@ namespace eSearch.Models.Indexing
                             }
                             else
                             {
-                                switch(document.ShouldSkipIndexing)
+                                switch (document.ShouldSkipIndexing)
                                 {
                                     case IDocument.SkipReason.TooLarge:
                                         Logger.Log(Severity.INFO, "Skip " + document.FileName + " - Too large");
@@ -236,8 +242,8 @@ namespace eSearch.Models.Indexing
                             int totalDiscoveredDocs = Source.GetTotalDiscoveredDocuments();
 
                             _maxProgress = totalDiscoveredDocs;
-                            _progress    = RetrievedDocuments;
-                            string strTimeRemaining  = ProgressCalculator.GetHumanFriendlyTimeRemainingLocalizablePrecise(startTime, Source.GetProgress());
+                            _progress = RetrievedDocuments;
+                            string strTimeRemaining = ProgressCalculator.GetHumanFriendlyTimeRemainingLocalizablePrecise(startTime, Source.GetProgress());
 
 
 
@@ -254,7 +260,7 @@ namespace eSearch.Models.Indexing
                                     + "\n" + currentDoc + " / " + totalDocs
                                     + "\n" + strTimeRemaining;
 
-                                
+
                             }
                         }
                         #endregion
@@ -266,7 +272,7 @@ namespace eSearch.Models.Indexing
                     #region If we should remove documents not found, do that now.
                     if (removeNotFound)
                     {
-                        _progressStatus = S.Get("Cleaning up...");              
+                        _progressStatus = S.Get("Cleaning up...");
                         int i = Index.GetTotalDocuments();
                         IDocument doc;
                         while (i-- > 0) // Loop through backwards since we're doing deletions
@@ -308,17 +314,21 @@ namespace eSearch.Models.Indexing
                         Index.OpenRead();
                         finishStatus.AppendLine(String.Format(S.Get("{0} Document(s) Indexed"), IndexedDocuments.ToString("N0")));
                         Index.EnsureClosed();
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         // Treat this as non-fatal.
                         Logger.Log(Severity.WARNING, "Error getting total number of documents in index", ex);
                     }
+
+                    Severity finalSeverity = Severity.INFO;
 
                     if (Logger is ILogger2 logger2)
                     {
                         if (logger2.GetNumErrors() > 0)
                         {
                             finishStatus.AppendLine(S.Get("Error(s) during indexing. Check log for details."));
+                            finalSeverity = Severity.ERROR;
                         }
                     }
 
@@ -326,23 +336,36 @@ namespace eSearch.Models.Indexing
                     _progress = 100;
                     _maxProgress = 100;
                     progressView.IsFinished = true;
-                    Logger.Log(Severity.INFO, finishStatus.ToString());
+
+                    
+
+                    Logger.Log(finalSeverity, finishStatus.ToString());
                 }
 
-            } 
+            }
             catch (FailedToOpenIndexException f)
             {
-                throw;
+                Logger.Log(Severity.ERROR, "Failed to open Index", f.InnerException);
+                if (throwOnFailedToOpen) throw;
             }
             catch (Exception ex)
             {
                 Logger.Log(Severity.ERROR, "Fatal error during indexing", ex);
-                Index.CloseWrite();
 
-            } finally
+
+            }
+            finally
             {
+                Index.CloseWrite();
                 progressView.EndWatching();
-                
+
+                if (Logger is IndexTaskLog logger)
+                {
+                    string indexLog = logger.BuildTxtLog("", "");
+                    File.WriteAllText(
+                        Path.Combine(Index.GetAbsolutePath(), "IndexTask.txt"), indexLog);
+                }
+
             }
         }
     }
