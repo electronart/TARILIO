@@ -452,9 +452,9 @@ namespace eSearch
             {
                 #if STANDALONE
                 string dir = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Exports");
-                if (!Directory.Exists(dir))
+                if (!System.IO.Directory.Exists(dir))
                 {
-                    Directory.CreateDirectory(dir);
+                    System.IO.Directory.CreateDirectory(dir);
                 }
                 return dir;
                 #else
