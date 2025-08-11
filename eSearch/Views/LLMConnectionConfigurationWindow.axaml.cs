@@ -212,6 +212,7 @@ public partial class LLMConnectionConfigurationWindow : Window
             switch (vm.SelectedService)
             {
                 case Models.AI.LLMService.Perplexity:
+                case LLMService.OpenRouter:
                     // Require an API Key.
                     if (string.IsNullOrWhiteSpace(vm.APIKey))
                     {
@@ -220,6 +221,8 @@ public partial class LLMConnectionConfigurationWindow : Window
                     }
                     break;
                 case Models.AI.LLMService.ChatGPT:
+                case LLMService.Ollama:
+                case LLMService.LMStudio:
                     // Require an API Key.
                     if (string.IsNullOrWhiteSpace(vm.APIKey))
                     {

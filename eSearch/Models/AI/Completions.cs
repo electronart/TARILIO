@@ -44,6 +44,12 @@ namespace eSearch.Models.AI
         {
             switch(aiConfig.LLMService)
             {
+                case LLMService.OpenRouter:
+                    return "https://openrouter.ai/api/v1/";
+                case LLMService.LMStudio:
+                    return "http://127.0.0.1:1234/v1";
+                case LLMService.Ollama:
+                    return "http://127.0.0.1:11434/v1";
                 case LLMService.Perplexity:
                     return "https://api.perplexity.ai";
                 case LLMService.ChatGPT:
