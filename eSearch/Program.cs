@@ -339,7 +339,7 @@ namespace eSearch
                 }
                 return dir;
                 #else
-                return Path.Combine(Program.GetMainWindow().StorageProvider.TryGetWellKnownFolderAsync(Avalonia.Platform.Storage.WellKnownFolder.Documents).Result.Path, "eSearch");
+                return Path.Combine(Program.GetMainWindow().StorageProvider.TryGetWellKnownFolderAsync(Avalonia.Platform.Storage.WellKnownFolder.Documents).Result.Path.LocalPath, "eSearch");
                 #endif
             }
         }
