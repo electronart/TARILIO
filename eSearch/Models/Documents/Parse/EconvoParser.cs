@@ -87,6 +87,10 @@ namespace eSearch.Models.Documents.Parse
                 new Metadata {
                     Key     = "Started",
                     Value   = (firstMessage?.Time ?? DateTime.MinValue).ToString("yyyy-MM-dd HH-mm-ss")
+                },
+                new Metadata {
+                    Key     = "Model",
+                    Value   = firstMessage?.Model ?? "???"
                 }
             ];
             parseResult = result;

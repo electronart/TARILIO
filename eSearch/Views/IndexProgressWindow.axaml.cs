@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using com.sun.tools.@internal.ws.processor.model.jaxb;
 using DocumentFormat.OpenXml.Spreadsheet;
+using eSearch.Interop.Indexing;
 using eSearch.Models;
 using eSearch.Models.Indexing;
 using eSearch.ViewModels;
@@ -77,6 +78,7 @@ namespace eSearch.Views
             IndexTask?.ResumeIndexing();
         }
 
+        // TODO I don't like the way this is implemented - Error handling is complex
         public static async Task<Tuple<TaskDialogResult, IndexTask>> ShowProgressDialogAndStartIndexTask(IndexTask indexTask, Window parent)
         {
             var progressViewModel = indexTask.GetProgressViewModel();
@@ -109,9 +111,18 @@ namespace eSearch.Views
         {
             if (e.Argument is IndexProgressWindow progressWindow)
             {
-                progressWindow.IndexTask?.ResumeIndexing();
-                progressWindow.IndexTask?.Execute();
-                e.Result = progressWindow;
+
+                try
+                {
+                    progressWindow.IndexTask?.ResumeIndexing();
+                    progressWindow.IndexTask?.Execute(false);
+                } catch (Exception ex)
+                {
+
+                } finally
+                {
+                    e.Result = progressWindow;
+                }
             }
             
         }

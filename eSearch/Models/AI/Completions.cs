@@ -19,6 +19,9 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using eSearch.Interop.AI;
+using OpenAI;
+using System.ClientModel;
+using DocumentFormat.OpenXml.Office2019.Drawing.Model3D;
 
 namespace eSearch.Models.AI
 {
@@ -40,10 +43,48 @@ namespace eSearch.Models.AI
             return model;
         }
 
+        /// <summary>
+        /// Attempt to list the models available at the given endpoint. 
+        /// </summary>
+        /// <param name="endpointURL">eg. "https://api.openai.com/v1"</param>
+        /// <param name="api_key">API Key or null</param>
+        /// <returns>May return null on error.</returns>
+        public static async Task<List<string>?> TryGetAvailableModelIds(AISearchConfiguration config, string? api_key, CancellationToken cancellationToken)
+        {
+            
+            try
+            {
+                var modelIds = new List<string>();
+                var options     = new OpenAIClientOptions { Endpoint = new Uri(GetOpenAIEndpointURL(config)) };
+                var credentials = (api_key != null) ? new ApiKeyCredential(api_key) : null ;
+                var client = new OpenAIClient(credentials, options);
+                var modelClient = client.GetOpenAIModelClient();
+                var models = await modelClient.GetModelsAsync(cancellationToken);
+                
+                
+                foreach(var model in models.Value)
+                {
+                    modelIds.Add(model.Id);
+                }
+                return modelIds;
+
+            } catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+
         private static string GetOpenAIEndpointURL(AISearchConfiguration aiConfig)
         {
             switch(aiConfig.LLMService)
             {
+                case LLMService.OpenRouter:
+                    return "https://openrouter.ai/api/v1";
+                case LLMService.LMStudio:
+                    return "http://127.0.0.1:1234/v1";
+                case LLMService.Ollama:
+                    return "http://127.0.0.1:11434/v1";
                 case LLMService.Perplexity:
                     return "https://api.perplexity.ai";
                 case LLMService.ChatGPT:
@@ -306,6 +347,11 @@ namespace eSearch.Models.AI
         CancellationToken cancellationToken = default)
         {
             // Set up Semantic Kernel with OpenAI
+
+            var customHttpClient = new HttpClient();
+            customHttpClient.DefaultRequestHeaders.Add("Referer", "https://github.com/electronart/esearch-project");
+            customHttpClient.DefaultRequestHeaders.Add("X-Title", Program.ProgramConfig.GetProductTagText());
+
             var builder = Kernel.CreateBuilder();
 
             string modelId = GetCurrentChatModel(aiConfig);
@@ -314,7 +360,8 @@ namespace eSearch.Models.AI
 
             builder.AddOpenAIChatCompletion(modelId: modelId,
                                             endpoint: endpoint,
-                                            apiKey: apiKey );
+                                            apiKey: apiKey,
+                                            httpClient: customHttpClient);
 
             var kernel = builder.Build();
 

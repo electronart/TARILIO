@@ -13,6 +13,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+	  <!-- TODO https://github.com/AvaloniaUI/Avalonia/discussions/9055 I was trying to fix the missing shadows but this did not work-->
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <TargetFramework>net8.0</TargetFramework>
 	<SelfContained>true</SelfContained>
 	<ApplicationIcon>esearch-icon.ico</ApplicationIcon>
@@ -108,11 +110,12 @@
     <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Debug - Portable'">
       <Version>11.0.10</Version>
     </PackageReference>
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.2.6" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.6" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.6" />
-    <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.0.3" />
     <PackageReference Include="CefGlue.Avalonia" Version="120.6099.210" />
     <PackageReference Include="CefGlue.Common" Version="120.6099.210" />
+    <PackageReference Include="Core.System.Configuration.Install" Version="1.1.0" />
     <PackageReference Include="CsvHelper" Version="33.1.0" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.20.0" />
     <PackageReference Include="DocumentFormat.OpenXml.Features" Version="2.19.0" />
@@ -145,6 +148,7 @@
     <PackageReference Include="System.Speech" Version="9.0.2" />
     <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+    <PackageReference Include="TaskScheduler" Version="2.12.2" />
     <PackageReference Include="TikaOnDotNet" Version="1.17.1" />
     <PackageReference Include="TikaOnDotnet.TextExtractor" Version="1.17.1" />
     <PackageReference Include="Toxy" Version="2.0.0" />
@@ -257,7 +261,6 @@
   </Target>
 	<!-- Make build fail if openjdk isn't present -->
    <Target Name="CheckOpenJDKDirectory" BeforeTargets="Build">
-	    <Error Text="The directory 'openjdk-22.0.1_windows-x64_bin' does not exist. Please ensure it is present before building. https://jdk.java.net/archive/"
-			    Condition="!Exists('openjdk-22.0.1_windows-x64_bin')" />
+	    <Error Text="The directory 'openjdk-22.0.1_windows-x64_bin' does not exist. Please ensure it is present before building. https://jdk.java.net/archive/" Condition="!Exists('openjdk-22.0.1_windows-x64_bin')" />
    </Target>
 </Project>

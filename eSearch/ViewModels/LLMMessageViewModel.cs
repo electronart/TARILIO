@@ -58,6 +58,13 @@ namespace eSearch.ViewModels
             return ExistingMessage;
         }
 
+        public bool IsMessageRoleSystem
+        {
+            get {
+                return Role.ToLower() == "system";
+            }
+        }
+
         public CancellationTokenSource? CancellationSource
         {
             get

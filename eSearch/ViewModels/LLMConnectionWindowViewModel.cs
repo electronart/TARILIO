@@ -176,8 +176,9 @@ namespace eSearch.ViewModels
         {
             get
             {
-                var values = new ObservableCollection<LLMService>(Enum.GetValues(typeof(LLMService)).Cast<LLMService>());
-                return values;
+                var values = Enum.GetValues(typeof(LLMService)).Cast<LLMService>();
+                var sorted = values.OrderBy(x => x == LLMService.Custom ? "zzz" : x.GetDescription());
+                return new ObservableCollection<LLMService>(sorted);
             }
         }
 

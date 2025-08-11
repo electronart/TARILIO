@@ -3,42 +3,58 @@
 RFC4646
 en-GB
 # --- Common ---
+Cancelled
+[Çååñçééļļééð]
+Size
+[Šîîžéé]
+Copy
+[Çööþýý]
 File not found
 [Ƒîîļéé ñööţ ƒööûûñð]
-Something went wrong
-[Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ]
 OK
 [ÖÖĶ]
 Cancel
 [Çååñçééļ]
-Name
-[Ñååɱéé]
+Append Note:
+[ÅÅþþééñð Ñööţéé∶]
+Copy to:
+[Çööþýý ţöö∶]
+Clipboard
+[Çļîîþƀööååŕð]
+File:
+[Ƒîîļéé∶]
 Append Date
 [ÅÅþþééñð Ðååţéé]
+Save
+[Šååṽéé]
+Type
+[Ţýýþéé]
+Name
+[Ñååɱéé]
 Title
 [Ţîîţļéé]
-Size
-[Šîîžéé]
 Score
 [Šçööŕéé]
 Close
 [Çļööšéé]
-Created
-[Çŕééååţééð]
-Modified
-[Ṁööðîîƒîîééð]
-Indexed
-[ÎÎñðééẋééð]
-Path
-[Þååţĥ]
-Settings...
-[Šééţţîîñĝš···]
+Help
+[Ĥééļþ]
+Copy Conversation
+[Çööþýý Çööñṽééŕšååţîîööñ]
+Error
+[ÉÉŕŕööŕ]
+Plugins
+[Þļûûĝîîñš]
+Remove
+[Ŕééɱööṽéé]
 Columns
 [Çööļûûɱñš]
 Words
 [Ŵööŕðš]
 Rows
 [Ŕööŵš]
+Soundex
+[Šööûûñðééẋ]
 Filters
 [Ƒîîļţééŕš]
 All
@@ -49,6 +65,8 @@ Include
 [ÎÎñçļûûðéé]
 Paragraphs
 [Þååŕååĝŕååþĥš]
+Search Settings
+[Šééååŕçĥ Šééţţîîñĝš]
 Synonyms
 [Šýýñööñýýɱš]
 New...
@@ -57,24 +75,26 @@ eSearch
 [ééŠééååŕçĥ]
 Delete
 [Ðééļééţéé]
-Update Index
-[ÛÛþðååţéé ÎÎñðééẋ]
 Update...
 [ÛÛþðååţéé···]
 Rename...
 [Ŕééñååɱéé···]
+Something went wrong
+[Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ]
+Delete {0}?
+[Ðééļééţéé {0}¿]
 Delete...
 [Ðééļééţéé···]
 # --- AboutWindow.axaml --- 
 Serial...
 [Šééŕîîååļ···]
-Online Help
-[ÖÖñļîîñéé Ĥééļþ]
 Licenses and acknowledgements
 [Ļîîçééñšééš ååñð ååçķñööŵļééðĝééɱééñţš]
 # --- AboutWindowViewModel.cs --- 
 Evaluation ({0} days remaining)
 [ÉÉṽååļûûååţîîööñ ({0} ðååýýš ŕééɱååîîñîîñĝ)]
+Does not expire
+[Ðööééš ñööţ ééẋþîîŕéé]
 Expires {0}
 [ÉÉẋþîîŕééš {0}]
 Expired {0}
@@ -82,26 +102,38 @@ Expired {0}
 Serial: None
 [Šééŕîîååļ∶ Ñööñéé]
 # --- ColorPickerWindow.axaml --- 
+# --- CompletionStreamingJSBinding.cs --- 
+# --- CopyConversationWindow.axaml --- 
+Transcript:
+[Ţŕååñšçŕîîþţ∶]
+# --- CopyConversationWindow.axaml.cs --- 
+# --- CopyConversationWindowViewModel.cs --- 
 # --- CopyDocumentWindow.axaml --- 
-Copy Document
-[Çööþýý Ðööçûûɱééñţ]
 Copied text:
 [Çööþîîééð ţééẋţ∶]
-Append Note:
-[ÅÅþþééñð Ñööţéé∶]
 Append File name:
 [ÅÅþþééñð Ƒîîļéé ñååɱéé∶]
+Append Query:
+[ÅÅþþééñð Ǫûûééŕýý∶]
+# --- CopyDocumentWindow.axaml.cs --- 
 Copy
 [Çööþýý]
-Copy to:
-[Çööþýý ţöö∶]
-Clipboard
-[Çļîîþƀööååŕð]
-File:
-[Ƒîîļéé∶]
+# --- CopyResultsTask.cs --- 
+Cancel Copying?
+[Çååñçééļ Çööþýýîîñĝ¿]
+Folder will not contain all files
+[Ƒööļðééŕ ŵîîļļ ñööţ çööñţååîîñ ååļļ ƒîîļééš]
 # --- DataColumn.cs --- 
+Created
+[Çŕééååţééð]
+Modified
+[Ṁööðîîƒîîééð]
+Indexed
+[ÎÎñðééẋééð]
 Accessed
 [ÅÅççééššééð]
+Path
+[Þååţĥ]
 Parser
 [Þååŕšééŕ]
 # --- DocumentType.cs --- 
@@ -129,6 +161,15 @@ Archives
 [ÅÅŕçĥîîṽééš]
 Source Code
 [Šööûûŕçéé Çööðéé]
+# --- ExportConversationWindow.axaml --- 
+Export Conversation
+[ÉÉẋþööŕţ Çööñṽééŕšååţîîööñ]
+Export
+[ÉÉẋþööŕţ]
+Export as
+[ÉÉẋþööŕţ ååš]
+File
+[Ƒîîļéé]
 # --- ExportSearchResultsViewModel.cs --- 
 Select output file type
 [Šééļééçţ ööûûţþûûţ ƒîîļéé ţýýþéé]
@@ -143,14 +184,10 @@ Results
 # --- ExportSearchResultsWindow.axaml --- 
 Export Search Results
 [ÉÉẋþööŕţ Šééååŕçĥ Ŕééšûûļţš]
-Save
-[Šååṽéé]
 All rows
 [ÅÅļļ ŕööŵš]
 Output as
 [ÖÖûûţþûûţ ååš]
-Type
-[Ţýýþéé]
 All columns
 [ÅÅļļ çööļûûɱñš]
 Output Directory
@@ -170,11 +207,14 @@ Must enter a file name
 [Ṁûûšţ ééñţééŕ åå ƒîîļéé ñååɱéé]
 File name contains illegal characters
 [Ƒîîļéé ñååɱéé çööñţååîîñš îîļļééĝååļ çĥååŕååçţééŕš]
+# --- FontPickerWindow.axaml --- 
 # --- HtmlDocumentControl.axaml.cs --- 
 Search Report
 [Šééååŕçĥ Ŕééþööŕţ]
 Document Information
 [Ðööçûûɱééñţ ÎÎñƒööŕɱååţîîööñ]
+Size
+[Šîîžéé]
 Hits in Context
 [Ĥîîţš îîñ Çööñţééẋţ]
 # --- IndexProgressWindow.axaml --- 
@@ -196,8 +236,8 @@ Stop words
 [Šţööþ ŵööŕðš]
 Maximum word length
 [Ṁååẋîîɱûûɱ ŵööŕð ļééñĝţĥ]
-Maximum file size (mb)
-[Ṁååẋîîɱûûɱ ƒîîļéé šîîžéé (ɱƀ)]
+Maximum file size (MB)
+[Ṁååẋîîɱûûɱ ƒîîļéé šîîžéé (ṀƁ)]
 Case sensitive
 [Çååšéé šééñšîîţîîṽéé]
 # --- IndexTask.cs --- 
@@ -228,6 +268,41 @@ File count
 [Ƒîîļéé çööûûñţ]
 Field count
 [Ƒîîééļð çööûûñţ]
+# --- LLMConnectionConfigurationWindow.axaml --- 
+Connect to API
+[Çööññééçţ ţöö ÅÅÞÎÎ]
+Service
+[Šééŕṽîîçéé]
+Server URL
+[Šééŕṽééŕ ÛÛŔĻ]
+API Key
+[ÅÅÞÎÎ Ķééýý]
+Model
+[Ṁööðééļ]
+Test
+[Ţééšţ]
+# --- LLMConnectionConfigurationWindow.axaml.cs --- 
+Rename
+[Ŕééñååɱéé]
+Connected Successfully.
+[Çööññééçţééð Šûûççééššƒûûļļýý·]
+API Key Required
+[ÅÅÞÎÎ Ķééýý Ŕééǫûûîîŕééð]
+Model Name required
+[Ṁööðééļ Ñååɱéé ŕééǫûûîîŕééð]
+Server URL Required
+[Šééŕṽééŕ ÛÛŔĻ Ŕééǫûûîîŕééð]
+# --- LLMMessageStreamingJSBinding.cs --- 
+Generation Cancelled
+[Ĝééñééŕååţîîööñ Çååñçééļļééð]
+# --- LLMService.cs --- 
+OpenAI
+[ÖÖþééñÅÅÎÎ]
+Custom...
+[Çûûšţööɱ···]
+# --- LuceneWordWheel.cs --- 
+Loading...
+[Ļööååðîîñĝ···]
 # --- MainWindow.axaml --- 
 _File
 [‿Ƒîîļéé]
@@ -235,20 +310,32 @@ View...
 [Ṽîîééŵ···]
 Export Search Results...
 [ÉÉẋþööŕţ Šééååŕçĥ Ŕééšûûļţš···]
-Search Report...
-[Šééååŕçĥ Ŕééþööŕţ···]
 Print...
 [Þŕîîñţ···]
+Launch at Startup
+[Ļååûûñçĥ ååţ Šţååŕţûûþ]
 _Exit
 [‿ÉÉẋîîţ]
-_Search
-[‿Šééååŕçĥ]
+_AI
+[‿ÅÅÎÎ]
+_AI Connections
+[‿ÅÅÎÎ Çööññééçţîîööñš]
+_MCP Servers
+[‿ṀÇÞ Šééŕṽééŕš]
+Show System Prompt
+[Šĥööŵ Šýýšţééɱ Þŕööɱþţ]
+Export Conversation...
+[ÉÉẋþööŕţ Çööñṽééŕšååţîîööñ···]
+Import Conversation...
+[ÎÎɱþööŕţ Çööñṽééŕšååţîîööñ···]
 History...
 [Ĥîîšţööŕýý···]
 Report...
 [Ŕééþööŕţ···]
 _Index
 [‿ÎÎñðééẋ]
+Manage Indexes...
+[Ṁååñååĝéé ÎÎñðééẋééš···]
 _View
 [‿Ṽîîééŵ]
 Theme
@@ -259,6 +346,8 @@ Light
 [Ļîîĝĥţ]
 System
 [Šýýšţééɱ]
+High Contrast
+[Ĥîîĝĥ Çööñţŕååšţ]
 Layout
 [Ļååýýööûûţ]
 Horizontal
@@ -275,8 +364,6 @@ From File...
 [Ƒŕööɱ Ƒîîļéé···]
 Word List
 [Ŵööŕð Ļîîšţ]
-Help
-[Ĥééļþ]
 About
 [ÅÅƀööûûţ]
 List...
@@ -287,14 +374,8 @@ Results Settings...
 [Ŕééšûûļţš Šééţţîîñĝš···]
 Copy Results...
 [Çööþýý Ŕééšûûļţš···]
-Title
-[Ţîîţļéé]
-Score
-[Šçööŕéé]
 Viewer Settings...
 [Ṽîîééŵééŕ Šééţţîîñĝš···]
-Copy Document...
-[Çööþýý Ðööçûûɱééñţ···]
 Document Metadata
 [Ðööçûûɱééñţ Ṁééţååðååţåå]
 View in folder
@@ -308,25 +389,79 @@ Key
 Value
 [Ṽååļûûéé]
 # --- MainWindow.axaml.cs --- 
-Something went wrong
-[Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ]
-There is no metadata to display.
-[Ţĥééŕéé îîš ñöö ɱééţååðååţåå ţöö ðîîšþļååýý·]
-# --- MainWindowViewModel.cs --- 
-Rebuild index now?
-[Ŕééƀûûîîļð îîñðééẋ ñööŵ¿]
-A rebuild is required for the new settings to take effect.
-[ÅÅ ŕééƀûûîîļð îîš ŕééǫûûîîŕééð ƒööŕ ţĥéé ñééŵ šééţţîîñĝš ţöö ţååķéé ééƒƒééçţ·]
-Filename:
-[Ƒîîļééñååɱéé∶]
+Import Conversation
+[ÎÎɱþööŕţ Çööñṽééŕšååţîîööñ]
 Note:
 [Ñööţéé∶]
+Must provide a filename or check append date.
+[Ṁûûšţ þŕööṽîîðéé åå ƒîîļééñååɱéé ööŕ çĥééçķ ååþþééñð ðååţéé·]
+Query: 
+[Ǫûûééŕýý∶ ]
+Filename:
+[Ƒîîļééñååɱéé∶]
+Select output folder
+[Šééļééçţ ööûûţþûûţ ƒööļðééŕ]
+Enter a query
+[ÉÉñţééŕ åå ǫûûééŕýý]
+An error occurred
+[ÅÅñ ééŕŕööŕ ööççûûŕŕééð]
 Show location
 [Šĥööŵ ļööçååţîîööñ]
 Location not available
 [Ļööçååţîîööñ ñööţ ååṽååîîļååƀļéé]
+There is no metadata to display.
+[Ţĥééŕéé îîš ñöö ɱééţååðååţåå ţöö ðîîšþļååýý·]
+# --- MainWindowViewModel.cs --- 
+Copy Response...
+[Çööþýý Ŕééšþööñšéé···]
+Copy Document...
+[Çööþýý Ðööçûûɱééñţ···]
 File \"%s\" not found
 [Ƒîîļéé ∖″‰š∖″ ñööţ ƒööûûñð]
+# --- MCP_SearchServerTool.cs --- 
+Search an index for documents.
+[Šééååŕçĥ ååñ îîñðééẋ ƒööŕ ðööçûûɱééñţš·]
+The name of the user's index to search
+[Ţĥéé ñååɱéé ööƒ ţĥéé ûûšééŕ´š îîñðééẋ ţöö šééååŕçĥ]
+The Search Query to perform. Supports the Lucene Search Syntax
+[Ţĥéé Šééååŕçĥ Ǫûûééŕýý ţöö þééŕƒööŕɱ· Šûûþþööŕţš ţĥéé Ļûûçééñéé Šééååŕçĥ Šýýñţååẋ]
+Returns the names of all indexes that can be searched.
+[Ŕééţûûŕñš ţĥéé ñååɱééš ööƒ ååļļ îîñðééẋééš ţĥååţ çååñ ƀéé šééååŕçĥééð·]
+# --- MCPConnectionConfigurationWindow.axaml --- 
+Configure MCP Servers
+[Çööñƒîîĝûûŕéé ṀÇÞ Šééŕṽééŕš]
+Configuration
+[Çööñƒîîĝûûŕååţîîööñ]
+Save
+[Šååṽéé]
+# --- MCPConnectionConfigurationWindow.axaml.cs --- 
+Running
+[Ŕûûññîîñĝ]
+Not Running
+[Ñööţ Ŕûûññîîñĝ]
+Server Stopped
+[Šééŕṽééŕ Šţööþþééð]
+Invalid Configuration
+[ÎÎñṽååļîîð Çööñƒîîĝûûŕååţîîööñ]
+Enter a valid MCP Server Configuration
+[ÉÉñţééŕ åå ṽååļîîð ṀÇÞ Šééŕṽééŕ Çööñƒîîĝûûŕååţîîööñ]
+\"{0}\" already exists.
+[∖″{0}∖″ ååļŕééååðýý ééẋîîšţš·]
+Server must be given a unique name.
+[Šééŕṽééŕ ɱûûšţ ƀéé ĝîîṽééñ åå ûûñîîǫûûéé ñååɱéé·]
+# --- MessageControl.axaml --- 
+Browser Debug...
+[Ɓŕööŵšééŕ Ðééƀûûĝ···]
+Stop Generation
+[Šţööþ Ĝééñééŕååţîîööñ]
+Notes
+[Ñööţééš]
+Delete Message
+[Ðééļééţéé Ṁééššååĝéé]
+Copy Message
+[Çööþýý Ṁééššååĝéé]
+Note
+[Ñööţéé]
 # --- NewIndexWindow.axaml --- 
 Index Name
 [ÎÎñðééẋ Ñååɱéé]
@@ -342,8 +477,42 @@ Select data to be indexed.
 Select at least one content type to index.
 [Šééļééçţ ååţ ļééååšţ ööñéé çööñţééñţ ţýýþéé ţöö îîñðééẋ·]
 # --- NewIndexWindowViewModel.cs --- 
+Update Index
+[ÛÛþðååţéé ÎÎñðééẋ]
 Create Index
 [Çŕééååţéé ÎÎñðééẋ]
+# --- PerplexityModel.cs --- 
+sonar
+[šööñååŕ]
+sonar-pro
+[šööñååŕ‐þŕöö]
+sonar-reasoning
+[šööñååŕ‐ŕééååšööñîîñĝ]
+sonar-reasoning-pro
+[šööñååŕ‐ŕééååšööñîîñĝ‐þŕöö]
+llama-3.1-sonar-small-128k-online
+[ļļååɱåå‐③·①‐šööñååŕ‐šɱååļļ‐①②⑧ķ‐ööñļîîñéé]
+llama-3.1-sonar-large-128k-online
+[ļļååɱåå‐③·①‐šööñååŕ‐ļååŕĝéé‐①②⑧ķ‐ööñļîîñéé]
+llama-3.1-sonar-huge-128k-online
+[ļļååɱåå‐③·①‐šööñååŕ‐ĥûûĝéé‐①②⑧ķ‐ööñļîîñéé]
+# --- PluginsWindow.axaml --- 
+Plugins
+[Þļûûĝîîñš]
+Close
+[Çļööšéé]
+Add...
+[ÅÅðð···]
+# --- PluginsWindow.axaml.cs --- 
+Remove Plugin {0}?
+[Ŕééɱööṽéé Þļûûĝîîñ {0}¿]
+Open Plugin File
+[ÖÖþééñ Þļûûĝîîñ Ƒîîļéé]
+Could not install plugin
+[Çööûûļð ñööţ îîñšţååļļ þļûûĝîîñ]
+# --- Program.cs --- 
+Scheduled Index of {0} is starting...
+[Šçĥééðûûļééð ÎÎñðééẋ ööƒ {0} îîš šţååŕţîîñĝ···]
 # --- ProgressCalculator.cs --- 
 Calculating...
 [Çååļçûûļååţîîñĝ···]
@@ -386,7 +555,12 @@ Limit Results
 # --- ResultsSettingsWindow.axaml.cs --- 
 Select at least one column
 [Šééļééçţ ååţ ļééååšţ ööñéé çööļûûɱñ]
+# --- ScheduleUtils.cs --- 
+Scheduled Automatic Index Update of {0}
+[Šçĥééðûûļééð ÅÅûûţööɱååţîîç ÎÎñðééẋ ÛÛþðååţéé ööƒ {0}]
 # --- SearchControl.axaml --- 
+AI Mode
+[ÅÅÎÎ Ṁööðéé]
 AND
 [ÅÅÑÐ]
 OR
@@ -399,8 +573,9 @@ Any
 [ÅÅñýý]
 Boolean
 [Ɓööööļééååñ]
+Search Document Metadata
+[Šééååŕçĥ Ðööçûûɱééñţ Ṁééţååðååţåå]
 # --- SearchFilterWindow.axaml --- 
-# --- SearchFilterWindow2.axaml --- 
 # --- SearchResultsReportWindow.axaml --- 
 Search Results Report
 [Šééååŕçĥ Ŕééšûûļţš Ŕééþööŕţ]
@@ -425,13 +600,9 @@ Open when done
 # --- SearchSettingsViewModel.cs --- 
 None
 [Ñööñéé]
-Soundex
-[Šööûûñðééẋ]
 Double Metaphone
 [Ðööûûƀļéé Ṁééţååþĥööñéé]
 # --- SearchSettingsWindow.axaml --- 
-Search Settings
-[Šééååŕçĥ Šééţţîîñĝš]
 Use List
 [ÛÛšéé Ļîîšţ]
 Stemming Language
@@ -440,8 +611,8 @@ English Porter
 [ÉÉñĝļîîšĥ Þööŕţééŕ]
 List Index Contents on Empty Query
 [Ļîîšţ ÎÎñðééẋ Çööñţééñţš ööñ ÉÉɱþţýý Ǫûûééŕýý]
-Phonetic Analysis
-[Þĥööñééţîîç ÅÅñååļýýšîîš]
+Search as you Type
+[Šééååŕçĥ ååš ýýööûû Ţýýþéé]
 English WordNet
 [ÉÉñĝļîîšĥ ŴööŕðÑééţ]
 Synonym files:
@@ -478,35 +649,56 @@ Something went wrong. Retry?
 [Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ· Ŕééţŕýý¿]
 Retry
 [Ŕééţŕýý]
+# --- TaskScheduleWindow.axaml --- 
+Schedule Index
+[Šçĥééðûûļéé ÎÎñðééẋ]
+Starting:
+[Šţååŕţîîñĝ∶]
+Repeat Every:
+[Ŕééþééååţ ÉÉṽééŕýý∶]
+# --- TaskScheduleWindowViewModel.cs --- 
+Enter starting date.
+[ÉÉñţééŕ šţååŕţîîñĝ ðååţéé·]
+Select the repeat interval.
+[Šééļééçţ ţĥéé ŕééþééååţ îîñţééŕṽååļ·]
+Day(s)
+[Ðååýý(š)]
+Week(s)
+[Ŵééééķ(š)]
+# --- TextInputDialog.axaml --- 
 # --- TikaServer.cs --- 
 # --- UpdateIndexWindow.axaml --- 
-Indexes
-[ÎÎñðééẋééš]
-Automatic...
-[ÅÅûûţööɱååţîîç···]
-Rebuild
-[Ŕééƀûûîîļð]
-Verify
-[Ṽééŕîîƒýý]
-# --- UpdateIndexWindowViewModel.cs --- 
-No Index Selected.
-[Ñöö ÎÎñðééẋ Šééļééçţééð·]
-{0} Document(s)
-[{0} Ðööçûûɱééñţ(š)]
-Delete {0}?
-[Ðééļééţéé {0}¿]
-Delete this index.
-[Ðééļééţéé ţĥîîš îîñðééẋ·]
+Manage Indexes
+[Ṁååñååĝéé ÎÎñðééẋééš]
+Index
+[ÎÎñðééẋ]
+Schedule Index...
+[Šçĥééðûûļéé ÎÎñðééẋ···]
+Cancel Schedule
+[Çååñçééļ Šçĥééðûûļéé]
+Rebuild...
+[Ŕééƀûûîîļð···]
+# --- UpdateIndexWindow.axaml.cs --- 
 Rename Index
 [Ŕééñååɱéé ÎÎñðééẋ]
+Delete
+[Ðééļééţéé]
+Delete this index.
+[Ðééļééţéé ţĥîîš îîñðééẋ·]
+Schedule: Every {0} at {1} from {2}
+[Šçĥééðûûļéé∶ ÉÉṽééŕýý {0} ååţ {1} ƒŕööɱ {2}]
+Not Scheduled.
+[Ñööţ Šçĥééðûûļééð·]
+{0} Document(s)
+[{0} Ðööçûûɱééñţ(š)]
+No Index Selected.
+[Ñöö ÎÎñðééẋ Šééļééçţééð·]
 # --- Utils.cs --- 
 RFC4646
 [ŔƑÇ④⑥④⑥]
 # --- ViewerSettingsWindow.axaml --- 
 Viewer Settings
 [Ṽîîééŵééŕ Šééţţîîñĝš]
-OK
-[ÖÖĶ]
 Cancel
 [Çååñçééļ]
 View Large Files

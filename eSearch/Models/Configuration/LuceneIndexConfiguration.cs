@@ -19,7 +19,7 @@ using eSearch.Models.Indexing;
 namespace eSearch.Models.Configuration
 {
     [JsonObject(ItemTypeNameHandling = TypeNameHandling.Arrays)] // Ensure  this object is understood as a LuceneIndexConfiguration, not just an IIndexConfiguration when serialized/deserialized from an array of IIndexConfiguration.
-    public class LuceneIndexConfiguration : ViewModelBase, IIndexConfiguration
+    public class LuceneIndexConfiguration : ReactiveObject, IIndexConfiguration
     {
 
         
@@ -218,5 +218,25 @@ namespace eSearch.Models.Configuration
 
         [JsonIgnore]
         private List<string>? _selectedFileExtensions = null;
+
+        public IndexSchedule? AutomaticUpdates 
+        {
+            get
+            {
+                return _automaticUpdates;
+            }
+            set
+            {
+                if (_automaticUpdates != value)
+                {
+                    ScheduleUtils.CreateUpdateScheduleCrossPlatform(this.LuceneIndex, value);
+                    _automaticUpdates = value;
+                }
+            }
+        }
+
+        private IndexSchedule? _automaticUpdates = null;
+
+        
     }
 }

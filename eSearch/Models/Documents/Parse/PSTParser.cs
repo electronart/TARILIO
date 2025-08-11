@@ -43,10 +43,10 @@ namespace eSearch.Models.Documents.Parse
             attachmentFSD = null;
             parseResult = new ParseResult
             {
-                ParserName = "PSTParser(XstReader)",
+                ParserName = "PSTParser (XstReader)",
                 Authors = new string[] { Utils.GetFileOwner(filePath) },
                 TextContent = "PST File",
-                Title = "<PST File> " + Path.GetFileNameWithoutExtension(filePath)
+                Title = "<PST File> " + Path.GetFileNameWithoutExtension(filePath),
             };
             using (var xstFile = new XstFile(filePath))
             {
@@ -72,10 +72,18 @@ namespace eSearch.Models.Documents.Parse
         {
             foreach(var message in folder.Messages)
             {
-                Debug.WriteLine("ProcessMessages..");
-                var msgResult = ProcessMessage(filePath, message);
-                ParsedRecords.Add(msgResult);
-                ProcessAttachments(filePath, message);
+                try
+                {
+                    var msgResult = ProcessMessage(filePath, message);
+                    ParsedRecords.Add(msgResult);
+                    ProcessAttachments(filePath, message);
+                } catch (Exception ex)
+                {
+                    InMemoryDocument errorResult = BaseParseResult("PST Message", filePath);
+                    errorResult.Text = $"There was an error parsing a message in {filePath}. {ex.Message}";
+                    errorResult.ShouldSkipIndexing = IDocument.SkipReason.ParseError;
+                    ParsedRecords.Add(errorResult);
+                }
             }
         }
 

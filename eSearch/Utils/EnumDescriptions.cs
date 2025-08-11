@@ -17,7 +17,8 @@ namespace eSearch.Utils
             {
                 return attribute.Description;
             }
-            throw new ArgumentException("Item not found.", nameof(EnumValue));
+            return EnumValue.ToString();
+            //throw new ArgumentException("Item not found.", nameof(EnumValue));
         }
     }
 }

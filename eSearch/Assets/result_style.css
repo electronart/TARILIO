@@ -68,9 +68,11 @@ body:not(.html,.htm) #doc-area
     margin-bottom: 1em;
 }
 
-body.txt {
+body.txt, body.pst {
     white-space: pre-line;
 }
+
+
 
 
 p {

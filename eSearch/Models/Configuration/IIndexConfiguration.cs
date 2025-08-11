@@ -1,5 +1,6 @@
 ﻿using eSearch.Interop;
 using eSearch.Models.DataSources;
+using eSearch.Models.Indexing;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -42,5 +43,13 @@ namespace eSearch.Models.Configuration
 
 
         public bool IsIndexCaseSensitive { get; set; }
+
+        /// <summary>
+        /// Null when not scheduled.
+        /// </summary>
+        public IndexSchedule? AutomaticUpdates
+        {
+            get; set;
+        }
     }
 }
