@@ -26,6 +26,15 @@ using S = eSearch.ViewModels.TranslationsViewModel;
 using eSearch.Interop.AI;
 using eSearch.Models.AI.MCP.Tools;
 using Xilium.CefGlue;
+using DynamicData;
+using UglyToad.PdfPig.Fonts.TrueType.Names;
+using eSearch.Interop;
+using eSearch.Models.Logging;
+using eSearch.Models.Indexing;
+using eSearch.Interop.Indexing;
+using System.Threading;
+using Timer = System.Timers.Timer;
+using ProgressCalculation;
 
 namespace eSearch
 {
@@ -33,6 +42,11 @@ namespace eSearch
     {
 
         static Timer timer;
+
+        /// <summary>
+        /// When not null, this is a scheduled index update task, the application should run in the background without disturbing the user.
+        /// </summary>
+        public static string? WasLaunchedAsScheduledIndexUpdate        = null;
 
         public static bool WasLaunchedWithSearchOnlyArgument           = false;
 
@@ -50,11 +64,114 @@ namespace eSearch
             WasLaunchedWithSearchOnlyArgument =           args.Contains("-s");
             WasLaunchedWithAIDisabledArgument =           args.Contains("-a");
             WasLaunchedWithCreateLLMConnectionsDisabled = args.Contains("-x");
+            #region Check if the application has been launched as a scheduled index update
+            int indexOfScheduledArg = args.IndexOf("--scheduled");
+            if (indexOfScheduledArg != -1)
+            {
+                if (args.Length > indexOfScheduledArg + 1)
+                {
+                    string indexId = args[args.IndexOf("--scheduled") + 1];
+                    WasLaunchedAsScheduledIndexUpdate = indexId;
+                    var index = Program.IndexLibrary.GetIndexById(indexId);
+                    if (index == null)
+                    {
+                        throw new ArgumentException("Unrecognized IndexID");
+                    }
+                    RunScheduledIndexUpdate(index);
+                    return;
+                } else
+                {
+                    throw new ArgumentException("`--scheduled` argument passed, but no IndexID supplied");
+                }
+            }
+            #endregion
             BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
             timer = new Timer(60000);
             timer.Elapsed += Timer_Elapsed;
             timer.Start();
+        }
+
+        private static System.Timers.Timer  _scheduledIndexProgressReportTimer;
+        private static ProgressViewModel    _scheduledIndexProgressVM;
+        private static ILogger              _scheduledIndexLogger;
+
+        private static void RunScheduledIndexUpdate(IIndex index)
+        {
+            
+
+            DateTime started = DateTime.Now;
+            List<ILogger> loggers = new List<ILogger>();
+#if DEBUG
+            loggers.Add(new DebugLogger());
+#endif
+            var indexTaskLog = new IndexTaskLog();
+            loggers.Add(indexTaskLog);
+            if (OperatingSystem.IsWindows())
+            {
+                WindowsEventViewerLogger winLogger = new WindowsEventViewerLogger(index);
+                loggers.Add(winLogger);
+            }
+            _scheduledIndexLogger = new MultiLogger(loggers);
+            try
+            {
+
+                _scheduledIndexLogger.Log(ILogger.Severity.INFO, String.Format(S.Get("Scheduled Index of {0} is starting..."), index.Name));
+                var indexConfig = Program.IndexLibrary.GetConfiguration(index);
+                if (indexConfig == null)
+                {
+                    throw new Exception("Could not find index configuration");
+                }
+                #region Attempt the Index Task. Opening it may fail if the user is already writing to it, so there is retry logic for this.
+            retryOpenIndex:
+                int openAttempts = 0;
+                try
+                {
+                    _scheduledIndexProgressReportTimer = new System.Timers.Timer(TimeSpan.FromMinutes(2));
+                    _scheduledIndexProgressReportTimer.Elapsed += _scheduledIndexProgressReportTimer_Elapsed;
+                    _scheduledIndexProgressReportTimer.AutoReset = true; // repeat
+                    _scheduledIndexProgressReportTimer.Start();
+                    _scheduledIndexProgressVM = new ProgressViewModel();
+                    IndexTask task = new IndexTask(indexConfig.GetMainDataSource(), index, _scheduledIndexProgressVM, false, true, _scheduledIndexLogger);
+                    task.ResumeIndexing();
+                    task.Execute(); // BLOCKING - This one call will keep this thread blocked potentially hours depending on whats to be indexed.
+                                    // It may also throw FailedToOpenIndexException 
+                    
+                }
+                catch (FailedToOpenIndexException ex)
+                {
+                    if (openAttempts < 3)
+                    {
+                        ++openAttempts;
+                        _scheduledIndexLogger.Log(ILogger.Severity.WARNING, $"Failed to open index. It may be locked. Will try again in 5 minutes... (Attempt {openAttempts}/3)", ex);
+                        Thread.Sleep(TimeSpan.FromMinutes(5));
+                        goto retryOpenIndex;
+                    }
+                    else
+                    {
+                        _scheduledIndexLogger.Log(ILogger.Severity.ERROR, "Could not open the index after 3 attempts. The scheduled index task was cancelled.", ex);
+                    }
+                } finally
+                {
+                    _scheduledIndexProgressReportTimer.Stop();
+                    _scheduledIndexProgressReportTimer.Dispose();
+                }
+                #endregion
+            } catch (Exception ex)
+            {
+                _scheduledIndexLogger.Log(ILogger.Severity.ERROR, "An unhandled Exception occurred during the scheduled index task.", ex);
+            } finally
+            {
+                string indexLog = indexTaskLog.BuildTxtLog($"Sheduled Task", "");
+                File.WriteAllText(
+                    Path.Combine(index.GetAbsolutePath(), "ScheduledIndexTask.txt"), indexLog);
+            }
+        }
+
+        private static void _scheduledIndexProgressReportTimer_Elapsed(object? sender, ElapsedEventArgs e)
+        {
+            string message = $"{_scheduledIndexProgressVM.Status}";
+            _scheduledIndexLogger.Log(ILogger.Severity.INFO, message);
         }
 
         private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)
@@ -63,6 +180,8 @@ namespace eSearch
             {
                 if (Program.GetMainWindow().DataContext is MainWindowViewModel vm)
                 {
+                    // TODO Non intuitive code - It's detecting expired serials in the case
+                    // The application is left open permanently.
                     vm.RaisePropertyChanged(nameof(vm.ProductTagText));
                 }
             } catch (Exception ex)
@@ -451,7 +570,7 @@ namespace eSearch
         {
             var config = ProgramConfig;
             string output = JsonConvert.SerializeObject(ProgramConfig, Formatting.Indented);
-            Directory.CreateDirectory(Path.GetDirectoryName(ESEARCH_CONFIG_FILE));
+            System.IO.Directory.CreateDirectory(Path.GetDirectoryName(ESEARCH_CONFIG_FILE));
             File.WriteAllText(ESEARCH_CONFIG_FILE, output);
         }
 

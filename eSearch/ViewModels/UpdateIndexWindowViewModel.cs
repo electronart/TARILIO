@@ -72,6 +72,22 @@ namespace eSearch.ViewModels
 
         private string _displayedIndexInformation = string.Empty;
 
+
+        public bool ShowCancelIndexButton
+        {
+            get
+            {
+                return _showCancelIndexButton;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _showCancelIndexButton, value);
+            }
+        }
+
+        private bool _showCancelIndexButton = false;
+
+
         public UpdateIndexWindowViewModel(Window myWindow, IndexLibrary indexLibrary, IIndex selectedIndex)
         {
             this.IndexLibrary  = indexLibrary;

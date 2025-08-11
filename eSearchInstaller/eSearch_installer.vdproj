@@ -135,6 +135,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_45C29631549444FDBD6B69AECF5BE802"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_4786B6EA0AA942BFBD68095766B82299"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -715,6 +721,20 @@
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_968CDBA763F84902A22EBC832FC35810"
+            {
+            "Name" = "8:Primary output from Installer Custom Actions (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_45C29631549444FDBD6B69AECF5BE802"
+            "FileType" = "3:1"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_F4949290_E54B_4EC9_A628_A0F6DA4DF756"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -2943,13 +2963,13 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:eSearch"
         "ProductCode" = "8:{D0C3E217-F012-4442-BB1B-664A72E9B25B}"
-        "PackageCode" = "8:{65EFDC07-303D-4D47-A766-83005694B49A}"
+        "PackageCode" = "8:{C36D5A38-12C3-405C-9959-2CFFAA5746E6}"
         "UpgradeCode" = "8:{4EE3EB0E-D78C-40EC-A3BC-19286DCE891E}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "InstallAllUsers" = "11:FALSE"
+        "InstallAllUsers" = "11:TRUE"
         "ProductVersion" = "8:1.0.0"
         "Manufacturer" = "8:ElectronArt Design Ltd"
         "ARPHELPTELEPHONE" = "8:"
@@ -3476,6 +3496,34 @@
         }
         "ProjectOutput"
         {
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_45C29631549444FDBD6B69AECF5BE802"
+            {
+            "SourcePath" = "8:..\\Installer Custom Actions\\obj\\Debug\\DIEventSourceCreator.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_5A28C29878D94098A4424E44BE28C9F8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{ABC5E2DD-9C2B-4C2B-8E27-6679B9545AB8}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6C7783675FE342F983AA3A89BB77A428"
             {
             "SourcePath" = "8:..\\eSearch\\obj\\eSearch DEBUG\\net8.0\\win-x64\\apphost.exe"

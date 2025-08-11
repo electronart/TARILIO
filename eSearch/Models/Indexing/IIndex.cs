@@ -67,8 +67,8 @@ namespace eSearch.Models.Indexing
         /// Open Index for writing.
         /// </summary>
         /// <param name="create">Recreate the Index, rather than append.</param>
-        /// <returns></returns>
-        bool OpenWrite(bool create);
+        /// <exception cref="FailedToOpenIndexException">Failed to open the index for any reason. Might be locked, IO error etc.</exception>
+        void OpenWrite(bool create);
         /// <summary>
         /// Add Document to the Index.
         /// Must Open Index with OpenWrite before hand.
@@ -133,6 +133,7 @@ namespace eSearch.Models.Indexing
         /// </summary>
         public List<string> KnownFieldNames { get; set; }
 
+        
         
 
     }

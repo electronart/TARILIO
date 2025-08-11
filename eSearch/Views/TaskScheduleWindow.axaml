@@ -3,29 +3,50 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="using:eSearch.ViewModels"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+        mc:Ignorable="d" Width="600" Height="350"
         x:Class="eSearch.Views.TaskScheduleWindow"
-        Title="New Index"
+        Title="Schedule Index"
+		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:TaskScheduleWindowViewModel/>
+	</Design.DataContext>
 	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
 		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
-			<Label Height="30">Schedule</Label>
+			<Label Height="30" Content="{Binding S[Schedule~Index]}"/>
 		</DockPanel>
 		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
-			<StackPanel Orientation="Vertical" Margin="15" Spacing="5">
-				<Label Height="30">Set Task Schedule</Label>
+			<DockPanel Margin="5">
+				<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+					<Button Width="150" HorizontalContentAlignment="Center" x:Name="ButtonOK" Content="{Binding S[OK]}"/>
+					<Button Width="150" HorizontalContentAlignment="Center" x:Name="ButtonCancel" Content="{Binding S[Cancel]}"/>
+				</StackPanel>
+				<StackPanel Orientation="Vertical" Margin="15" Spacing="5">
+					
 
-				<Label Margin="0,20,0,0">Starting:</Label>
-				<DockPanel>
-					<TimePicker DockPanel.Dock="Right" Width="250"></TimePicker>
-					<DatePicker></DatePicker>	
-				</DockPanel>
-				<Label Margin="0,20,0,0">Repeat Every:</Label>
-				<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-					<NumericUpDown Width="150" DockPanel.Dock="Left"></NumericUpDown>
-					<ComboBox Margin="15,0,0,0" HorizontalAlignment="Stretch"></ComboBox>
-				</DockPanel>
-			</StackPanel>
+					<Label Margin="0,20,0,0" Content="{Binding S[Starting:]}"/>
+					<DockPanel>
+						<TimePicker x:Name="StartTimePicker" DockPanel.Dock="Right" Width="250"></TimePicker>
+						<DatePicker x:Name="StartDatePicker" ></DatePicker>
+					</DockPanel>
+					<Label Margin="0,20,0,0" Content="{Binding S[Repeat~Every:]}"/>
+					<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+						<NumericUpDown
+							Value="{Binding RepeatEveryInterval}"
+							Maximum="30"
+							Minimum="1"
+							Width="150" DockPanel.Dock="Left"></NumericUpDown>
+						<ComboBox
+							ItemsSource="{Binding AvailableIntervalSizes}"
+							SelectedItem="{Binding RepeatEveryIntervalSize}"
+							Margin="15,0,0,0" HorizontalAlignment="Stretch"></ComboBox>
+					</DockPanel>
+					<Label Margin="0,20" Classes="Error" Content="{Binding DisplayedErrorMsg}"/>
+				</StackPanel>
+			</DockPanel>
+			
 		</Border>
 	</DockPanel>
 </Window>
