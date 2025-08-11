@@ -1066,33 +1066,6 @@ namespace eSearch.Views
             }
         }
 
-        //private void ResultsGrid_ColumnReordered(object? sender, DataGridColumnEventArgs e)
-        //{
-        //    if (e.Column.DisplayIndex < 1)
-        //    {
-        //        e.Column.DisplayIndex = 1;
-        //    }
-        //    if (this.DataContext is MainWindowViewModel mwvm)
-        //    {
-        //        var ixConfig = mwvm.IndexLibrary.GetConfiguration(mwvm.SelectedIndex);
-
-        //        foreach (var column in ResultsGrid.Columns)
-        //        {
-        //            if (column.DisplayIndex > 0) // First Column is not data.
-        //            {
-        //                foreach(var selectedColumn in ixConfig.ColumnDisplaySettings)
-        //                {
-        //                    if (selectedColumn.Header == (string)column.Header)
-        //                    {
-        //                        selectedColumn.DisplayIndex = column.DisplayIndex;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        mwvm.IndexLibrary.SaveLibrary();
-        //    }
-        //}
-
         public void UpdateTheme()
         {
             htmlDocumentControl.UpdateTheme();
@@ -1155,127 +1128,6 @@ namespace eSearch.Views
 
             
         }
-
-
-
-
-        //private void ResultsGrid_KeyDown(object sender, KeyEventArgs e)
-        //{
-        //    if (DataContext is MainWindowViewModel mwvm)
-        //    {
-        //        // Intercept Ctrl + Arrow Keys and Override default behaviour.
-        //        if (e.KeyModifiers == KeyModifiers.Control &&
-        //            (e.Key == Key.Up || e.Key == Key.Down || e.Key == Key.Left || e.Key == Key.Right))
-        //        {
-        //            resultsGrid.SelectionChanged -= ResultsGrid_SelectionChanged; // Temporarily disable default selection behaviours
-        //            if (e.Key == Key.Up || e.Key == Key.Down)
-        //            {
-
-        //                List<ResultViewModel>   previouslySelectedItems = new List<ResultViewModel>();
-        //                foreach(ResultViewModel previouslySelectedItem in resultsGrid.SelectedItems)
-        //                {
-        //                    previouslySelectedItems.Add(previouslySelectedItem);
-        //                }
-
-        //                int offset = e.Key == Key.Up ? -1 : 1;
-
-        //                if (resultsGrid.SelectedItem is ResultViewModel rvm)
-        //                {
-        //                    var indexOfCurrentItem = mwvm.Results.IndexOf(rvm);
-        //                    if (mwvm.Results.Count > indexOfCurrentItem + offset && (indexOfCurrentItem + offset) > 0)
-        //                    {
-        //                        var nextItem = mwvm.Results[indexOfCurrentItem + offset];
-        //                        resultsGrid.SelectedItem = nextItem;
-        //                        foreach(var item in previouslySelectedItems)
-        //                        {
-        //                            if (item.IsResultChecked) resultsGrid.SelectedItems.Add(item);
-        //                        }
-        //                    }
-        //                }
-
-        //            }
-        //            if (e.Key == Key.Left || e.Key == Key.Right)
-        //            {
-        //                DataGridColumn? prevColumn = null;
-        //                DataGridColumn? columnBefore = null;
-        //                DataGridColumn? columnAfter = null;
-        //                bool isNextColumnTheAfterColumn = false;
-        //                foreach (var column in resultsGrid.Columns)
-        //                {
-        //                    if (isNextColumnTheAfterColumn)
-        //                    {
-        //                        columnAfter = column;
-        //                        isNextColumnTheAfterColumn = false;
-        //                    }
-        //                    if (column == resultsGrid.CurrentColumn)
-        //                    {
-        //                        columnBefore = prevColumn;
-        //                        isNextColumnTheAfterColumn = true;
-        //                    }
-        //                    prevColumn = column;
-        //                }
-        //                if (e.Key == Key.Left && columnBefore != null)
-        //                {
-        //                    resultsGrid.CurrentColumn = columnBefore;
-        //                }
-        //                if (e.Key == Key.Right && columnAfter != null)
-        //                {
-        //                    resultsGrid.CurrentColumn = columnAfter;
-        //                }
-        //            }
-
-        //            resultsGrid.SelectionChanged += ResultsGrid_SelectionChanged;
-        //            e.Handled = true; // Prevent default behavior
-        //        }
-        //    }
-        //    if (e.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift)
-        //        &&
-        //        (e.Key == Key.Up || e.Key == Key.Down || e.Key == Key.Left || e.Key == Key.Right))
-        //    {
-        //        // Override Shift + CTRL + ArrowKeys
-
-        //        resultsGrid.SelectionChanged -= ResultsGrid_SelectionChanged; // Temporarily disable default selection behaviours
-        //        if (e.Key == Key.Down || e.Key == Key.Up)
-        //        {
-        //            GetCurrentlySelectedItems(out List<ResultViewModel> selectedItems, out ResultViewModel? previousItem, out ResultViewModel? currentItem, out ResultViewModel? nextItem);
-        //            if (e.Key == Key.Down && nextItem != null && !resultsGrid.SelectedItems.Contains(nextItem))
-        //            {
-        //                resultsGrid.SelectedItem = nextItem;
-        //                nextItem.SetResultChecked(true);
-                        
-        //            }
-        //            if (e.Key == Key.Up && previousItem != null && !resultsGrid.SelectedItems.Contains(previousItem))
-        //            {
-        //                resultsGrid.SelectedItem = previousItem;
-        //                previousItem.SetResultChecked(true);
-        //            }
-        //            foreach (var item in selectedItems)
-        //            {
-        //                if (item.IsResultChecked) resultsGrid.SelectedItems.Add(item);
-        //            }
-        //        }
-        //        resultsGrid.SelectionChanged += ResultsGrid_SelectionChanged;
-        //        e.Handled = true;
-        //    }
-        //    if (e.Key == Key.Space)
-        //    {
-        //        if (resultsGrid.SelectedItem is ResultViewModel rvm)
-        //        {
-        //            if (rvm.IsResultChecked)
-        //            {
-        //                // Only uncheck the item if it's not the only item checked.
-        //                if (resultsGrid.SelectedItems.Count > 1)
-        //                {
-        //                    rvm.SetResultChecked(false);
-        //                }
-        //            } else
-        //            {
-        //                rvm.SetResultChecked(true);
-        //            }
-        //        }
-        //        e.Handled = true;
-        //    }
-        //}
 
 
         private void GetCurrentlySelectedItems(out List<ResultViewModel> selectedItems, out ResultViewModel? previousItem, out ResultViewModel? currentItem, out ResultViewModel? nextItem)
@@ -1918,6 +1770,8 @@ namespace eSearch.Views
 
         private VoiceListener? voiceListener = null;
 
+        private SearchSource? _previousSearchSource = null;
+
         private async void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (sender is MainWindowViewModel viewModel)
@@ -1958,12 +1812,25 @@ namespace eSearch.Views
                 }
                 if (e.PropertyName?.Equals(nameof(viewModel.SelectedSearchSource)) ?? false)
                 {
-                    if (viewModel.SelectedSearchSource?.Source is IIndex index)
+                    var newSearchSource = viewModel.SelectedSearchSource;
+
+                    if (newSearchSource?.Source is IIndex index)
                     {
                         viewModel.SelectedIndex = index;
                     }
-                    if (viewModel.SelectedSearchSource?.Source is AISearchConfiguration config)
+                    if (newSearchSource?.Source is AISearchConfiguration config)
                     {
+                        if (newSearchSource != _previousSearchSource && _previousSearchSource?.Source is AISearchConfiguration prevConfig)
+                        {
+                            // Switched from one AI Search Source to another.
+                            var firstUserMessage = viewModel.CurrentLLMConversation?.Messages.FirstOrDefault(m => m.Role == "user", null);
+                            if (firstUserMessage != null)
+                            {
+                                var content = firstUserMessage.GetFinalMessage()?.Content;
+                                Program.GetMainWindow()?.Clipboard?.SetTextAsync(content);
+                            }
+                        }
+                        _previousSearchSource = newSearchSource;
                         Program.ProgramConfig.SelectedAISearchConfigurationID = config.Id;
                         Program.SaveProgramConfig();
                         var conversationStarter = Completions.GetDefaultConversationStarter(config);
