@@ -34,6 +34,7 @@ using eSearch.Models.Indexing;
 using eSearch.Interop.Indexing;
 using System.Threading;
 using Timer = System.Timers.Timer;
+using ProgressCalculation;
 
 namespace eSearch
 {
@@ -91,8 +92,14 @@ namespace eSearch
             timer.Start();
         }
 
+        private static System.Timers.Timer  _scheduledIndexProgressReportTimer;
+        private static ProgressViewModel    _scheduledIndexProgressVM;
+        private static ILogger              _scheduledIndexLogger;
+
         private static void RunScheduledIndexUpdate(IIndex index)
         {
+            
+
             DateTime started = DateTime.Now;
             List<ILogger> loggers = new List<ILogger>();
 #if DEBUG
@@ -105,11 +112,11 @@ namespace eSearch
                 WindowsEventViewerLogger winLogger = new WindowsEventViewerLogger(index);
                 loggers.Add(winLogger);
             }
-            var logger = new MultiLogger(loggers);
+            _scheduledIndexLogger = new MultiLogger(loggers);
             try
             {
 
-                logger.Log(ILogger.Severity.INFO, String.Format(S.Get("Scheduled Index of {0} is starting..."), index.Name));
+                _scheduledIndexLogger.Log(ILogger.Severity.INFO, String.Format(S.Get("Scheduled Index of {0} is starting..."), index.Name));
                 var indexConfig = Program.IndexLibrary.GetConfiguration(index);
                 if (indexConfig == null)
                 {
@@ -120,8 +127,12 @@ namespace eSearch
                 int openAttempts = 0;
                 try
                 {
-                    var dummyViewModel = new ProgressViewModel(); // TODO Placeholder.... Need a better solution to this.
-                    IndexTask task = new IndexTask(indexConfig.GetMainDataSource(), index, dummyViewModel, false, true, logger);
+                    _scheduledIndexProgressReportTimer = new System.Timers.Timer(TimeSpan.FromMinutes(2));
+                    _scheduledIndexProgressReportTimer.Elapsed += _scheduledIndexProgressReportTimer_Elapsed;
+                    _scheduledIndexProgressReportTimer.AutoReset = true; // repeat
+                    _scheduledIndexProgressReportTimer.Start();
+                    _scheduledIndexProgressVM = new ProgressViewModel();
+                    IndexTask task = new IndexTask(indexConfig.GetMainDataSource(), index, _scheduledIndexProgressVM, false, true, _scheduledIndexLogger);
                     task.ResumeIndexing();
                     task.Execute(); // BLOCKING - This one call will keep this thread blocked potentially hours depending on whats to be indexed.
                                     // It may also throw FailedToOpenIndexException 
@@ -132,25 +143,35 @@ namespace eSearch
                     if (openAttempts < 3)
                     {
                         ++openAttempts;
-                        logger.Log(ILogger.Severity.WARNING, $"Failed to open index. It may be locked. Will try again in 5 minutes... (Attempt {openAttempts}/3)", ex);
+                        _scheduledIndexLogger.Log(ILogger.Severity.WARNING, $"Failed to open index. It may be locked. Will try again in 5 minutes... (Attempt {openAttempts}/3)", ex);
                         Thread.Sleep(TimeSpan.FromMinutes(5));
                         goto retryOpenIndex;
                     }
                     else
                     {
-                        logger.Log(ILogger.Severity.ERROR, "Could not open the index after 3 attempts. The scheduled index task was cancelled.", ex);
+                        _scheduledIndexLogger.Log(ILogger.Severity.ERROR, "Could not open the index after 3 attempts. The scheduled index task was cancelled.", ex);
                     }
+                } finally
+                {
+                    _scheduledIndexProgressReportTimer.Stop();
+                    _scheduledIndexProgressReportTimer.Dispose();
                 }
                 #endregion
             } catch (Exception ex)
             {
-                logger.Log(ILogger.Severity.ERROR, "An unhandled Exception occurred during the scheduled index task.", ex);
+                _scheduledIndexLogger.Log(ILogger.Severity.ERROR, "An unhandled Exception occurred during the scheduled index task.", ex);
             } finally
             {
                 string indexLog = indexTaskLog.BuildTxtLog($"Sheduled Task", "");
                 File.WriteAllText(
                     Path.Combine(index.GetAbsolutePath(), "ScheduledIndexTask.txt"), indexLog);
             }
+        }
+
+        private static void _scheduledIndexProgressReportTimer_Elapsed(object? sender, ElapsedEventArgs e)
+        {
+            string message = $"{_scheduledIndexProgressVM.Status}";
+            _scheduledIndexLogger.Log(ILogger.Severity.INFO, message);
         }
 
         private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)
