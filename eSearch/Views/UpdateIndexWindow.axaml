@@ -26,7 +26,6 @@
 						<Button HorizontalAlignment="Stretch" x:Name="BtnCancelSchedule" Content="{Binding S[Cancel~Schedule]}" IsVisible="{Binding ShowCancelIndexButton}"/>
 						<Button HorizontalAlignment="Stretch" x:Name="BtnRebuild"		 Content="{Binding S[Rebuild...]}"/>
 						<Button HorizontalAlignment="Stretch" x:Name="BtnRename"		 Content="{Binding S[Rename...]}"/>
-						<Button HorizontalAlignment="Stretch" x:Name="BtnVerify"		 Content="{Binding S[Verify]}"/>
 						<Button HorizontalAlignment="Stretch" x:Name="BtnDelete"		 Content="{Binding S[Delete...]}"/>
 					</StackPanel>
 					<DockPanel Margin="5">
