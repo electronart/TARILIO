@@ -138,6 +138,18 @@ namespace eSearch.Models
         }
 
         /// <summary>
+        /// Should not include the extension or path. Just the file name itself... IE if the path is C:/Documents/MyImg.png, this method expects you to supply "MyImg" and nothing else.
+        /// </summary>
+        /// <param name="userInput"></param>
+        /// <returns>String with all invalid file name characters removed.</returns>
+        public static string SanitizeFileName(string userInput)
+        {
+            if (string.IsNullOrEmpty(userInput)) throw new NotSupportedException("Input was null or empty");
+            char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
+            return new string(userInput.Where(c => !invalidFileNameChars.Contains(c)).ToArray());
+        }
+
+        /// <summary>
         /// May return null on unsupported OS.
         /// Currently Windows Only.
         /// </summary>

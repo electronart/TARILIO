@@ -245,7 +245,10 @@ namespace eSearch.Views
                         {
                             System.IO.Directory.CreateDirectory(exportConvoViewModel.ExportDirectory);
                         }
-                        string localPath = Path.Combine(exportConvoViewModel.ExportDirectory, $"{exportConvoViewModel.FileName}{dateStr}.{exportConvoViewModel.SelectedExportFormat.Extension.ToLower()}");
+
+                        string modelName = conversation.Messages.First().Model;
+                        string modelNameFileNameFriendly = Models.Utils.SanitizeFileName(modelName);
+                        string localPath = Path.Combine(exportConvoViewModel.ExportDirectory, $"{exportConvoViewModel.FileName}-{modelNameFileNameFriendly}-{dateStr}.{exportConvoViewModel.SelectedExportFormat.Extension.ToLower()}");
 
                         if (Path.GetExtension(localPath).ToLower() == ".csv")
                         {
