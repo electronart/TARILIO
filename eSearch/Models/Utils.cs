@@ -165,6 +165,12 @@ namespace eSearch.Models
         }
 
 
+        public static string ToTotalSeconds(this TimeSpan t)
+        {
+            return $@"{t:%s} seconds";
+        }
+
+
         /// <summary>
         /// Attempt to get the owner of a given file. May return an empty string on failure.
         /// Failure may be for various reasons including unsupported OS, lack of permissions etc.
