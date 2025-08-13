@@ -308,12 +308,6 @@ public partial class LLMConnectionConfigurationWindow : Window
                 case Models.AI.LLMService.ChatGPT:
                 case LLMService.Ollama:
                 case LLMService.LMStudio:
-                    // Require an API Key.
-                    if (string.IsNullOrWhiteSpace(vm.APIKey))
-                    {
-                        reason = S.Get("API Key Required");
-                        return false;
-                    }
                     if (string.IsNullOrWhiteSpace(vm.EnteredModelName))
                     {
                         reason = S.Get("Model Name required");
