@@ -248,7 +248,7 @@ namespace eSearch.Views
 
                         string modelName = conversation.Messages.First().Model;
                         string modelNameFileNameFriendly = Models.Utils.SanitizeFileName(modelName);
-                        string localPath = Path.Combine(exportConvoViewModel.ExportDirectory, $"{exportConvoViewModel.FileName}-{modelNameFileNameFriendly}-{dateStr}.{exportConvoViewModel.SelectedExportFormat.Extension.ToLower()}");
+                        string localPath = Path.Combine(exportConvoViewModel.ExportDirectory, $"{exportConvoViewModel.FileName} {modelNameFileNameFriendly.Trim()}{dateStr}.{exportConvoViewModel.SelectedExportFormat.Extension.ToLower()}");
 
                         if (Path.GetExtension(localPath).ToLower() == ".csv")
                         {
