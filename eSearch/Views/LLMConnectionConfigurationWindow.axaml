@@ -109,8 +109,12 @@
 								  IsEnabled="{Binding EnableConnectionForm}"
 								  IsVisible="{Binding !HidePerplexityModelSelectionDropDown}"
 							  />
-						<TextBox Width="400" HorizontalAlignment="Left"
+						
+						<AutoCompleteBox
+							     x:Name="AutoCompleteBoxModelName"
+							     Width="400" HorizontalAlignment="Left"
 								 Text="{Binding EnteredModelName}"
+								 MinimumPrefixLength="0"
 								 IsEnabled="{Binding EnableConnectionForm}"
 								 IsVisible="{Binding HidePerplexityModelSelectionDropDown}"
 							 />

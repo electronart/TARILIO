@@ -22,6 +22,7 @@ using eSearch.Interop.AI;
 using OpenAI;
 using System.ClientModel;
 using DocumentFormat.OpenXml.Office2019.Drawing.Model3D;
+using System.Net.Http.Headers;
 
 namespace eSearch.Models.AI
 {
@@ -75,9 +76,72 @@ namespace eSearch.Models.AI
             }
         }
 
-        private static string GetOpenAIEndpointURL(AISearchConfiguration aiConfig)
+        public static async Task<List<string>> TryGetAvailableModels(string endpointURL, string? api_key, CancellationToken cancellationToken)
         {
-            switch(aiConfig.LLMService)
+            try
+            {
+                List<string> models = new List<string>();
+                string url = $"{endpointURL}/models";
+
+                using HttpClient client = new HttpClient();
+                if (!string.IsNullOrEmpty(api_key))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", api_key);
+                }
+                else
+                {
+                    throw new ArgumentException("API key is required.");
+                }
+
+                HttpResponseMessage httpResponse = await client.GetAsync(url, cancellationToken);
+                httpResponse.EnsureSuccessStatusCode(); // Throws if the response is not successful
+
+                string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+                JObject response = JObject.Parse(jsonResponse);
+                var data = response.ContainsKey("data") ? response["data"] : null;
+                if (data == null) throw new FormatException($"Unexpected Response Format - Couldn't find 'data' key in \n{jsonResponse}\n");
+                if (data is JArray array)
+                {
+                    foreach(var arrayItem in array)
+                    {
+                        if (arrayItem is JObject model)
+                        {
+                            string obj_type = model.ContainsKey("object") ? model["object"].ToString() : string.Empty;
+                            if (obj_type == "model")
+                            {
+                                string model_id = model.ContainsKey("id") ? model["id"].ToString() : string.Empty;
+                                if (!string.IsNullOrEmpty(model_id))
+                                {
+                                    models.Add(model_id);
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                return models;
+            } catch (Exception ex)
+            {
+                Debug.WriteLine($"Error listing models {ex.ToString()}");
+                throw;
+            }
+        }
+
+        public static string GetOpenAIEndpointURL(AISearchConfiguration aiConfig)
+        {
+            if (aiConfig.LLMService == LLMService.Custom) return aiConfig.ServerURL;
+            return GetOpenAIEndpointURL(aiConfig.LLMService);
+        }
+
+        /// <summary>
+        /// Note this method does not support Custom sources, uses the method that takes an AISearchConfiguration argument instead.
+        /// </summary>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public static string GetOpenAIEndpointURL(LLMService service)
+        {
+            switch (service)
             {
                 case LLMService.OpenRouter:
                     return "https://openrouter.ai/api/v1";
@@ -90,7 +154,7 @@ namespace eSearch.Models.AI
                 case LLMService.ChatGPT:
                     return "https://api.openai.com/v1";
                 default:
-                    return aiConfig.ServerURL;
+                    return string.Empty;
             }
         }
 
