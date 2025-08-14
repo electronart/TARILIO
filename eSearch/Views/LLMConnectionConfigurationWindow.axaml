@@ -98,9 +98,10 @@
 						<TextBox Width="400" HorizontalAlignment="Left"
 								 IsEnabled="{Binding EnableConnectionForm}"
 								 IsVisible="{Binding !HideServerURL}" Text="{Binding ServerURL}"/>
-						<Label Content="{Binding S[API~Key]}"/>
+						<Label Content="{Binding S[API~Key]}" IsVisible="{Binding !HideAPIKey}"/>
 						<TextBox
 							IsEnabled="{Binding EnableConnectionForm}"
+							IsVisible="{Binding !HideAPIKey}"
 							Width="400" HorizontalAlignment="Left" Text="{Binding APIKey}" PasswordChar="•"/>
 						<Label Content="{Binding S[Model]}"/>
 						<ComboBox Width="400"
@@ -109,7 +110,12 @@
 								  IsEnabled="{Binding EnableConnectionForm}"
 								  IsVisible="{Binding !HidePerplexityModelSelectionDropDown}"
 							  />
-						
+						<TextBox
+							     Width="400" HorizontalAlignment="Left"
+								 Text="{Binding EnteredModelName}"
+								 IsEnabled="{Binding EnableConnectionForm}"
+								 IsVisible="{Binding HidePerplexityModelSelectionDropDown}"/>
+						<!--
 						<AutoCompleteBox
 							     x:Name="AutoCompleteBoxModelName"
 							     Width="400" HorizontalAlignment="Left"
@@ -118,6 +124,7 @@
 								 IsEnabled="{Binding EnableConnectionForm}"
 								 IsVisible="{Binding HidePerplexityModelSelectionDropDown}"
 							 />
+							-->
 						<Label Content="Custom System Prompt"></Label>
 						<ComboBox 
 							Width="400"

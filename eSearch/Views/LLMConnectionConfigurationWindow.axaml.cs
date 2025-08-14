@@ -35,7 +35,7 @@ public partial class LLMConnectionConfigurationWindow : Window
         DataContextChanged += LLMConnectionConfigurationWindow_DataContextChanged;
         BtnEditConnection.Click += BtnEditConnection_Click;
 
-        AutoCompleteBoxModelName.GotFocus += AutoCompleteBoxModelName_GotFocus;
+        //AutoCompleteBoxModelName.GotFocus += AutoCompleteBoxModelName_GotFocus;
 
     }
 
@@ -45,47 +45,47 @@ public partial class LLMConnectionConfigurationWindow : Window
     private string _autoCompleteFetchModelsAPIKey   = string.Empty;
 
 
-    private async void AutoCompleteBoxModelName_GotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
-    {
+    //private async void AutoCompleteBoxModelName_GotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+    //{
         
-        if (DataContext is LLMConnectionWindowViewModel viewModel)
-        {
-            if (viewModel.EnteredModelName != string.Empty) return; // Only populate when the box starts empty.
+    //    if (DataContext is LLMConnectionWindowViewModel viewModel)
+    //    {
+    //        if (viewModel.EnteredModelName != string.Empty) return; // Only populate when the box starts empty.
             
-            string endpoint = viewModel.SelectedService == LLMService.Custom ? viewModel.ServerURL : Completions.GetOpenAIEndpointURL(viewModel.SelectedService);
-            string api_key  = viewModel.APIKey;
-            try
-            {
-                if (_autoCompleteFetchModelsURL == endpoint && _autoCompleteFetchModelsAPIKey == api_key)
-                {
-                    // We already looked this endpoint up.
-                    InvokeDropDown(AutoCompleteBoxModelName);
-                }
-                else
-                {
-                    // Look this endpoint up try to get a list of models.
-                    _autoCompleteFetchModelsAPIKey = api_key;
-                    _autoCompleteFetchModelsURL = endpoint;
-                    AutoCompleteBoxModelName.ItemsSource = new List<string>(); // Clear any previous suggestions.
-                    if (!string.IsNullOrWhiteSpace(endpoint)
-                    && !string.IsNullOrWhiteSpace(api_key))
-                    {
-                        modelLookupCancellationTokenSource?.Dispose();
-                        modelLookupCancellationTokenSource = new CancellationTokenSource(new TimeSpan(0, 0, 30));
-                        var models = await Completions.TryGetAvailableModels(endpoint, api_key, modelLookupCancellationTokenSource.Token);
-                        AutoCompleteBoxModelName.ItemsSource = models;
-                        AutoCompleteBoxModelName.PopulateComplete();
-                        // Seriously why can't they just expose basic functionality..
-                        InvokeDropDown(AutoCompleteBoxModelName); // This may throw an exception...
+    //        string endpoint = viewModel.SelectedService == LLMService.Custom ? viewModel.ServerURL : Completions.GetOpenAIEndpointURL(viewModel.SelectedService);
+    //        string api_key  = viewModel.APIKey;
+    //        try
+    //        {
+    //            if (_autoCompleteFetchModelsURL == endpoint && _autoCompleteFetchModelsAPIKey == api_key)
+    //            {
+    //                // We already looked this endpoint up.
+    //                InvokeDropDown(AutoCompleteBoxModelName);
+    //            }
+    //            else
+    //            {
+    //                // Look this endpoint up try to get a list of models.
+    //                _autoCompleteFetchModelsAPIKey = api_key;
+    //                _autoCompleteFetchModelsURL = endpoint;
+    //                AutoCompleteBoxModelName.ItemsSource = new List<string>(); // Clear any previous suggestions.
+    //                if (!string.IsNullOrWhiteSpace(endpoint)
+    //                && !string.IsNullOrWhiteSpace(api_key))
+    //                {
+    //                    modelLookupCancellationTokenSource?.Dispose();
+    //                    modelLookupCancellationTokenSource = new CancellationTokenSource(new TimeSpan(0, 0, 30));
+    //                    var models = await Completions.TryGetAvailableModels(endpoint, api_key, modelLookupCancellationTokenSource.Token);
+    //                    AutoCompleteBoxModelName.ItemsSource = models;
+    //                    AutoCompleteBoxModelName.PopulateComplete();
+    //                    // Seriously why can't they just expose basic functionality..
+    //                    InvokeDropDown(AutoCompleteBoxModelName); // This may throw an exception...
 
-                    }
-                }
-            } catch (Exception ex)
-            {
-                Debug.WriteLine($"An error occurred listing models for autocomplete box: {ex.ToString()}");
-            }
-        }
-    }
+    //                }
+    //            }
+    //        } catch (Exception ex)
+    //        {
+    //            Debug.WriteLine($"An error occurred listing models for autocomplete box: {ex.ToString()}");
+    //        }
+    //    }
+    //}
 
     /// <summary>
     /// Uses reflection, unsafe HACK
