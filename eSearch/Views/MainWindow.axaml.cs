@@ -106,7 +106,7 @@ namespace eSearch.Views
                 }
                 Debug.WriteLine("Fetching available models...");
                 CancellationTokenSource cts = new CancellationTokenSource(new TimeSpan(0, 0, 30));
-                var models = await Completions.TryGetAvailableModelIds(aiConfig, aiConfig.APIKey, cts.Token);
+                var models = await Completions.TryGetAvailableModels(Completions.GetOpenAIEndpointURL(aiConfig), eSearch.Models.Utils.Base64Decode(aiConfig.APIKey), cts.Token);
                 if (models == null) {
                     Debug.WriteLine("Error fetching models.");
                     return;
@@ -245,7 +245,10 @@ namespace eSearch.Views
                         {
                             System.IO.Directory.CreateDirectory(exportConvoViewModel.ExportDirectory);
                         }
-                        string localPath = Path.Combine(exportConvoViewModel.ExportDirectory, $"{exportConvoViewModel.FileName}{dateStr}.{exportConvoViewModel.SelectedExportFormat.Extension.ToLower()}");
+
+                        string modelName = conversation.Messages.First().Model;
+                        string modelNameFileNameFriendly = Models.Utils.SanitizeFileName(modelName);
+                        string localPath = Path.Combine(exportConvoViewModel.ExportDirectory, $"{exportConvoViewModel.FileName} {modelNameFileNameFriendly.Trim()}{dateStr}.{exportConvoViewModel.SelectedExportFormat.Extension.ToLower()}");
 
                         if (Path.GetExtension(localPath).ToLower() == ".csv")
                         {

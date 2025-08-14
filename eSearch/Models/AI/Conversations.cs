@@ -15,6 +15,10 @@ namespace eSearch.Models.AI
         public required string Role     { get; set; } // "system", "user", "assistant"
         public required string Content  { get; set; }
 
+        // Note this can only valid if role is 'assistant'
+        // Null whilst generating too.
+        public TimeSpan? GenerationTime = null;
+
         public DateTime Time { get; set; } = DateTime.Now;
 
         /// <summary>

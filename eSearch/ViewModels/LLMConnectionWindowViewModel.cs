@@ -190,6 +190,9 @@ namespace eSearch.ViewModels
             }
             set
             {
+
+                HideAPIKey = ( value == LLMService.Ollama || value == LLMService.LMStudio );
+
                 switch(value)
                 {
                     case LLMService.Custom:
@@ -204,6 +207,20 @@ namespace eSearch.ViewModels
 
             }
         }
+
+        public bool HideAPIKey
+        {
+            get
+            {
+                return _hideAPIKey;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _hideAPIKey, value);
+            }
+        }
+
+        private bool _hideAPIKey = false;
 
         public string CustomSystemPrompt
         {

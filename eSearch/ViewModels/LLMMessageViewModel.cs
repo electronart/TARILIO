@@ -78,6 +78,7 @@ namespace eSearch.ViewModels
         }
 
         private CancellationTokenSource? _cancellationSource = null;
+        private DateTime? _startedMessageStream;
 
         /// <summary>
         /// Populated only when this message is a streaming API call to an LLM.
@@ -86,6 +87,7 @@ namespace eSearch.ViewModels
         {
             if (_messageStreamEnumerator != null)
             {
+                _startedMessageStream = DateTime.Now;
                 await foreach (var str in _messageStreamEnumerator)
                 {
                     _recordedOutputContent.Append(str);
@@ -135,6 +137,12 @@ namespace eSearch.ViewModels
                 return _isFinishedStreaming;
             } set
             {
+                if (_startedMessageStream != null && ExistingMessage != null)
+                {
+                    DateTime now = DateTime.Now;
+                    var elapsed = now - _startedMessageStream;
+                    ExistingMessage.GenerationTime = elapsed;
+                }
                 this.RaiseAndSetIfChanged(ref _isFinishedStreaming, value);
             }
         }

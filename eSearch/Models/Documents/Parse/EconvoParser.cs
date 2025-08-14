@@ -48,9 +48,16 @@ namespace eSearch.Models.Documents.Parse
 
             foreach (var message in convo.Messages)
             {
+
+                string generationTime = "";
+                if (message.Role?.ToLower() == "assistant")
+                {
+                    generationTime = $@" ({message.GenerationTime:%s} seconds)";
+                }
+
                 markDownOutput.Clear();
                 markDownOutput.AppendLine().AppendLine("****").AppendLine().AppendLine();
-                markDownOutput.Append("**Time:** ").AppendLine(message.Time.ToShortDateString() + " " +  message.Time.ToShortTimeString()).AppendLine();
+                markDownOutput.Append("**Time:** ").Append(message.Time.ToShortDateString() + " " +  message.Time.ToShortTimeString()).AppendLine(generationTime).AppendLine();
                 markDownOutput.Append("**Role:** ").AppendLine(message.Role ?? "").AppendLine();
                 markDownOutput.Append("**Content:** ").AppendLine(message.Content).AppendLine();
                 if (!string.IsNullOrWhiteSpace(message.Note))

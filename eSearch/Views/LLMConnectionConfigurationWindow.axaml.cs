@@ -11,6 +11,10 @@ using eSearch.Models.AI;
 using System.Linq;
 using eSearch.Models.Configuration;
 using sun.misc;
+using System.Threading;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace eSearch;
 
@@ -31,6 +35,87 @@ public partial class LLMConnectionConfigurationWindow : Window
         DataContextChanged += LLMConnectionConfigurationWindow_DataContextChanged;
         BtnEditConnection.Click += BtnEditConnection_Click;
 
+        //AutoCompleteBoxModelName.GotFocus += AutoCompleteBoxModelName_GotFocus;
+
+    }
+
+    CancellationTokenSource? modelLookupCancellationTokenSource = null;
+
+    private string _autoCompleteFetchModelsURL      = string.Empty;
+    private string _autoCompleteFetchModelsAPIKey   = string.Empty;
+
+
+    //private async void AutoCompleteBoxModelName_GotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+    //{
+        
+    //    if (DataContext is LLMConnectionWindowViewModel viewModel)
+    //    {
+    //        if (viewModel.EnteredModelName != string.Empty) return; // Only populate when the box starts empty.
+            
+    //        string endpoint = viewModel.SelectedService == LLMService.Custom ? viewModel.ServerURL : Completions.GetOpenAIEndpointURL(viewModel.SelectedService);
+    //        string api_key  = viewModel.APIKey;
+    //        try
+    //        {
+    //            if (_autoCompleteFetchModelsURL == endpoint && _autoCompleteFetchModelsAPIKey == api_key)
+    //            {
+    //                // We already looked this endpoint up.
+    //                InvokeDropDown(AutoCompleteBoxModelName);
+    //            }
+    //            else
+    //            {
+    //                // Look this endpoint up try to get a list of models.
+    //                _autoCompleteFetchModelsAPIKey = api_key;
+    //                _autoCompleteFetchModelsURL = endpoint;
+    //                AutoCompleteBoxModelName.ItemsSource = new List<string>(); // Clear any previous suggestions.
+    //                if (!string.IsNullOrWhiteSpace(endpoint)
+    //                && !string.IsNullOrWhiteSpace(api_key))
+    //                {
+    //                    modelLookupCancellationTokenSource?.Dispose();
+    //                    modelLookupCancellationTokenSource = new CancellationTokenSource(new TimeSpan(0, 0, 30));
+    //                    var models = await Completions.TryGetAvailableModels(endpoint, api_key, modelLookupCancellationTokenSource.Token);
+    //                    AutoCompleteBoxModelName.ItemsSource = models;
+    //                    AutoCompleteBoxModelName.PopulateComplete();
+    //                    // Seriously why can't they just expose basic functionality..
+    //                    InvokeDropDown(AutoCompleteBoxModelName); // This may throw an exception...
+
+    //                }
+    //            }
+    //        } catch (Exception ex)
+    //        {
+    //            Debug.WriteLine($"An error occurred listing models for autocomplete box: {ex.ToString()}");
+    //        }
+    //    }
+    //}
+
+    /// <summary>
+    /// Uses reflection, unsafe HACK
+    /// </summary>
+    /// <param name="autoCompleteBox"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    private void InvokeDropDown(AutoCompleteBox autoCompleteBox)
+    {
+        if (autoCompleteBox == null)
+        {
+            throw new ArgumentNullException(nameof(autoCompleteBox));
+        }
+
+        // Get the type (use autoCompleteBox.GetType() if it's a subclass)
+        Type type = typeof(AutoCompleteBox);
+
+        // Find the private method (adjust BindingFlags if it's static: add BindingFlags.Static and remove Instance)
+        MethodInfo method = type.GetMethod("OpeningDropDown",
+            BindingFlags.NonPublic | BindingFlags.Instance);
+
+        if (method != null)
+        {
+            // Invoke it (pass parameters as object[] if needed, e.g., new object[] { arg1, arg2 })
+            method.Invoke(autoCompleteBox, [false]);
+        }
+        else
+        {
+            // Handle case where method is not found (e.g., misspelled or doesn't exist)
+            Console.WriteLine("Method 'OpeningDropDown' not found.");
+        }
     }
 
     private void BtnEditConnection_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -223,12 +308,6 @@ public partial class LLMConnectionConfigurationWindow : Window
                 case Models.AI.LLMService.ChatGPT:
                 case LLMService.Ollama:
                 case LLMService.LMStudio:
-                    // Require an API Key.
-                    if (string.IsNullOrWhiteSpace(vm.APIKey))
-                    {
-                        reason = S.Get("API Key Required");
-                        return false;
-                    }
                     if (string.IsNullOrWhiteSpace(vm.EnteredModelName))
                     {
                         reason = S.Get("Model Name required");
