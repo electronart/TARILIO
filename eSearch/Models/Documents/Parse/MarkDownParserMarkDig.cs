@@ -10,6 +10,8 @@ namespace eSearch.Models.Documents.Parse
 {
     public class MarkDownParserMarkDig : IParser
     {
+        private MarkdownPipeline? _pipeline;
+
         public string[] Extensions
         {
             get
@@ -20,7 +22,12 @@ namespace eSearch.Models.Documents.Parse
 
         public void Parse(string filePath, out ParseResult parseResult)
         {
-            var html = Markdown.ToHtml(System.IO.File.ReadAllText(filePath));
+            if (_pipeline == null)
+            {
+                _pipeline = new MarkdownPipelineBuilder()
+                    .UseAdvancedExtensions().Build(); // Support for citations, figures, footnotes, grid tables, diagrams etc
+            }
+            var html = Markdown.ToHtml(System.IO.File.ReadAllText(filePath), _pipeline);
             HtmlParser htmlParser = new HtmlParser();
             htmlParser.ParseText(html, out parseResult);
             parseResult.ParserName = "MarkdownParserMarkdig";
