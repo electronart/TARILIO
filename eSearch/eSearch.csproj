@@ -122,6 +122,7 @@
     <PackageReference Include="DocumentFormat.OpenXml.Linq" Version="2.19.0" />
     <PackageReference Include="FileSignatures" Version="5.0.2" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+    <PackageReference Include="LLamaSharp" Version="0.25.0" />
     <PackageReference Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Analysis.Phonetic" Version="4.8.0-beta00016" />

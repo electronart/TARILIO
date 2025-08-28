@@ -35,6 +35,8 @@ using eSearch.Interop.Indexing;
 using System.Threading;
 using Timer = System.Timers.Timer;
 using ProgressCalculation;
+using eSearch.Models.AI;
+using System.Threading.Tasks;
 
 namespace eSearch
 {
@@ -462,6 +464,70 @@ namespace eSearch
                 #endif
             }
         }
+
+
+        public  static IProgress<float>?            ModelLoadProgress;
+        private static CancellationTokenSource?     ModelLoadCancelTokenSrc;
+
+
+        /// <summary>
+        /// Note, if an LLM is already loaded, and the LLM is different to the config, then this will UNLOAD the existing LLM.
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static async Task<LoadedLocalLLM> GetOrLoadLocalLLM(LocalLLMConfiguration config, CancellationToken cancellationToken)
+        {
+            if (_loadedLocalLLM != null)
+            {
+                if (_loadedLocalLLM.llm == config) return _loadedLocalLLM; // The LLM was already in memory
+                else
+                {
+                    // Another LLM is in memory...
+                    _loadedLocalLLM.Dispose();
+                    _loadedLocalLLM = null;
+                }   
+            }
+            // LLM is not in memory. Need to load it.
+
+            // Firstly, check if we're already loading a model, and if so, cancel.
+            if (ModelLoadCancelTokenSrc != null)
+            {
+                await ModelLoadCancelTokenSrc.CancelAsync();
+            }
+
+            if (Program.GetMainWindow()?.DataContext is MainWindowViewModel mwvm)
+            {
+
+                var modelLoadProgress = new Progress<float>();
+                modelLoadProgress.ProgressChanged += (sender, progress) =>
+                {
+#if DEBUG
+                    Debug.WriteLine($"Model Load Progress {progress}%");
+#endif
+                    mwvm.LocalLLMModelLoadProgress = progress;
+                };
+
+                mwvm.LocalLLMIsModelLoading = true;
+                try
+                {
+                    _loadedLocalLLM = await LoadedLocalLLM.LoadLLM(config, cancellationToken, modelLoadProgress);
+                    return _loadedLocalLLM;
+                } catch (Exception ex)
+                {
+                    // TODO - Display error on the UI.
+
+                    Debug.WriteLine($"Error loading LLM Model: {ex.ToString()}");
+                } finally
+                {
+                    mwvm.LocalLLMIsModelLoading = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// This could potentially be using a very large amount of RAM/VRAM when populated..
+        /// </summary>
+        private static LoadedLocalLLM? _loadedLocalLLM;
 
         public static TranslationsViewModel TranslationsViewModel { 
             get

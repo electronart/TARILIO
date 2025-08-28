@@ -18,11 +18,14 @@ using S = eSearch.ViewModels.TranslationsViewModel;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using MSK = Microsoft.SemanticKernel;
 using eSearch.Interop.AI;
 using OpenAI;
 using System.ClientModel;
 using DocumentFormat.OpenXml.Office2019.Drawing.Model3D;
 using System.Net.Http.Headers;
+using LLama;
+using LLama.Common;
 
 namespace eSearch.Models.AI
 {
@@ -410,6 +413,15 @@ namespace eSearch.Models.AI
         Conversation conversation,
         CancellationToken cancellationToken = default)
         {
+            if (aiConfig.LocalLLMConfiguration != null)
+            {
+                // Using LocalLama
+                await foreach(var token in GetCompletionViaLocalLLM(aiConfig.LocalLLMConfiguration, conversation, cancellationToken))
+                {
+                    yield return token;
+                }
+                yield break;
+            }
             // Set up Semantic Kernel with OpenAI
 
             var customHttpClient = new HttpClient();
@@ -480,15 +492,15 @@ namespace eSearch.Models.AI
 #pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
             // Convert conversation to Semantic Kernel format
-            var chatHistory = new ChatHistory();
+            var chatHistory = new MSK.ChatCompletion.ChatHistory();
             foreach (var message in conversation.Messages)
             {
                 chatHistory.AddMessage(
                     message.Role switch
                     {
-                        "system" => AuthorRole.System,
-                        "user" => AuthorRole.User,
-                        "assistant" => AuthorRole.Assistant,
+                        "system" => MSK.ChatCompletion.AuthorRole.System,
+                        "user" => MSK.ChatCompletion.AuthorRole.User,
+                        "assistant" => MSK.ChatCompletion.AuthorRole.Assistant,
                         _ => throw new ArgumentException($"Invalid role: {message.Role}")
                     },
                     message.Content
@@ -514,7 +526,7 @@ namespace eSearch.Models.AI
              *    
              */
 
-            AuthorRole? lastRole = null;
+            MSK.ChatCompletion.AuthorRole? lastRole = null;
             string? lastCompletionId = "X"; // This ensures there will always be a new message signal
 
 
@@ -547,7 +559,54 @@ namespace eSearch.Models.AI
             }
         }
 
+        private static async IAsyncEnumerable<string> GetCompletionViaLocalLLM(LocalLLMConfiguration llmConfig, Conversation conversation, CancellationToken cancellationToken = default)
+        {
+            #region Some basic validation...
+            if (string.IsNullOrEmpty(llmConfig.ModelPath) || !File.Exists(llmConfig.ModelPath))
+            {
+                throw new ArgumentException("Invalid or missing model path.", nameof(llmConfig.ModelPath));
+            }
+            if (llmConfig.ContextSize <= 0)
+            {
+                throw new ArgumentException("Context size must be positive.", nameof(llmConfig.ContextSize));
+            }
+            #endregion
 
+            LoadedLocalLLM llm = await Program.GetOrLoadLocalLLM(llmConfig, cancellationToken);
+            var executor = new InteractiveExecutor(llm.GetNewContext());
+            var chatHistory = new LLama.Common.ChatHistory();
+            for (int i = 0; i < conversation.Messages.Count - 1; i++)
+            {
+                var msg = conversation.Messages[i];
+                LLama.Common.AuthorRole role = msg.Role switch
+                {
+                    "system" =>     LLama.Common.AuthorRole.System,
+                    "user" =>       LLama.Common.AuthorRole.User,
+                    "assistant" =>  LLama.Common.AuthorRole.Assistant,
+                    _ => throw new ArgumentException($"Invalid role: {msg.Role}")
+                };
+                chatHistory.AddMessage(role, msg.Content);
+            }
+
+            var lastMsg = conversation.Messages.Last();
+            var userMessage = new LLama.Common.ChatHistory.Message(LLama.Common.AuthorRole.User, lastMsg.Content);
+
+            // Create chat session with history
+            var session = new ChatSession(executor, chatHistory);
+
+            // Inference parameters
+            var inferenceParams = new InferenceParams
+            {
+                // MaxTokens = 512, // Limit generation; -1 for no limit (risks infinite generation)
+                AntiPrompts = new List<string> { "User:" }, // Stop at next user prompt
+            };
+
+            // Stream the response tokens
+            await foreach (var token in session.ChatAsync(userMessage, inferenceParams, cancellationToken))
+            {
+                yield return token;
+            }
+        }
 
         public static async Task<Completion> CompleteText(string startText, CancellationToken cancellationToken = default)
         {

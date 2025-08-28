@@ -78,6 +78,9 @@ namespace eSearch.Models.Configuration
 
         public LLMService LLMService { get; set; } = LLMService.Perplexity;
 
+        public LocalLLMConfiguration? LocalLLMConfiguration { get; set; } = null;
+
+    #region The following settings are only to be used if LocalLLMConfiguration is null, otherwise they should be ignored.
         public string ServerURL { get; set; } = string.Empty;
 
         public string APIKey { get; set; } = string.Empty;
@@ -85,6 +88,8 @@ namespace eSearch.Models.Configuration
         public PerplexityModel PerplexityModel { get; set; } = PerplexityModel.Sonar;
 
         public string Model { get; set; } = string.Empty;
+
+    #endregion
 
         /// <summary>
         /// The role to use when providing system prompts to LLM. Might be 'System' or 'Developer'
@@ -95,6 +100,9 @@ namespace eSearch.Models.Configuration
         /// May be null. When not null, overrides the System Prompt.
         /// </summary>
         public string? CustomSystemPrompt = null;
+
+        
+
 
         /// <summary>
         /// Test for success response. Will attempt to call the API.
