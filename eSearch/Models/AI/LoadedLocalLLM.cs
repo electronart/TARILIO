@@ -49,7 +49,8 @@ namespace eSearch.Models.AI
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            weights?.Dispose();
+            weights = null;
         }
     }
 }

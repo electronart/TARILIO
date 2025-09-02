@@ -356,7 +356,18 @@ namespace eSearch
 #else
                 return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "Plugins");
 #endif
+            }
+        }
 
+        public static string ESEARCH_LLM_MODELS_DIR
+        {
+            get
+            {
+#if STANDALONE
+            return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "AI", "Language Models");
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "AI", "Language Models");
+#endif
             }
         }
 
@@ -452,16 +463,16 @@ namespace eSearch
         {
             get
             {
-                #if STANDALONE
+#if STANDALONE
                 string dir = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Exports");
                 if (!System.IO.Directory.Exists(dir))
                 {
                     System.IO.Directory.CreateDirectory(dir);
                 }
                 return dir;
-                #else
+#else
                 return Path.Combine(Program.GetMainWindow().StorageProvider.TryGetWellKnownFolderAsync(Avalonia.Platform.Storage.WellKnownFolder.Documents).Result.Path.LocalPath, "eSearch");
-                #endif
+#endif
             }
         }
 
@@ -517,10 +528,14 @@ namespace eSearch
                     // TODO - Display error on the UI.
 
                     Debug.WriteLine($"Error loading LLM Model: {ex.ToString()}");
+                    throw;
                 } finally
                 {
                     mwvm.LocalLLMIsModelLoading = false;
                 }
+            } else
+            {
+                throw new Exception("Must be run from Windowed eSearch");
             }
         }
 

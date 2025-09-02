@@ -114,7 +114,12 @@
 							     Width="400" HorizontalAlignment="Left"
 								 Text="{Binding EnteredModelName}"
 								 IsEnabled="{Binding EnableConnectionForm}"
-								 IsVisible="{Binding HidePerplexityModelSelectionDropDown}"/>
+								 IsVisible="{Binding !HideModelNameTextBox}"/>
+						<ComboBox Width="400"
+								  SelectedItem="{Binding LocalModelSelected}"
+								  ItemsSource="{Binding LocalModelsAvailable}"
+								  IsVisible="{Binding !HideLocalModelDropDown}"
+						/>
 						<!--
 						<AutoCompleteBox
 							     x:Name="AutoCompleteBoxModelName"
@@ -124,7 +129,7 @@
 								 IsEnabled="{Binding EnableConnectionForm}"
 								 IsVisible="{Binding HidePerplexityModelSelectionDropDown}"
 							 />
-							-->
+						-->
 						<Label Content="Custom System Prompt"></Label>
 						<ComboBox 
 							Width="400"

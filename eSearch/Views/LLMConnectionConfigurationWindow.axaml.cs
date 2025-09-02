@@ -225,7 +225,12 @@ public partial class LLMConnectionConfigurationWindow : Window
                         viewModel.HideServerURL = true;
                         break;
                 }
+
+                viewModel.HideAPIKey = viewModel.SelectedService == LLMService.LocalModel;
+
                 viewModel.HidePerplexityModelSelectionDropDown = viewModel.SelectedService != LLMService.Perplexity;
+                viewModel.HideLocalModelDropDown = viewModel.SelectedService != LLMService.LocalModel;
+                viewModel.HideModelNameTextBox = viewModel.SelectedService == LLMService.Perplexity || viewModel.SelectedService == LLMService.LocalModel;
                 #endregion
                 #region Clear Inputs
                 viewModel.ServerURL        = string.Empty;

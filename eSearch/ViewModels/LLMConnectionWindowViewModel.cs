@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -181,6 +182,84 @@ namespace eSearch.ViewModels
                 return new ObservableCollection<LLMService>(sorted);
             }
         }
+
+        /// <summary>
+        /// Names of available local model files.
+        /// </summary>
+        public ObservableCollection<string> LocalModelsAvailable
+        {
+            get
+            {
+                if (_localModelsAvailable == null)
+                {
+                    _localModelsAvailable = new ObservableCollection<string>();
+                    // Detect available models...
+                    List<DirectoryInfo> directories = new List<DirectoryInfo>();
+                    directories.Add(new DirectoryInfo(Program.ESEARCH_LLM_MODELS_DIR));
+
+                    foreach(var directory in directories)
+                    {
+                        if (directory.Exists)
+                        {
+                            foreach (var file in directory.GetFiles("*.gguf"))
+                            {
+                                _localModelsAvailable.Add(Path.GetFileName(file.FullName));
+                            }
+                        }
+                    }
+                }
+                return _localModelsAvailable;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _localModelsAvailable, value);
+            }
+        }
+
+        private ObservableCollection<string>? _localModelsAvailable = null;
+
+        public string? LocalModelSelected
+        {
+            get
+            {
+                return _localModelSelected;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _localModelSelected, value);
+            }
+        }
+
+        private string? _localModelSelected = null;
+
+        public bool HideLocalModelDropDown
+        {
+            get
+            {
+                return _hideLocalModelDropDown;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _hideLocalModelDropDown, value);
+            }
+        }
+
+        private bool _hideLocalModelDropDown = true;
+
+
+        public bool HideModelNameTextBox
+        {
+            get
+            {
+                return _hideModelNameTextBox;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _hideModelNameTextBox, value);
+            }
+        }
+
+        private bool _hideModelNameTextBox = false;
 
         [Required]
         public LLMService SelectedService { 

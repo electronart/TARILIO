@@ -8,8 +8,8 @@ namespace eSearch.Models.Configuration
 {
     public class LocalLLMConfiguration
     {
-        public string ModelPath;
-        public uint    ContextSize;
+        public string  ModelPath;
+        public uint    ContextSize = 4096;
         public uint    Seed = 1;
     }
 }
