@@ -329,6 +329,14 @@ public partial class LLMConnectionConfigurationWindow : Window
                     }
                     // DO NOT Require a model name, depending on the API, this is not required.
                     break;
+                case LLMService.LocalModel:
+                    // A model that eSearch itself runs.
+                    if (vm.LocalModelSelected == null)
+                    {
+                        reason = S.Get("No Model Selected");
+                        return false;
+                    }
+                    break;
             }
             reason = "Valid";
             return true;

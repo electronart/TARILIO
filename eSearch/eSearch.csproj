@@ -29,6 +29,7 @@
 	  <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 
 	  <AvaloniaNameGeneratorIsEnabled>false</AvaloniaNameGeneratorIsEnabled>
+	  <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='eSearch DEBUG'">
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
@@ -42,6 +43,54 @@
     <PropertyGroup Condition="'$(Configuration)'=='eSearch RELEASE'">
         <DefineConstants>$(DefineConstants);</DefineConstants>
     </PropertyGroup>
+	<!-- For llamaSharp... -->
+	<ItemGroup>
+		<!-- CPU Backend -->
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cpu\*\runtimes\win-x64\native\llama.dll" Link="native_libs\llama-cpu.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cpu\*\runtimes\win-x64\native\llava.dll" Link="native_libs\llava-cpu.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
+		<!-- CUDA12 Backend -->
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda12\*\runtimes\win-x64\native\llama.dll" Link="native_libs\llama-cuda12.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda12\*\runtimes\win-x64\native\llava.dll" Link="native_libs\llava-cuda12.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
+		<!-- CUDA11 Backend -->
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda11\*\runtimes\win-x64\native\llama.dll" Link="native_libs\llama-cuda11.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda11\*\runtimes\win-x64\native\llava.dll" Link="native_libs\llava-cuda11.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
+		<!-- Vulkan Backend -->
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.vulkan\*\runtimes\win-x64\native\llama.dll" Link="native_libs\llama-vulkan.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.vulkan\*\runtimes\win-x64\native\llava.dll" Link="native_libs\llava-vulkan.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
+		<!-- OpenCL Backend -->
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.opencl\*\runtimes\win-x64\native\llama.dll" Link="native_libs\llama-opencl.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.opencl\*\runtimes\win-x64\native\llava.dll" Link="native_libs\llava-opencl.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<!-- Ensure native_libs folder is created in output -->
+	<Target Name="EnsureNativeLibsFolder" BeforeTargets="Build">
+		<MakeDir Directories="$(OutputPath)native_libs" />
+	</Target>
+	<!-- End llamaSharp-->
 <!-- No longer used
   <PropertyGroup Condition="'$(Configuration)'=='LITE - Debug'">
 		<DefineConstants>$(DefineConstants);LITE;DEBUG</DefineConstants>
@@ -123,6 +172,10 @@
     <PackageReference Include="FileSignatures" Version="5.0.2" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
     <PackageReference Include="LLamaSharp" Version="0.25.0" />
+    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.25.0" />
+    <PackageReference Include="LLamaSharp.Backend.Cuda11" Version="0.24.0" />
+    <PackageReference Include="LLamaSharp.Backend.Cuda12" Version="0.25.0" />
+    <PackageReference Include="LLamaSharp.Backend.Vulkan" Version="0.25.0" />
     <PackageReference Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Analysis.Phonetic" Version="4.8.0-beta00016" />

@@ -162,24 +162,6 @@ namespace eSearch.Models.AI
         }
 
         /// <summary>
-        /// Note that this method does not handle exceptions but is likely to trigger them as it uses external network resources. Always try/catch.
-        /// </summary>
-        /// <param name="startText"></param>
-        /// <returns></returns>
-        public static async Task<Completion> CompleteText(AISearchConfiguration aiConfig, string startText, CancellationToken cancellationToken = default)
-        {
-            switch(aiConfig.LLMService)
-            {
-                case LLMService.Perplexity:
-
-                default:
-                    break;
-            }
-            var completion = await GetCompletionViaOpenAIUrlAsync(aiConfig, startText, cancellationToken);
-            return completion;
-        }
-
-        /// <summary>
         /// Note this is the NON-LOCALIZED version.
         /// </summary>
         public static string DEFAULT_SYSTEM_PROMPT = "Answer in English. You are a helpful research assistant";
@@ -189,92 +171,6 @@ namespace eSearch.Models.AI
             if (!string.IsNullOrWhiteSpace(aiConfig.CustomSystemPrompt)) return aiConfig.CustomSystemPrompt;
             return S.Get(DEFAULT_SYSTEM_PROMPT);
         }
-
-        private static async Task<Completion> GetCompletionViaOpenAIUrlAsync(
-            AISearchConfiguration aiConfig, 
-            string startText,
-            CancellationToken cancellationToken = default)
-        {
-
-            
-
-            Dictionary<string, string> systemMessage = new Dictionary<string, string>
-            {
-                { "role", aiConfig.SystemPromptRole.ToLower() },
-                { "content", GetSystemPrompt(aiConfig) }
-            };
-
-            Dictionary<string, string> userMessage = new Dictionary<string, string>
-            {
-                { "role", "user" },
-                { "content", startText }
-            };
-
-            Dictionary<string, object> requestParameters = new Dictionary<string, object>
-            {
-                { "messages", new List<Dictionary<string,string>> { systemMessage, userMessage } },
-                { "model", GetCurrentChatModel(aiConfig) }
-            };
-
-            string body = JsonConvert.SerializeObject(requestParameters);
-            string apiKey = Utils.Base64Decode(aiConfig.APIKey);
-            string url = GetOpenAIEndpointURL(aiConfig) + "/chat/completions";
-            string userAgent = "eSearch";
-
-
-            string       completedText = "";
-            List<string> citations = new List<string>();
-
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-                client.DefaultRequestHeaders.Add("User-Agent", userAgent);
-                client.Timeout = TimeSpan.FromSeconds(10 * 60);
-
-                HttpContent content = new StringContent(body, Encoding.UTF8, "application/json");
-                string responseBody;
-                try
-                {
-                    var response = await client.PostAsync(url, content, cancellationToken);
-                    responseBody = await response.Content.ReadAsStringAsync();
-                    response.EnsureSuccessStatusCode();
-
-                    
-                    var responseParameters = JObject.Parse(responseBody);
-                    if (responseParameters.Property("choices")?.Value is JArray jArray)
-                    {
-                        if (jArray.Count > 0 && jArray[0] is JObject choice)
-                        {
-                            completedText = (string)choice["message"]["content"] ?? string.Empty;
-                        }
-                    }
-                    if (responseParameters.Property("citations") != null) // This is not part of OpenAI Spec - It is a Perplexity Extension.
-                    {
-                        citations.AddRange(responseParameters["citations"].ToObject<List<string>>());
-                    }
-                    Completion completion = new Completion
-                    {
-                        Citations = citations,
-                        Text = completedText,
-                    };
-                    return completion;
-                }
-                catch (HttpRequestException ex)
-                {
-                    Debug.WriteLine($"Req Error: {ex.Message}");
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Unexpected Error: {ex.Message}", ex);
-                    throw;
-                }
-            }
-
-
-        }
-
-        List<string> outputsDebug;
         
 
         /// <param name="aiConfig"></param>
@@ -606,12 +502,6 @@ namespace eSearch.Models.AI
             {
                 yield return token;
             }
-        }
-
-        public static async Task<Completion> CompleteText(string startText, CancellationToken cancellationToken = default)
-        {
-            var aiConfig = Program.ProgramConfig.GetSelectedConfiguration();
-            return await GetCompletionViaOpenAIUrlAsync(aiConfig, startText, cancellationToken);
         }
 
         public static string GetCompletionAsHtmlDisplay(Completion completion)
