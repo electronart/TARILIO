@@ -307,14 +307,9 @@
 												Height="30"
 												Classes="TransparentBtn"
 												IsVisible="{Binding !Session.Query.UseAISearch}"
+												IsEnabled="{Binding SelectedResult, Converter={x:Static ObjectConverters.IsNotNull}}"
+												ToolTip.Tip="{Binding S[Copy~Document...]}"
 												>
-											<ToolTip.Tip>
-												<MultiBinding Converter="{x:Static converters:FuncConverters.SelectString}">
-													<Binding Path="Session.Query.UseAISearch"/>
-													<Binding Path="S[Copy~Response...]"/>
-													<Binding Path="S[Copy~Document...]"/>
-												</MultiBinding>
-											</ToolTip.Tip>
 											<Image Source="{Binding I[icons8-copy-16.png]}"
 												   Width="16"
 												   Height="16"

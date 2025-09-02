@@ -745,6 +745,7 @@ namespace eSearch.Views
             {
                 try
                 {
+                    if (mwvm.SelectedResult == null) return;
                     string txtToCopy = string.Empty;
                     string docFileName = string.Empty;
                     string aiQuery     = string.Empty;
