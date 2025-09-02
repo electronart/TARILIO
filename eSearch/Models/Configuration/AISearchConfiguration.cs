@@ -2,8 +2,10 @@
 using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace eSearch.Models.Configuration
@@ -112,11 +114,23 @@ namespace eSearch.Models.Configuration
         {
             try
             {
-                var res = await Completions.CompleteText(this, "Testing, testing. This is a test. I repeat, this is a ");
-                return new Tuple<bool, string>(true, res.Text);
+                Debug.WriteLine("Testing configuration...");
+                Conversation testConvo = new Conversation();
+                testConvo.Messages.Add(new Message { Content = "You are a helpful assistant", Role = "system", Model = ""});
+                testConvo.Messages.Add(new Message { Content = "User: Testing the system. Respond with a quick and short message", Role = "user", Model = "" });
+
+                var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+
+                await foreach(var str in Completions.GetCompletionStreamViaMCPAsync(this, testConvo, cts.Token))
+                {
+                    cts.Cancel();
+                    return new Tuple<bool, string>(true, "success");
+                }
+                throw new Exception("Empty Response Message?");
 
             } catch (Exception ex)
             {
+                Debug.WriteLine($"An exception ocurred: {ex.ToString()}");
                 return new Tuple<bool, string>(false, ex.Message);
             }
         }

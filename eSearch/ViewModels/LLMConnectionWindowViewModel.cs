@@ -68,6 +68,16 @@ namespace eSearch.ViewModels
 
         public AISearchConfiguration ToAiSearchConfiguration()
         {
+
+            LocalLLMConfiguration localLLMConfig = null; // Null by default for non local LLM's.
+            if (this.SelectedService == LLMService.LocalModel)
+            {
+                localLLMConfig = new LocalLLMConfiguration
+                {
+                    ModelPath = this.LocalModelSelected ?? throw new Exception("No model selected"),
+                };
+            }
+
             AISearchConfiguration aiSearchConfiguration = new AISearchConfiguration()
             {
                 APIKey = Models.Utils.Base64Encode(this.APIKey),
@@ -75,7 +85,8 @@ namespace eSearch.ViewModels
                 ServerURL = this.ServerURL,
                 PerplexityModel = this.SelectedPerplexityModel?.Value ?? PerplexityModel.Small,
                 Model = this.EnteredModelName,
-                SystemPromptRole = this.SelectedSystemPromptRole
+                SystemPromptRole = this.SelectedSystemPromptRole,
+                LocalLLMConfiguration = localLLMConfig
             };
             if (!string.IsNullOrWhiteSpace(CustomSystemPrompt))
             {
@@ -203,7 +214,7 @@ namespace eSearch.ViewModels
                         {
                             foreach (var file in directory.GetFiles("*.gguf"))
                             {
-                                _localModelsAvailable.Add(Path.GetFileName(file.FullName));
+                                _localModelsAvailable.Add(file.FullName);
                             }
                         }
                     }
