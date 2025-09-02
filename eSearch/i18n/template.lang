@@ -37,6 +37,10 @@ Score
 [Šçööŕéé]
 Close
 [Çļööšéé]
+Copy Response...
+[Çööþýý Ŕééšþööñšéé···]
+Copy Document...
+[Çööþýý Ðööçûûɱééñţ···]
 Help
 [Ĥééļþ]
 Copy Conversation
@@ -109,6 +113,10 @@ Transcript:
 # --- CopyConversationWindow.axaml.cs --- 
 # --- CopyConversationWindowViewModel.cs --- 
 # --- CopyDocumentWindow.axaml --- 
+Copy Response
+[Çööþýý Ŕééšþööñšéé]
+Copy Document
+[Çööþýý Ðööçûûɱééñţ]
 Copied text:
 [Çööþîîééð ţééẋţ∶]
 Append File name:
@@ -271,6 +279,8 @@ Field count
 # --- LLMConnectionConfigurationWindow.axaml --- 
 Connect to API
 [Çööññééçţ ţöö ÅÅÞÎÎ]
+Connections
+[Çööññééçţîîööñš]
 Service
 [Šééŕṽîîçéé]
 Server URL
@@ -279,6 +289,8 @@ API Key
 [ÅÅÞÎÎ Ķééýý]
 Model
 [Ṁööðééļ]
+Custom System Prompt
+[Çûûšţööɱ Šýýšţééɱ Þŕööɱþţ]
 Test
 [Ţééšţ]
 # --- LLMConnectionConfigurationWindow.axaml.cs --- 
@@ -412,10 +424,6 @@ Location not available
 There is no metadata to display.
 [Ţĥééŕéé îîš ñöö ɱééţååðååţåå ţöö ðîîšþļååýý·]
 # --- MainWindowViewModel.cs --- 
-Copy Response...
-[Çööþýý Ŕééšþööñšéé···]
-Copy Document...
-[Çööþýý Ðööçûûɱééñţ···]
 File \"%s\" not found
 [Ƒîîļéé ∖″‰š∖″ ñööţ ƒööûûñð]
 # --- MCP_SearchServerTool.cs --- 
@@ -430,6 +438,8 @@ Returns the names of all indexes that can be searched.
 # --- MCPConnectionConfigurationWindow.axaml --- 
 Configure MCP Servers
 [Çööñƒîîĝûûŕéé ṀÇÞ Šééŕṽééŕš]
+Configured Servers
+[Çööñƒîîĝûûŕééð Šééŕṽééŕš]
 Configuration
 [Çööñƒîîĝûûŕååţîîööñ]
 Save

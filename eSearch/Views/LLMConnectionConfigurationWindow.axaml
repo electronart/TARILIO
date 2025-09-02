@@ -36,7 +36,7 @@
 				
 				<DockPanel>
 					<StackPanel DockPanel.Dock="Left" Width="175" Margin="5" Spacing="5">
-						<Label>Connections</Label>
+						<Label Content="{Binding S[Connections]}"/>
 						<ListBox Height="350"
 								 ItemsSource="{Binding AvailableConnections}"
 								 SelectedItem="{Binding SelectedConnection}">
@@ -125,7 +125,7 @@
 								 IsVisible="{Binding HidePerplexityModelSelectionDropDown}"
 							 />
 							-->
-						<Label Content="Custom System Prompt"></Label>
+						<Label Content="{Binding S[Custom~System~Prompt]}"/>
 						<ComboBox 
 							Width="400"
 							ItemsSource="{Binding SystemPromptRoles}"
