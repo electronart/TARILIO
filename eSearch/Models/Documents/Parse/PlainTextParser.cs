@@ -23,7 +23,7 @@ namespace eSearch.Models.Documents.Parse
                 {
                     // Build the supported extensions once and reuse the same list so the performance hit is only once.
                     List<string> temp = new List<string>();
-                    temp.AddRange(new string[] { "txt", "json", "tex" });
+                    temp.AddRange(new string[] { "txt", "json", "tex", "lang" });
                     foreach(var srcCodeFormat in DocumentType.SourceCodeFormats)
                     {
                         temp.Add(srcCodeFormat.Extension);
