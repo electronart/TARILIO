@@ -91,7 +91,19 @@ namespace eSearch.Views
 
             menuItemDebugListModels.Click += MenuItemDebugListModels_Click;
 
+            Program.OnLanguageChanged += Program_OnLanguageChanged;
 
+        }
+
+        private void Program_OnLanguageChanged(object? sender, EventArgs e)
+        {
+            try
+            {
+                init_columns();
+            } catch (Exception ex)
+            {
+                Debug.WriteLine($"Error initializing results columns after language change: {ex.ToString()}");
+            }
         }
 
         private async void MenuItemDebugListModels_Click(object? sender, RoutedEventArgs e)
