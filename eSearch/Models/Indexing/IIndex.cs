@@ -133,6 +133,11 @@ namespace eSearch.Models.Indexing
         /// </summary>
         public List<string> KnownFieldNames { get; set; }
 
+        /// <summary>
+        /// Get the last time the index was updated.
+        /// </summary>
+        public DateTime LastUpdated { get; }
+
         
         
 

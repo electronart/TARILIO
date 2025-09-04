@@ -30,6 +30,7 @@ using eSearch.Interop;
 using eSearch.Models.Search.LuceneCustomFieldComparers;
 using S = eSearch.ViewModels.TranslationsViewModel;
 using eSearch.Interop.Indexing;
+using Avalonia.Controls;
 
 namespace eSearch.Models.Indexing
 {
@@ -111,9 +112,36 @@ namespace eSearch.Models.Indexing
             }
         }
 
-        
+        public DateTime LastUpdated
+        {
+            get
+            {
+                using var directory = FSDirectory.Open(new DirectoryInfo(GetAbsolutePath()));
 
+                // Define Lucene-specific file patterns
+                var luceneFilePatterns = new[] { "segments_*", "*.si", "*.cfs", "*.cfe", "*.fdt", "*.fdx", "*.nvd", "*.nvm", "*.del", "*.tvx", "*.tvd", "*.tvf", "*.tim", "*.tip", "*.doc" };
 
+                // Get all files in the index directory
+                var indexFiles = System.IO.Directory
+                    .GetFiles(GetAbsolutePath())
+                    .Where(file => luceneFilePatterns.Any(pattern => Path.GetFileName(file).MatchesWildcard(pattern)))
+                    .ToList();
+
+                if (!indexFiles.Any())
+                {
+                    Console.WriteLine("No Lucene index files found.");
+                    return DateTime.MinValue; // No Lucene files found
+                }
+
+                // Find the most recent file modification time
+                var lastModified = indexFiles
+                    .Select(file => new FileInfo(file).LastWriteTimeUtc)
+                    .OrderByDescending(time => time)
+                    .FirstOrDefault();
+
+                return lastModified;
+            }
+        }
 
         private IWordWheel _wordWheel;
 

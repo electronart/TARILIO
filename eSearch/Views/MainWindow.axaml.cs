@@ -19,6 +19,7 @@ using eSearch.Models.Search;
 using eSearch.Models.Voice;
 using eSearch.Utils;
 using eSearch.ViewModels;
+using eSearch.ViewModels.StatusUI;
 using ModelContextProtocol.Client;
 using Newtonsoft.Json;
 using ReactiveUI;
@@ -1055,11 +1056,14 @@ namespace eSearch.Views
             }
         }
 
+        private IndexStatusControlViewModel? _selectedIndexStatusViewer = null;
+
         public async void SelectAndDisplayIndex(IIndex? index)
         {
             if (DataContext is MainWindowViewModel mwvm)
             {
                 index?.OpenRead();
+                
                 mwvm.SelectedIndex = index;
                 if (mwvm.SelectedIndex != null) mwvm.SelectedIndex.OpenRead();
                 mwvm.Results = new EmptySearchResultsProvider();
@@ -1790,23 +1794,23 @@ namespace eSearch.Views
 
         private async void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (sender is MainWindowViewModel viewModel)
+            if (sender is MainWindowViewModel mwvm)
             {
-                if (e.PropertyName?.Equals(nameof(viewModel.Results)) ?? false)
+                if (e.PropertyName?.Equals(nameof(mwvm.Results)) ?? false)
                 {
                     if (ResultsGrid2.Source is FlatTreeDataGridSourceCustomSortable<ResultViewModel> sortable)
                     {
-                        sortable.SetItems(viewModel.Results);
+                        sortable.SetItems(mwvm.Results);
                     }
                     //init_columns();
                 }
-                if (e.PropertyName?.Equals(nameof(viewModel.IsVoiceInputActive)) ?? false)
+                if (e.PropertyName?.Equals(nameof(mwvm.IsVoiceInputActive)) ?? false)
                 {
                     try
                     {
                         if (OperatingSystem.IsWindows())
                         {
-                            if (viewModel.IsVoiceInputActive)
+                            if (mwvm.IsVoiceInputActive)
                             {
                                 if (voiceListener == null)
                                 {
@@ -1822,24 +1826,24 @@ namespace eSearch.Views
                         }
                     } catch (Exception ex)
                     {
-                        viewModel.IsVoiceInputActive = false;
+                        mwvm.IsVoiceInputActive = false;
                         await TaskDialogWindow.OKDialog(S.Get("An error occurred"), ex.ToString(), this);
                     }
                 }
-                if (e.PropertyName?.Equals(nameof(viewModel.SelectedSearchSource)) ?? false)
+                if (e.PropertyName?.Equals(nameof(mwvm.SelectedSearchSource)) ?? false)
                 {
-                    var newSearchSource = viewModel.SelectedSearchSource;
+                    var newSearchSource = mwvm.SelectedSearchSource;
 
                     if (newSearchSource?.Source is IIndex index)
                     {
-                        viewModel.SelectedIndex = index;
+                        mwvm.SelectedIndex = index;
                     }
                     if (newSearchSource?.Source is AISearchConfiguration config)
                     {
                         if (newSearchSource != _previousSearchSource && _previousSearchSource?.Source is AISearchConfiguration prevConfig)
                         {
                             // Switched from one AI Search Source to another.
-                            var firstUserMessage = viewModel.CurrentLLMConversation?.Messages.FirstOrDefault(m => m.Role == "user", null);
+                            var firstUserMessage = mwvm.CurrentLLMConversation?.Messages.FirstOrDefault(m => m.Role == "user", null);
                             if (firstUserMessage != null)
                             {
                                 var content = firstUserMessage.GetFinalMessage()?.Content;
@@ -1850,16 +1854,16 @@ namespace eSearch.Views
                         Program.ProgramConfig.SelectedAISearchConfigurationID = config.Id;
                         Program.SaveProgramConfig();
                         var conversationStarter = Completions.GetDefaultConversationStarter(config);
-                        viewModel.CurrentLLMConversation = new LLMConversationViewModel(conversationStarter);
+                        mwvm.CurrentLLMConversation = new LLMConversationViewModel(conversationStarter);
                         var browser = GetHtmlDocumentControl();
                         browser?.RenderLLMConversation(config, conversationStarter);
                         return;
                     }
                 }
-                if (e.PropertyName?.Equals(nameof(viewModel.SelectedLayout)) ?? false)
+                if (e.PropertyName?.Equals(nameof(mwvm.SelectedLayout)) ?? false)
                 {
 
-                    if (viewModel.SelectedLayout == MainWindowViewModel.LayoutPreference.Horizontal)
+                    if (mwvm.SelectedLayout == MainWindowViewModel.LayoutPreference.Horizontal)
                     {
                         var columnDefinitions = ColumnDefinitions.Parse(ResultsAndDocumentView.RowDefinitions.ToString());
                         var rowDefinitions = RowDefinitions.Parse(ResultsAndDocumentView.ColumnDefinitions.ToString());
@@ -1891,33 +1895,33 @@ namespace eSearch.Views
                     UpdateLayout();
 
                 }
-                if (e.PropertyName?.Equals(nameof(viewModel.SelectedResult)) ?? false)
+                if (e.PropertyName?.Equals(nameof(mwvm.SelectedResult)) ?? false)
                 {
-                    ResultsCopyButton.IsEnabled     = viewModel.SelectedResult != null;
-                    DocumentCopyButton.IsEnabled    = viewModel.SelectedResult != null;
-                    viewModel.ShowDocumentLocation  = false;
+                    ResultsCopyButton.IsEnabled     = mwvm.SelectedResult != null;
+                    DocumentCopyButton.IsEnabled    = mwvm.SelectedResult != null;
+                    mwvm.ShowDocumentLocation  = false;
                     #region Update Geolocation UI
                     bool isGeolocationAvailable = false;
 
-                    if (Program.ProgramConfig.IsProgramRegistered() && viewModel.SelectedResult != null)
+                    if (Program.ProgramConfig.IsProgramRegistered() && mwvm.SelectedResult != null)
                     {
-                        var latitude = viewModel.SelectedResult.GetMetadataValue("Latitude");
-                        var longitude = viewModel.SelectedResult.GetMetadataValue("Longitude");
+                        var latitude = mwvm.SelectedResult.GetMetadataValue("Latitude");
+                        var longitude = mwvm.SelectedResult.GetMetadataValue("Longitude");
                         if (latitude != null && longitude != null)
                         {
                             isGeolocationAvailable = true;
                         }
                     }
-                    viewModel.IsDocumentLocationAvailable = isGeolocationAvailable;
-                    viewModel.DocumentLocationButtonToolTip = isGeolocationAvailable ? S.Get("Show location") : S.Get("Location not available");
+                    mwvm.IsDocumentLocationAvailable = isGeolocationAvailable;
+                    mwvm.DocumentLocationButtonToolTip = isGeolocationAvailable ? S.Get("Show location") : S.Get("Location not available");
                     #endregion
                     #region Update the Html Viewer
-                    if (viewModel.SelectedResult != null)
+                    if (mwvm.SelectedResult != null)
                     {
-                        htmlDocumentControl.renderResultAccordingToSettings(viewModel.SelectedResult, viewModel);
-                        if (viewModel.SelectedResult.DocumentMetaData != null)
+                        htmlDocumentControl.renderResultAccordingToSettings(mwvm.SelectedResult, mwvm);
+                        if (mwvm.SelectedResult.DocumentMetaData != null)
                         {
-                            MetadataDataGrid.ItemsSource = viewModel.SelectedResult.VisibleDocumentMetaData;
+                            MetadataDataGrid.ItemsSource = mwvm.SelectedResult.VisibleDocumentMetaData;
                         } else
                         {
                             var metaData = new List<Metadata>();
@@ -1930,34 +1934,51 @@ namespace eSearch.Views
                     }
                     #endregion
                 }
-                if (e.PropertyName?.Equals(nameof(viewModel.Columns)) ?? false)
+                if (e.PropertyName?.Equals(nameof(mwvm.Columns)) ?? false)
                 {
                     init_columns();
                 }
-                if (e.PropertyName?.Equals(nameof(viewModel.CurrentDocSelectedHit)) ?? false)
+                if (e.PropertyName?.Equals(nameof(mwvm.CurrentDocSelectedHit)) ?? false)
                 {
-                    htmlDocumentControl.GoToHit(viewModel.CurrentDocSelectedHit);
+                    htmlDocumentControl.GoToHit(mwvm.CurrentDocSelectedHit);
                 }
-                if (e.PropertyName?.Equals(nameof(viewModel.SelectedIndex)) ?? false)
+                if (e.PropertyName?.Equals(nameof(mwvm.SelectedIndex)) ?? false)
                 {
+
+                    if (_selectedIndexStatusViewer != null)
+                    {
+                        mwvm.StatusMessages.Remove(_selectedIndexStatusViewer);
+                        _selectedIndexStatusViewer.Dispose();
+                        _selectedIndexStatusViewer = null;
+                    }
+                    
+
+
                     PauseSearchUpdates = true;
                     htmlDocumentControl.RenderBlankPageThemeColored();
-                    viewModel.ShowDocumentLocation      = false;
-                    viewModel.ShowMetadataPanel         = false;
-                    viewModel.Session.Query.Query       = "";
-                    viewModel.Session.SelectedIndexId   = viewModel.SelectedIndex?.Id ?? null;
-                    viewModel.Results = new EmptySearchResultsProvider();
+                    mwvm.ShowDocumentLocation      = false;
+                    mwvm.ShowMetadataPanel         = false;
+                    mwvm.Session.Query.Query       = "";
+                    mwvm.Session.SelectedIndexId   = mwvm.SelectedIndex?.Id ?? null;
+                    mwvm.Results = new EmptySearchResultsProvider();
                     init_columns();
-                    await init_wheel(viewModel.SelectedIndex);
+                    if (mwvm.SelectedIndex != null)
+                    {
+                        _selectedIndexStatusViewer = new IndexStatusControlViewModel(mwvm.SelectedIndex);
+                        mwvm.StatusMessages.Add(_selectedIndexStatusViewer);
+                    }
+                    await init_wheel(mwvm.SelectedIndex);
                     PauseSearchUpdates = false;
+
+                    
                 }
-                if (e.PropertyName?.Equals(nameof(viewModel.ShowDocumentLocation)) ?? false)
+                if (e.PropertyName?.Equals(nameof(mwvm.ShowDocumentLocation)) ?? false)
                 {
-                    if (viewModel.ShowDocumentLocation)
+                    if (mwvm.ShowDocumentLocation)
                     {
                         // Show the document location.
-                        var latitude  = viewModel.SelectedResult.GetMetadataValue("Latitude");
-                        var longitude = viewModel.SelectedResult.GetMetadataValue("Longitude");
+                        var latitude  = mwvm.SelectedResult.GetMetadataValue("Latitude");
+                        var longitude = mwvm.SelectedResult.GetMetadataValue("Longitude");
                         // string url = "https://maps.google.com/?q=" + latitude + "," + longitude;
                         // string url = "https://www.openstreetmap.org/#map=11/" + latitude + "/" + longitude;
                         string url = "https://www.openstreetmap.org/?mlat=" + latitude + "&mlon=" + longitude;
@@ -1965,9 +1986,9 @@ namespace eSearch.Views
                     }
                     else
                     {
-                        if (viewModel.SelectedResult != null)
+                        if (mwvm.SelectedResult != null)
                         {
-                            htmlDocumentControl.renderResultAccordingToSettings(viewModel.SelectedResult, this.DataContext as MainWindowViewModel);
+                            htmlDocumentControl.renderResultAccordingToSettings(mwvm.SelectedResult, this.DataContext as MainWindowViewModel);
                         }
                         else
                         {
@@ -1976,16 +1997,16 @@ namespace eSearch.Views
                     }
                 }
 
-                if (e.PropertyName?.Equals(nameof(viewModel.SelectedIndex)) ?? false)
+                if (e.PropertyName?.Equals(nameof(mwvm.SelectedIndex)) ?? false)
                 {
                     // Ensure that the Search Source matches SelectedIndex, where possible.
-                    foreach (var src in viewModel.AvailableSearchSources)
+                    foreach (var src in mwvm.AvailableSearchSources)
                     {
                         if (src.Source is IIndex index)
                         {
-                            if (index.Id.Equals(viewModel.SelectedIndex?.Id))
+                            if (index.Id.Equals(mwvm.SelectedIndex?.Id))
                             {
-                                viewModel.SelectedSearchSource = src;
+                                mwvm.SelectedSearchSource = src;
                             }
                         }
                     }
