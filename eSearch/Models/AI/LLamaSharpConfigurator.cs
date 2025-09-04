@@ -3,24 +3,26 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Management; // Add reference to System.Management
+using System.Management;
 using System.Runtime.InteropServices;
 using LLama.Native;
 using LLama.Common;
-using eSearch;
-using eSearch.Interop;
+using Microsoft.Extensions.Logging;
 
 public class LLamaBackendConfigurator
 {
-    // Assume DLLs are bundled in this subfolder relative to exe
+    // Base folder for native DLLs relative to executable
     private const string NativeLibsFolder = "native_libs";
 
-    // DLL names from LLamaSharp packages (adjust if different)
-    private const string CpuDll = "llama.dll";
-    private const string Cuda11Dll = "llama-cuda-11.dll"; // Actual name might be llama.dll in CUDA11 package; check NuGet
-    private const string Cuda12Dll = "llama-cuda-12.dll"; // Similarly
-    private const string VulkanDll = "llama-vulkan.dll";
-    private const string OpenClDll = "llama-opencl.dll";
+    // Subfolders for each backend, containing llama.dll and other dependencies
+    private const string CpuSubfolder = "llama-cpu-avx2";
+    private const string Cuda11Subfolder = "llama-cuda11-win-x64";
+    private const string Cuda12Subfolder = "llama-cuda12-win-x64";
+    private const string VulkanSubfolder = "llama-vulkan-win-x64";
+    private const string OpenClSubfolder = "llama-opencl-win-x64";
+
+    // Common DLL name used in all backend folders
+    private const string LlamaDllName = "llama.dll";
 
     // WMI class for GPUs
     private const string WmiVideoController = "Win32_VideoController";
@@ -99,8 +101,9 @@ public class LLamaBackendConfigurator
     /// </summary>
     /// <param name="gpuIndex">Optional: Index of GPU to use (from GetAvailableGPUs). If null, selects best (discrete NVIDIA preferred).</param>
     /// <param name="promptCallback">Optional: Callback to prompt user (e.g., show message box). Arg is message string.</param>
+    /// <param name="logger">Optional: Logger for diagnostics.</param>
     /// <returns>True if configuration succeeded (including fallback), false if critical failure (e.g., no CPU backend).</returns>
-    public static bool ConfigureBackend(int? gpuIndex = null, Action<string> promptCallback = null, Microsoft.Extensions.Logging.ILogger logger = null)
+    public static bool ConfigureBackend(int? gpuIndex = null, Action<string> promptCallback = null, ILogger logger = null)
     {
         // Enable logging for diagnostics
         if (logger != null) NativeLibraryConfig.All.WithLogCallback(logger);
@@ -109,7 +112,7 @@ public class LLamaBackendConfigurator
         if (gpus.Count == 0)
         {
             // No GPUs, fallback to CPU
-            return SetBackend(CpuDll, null);
+            return SetBackend(CpuSubfolder, null, promptCallback);
         }
 
         GPUInfo selectedGpu = SelectGpu(gpus, gpuIndex);
@@ -125,7 +128,7 @@ public class LLamaBackendConfigurator
             Environment.SetEnvironmentVariable("CUDA_VISIBLE_DEVICES", gpuIndex.Value.ToString());
         }
 
-        string dllPath = null;
+        string backendSubfolder = null;
         string fallbackReason = null;
 
         if (selectedGpu.Vendor == "NVIDIA")
@@ -140,55 +143,62 @@ public class LLamaBackendConfigurator
             else
             {
                 // Select CUDA backend based on version
-                string cudaDll = cudaInfo.MajorVersion >= 12 ? Cuda12Dll : Cuda11Dll;
-                dllPath = GetDllPath(cudaDll);
+                backendSubfolder = cudaInfo.MajorVersion >= 12 ? Cuda12Subfolder : Cuda11Subfolder;
+                var dllPath = GetDllPath(backendSubfolder);
 
-                // Dry run to check compatibility (e.g., old card with new CUDA)
+                // Dry run to check compatibility
                 NativeLibraryConfig.All.WithLibrary(dllPath, null);
                 var success = NativeLibraryConfig.All.DryRun(out var loadedLib, out var ignored);
                 if (!success)
                 {
                     // Try the other CUDA version as fallback
-                    string altCudaDll = cudaInfo.MajorVersion >= 12 ? Cuda11Dll : Cuda12Dll;
-                    dllPath = GetDllPath(altCudaDll);
+                    string altSubfolder = cudaInfo.MajorVersion >= 12 ? Cuda11Subfolder : Cuda12Subfolder;
+                    dllPath = GetDllPath(altSubfolder);
                     NativeLibraryConfig.All.WithLibrary(dllPath, null);
                     var success2 = NativeLibraryConfig.All.DryRun(out var loadedLib2, out var ignored2);
                     if (!success2)
                     {
                         fallbackReason = $"CUDA backend failed to load ({loadedLib2}). Possible incompatible GPU or driver. Falling back.";
-                        dllPath = null;
+                        backendSubfolder = null;
+                    }
+                    else
+                    {
+                        backendSubfolder = altSubfolder;
                     }
                 }
             }
         }
 
-        if (dllPath == null && fallbackReason != null)
+        if (backendSubfolder == null && fallbackReason != null)
         {
             // Try Vulkan as fallback for NVIDIA/AMD/Intel
-            dllPath = GetDllPath(VulkanDll);
+            backendSubfolder = VulkanSubfolder;
+            var dllPath = GetDllPath(backendSubfolder);
             NativeLibraryConfig.All.WithLibrary(dllPath, null);
             var success = NativeLibraryConfig.All.DryRun(out var _, out var __);
             if (!success)
             {
                 // Then OpenCL
-                dllPath = GetDllPath(OpenClDll);
+                backendSubfolder = OpenClSubfolder;
+                dllPath = GetDllPath(backendSubfolder);
                 NativeLibraryConfig.All.WithLibrary(dllPath, null);
                 var success2 = NativeLibraryConfig.All.DryRun(out var ___, out var ____);
                 if (!success2)
                 {
                     fallbackReason += "\nVulkan and OpenCL also failed. Falling back to CPU.";
+                    backendSubfolder = CpuSubfolder;
                 }
             }
         }
 
         // Final fallback to CPU if needed
-        if (dllPath == null)
+        if (backendSubfolder == null)
         {
-            return SetBackend(CpuDll, fallbackReason, promptCallback);
+            backendSubfolder = CpuSubfolder;
         }
 
         // Set the selected backend
-        return SetBackend(dllPath, fallbackReason, promptCallback);
+        return SetBackend(backendSubfolder, fallbackReason, promptCallback);
     }
 
     private static GPUInfo SelectGpu(List<GPUInfo> gpus, int? gpuIndex)
@@ -257,23 +267,24 @@ public class LLamaBackendConfigurator
         return (null, 0);
     }
 
-    private static string GetDllPath(string dllName)
+    private static string GetDllPath(string backendSubfolder)
     {
-        return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, dllName);
+        return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, backendSubfolder, LlamaDllName);
     }
 
-    private static bool SetBackend(string dllPathOrName, string fallbackReason = null, Action<string> promptCallback = null)
+    private static bool SetBackend(string backendSubfolder, string fallbackReason = null, Action<string> promptCallback = null)
     {
-        string fullPath = Path.IsPathRooted(dllPathOrName) ? dllPathOrName : GetDllPath(dllPathOrName);
+        string dllPath = GetDllPath(backendSubfolder);
+        string searchPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, backendSubfolder);
         NativeLibraryConfig.All
-            .WithSearchDirectory(Path.GetDirectoryName(fullPath))
-            .WithLibrary(fullPath, null)
+            .WithSearchDirectory(searchPath)
+            .WithLibrary(dllPath, null)
             .WithAutoFallback(true); // Fallback if load fails
 
         var success = NativeLibraryConfig.All.DryRun(out var loadedLib, out var ignored);
         if (!success)
         {
-            promptCallback?.Invoke($"Failed to load backend: {loadedLib}. {fallbackReason ?? ""}");
+            promptCallback?.Invoke($"Failed to load backend from {backendSubfolder}: {loadedLib}. {fallbackReason ?? ""}");
             return false;
         }
 
@@ -285,11 +296,3 @@ public class LLamaBackendConfigurator
         return true;
     }
 }
-
-// Usage example:
-// var gpus = LLamaBackendConfigurator.GetAvailableGPUs();
-// foreach (var gpu in gpus) { Console.WriteLine($"{gpu.Index}: {gpu.Vendor} - {gpu.Name} (Integrated: {gpu.IsIntegrated})"); }
-
-// bool success = LLamaBackendConfigurator.ConfigureBackend(gpuIndex: 0, promptCallback: msg => Console.WriteLine("Prompt: " + msg));
-
-// Then load model with GpuLayerCount > 0 for GPU offload

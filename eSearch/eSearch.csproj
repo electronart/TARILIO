@@ -44,44 +44,26 @@
         <DefineConstants>$(DefineConstants);</DefineConstants>
     </PropertyGroup>
 	<!-- For llamaSharp... -->
+	<!-- TODO GPU Support is Windows Only-->
 	<ItemGroup>
 		<!-- CPU Backend -->
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cpu\*\runtimes\win-x64\native\llama.dll" Link="native_libs\llama-cpu.dll">
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cpu\*\runtimes\win-x64\native\avx2\*.dll" Link="native_libs\llama-cpu-avx2\%(Filename).dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cpu\*\runtimes\win-x64\native\llava.dll" Link="native_libs\llava-cpu.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-
 		<!-- CUDA12 Backend -->
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda12\*\runtimes\win-x64\native\llama.dll" Link="native_libs\llama-cuda12.dll">
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda12.windows\*\runtimes\win-x64\native\cuda12\*.dll" Link="native_libs\llama-cuda12-win-x64\%(Filename).dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda12\*\runtimes\win-x64\native\llava.dll" Link="native_libs\llava-cuda12.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-
 		<!-- CUDA11 Backend -->
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda11\*\runtimes\win-x64\native\llama.dll" Link="native_libs\llama-cuda11.dll">
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda11.windows\*\runtimes\win-x64\native\cuda11\*.dll" Link="native_libs\llama-cuda11-win-x64\%(Filename).dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda11\*\runtimes\win-x64\native\llava.dll" Link="native_libs\llava-cuda11.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-
 		<!-- Vulkan Backend -->
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.vulkan\*\runtimes\win-x64\native\llama.dll" Link="native_libs\llama-vulkan.dll">
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.vulkan.windows\*\runtimes\win-x64\native\vulkan\*.dll" Link="native_libs\llama-vulkan-win-x64\%(Filename).dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.vulkan\*\runtimes\win-x64\native\llava.dll" Link="native_libs\llava-vulkan.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-
 		<!-- OpenCL Backend -->
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.opencl\*\runtimes\win-x64\native\llama.dll" Link="native_libs\llama-opencl.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.opencl\*\runtimes\win-x64\native\llava.dll" Link="native_libs\llava-opencl.dll">
+		<None Include="$(NuGetPackageRoot)\llamasharp.backend.opencl\*\runtimes\win-x64\native\clblast\*.dll" Link="native_libs\llama-opencl-win-x64\%(Filename).dll">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
@@ -176,6 +158,7 @@
     <PackageReference Include="LLamaSharp.Backend.Cuda11" Version="0.24.0" />
     <PackageReference Include="LLamaSharp.Backend.Cuda12" Version="0.25.0" />
     <PackageReference Include="LLamaSharp.Backend.Vulkan" Version="0.25.0" />
+	<PackageReference Include="LLamaSharp.Backend.OpenCL" Version="0.13.0" />
     <PackageReference Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Analysis.Phonetic" Version="4.8.0-beta00016" />
@@ -313,6 +296,32 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(DefineConstants.Contains('STANDALONE'))">
     <Exec Command="call ..\PortableBuilder\bin\Debug\PortableBuilder.exe &quot;$(Configuration)&quot;" />
   </Target>
+	<Target Name="CheckLLamaSharpNativeDirectories" BeforeTargets="Build">
+		<!-- Get package versions from PackageReference -->
+		<ItemGroup>
+			<LLamaCpuPackage Include="@(PackageReference)" Condition="'%(Identity)' == 'LLamaSharp.Backend.Cpu'" />
+			<LLamaCuda11Package Include="@(PackageReference)" Condition="'%(Identity)' == 'LLamaSharp.Backend.Cuda11'" />
+			<LLamaCuda12Package Include="@(PackageReference)" Condition="'%(Identity)' == 'LLamaSharp.Backend.Cuda12'" />
+			<LLamaVulkanPackage Include="@(PackageReference)" Condition="'%(Identity)' == 'LLamaSharp.Backend.Vulkan'" />
+			<LLamaOpenCLPackage Include="@(PackageReference)" Condition="'%(Identity)' == 'LLamaSharp.Backend.OpenCL'" />
+		</ItemGroup>
+		<!-- Check CPU backend avx2 directory -->
+		<Error Text="The directory '$(NuGetPackageRoot)\llamasharp.backend.cpu\%(LLamaCpuPackage.Version)\runtimes\win-x64\native\avx2' does not exist. Ensure the LLamaSharp.Backend.Cpu package is restored and contains the avx2 native DLLs. Run 'dotnet restore' or check your NuGet configuration."
+			   Condition="'%(LLamaCpuPackage.Version)' != '' AND !Exists('$(NuGetPackageRoot)\llamasharp.backend.cpu\%(LLamaCpuPackage.Version)\runtimes\win-x64\native\avx2')" />
+		<!-- Check CUDA12 backend directory -->
+		<Error Text="The directory '$(NuGetPackageRoot)\llamasharp.backend.cuda12.windows\%(LLamaCuda12Package.Version)\runtimes\win-x64\native\cuda12' does not exist. Ensure the LLamaSharp.Backend.Cuda12.Windows package is restored and contains the cuda12 native DLLs. Run 'dotnet restore' or check your NuGet configuration."
+			   Condition="'%(LLamaCuda12Package.Version)' != '' AND !Exists('$(NuGetPackageRoot)\llamasharp.backend.cuda12.windows\%(LLamaCuda12Package.Version)\runtimes\win-x64\native\cuda12')" />
+		<!-- Check CUDA11 backend directory -->
+		<Error Text="The directory '$(NuGetPackageRoot)\llamasharp.backend.cuda11.windows\%(LLamaCuda11Package.Version)\runtimes\win-x64\native\cuda11' does not exist. Ensure the LLamaSharp.Backend.Cuda11.Windows package is restored and contains the cuda11 native DLLs. Run 'dotnet restore' or check your NuGet configuration."
+			   Condition="'%(LLamaCuda11Package.Version)' != '' AND !Exists('$(NuGetPackageRoot)\llamasharp.backend.cuda11.windows\%(LLamaCuda11Package.Version)\runtimes\win-x64\native\cuda11')" />
+		<!-- Check Vulkan backend directory -->
+		<Error Text="The directory '$(NuGetPackageRoot)\llamasharp.backend.vulkan.windows\%(LLamaVulkanPackage.Version)\runtimes\win-x64\native\vulkan' does not exist. Ensure the LLamaSharp.Backend.Vulkan.Windows package is restored and contains the vulkan native DLLs. Run 'dotnet restore' or check your NuGet configuration."
+			   Condition="'%(LLamaVulkanPackage.Version)' != '' AND !Exists('$(NuGetPackageRoot)\llamasharp.backend.vulkan.windows\%(LLamaVulkanPackage.Version)\runtimes\win-x64\native\vulkan')" />
+		<!-- Check OpenCL backend directory -->
+		<Error Text="The directory '$(NuGetPackageRoot)\llamasharp.backend.opencl\%(LLamaOpenCLPackage.Version)\runtimes\win-x64\native\clblast' does not exist. Ensure the LLamaSharp.Backend.OpenCL package is restored and contains the clblast native DLLs. Run 'dotnet restore' or check your NuGet configuration."
+			   Condition="'%(LLamaOpenCLPackage.Version)' != '' AND !Exists('$(NuGetPackageRoot)\llamasharp.backend.opencl\%(LLamaOpenCLPackage.Version)\runtimes\win-x64\native\clblast')" />
+	</Target>
+	
 	<!-- Make build fail if openjdk isn't present -->
    <Target Name="CheckOpenJDKDirectory" BeforeTargets="Build">
 	    <Error Text="The directory 'openjdk-22.0.1_windows-x64_bin' does not exist. Please ensure it is present before building. https://jdk.java.net/archive/" Condition="!Exists('openjdk-22.0.1_windows-x64_bin')" />
