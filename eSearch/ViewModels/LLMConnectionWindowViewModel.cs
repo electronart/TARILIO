@@ -60,6 +60,7 @@ namespace eSearch.ViewModels
             PreviousID = aiSearchConfig.Id;
             PreviousDisplayName = aiSearchConfig.CustomDisplayName ?? string.Empty;
             SelectedPerplexityModel = AvailablePerplexityModels.SingleOrDefault(m => m.Value == aiSearchConfig.PerplexityModel, AvailablePerplexityModels[0]);
+            LocalModelSelected = aiSearchConfig.LocalLLMConfiguration?.ModelPath ?? null;
         }
 
         public string? PreviousID = null;

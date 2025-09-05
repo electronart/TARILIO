@@ -9,6 +9,7 @@
         Title="LLMConnectionConfigurationWindow"
 		ExtendClientAreaToDecorationsHint="True"
 		xmlns:utils="clr-namespace:eSearch.Utils;assembly=eSearch"
+		xmlns:converters="clr-namespace:eSearch.Converters;assembly=eSearch"
 		WindowStartupLocation="CenterOwner"
 		CanResize="False">
 	<Design.DataContext>
@@ -18,6 +19,7 @@
 	</Design.DataContext>
 	<Window.Resources>
 		<utils:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
+		<converters:PathToFileNameConverter x:Key="PathToFileNameConverter"/>
 	</Window.Resources>
 	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
 		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
@@ -118,7 +120,9 @@
 						<ComboBox Width="400"
 								  SelectedItem="{Binding LocalModelSelected}"
 								  ItemsSource="{Binding LocalModelsAvailable}"
+								  IsEnabled="{Binding EnableConnectionForm}"
 								  IsVisible="{Binding !HideLocalModelDropDown}"
+								  DisplayMemberBinding="{Binding Converter={StaticResource PathToFileNameConverter}}"
 						/>
 						<!--
 						<AutoCompleteBox

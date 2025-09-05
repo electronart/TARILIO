@@ -3,6 +3,7 @@ using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -48,6 +49,8 @@ namespace eSearch.Models.Configuration
 
             switch(LLMService)
             {
+                case LLMService.LocalModel:
+                    return Path.GetFileNameWithoutExtension(LocalLLMConfiguration?.ModelPath ?? "??");
                 case LLMService.Perplexity:
                     return "Perplexity";
                 case LLMService.ChatGPT:
