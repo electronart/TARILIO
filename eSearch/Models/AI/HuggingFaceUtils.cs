@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace eSearch.Models.AI
     public class HuggingFaceUtils
     {
 
-        public async Task<List<(string Filename, long FileSize)>> GetPossibleModelsAsync(string modelId, string token = null)
+        public async Task<List<(string Filename, long FileSize)>> GetPossibleModelsAsync(string modelId, string? token = null)
         {
             var url = $"https://huggingface.co/api/models/{modelId}/revision/main?full=true";
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -30,7 +31,7 @@ namespace eSearch.Models.AI
             if (!response.IsSuccessStatusCode)
             {
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized || response.StatusCode == System.Net.HttpStatusCode.Forbidden)
-                    throw new Exception("Model is gated; provide a valid token.");
+                    throw new UnauthorizedAccessException("Model is gated; provide a valid token.");
                 response.EnsureSuccessStatusCode(); // Will throw with details
             }
 
@@ -53,7 +54,7 @@ namespace eSearch.Models.AI
 
         private static readonly HttpClient _client = new HttpClient { Timeout = TimeSpan.FromHours(6) }; // Longer timeout for large files
 
-        public async Task DownloadModelFileAsync(string modelId, string filename, string localDir, IProgress<DownloadProgress> progressReporter = null, string token = null, CancellationToken cancellationToken = default)
+        public async Task DownloadModelFileAsync(string modelId, string filename, string localDir, IProgress<DownloadProgress>? progressReporter = null, string? token = null, CancellationToken cancellationToken = default)
         {
             // Construct local path, handling subdirs in filename
             var localPath = Path.Combine(localDir, filename.Replace('/', Path.DirectorySeparatorChar));
@@ -120,17 +121,22 @@ namespace eSearch.Models.AI
         #region DTO's (Simplified)
         public class ModelInfo
         {
+            [JsonPropertyName("siblings")]
             public List<Sibling> Siblings { get; set; } = new();
         }
 
         public class Sibling
         {
+            [JsonPropertyName("rfilename")]
             public string Rfilename { get; set; } = string.Empty;
+
+            [JsonPropertyName("lfs")]
             public LfsInfo? Lfs { get; set; } // Optional, only for LFS-tracked files
         }
 
         public class LfsInfo
         {
+            [JsonPropertyName("size")]
             public long Size { get; set; } // Size in bytes
         }
         #endregion

@@ -51,6 +51,7 @@
 								  Command="{Binding MenuFileExportSearchResults}"
 								  IsEnabled="{Binding !Session.Query.UseAISearch}"/>
 						<MenuItem Header="{Binding S[Print...]}" Command="{Binding MenuFilePrint}"/>
+						
 						<Separator/>
 						<MenuItem Header="{Binding S[Launch~at~Startup]}" x:Name="menuItemLaunchAtStartup">
 							<MenuItem.Icon>
@@ -64,6 +65,7 @@
 					<MenuItem Header="{Binding S[_AI]}"
 							  IsEnabled="{Binding Session.Query.UseAISearch}"
 							  >
+						<MenuItem Header="{Binding S[Import~LLMs...]}" x:Name="menuItemAIImportLLMs"/>
 						<MenuItem Header="{Binding S[_AI~Connections]}" 
 								  x:Name="menuItemSearchAISearch"
 								  IsEnabled="{Binding IsAIConnectionsMenuEnabled}"

@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:eSearch.ViewModels"
+        mc:Ignorable="d"
+		Width="500" Height="200"
+        x:Class="eSearch.Views.ModelChooserWindow"
+        Title="{Binding S[eSearch]}"
+		Classes="tool_window"
+		WindowStartupLocation="CenterOwner"
+		Icon="{Binding ApplicationIcon}"
+		ExtendClientAreaToDecorationsHint="True"
+		CanResize="False"
+		>
+	<Window.Styles>
+		<StyleInclude Source="/Views/ViewStyles/ToolWindowStyle.axaml"></StyleInclude>
+	</Window.Styles>
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:TaskDialogWindowViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="PanelMainContent" Margin="5">
+		<DockPanel Margin="15" x:Name="PanelButtons" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+			<Button Margin="5,0" x:Name="ButtonOK" IsVisible="{Binding Button1Visible}" Content="{Binding S[OK]}" Padding="15,5" 
+					MinWidth="110" HorizontalContentAlignment="Center">Button 1</Button>
+			<Button Margin="5,0" x:Name="ButtonCancel" IsVisible="{Binding Button2Visible}" Content="{Binding S[Cancel]}" Padding="15,5"
+					MinWidth="110" HorizontalContentAlignment="Center">Button 2</Button>
+			
+		</DockPanel>
+		<DockPanel x:Name="PanelMainInstructionAndText">
+			<TextBlock Margin="10,25,10,10" FontSize="20" x:Name="LabelMainInstruction" DockPanel.Dock="Top" Text="{Binding S[Select~Model~to~Download]}">Main Instruction</TextBlock>
+			<ComboBox
+				Margin="10,10,10,10"
+				Width="350"
+				ItemsSource="{Binding AvailableModels}"
+				SelectedItem="{Binding SelectedModel}"
+			/>
+		</DockPanel>
+	</DockPanel>
+</Window>

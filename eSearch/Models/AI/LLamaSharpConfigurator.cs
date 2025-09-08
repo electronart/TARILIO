@@ -7,7 +7,10 @@ using System.Management;
 using System.Runtime.InteropServices;
 using LLama.Native;
 using LLama.Common;
+using static java.security.cert.CertPathValidatorException;
 using Microsoft.Extensions.Logging;
+
+// TODO Supports LLama only, NOT LLava despite method signatures.
 
 public class LLamaBackendConfigurator
 {
@@ -95,111 +98,150 @@ public class LLamaBackendConfigurator
         return vendor == "Intel" || name.Contains("integrated") || name.Contains("hd graphics") || name.Contains("uhd");
     }
 
+
     /// <summary>
-    /// Configures the LLamaSharp backend based on detected hardware.
-    /// Prioritizes discrete GPUs if available.
+    /// Configures backend with resets to avoid singleton state issues. Call this EARLY (e.g., in Program.Main before any LLamaSharp use).
     /// </summary>
-    /// <param name="gpuIndex">Optional: Index of GPU to use (from GetAvailableGPUs). If null, selects best (discrete NVIDIA preferred).</param>
-    /// <param name="promptCallback">Optional: Callback to prompt user (e.g., show message box). Arg is message string.</param>
-    /// <param name="logger">Optional: Logger for diagnostics.</param>
-    /// <returns>True if configuration succeeded (including fallback), false if critical failure (e.g., no CPU backend).</returns>
-    public static bool ConfigureBackend(int? gpuIndex = null, Action<string> promptCallback = null, ILogger logger = null)
+    public static bool ConfigureBackend2(int? gpuIndex = null, bool useLlava = false, Action<string> promptCallback = null, ILogger logger = null)
     {
-        // Enable logging for diagnostics
-        if (logger != null) NativeLibraryConfig.All.WithLogCallback(logger);
+        // Base config: Apply ONCE at start (before any DryRun/WithLibrary)
+        NativeLibraryConfig.All
+            .WithSearchDirectory(NativeLibsFolder)  // Search all subfolders
+            .WithAutoFallback(true);  // Allow fallback if specific fails
+
+        if (logger != null)
+        {
+            // Custom log callback for your ILogger
+            NativeLibraryConfig.All.WithLogCallback((level, msg) =>
+            {
+                switch (level)
+                {
+                    case LLamaLogLevel.Error: logger.LogError(msg); break;
+                    case LLamaLogLevel.Warning: logger.LogWarning(msg); break;
+                    case LLamaLogLevel.Info: logger.LogInformation(msg); break;
+                    case LLamaLogLevel.Debug: logger.LogDebug(msg); break;
+                }
+            });
+        }
+
+        NativeLibraryConfig.LLava.SkipCheck(true); // Bypass llava validation in dryrun
 
         var gpus = GetAvailableGPUs();
         if (gpus.Count == 0)
         {
-            // No GPUs, fallback to CPU
             return SetBackend(CpuSubfolder, null, promptCallback);
         }
 
-        GPUInfo selectedGpu = SelectGpu(gpus, gpuIndex);
+        var selectedGpu = SelectGpu(gpus, gpuIndex);
         if (selectedGpu == null)
         {
             promptCallback?.Invoke("Invalid GPU index specified.");
             return false;
         }
 
-        // For multi-GPU, set environment for selection (CUDA-specific; Vulkan/OpenCL may need different handling)
+        // Set CUDA_VISIBLE_DEVICES EARLY for multi-GPU (before any config)
         if (gpuIndex.HasValue && selectedGpu.Vendor == "NVIDIA")
         {
             Environment.SetEnvironmentVariable("CUDA_VISIBLE_DEVICES", gpuIndex.Value.ToString());
         }
 
-        string backendSubfolder = null;
-        string fallbackReason = null;
-
-        if (selectedGpu.Vendor == "NVIDIA")
+        string reason = string.Empty;
+        // Check/prep CUDA env (for RTX 4090 + 12.6)
+        var cudaInfo = GetCudaVersion();
+        if (selectedGpu.Vendor == "NVIDIA" && cudaInfo.Version != null)
         {
-            // Check CUDA installation and version
-            var cudaInfo = GetCudaVersion();
-            if (cudaInfo.Version == null)
+            // Prompt for common missing deps
+            var cudaBinPath = @"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v" + cudaInfo.Version + @"\bin";
+            if (!Directory.Exists(cudaBinPath) || !File.Exists(Path.Combine(cudaBinPath, "cudart64_12.dll")))
             {
-                fallbackReason = "CUDA Toolkit not detected. For NVIDIA GPU acceleration, install CUDA Toolkit from https://developer.nvidia.com/cuda-downloads.";
-                promptCallback?.Invoke(fallbackReason);
+                promptCallback?.Invoke("CUDA bin path invalid. Add '" + cudaBinPath + "' to your system PATH, and install cuDNN from https://developer.nvidia.com/cudnn if missing.");
+                return SetBackend(CpuSubfolder, "CUDA env incomplete", promptCallback);
             }
-            else
-            {
-                // Select CUDA backend based on version
-                backendSubfolder = cudaInfo.MajorVersion >= 12 ? Cuda12Subfolder : Cuda11Subfolder;
-                var dllPath = GetDllPath(backendSubfolder);
 
-                // Dry run to check compatibility
-                NativeLibraryConfig.All.WithLibrary(dllPath, null);
-                var success = NativeLibraryConfig.All.DryRun(out var loadedLib, out var ignored);
-                if (!success)
-                {
-                    // Try the other CUDA version as fallback
-                    string altSubfolder = cudaInfo.MajorVersion >= 12 ? Cuda11Subfolder : Cuda12Subfolder;
-                    dllPath = GetDllPath(altSubfolder);
-                    NativeLibraryConfig.All.WithLibrary(dllPath, null);
-                    var success2 = NativeLibraryConfig.All.DryRun(out var loadedLib2, out var ignored2);
-                    if (!success2)
-                    {
-                        fallbackReason = $"CUDA backend failed to load ({loadedLib2}). Possible incompatible GPU or driver. Falling back.";
-                        backendSubfolder = null;
-                    }
-                    else
-                    {
-                        backendSubfolder = altSubfolder;
-                    }
-                }
+            // Try CUDA12 first (RTX 4090 compatible)
+            if (TryBackendWithReset(Cuda12Subfolder, useLlava, promptCallback, logger, out var cuda12Success, out reason))
+            {
+                return true;
             }
+
+            // Fallback to CUDA11 (rare for 4090, but for completeness)
+            if (TryBackendWithReset(Cuda11Subfolder, useLlava, promptCallback, logger, out var cuda11Success, out var reason2))
+            {
+                return true;
+            }
+
+            reason = $"CUDA backends failed: {reason} {reason2}. Falling back to non-CUDA.";
+            promptCallback?.Invoke(reason);
+        }
+        else if (selectedGpu.Vendor == "NVIDIA" && cudaInfo.Version == null)
+        {
+            promptCallback?.Invoke("CUDA Toolkit not detected (run 'nvcc --version'). Install from https://developer.nvidia.com/cuda-downloads.");
+            return SetBackend(CpuSubfolder, "No CUDA", promptCallback);
         }
 
-        if (backendSubfolder == null && fallbackReason != null)
+        // Non-NVIDIA or CUDA fallback: Vulkan -> OpenCL -> CPU
+        if (TryBackendWithReset(VulkanSubfolder, useLlava, promptCallback, logger, out var vulkanSuccess, out var reason3))
         {
-            // Try Vulkan as fallback for NVIDIA/AMD/Intel
-            backendSubfolder = VulkanSubfolder;
-            var dllPath = GetDllPath(backendSubfolder);
-            NativeLibraryConfig.All.WithLibrary(dllPath, null);
-            var success = NativeLibraryConfig.All.DryRun(out var _, out var __);
-            if (!success)
-            {
-                // Then OpenCL
-                backendSubfolder = OpenClSubfolder;
-                dllPath = GetDllPath(backendSubfolder);
-                NativeLibraryConfig.All.WithLibrary(dllPath, null);
-                var success2 = NativeLibraryConfig.All.DryRun(out var ___, out var ____);
-                if (!success2)
-                {
-                    fallbackReason += "\nVulkan and OpenCL also failed. Falling back to CPU.";
-                    backendSubfolder = CpuSubfolder;
-                }
-            }
+            return SetBackend(VulkanSubfolder, null, promptCallback);
         }
 
-        // Final fallback to CPU if needed
-        if (backendSubfolder == null)
+        if (TryBackendWithReset(OpenClSubfolder, useLlava, promptCallback, logger, out var openclSuccess, out var reason4))
         {
-            backendSubfolder = CpuSubfolder;
+            return SetBackend(OpenClSubfolder, null, promptCallback);
         }
 
-        // Set the selected backend
-        return SetBackend(backendSubfolder, fallbackReason, promptCallback);
+        // Final CPU fallback
+        var cpuReason = $"{reason} {reason3} {reason4 ?? ""} Falling back to CPU.";
+        promptCallback?.Invoke(cpuReason);
+        return SetBackend(CpuSubfolder, cpuReason, promptCallback);
     }
+
+
+
+    /// <summary>
+    /// Tries a backend with config reset to avoid singleton side effects. Returns true if DryRun succeeds.
+    /// </summary>
+    private static bool TryBackendWithReset(string subfolder, bool useLlava, Action<string> promptCallback, ILogger logger, out bool success, out string reason)
+    {
+        success = false;
+        reason = null;
+
+        // Reset: Re-apply base config to clear any prior state (no-op if already set, but forces fresh)
+        NativeLibraryConfig.All
+            .WithSearchDirectory(NativeLibsFolder)
+            .WithLogCallback(logger)
+            .WithCuda(subfolder.Contains("cuda"))
+            .WithAutoFallback(false);  // Disable for this test to isolate
+
+        NativeLibraryConfig.LLava.SkipCheck(true);
+
+        var dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, subfolder, "llama.dll");
+        var llavaPath = useLlava ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, subfolder, "llava.dll") : null;
+
+        if (!File.Exists(dllPath))
+        {
+            reason = $"DLL not found: {dllPath}";
+            return false;
+        }
+
+        // Apply specific library for test
+        NativeLibraryConfig.All.WithLibrary(dllPath, llavaPath);
+
+        // DryRun: Test without committing
+        var drySuccess = NativeLibraryConfig.LLama.DryRun(out var loadedLib); // TODO LLama only, NOT llava
+        //var drySuccess = NativeLibraryConfig.All.DryRun(out var loadedLib, out var ignored); 
+        if (!drySuccess)
+        {
+            reason = $"DryRun failed for {subfolder}: {loadedLib?.ToString() ?? "Unknown error"}. Check logs for details (e.g., cuBLAS missing).";
+            // Reset again after failed DryRun
+            NativeLibraryConfig.All.WithSearchDirectory(NativeLibsFolder).WithAutoFallback(true);
+            return false;
+        }
+
+        success = true;
+        return true;
+    }
+
 
     private static GPUInfo SelectGpu(List<GPUInfo> gpus, int? gpuIndex)
     {

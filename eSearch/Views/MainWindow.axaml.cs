@@ -15,12 +15,14 @@ using eSearch.Models.AI;
 using eSearch.Models.Configuration;
 using eSearch.Models.Documents.Parse;
 using eSearch.Models.Indexing;
+using eSearch.Models.Logging;
 using eSearch.Models.Search;
 using eSearch.Models.Voice;
 using eSearch.Utils;
 using eSearch.ViewModels;
 using ModelContextProtocol.Client;
 using Newtonsoft.Json;
+using org.apache.sis.@internal.jaxb.gmx;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -91,7 +93,151 @@ namespace eSearch.Views
 
             menuItemDebugListModels.Click += MenuItemDebugListModels_Click;
 
+            menuItemAIImportLLMs.Click += MenuItemAIImportLLMs_Click;
 
+            
+
+            this.Opened += MainWindow_Opened;
+
+            
+        }
+
+        private async void MainWindow_Opened(object? sender, EventArgs e)
+        {
+            // Wait for the window to open so we have a valid parent for this.
+            string errorMsg = string.Empty;
+
+            try
+            {
+                MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
+                var res = LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
+                {
+                    await TaskDialogWindow.OKDialog("Error", msg, this);
+                }, wrappedDebugLogger);
+                if (res != true)
+                {
+                    errorMsg = "LlamaSharp lib failed to load. Check logs for details.";
+                }
+            } catch (Exception ex)
+            {
+                errorMsg = ex.ToString();
+            }
+
+            if (errorMsg != string.Empty)
+            {
+                await TaskDialogWindow.OKDialog(S.Get("An error occurred"), errorMsg, this);
+            }
+        }
+
+        private async void MenuItemAIImportLLMs_Click(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                string? downloadAuthToken = null;
+
+            retryModelID:
+                var res = await TextInputDialog.ShowDialog(this, S.Get("Download Model"), S.Get("HuggingFace Model ID"), "bartowski/Llama-3.2-3B-Instruct-GGUF", string.Empty, null, 400);
+                if (res.Item1 == TaskDialogResult.OK)
+                {
+                    string modelID = res.Item2.Text;
+                    if (string.IsNullOrWhiteSpace(modelID))
+                    {
+                        // Didn't enter a model.
+                        await TaskDialogWindow.OKDialog(S.Get("Model ID Required"), S.Get("Must provide HuggingFace Model ID to download a model"), this);
+                        goto retryModelID;
+                    }
+                retryFetchModels:
+                    var hfUtils = new HuggingFaceUtils();
+                    try
+                    {
+                        var models = await hfUtils.GetPossibleModelsAsync(modelID, downloadAuthToken);
+                        if (models.Count == 0)
+                        {
+                            await TaskDialogWindow.OKDialog(S.Get("No Valid Models Found"), S.Get("No Valid Models were found in the provided repository.\nProvide a repository containing compatible models"), this);
+                            return;
+                        }
+                        string fileName;
+                        long fileSize;
+                        if (models.Count == 1)
+                        {
+                            (fileName, fileSize) = models[0];
+                        }
+                        else
+                        {
+                            List<string> dialogOptions = new List<string>();
+                            foreach (var model in models)
+                            {
+                                dialogOptions.Add($"{model.Filename} ({Models.Utils.FileSizeHumanFriendly(model.FileSize)})");
+                            }
+                            ModelChooserWindowViewModel vm = new ModelChooserWindowViewModel
+                            {
+                                AvailableModels = dialogOptions,
+                                SelectedModel = dialogOptions[0]
+                            };
+                            ModelChooserWindow window = new ModelChooserWindow { DataContext = vm };
+                            var choiceRes = await window.ShowDialog<object>(this);
+                            if (choiceRes is TaskDialogResult tdr && tdr == TaskDialogResult.OK)
+                            {
+                                var selectedModel = vm.SelectedModel;
+                                if (string.IsNullOrEmpty(selectedModel))
+                                {
+                                    return;
+                                }
+                                int index = dialogOptions.IndexOf(selectedModel);
+                                (fileName, fileSize) = models[index];
+                            }
+                            else
+                            {
+                                return;
+                            }
+                            // Now we have FileName/FileSize of the model to get from the repo.
+                            try
+                            {
+                                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromHours(2)); // TODO Need UI Support for cancelling downloads...
+                                // TODO This needs to be a status item that the user can see progress on and cancel.
+                                Progress<HuggingFaceUtils.DownloadProgress> downloadProgress = new System.Progress<HuggingFaceUtils.DownloadProgress>();
+                                downloadProgress.ProgressChanged += DownloadProgress_ProgressChanged;
+                                await hfUtils.DownloadModelFileAsync(modelID, fileName, Program.ESEARCH_LLM_MODELS_DIR, downloadProgress, downloadAuthToken, cts.Token);
+                                // TODO Once the model is downloaded, we need probably to show it in the setup UI.
+                                Debug.WriteLine("Model finished downloading..");
+                            }
+                            finally
+                            {
+                                // TODO Remove the Status Item...
+                            }
+                        }
+
+                    }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        if (downloadAuthToken == null)
+                        {
+                            var tokenReqRes = await TextInputDialog.ShowDialog(this, S.Get("Token Required"), S.Get("Provide Authentication Token to access this model"), S.Get("Token"), string.Empty, null, 250);
+                            if (tokenReqRes.Item1 == TaskDialogResult.OK)
+                            {
+                                downloadAuthToken = tokenReqRes.Item2.Text;
+                                goto retryFetchModels;
+                            }
+                            else
+                            {
+                                // Cancelled.
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            await TaskDialogWindow.OKDialog(S.Get("Invalid Token"), S.Get("The token provided was rejected by HuggingFace"), this);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DownloadProgress_ProgressChanged(object? sender, HuggingFaceUtils.DownloadProgress e)
+        {
+            Debug.WriteLine($"Model Download Progress {e.Percent.ToString("N2")}% Time Remaining: {e.EstimatedTimeRemaining}");
+            // TODO UI.
         }
 
         private async void MenuItemDebugListModels_Click(object? sender, RoutedEventArgs e)
