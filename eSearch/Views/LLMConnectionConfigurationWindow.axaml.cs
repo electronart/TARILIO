@@ -15,6 +15,8 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Reflection;
+using org.apache.xmlbeans.impl.xb.xsdschema;
+using System.IO;
 
 namespace eSearch;
 
@@ -41,14 +43,92 @@ public partial class LLMConnectionConfigurationWindow : Window
 
     }
 
-    private void BtnPromptExport_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void BtnPromptExport_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        try
+        {
+            string prompts_dir = Program.ESEARCH_LLM_SYSTEM_PROMPTS_DIR;
+            Directory.CreateDirectory(prompts_dir);
+            if (DataContext is LLMConnectionWindowViewModel vm)
+            {
+                string systemPrompt = vm.CustomSystemPrompt;
+                var dialog = new SaveFileDialog // TODO
+                {
+                    // Set the default directory
+                    Directory = prompts_dir,
+                    // Set the default file extension
+                    DefaultExtension = "txt",
+                    // Configure file filters to allow only .txt files
+                    Filters = new()
+            {
+                new FileDialogFilter
+                {
+                    Name = "Text Files",
+                    Extensions = { "txt" }
+                }
+            },
+                    // Set the dialog title
+                    Title = S.Get("Export Prompt")
+                };
+
+                var res = await dialog.ShowAsync(this);
+                if (res != null)
+                {
+                    File.WriteAllText(res, systemPrompt);
+                }
+            }
+        } catch (Exception ex)
+        {
+            Debug.WriteLine($"Error exporting prompt {ex.ToString()}");
+            await TaskDialogWindow.OKDialog(S.Get("An error occurred"), ex.ToString(), this);
+        }
+
     }
 
-    private void BtnPromptImport_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void BtnPromptImport_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        throw new NotImplementedException();
+        string prompts_dir = Program.ESEARCH_LLM_SYSTEM_PROMPTS_DIR;
+        Directory.CreateDirectory(prompts_dir);
+
+        try
+        {
+            var dialog = new OpenFileDialog // TODO
+            {
+                Title = S.Get("Import Prompt"),
+                Directory = prompts_dir,
+                AllowMultiple = false // Set to true if you want multi-select
+            };
+
+            // Add .txt filter (name is user-friendly, extensions are the actual filter)
+            dialog.Filters = new List<FileDialogFilter>
+        {
+            new FileDialogFilter
+            {
+                Name = "Text Files",
+                Extensions = { "txt" }
+            },
+            new FileDialogFilter
+            {
+                Name = "All Files",
+                Extensions = { "*" }
+            }
+        };
+
+            // Show the dialog (pass 'this' as the parent Window)
+            var result = await dialog.ShowAsync(this);
+            if (result.Length == 1)
+            {
+                string txt = File.ReadAllText(result[0]);
+                if (DataContext is LLMConnectionWindowViewModel vm)
+                {
+                    vm.CustomSystemPrompt = txt;
+                }
+            }
+        } catch (Exception ex)
+        {
+            Debug.WriteLine($"Error importing prompt {ex.ToString()}");
+            await TaskDialogWindow.OKDialog(S.Get("An error occurred"), ex.ToString(), this);
+        }
     }
 
     CancellationTokenSource? modelLookupCancellationTokenSource = null;
