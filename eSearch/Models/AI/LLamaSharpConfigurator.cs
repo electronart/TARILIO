@@ -182,12 +182,12 @@ public class LLamaBackendConfigurator
         // Non-NVIDIA or CUDA fallback: Vulkan -> OpenCL -> CPU
         if (TryBackendWithReset(VulkanSubfolder, useLlava, promptCallback, logger, out var vulkanSuccess, out var reason3))
         {
-            return SetBackend(VulkanSubfolder, null, promptCallback);
+            return true;
         }
 
         if (TryBackendWithReset(OpenClSubfolder, useLlava, promptCallback, logger, out var openclSuccess, out var reason4))
         {
-            return SetBackend(OpenClSubfolder, null, promptCallback);
+            return true;
         }
 
         // Final CPU fallback
