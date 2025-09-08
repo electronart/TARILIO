@@ -34,9 +34,21 @@ public partial class LLMConnectionConfigurationWindow : Window
         BtnRenameConnection.Click += BtnRenameConnection_Click;
         DataContextChanged += LLMConnectionConfigurationWindow_DataContextChanged;
         BtnEditConnection.Click += BtnEditConnection_Click;
+        BtnPromptImport.Click += BtnPromptImport_Click;
+        BtnPromptExport.Click += BtnPromptExport_Click;
 
         //AutoCompleteBoxModelName.GotFocus += AutoCompleteBoxModelName_GotFocus;
 
+    }
+
+    private void BtnPromptExport_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void BtnPromptImport_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        throw new NotImplementedException();
     }
 
     CancellationTokenSource? modelLookupCancellationTokenSource = null;

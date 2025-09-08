@@ -125,7 +125,17 @@
 								 IsVisible="{Binding HidePerplexityModelSelectionDropDown}"
 							 />
 							-->
-						<Label Content="{Binding S[Custom~System~Prompt]}"/>
+						<DockPanel Width="400" HorizontalAlignment="Left" Margin="0,5,5,5">
+							<StackPanel
+								Spacing="5"
+								DockPanel.Dock="Right"
+								Orientation="Horizontal"
+								IsEnabled="{Binding EnableConnectionForm}">
+								<Button Content="{Binding S[Import]}" x:Name="BtnPromptImport" MinWidth="80" Height="30" HorizontalContentAlignment="Center"/>
+								<Button Content="{Binding S[Export]}" x:Name="BtnPromptExport" MinWidth="80" Height="30" HorizontalContentAlignment="Center"/>
+							</StackPanel>
+							<Label Content="{Binding S[Custom~System~Prompt]}"/>
+						</DockPanel>
 						<ComboBox 
 							Width="400"
 							ItemsSource="{Binding SystemPromptRoles}"
