@@ -37,9 +37,19 @@ namespace eSearch.ViewModels.StatusUI
             var lastUpdated = _index.LastUpdated;
             var elapsed = DateTime.Now - lastUpdated;
 
-            string strElapsed = FormatElapsedTime(elapsed);
-            return String.Format(S.Get("Updated: {0} ago"), strElapsed);
+            string strElapsed  = FormatElapsedTime(elapsed);
+            strElapsed = String.Format(S.Get("Updated: {0} ago"), strElapsed);
 
+            string strSchedule;
+            var indexConfig = Program.IndexLibrary.GetConfiguration(_index);
+            if (indexConfig.AutomaticUpdates == null)
+            {
+                strSchedule = S.Get("Not Scheduled.");
+            } else
+            {
+                strSchedule = S.Get("Scheduled");
+            }
+            return strElapsed + Environment.NewLine + strSchedule;
         }
 
         private static string FormatElapsedTime(TimeSpan elapsed)

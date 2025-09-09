@@ -5,7 +5,8 @@
 			 xmlns:vm="using:eSearch.ViewModels"
 			 xmlns:vmStatus="using:eSearch.ViewModels.StatusUI"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="125"
-             x:Class="eSearch.Views.StatusUI.StatusControl">
+             x:Class="eSearch.Views.StatusUI.StatusControl"
+			 Cursor="{Binding Cursor}">
 	<Design.DataContext>
 		<vmStatus:DesignStatusControlViewModel/>
 	</Design.DataContext>
@@ -14,9 +15,11 @@
                FontWeight="Bold"
 			   FontSize="14"
                IsVisible="{Binding StatusTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
-		<Label Content="{Binding StatusMessage}"
-               IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-			   FontSize="12"/>
+		<TextBlock Text="{Binding StatusMessage}"
+				   Margin="2"
+                   TextWrapping="Wrap"
+                   IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                   FontSize="12"/>
 		<ProgressBar
             Value="{Binding StatusProgress}"
             Maximum="100" Minimum="0"

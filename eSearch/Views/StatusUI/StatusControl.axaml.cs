@@ -1,13 +1,29 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
+using eSearch.ViewModels.StatusUI;
+using System;
 
 namespace eSearch.Views.StatusUI;
 
 public partial class StatusControl : UserControl
 {
+
     public StatusControl()
     {
         InitializeComponent();
+        this.PointerPressed += OnPointerPressed;
+        Background = Brushes.Transparent; // Make control hit-testable for cursor.
+    }
+
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is StatusControlViewModel vm)
+        {
+            vm.ClickAction?.Invoke();
+        }
     }
 }

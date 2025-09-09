@@ -38,9 +38,23 @@ public partial class LLMConnectionConfigurationWindow : Window
         BtnEditConnection.Click += BtnEditConnection_Click;
         BtnPromptImport.Click += BtnPromptImport_Click;
         BtnPromptExport.Click += BtnPromptExport_Click;
+        BtnOpenModelsDirectory.Click += BtnOpenModelsDirectory_Click;
 
         //AutoCompleteBoxModelName.GotFocus += AutoCompleteBoxModelName_GotFocus;
 
+    }
+
+    private async void BtnOpenModelsDirectory_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        try
+        {
+            string dir = Program.ESEARCH_LLM_MODELS_DIR;
+            Directory.CreateDirectory(dir);
+            eSearch.Models.Utils.ShowFolderInExplorerCrossPlatform(dir);
+        } catch (Exception ex)
+        {
+            await TaskDialogWindow.OKDialog(S.Get("An error occurred."), ex.ToString(), this);
+        }
     }
 
     private async void BtnPromptExport_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

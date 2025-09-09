@@ -972,12 +972,6 @@ namespace eSearch.ViewModels
         public ObservableCollection<StatusControlViewModel> StatusMessages { 
             get
             {
-                if (_statusMessages.Count == 0)
-                {
-#if DEBUG
-                    _statusMessages.Add(new DesignStatusControlViewModel());
-#endif
-                }
                 return _statusMessages;
             } 
             set

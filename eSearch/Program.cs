@@ -37,6 +37,7 @@ using Timer = System.Timers.Timer;
 using ProgressCalculation;
 using eSearch.Models.AI;
 using System.Threading.Tasks;
+using eSearch.ViewModels.StatusUI;
 
 namespace eSearch
 {
@@ -524,13 +525,22 @@ namespace eSearch
 
             if (Program.GetMainWindow()?.DataContext is MainWindowViewModel mwvm)
             {
+                StatusControlViewModel status = new StatusControlViewModel
+                {
+                    StatusTitle = S.Get("Loading Model"),
+                    Tag = config,
+                    StatusProgress = 0.1f,
+                    StatusMessage = Path.GetFileNameWithoutExtension(config.ModelPath)
+                };
+                mwvm.StatusMessages.Add(status);
 
                 var modelLoadProgress = new Progress<float>();
                 modelLoadProgress.ProgressChanged += (sender, progress) =>
                 {
 #if DEBUG
-                    Debug.WriteLine($"Model Load Progress {progress}%");
+                    Debug.WriteLine($"Model Load Progress {progress * 100}%");
 #endif
+                    status.StatusProgress = Math.Clamp(progress * 100, 0, 100);
                     mwvm.LocalLLMModelLoadProgress = progress;
                 };
 
@@ -548,6 +558,10 @@ namespace eSearch
                 } finally
                 {
                     mwvm.LocalLLMIsModelLoading = false;
+                    status.StatusTitle = S.Get("Model Loaded");
+                    status.StatusProgress = 100;
+                    await Task.Delay(TimeSpan.FromSeconds(5)); // Just to keep the status visible for a moment.
+                    mwvm.StatusMessages.Remove(status);
                 }
             } else
             {

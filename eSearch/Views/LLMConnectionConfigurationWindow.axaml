@@ -117,13 +117,26 @@
 								 Text="{Binding EnteredModelName}"
 								 IsEnabled="{Binding EnableConnectionForm}"
 								 IsVisible="{Binding !HideModelNameTextBox}"/>
-						<ComboBox Width="400"
-								  SelectedItem="{Binding LocalModelSelected}"
-								  ItemsSource="{Binding LocalModelsAvailable}"
-								  IsEnabled="{Binding EnableConnectionForm}"
-								  IsVisible="{Binding !HideLocalModelDropDown}"
-								  DisplayMemberBinding="{Binding Converter={StaticResource PathToFileNameConverter}}"
-						/>
+						<DockPanel Width="400" HorizontalAlignment="Left"
+								   IsVisible="{Binding !HideLocalModelDropDown}">
+							<Button DockPanel.Dock="Right" Width="30" x:Name="BtnOpenModelsDirectory"
+									IsEnabled="{Binding EnableConnectionForm}">
+								<Image Source="{Binding I[icons8-folder-16.png]}"
+								Width="16"
+								Height="16"
+								/>
+							</Button>
+							<ComboBox 
+								Width="350"
+								SelectedItem="{Binding LocalModelSelected}"
+								ItemsSource="{Binding LocalModelsAvailable}"
+								IsEnabled="{Binding EnableConnectionForm}"
+								IsVisible="{Binding !HideLocalModelDropDown}"
+								DisplayMemberBinding="{Binding Converter={StaticResource PathToFileNameConverter}}"
+							/>
+							
+						</DockPanel>
+						
 						<!--
 						<AutoCompleteBox
 							     x:Name="AutoCompleteBoxModelName"

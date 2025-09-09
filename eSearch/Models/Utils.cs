@@ -286,6 +286,57 @@ namespace eSearch.Models
             }
         }
 
+        public static void ShowFolderInExplorerCrossPlatform(string folderPath)
+        {
+            // Validate the folder path
+            if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+            {
+                throw new ArgumentException("Invalid or non-existent folder path.", nameof(folderPath));
+            }
+
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    // Windows: Use explorer.exe
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "explorer.exe",
+                        Arguments = $"\"{folderPath}\"",
+                        UseShellExecute = true
+                    });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    // macOS: Use 'open' command
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "open",
+                        Arguments = $"\"{folderPath}\"",
+                        UseShellExecute = true
+                    });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    // Linux: Try common file managers (xdg-open is the most portable)
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "xdg-open",
+                        Arguments = $"\"{folderPath}\"",
+                        UseShellExecute = true
+                    });
+                }
+                else
+                {
+                    throw new PlatformNotSupportedException("Unsupported operating system.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to open folder: {folderPath}", ex);
+            }
+        }
+
         public static bool IsOnlyRunningCopyOfESearch()
         {
             int count = 0;

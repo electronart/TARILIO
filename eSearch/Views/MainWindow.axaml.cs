@@ -21,6 +21,7 @@ using eSearch.Models.Voice;
 using eSearch.Utils;
 using eSearch.ViewModels;
 using eSearch.ViewModels.StatusUI;
+using eSearch.Views.StatusUI;
 using ModelContextProtocol.Client;
 using Newtonsoft.Json;
 using org.apache.sis.@internal.jaxb.gmx;
@@ -96,12 +97,31 @@ namespace eSearch.Views
 
             menuItemAIImportLLMs.Click += MenuItemAIImportLLMs_Click;
 
-            
+            menuItemDebugStatusTest.Click += MenuItemDebugStatusTest_Click;
+
+
+
 
             this.Opened += MainWindow_Opened;
             Program.OnLanguageChanged += Program_OnLanguageChanged;
 
         }
+
+        private void MenuItemDebugStatusTest_Click(object? sender, RoutedEventArgs e)
+        {
+            var statusVM1 = new StatusControlViewModel
+            {
+                StatusTitle = "Test Title",
+                StatusMessage = "Test Message\nMultiline and a very long line that will overflow\nThird line..",
+                StatusProgress = null
+            };
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                mwvm.StatusMessages.Add(statusVM1);
+            }
+        }
+
+
 
         private async void MainWindow_Opened(object? sender, EventArgs e)
         {
@@ -194,10 +214,29 @@ namespace eSearch.Views
                             // Now we have FileName/FileSize of the model to get from the repo.
                             try
                             {
+                                var statusVM = new StatusControlViewModel
+                                {
+                                    StatusTitle = S.Get("Downloading Model"),
+                                    StatusMessage = string.Empty,
+                                };
+
                                 CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromHours(2)); // TODO Need UI Support for cancelling downloads...
                                 // TODO This needs to be a status item that the user can see progress on and cancel.
                                 Progress<HuggingFaceUtils.DownloadProgress> downloadProgress = new System.Progress<HuggingFaceUtils.DownloadProgress>();
-                                downloadProgress.ProgressChanged += DownloadProgress_ProgressChanged;
+                                downloadProgress.ProgressChanged += (sender, downloadProgress) =>
+                                {
+                                    statusVM.StatusProgress = ((float?)downloadProgress.Percent) ?? null;
+                                    statusVM.StatusMessage = 
+                                    Path.GetFileNameWithoutExtension(fileName) 
+                                    + Environment.NewLine 
+                                    + downloadProgress.EstimatedTimeRemaining;
+
+#if DEBUG
+                                   Debug.WriteLine($"Model Download Progress {downloadProgress.Percent.ToString("N2")}% Time Remaining: {downloadProgress.EstimatedTimeRemaining}");
+#endif
+
+
+                                };
                                 await hfUtils.DownloadModelFileAsync(modelID, fileName, Program.ESEARCH_LLM_MODELS_DIR, downloadProgress, downloadAuthToken, cts.Token);
                                 // TODO Once the model is downloaded, we need probably to show it in the setup UI.
                                 Debug.WriteLine("Model finished downloading..");
@@ -1937,6 +1976,24 @@ namespace eSearch.Views
 
         private SearchSource? _previousSearchSource = null;
 
+        private void SetMainStatusViewModel(StatusControlViewModel viewModel)
+        {
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                var existingStatus = mwvm.StatusMessages.FirstOrDefault(x => x?.Tag is MainWindow, null);
+                if (existingStatus != null)
+                {
+                    mwvm.StatusMessages.Remove(existingStatus);
+                    if (existingStatus is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                    }
+                }
+                viewModel.Tag = this;
+                mwvm.StatusMessages.Insert(0, viewModel);
+            }
+        }
+
         private async void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (sender is MainWindowViewModel mwvm)
@@ -2110,7 +2167,11 @@ namespace eSearch.Views
                     if (mwvm.SelectedIndex != null)
                     {
                         _selectedIndexStatusViewer = new IndexStatusControlViewModel(mwvm.SelectedIndex);
-                        mwvm.StatusMessages.Add(_selectedIndexStatusViewer);
+                        _selectedIndexStatusViewer.ClickAction = () =>
+                        {
+                            MenuItemIndexManageIndexes_Click(this, null);
+                        };
+                        SetMainStatusViewModel(_selectedIndexStatusViewer);
                     }
                     await init_wheel(mwvm.SelectedIndex);
                     PauseSearchUpdates = false;

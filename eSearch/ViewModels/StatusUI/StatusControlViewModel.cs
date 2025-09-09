@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Avalonia.Input;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,22 @@ namespace eSearch.ViewModels.StatusUI
         }
 
         private object? _tag = null;
+
+
+        public Cursor Cursor
+        {
+            get
+            {
+                return _cursor;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _cursor, value);
+            }
+        }
+
+        private Cursor _cursor = new Cursor(StandardCursorType.Arrow);
+
 
         public string? StatusTitle
         {
@@ -65,6 +82,27 @@ namespace eSearch.ViewModels.StatusUI
         }
 
         private float? _statusProgress = null;
+
+        public Action? ClickAction
+        {
+            get
+            {
+                return _clickAction;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _clickAction, value);
+                if (value == null)
+                {
+                    Cursor = new Cursor(StandardCursorType.Arrow);
+                } else
+                {
+                    Cursor = new Cursor(StandardCursorType.Hand);
+                }
+            }
+        }
+
+        private Action? _clickAction = null;
     }
 
     public class DesignStatusControlViewModel : StatusControlViewModel

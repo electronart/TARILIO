@@ -170,6 +170,7 @@
 							<MenuItem Header="List tools to console" x:Name="MenuItemDebugMCPListTools"/>
 						</MenuItem>
 						<MenuItem Header="List Avail Models" x:Name="menuItemDebugListModels"/>
+						<MenuItem Header="StatusTest Add" x:Name="menuItemDebugStatusTest"/>
 					</MenuItem>
 				</Menu>
 			</StackPanel>
@@ -191,7 +192,7 @@
 			Margin="5"
 			>
 			<DockPanel x:Name="SearchAndSidebar">
-				<Panel x:Name="Sidebar" Width="200" VerticalAlignment="Top" IsVisible="{Binding ShowWordWheel}">
+				<Panel x:Name="Sidebar" Width="200" VerticalAlignment="Stretch" IsVisible="{Binding ShowWordWheel}">
 					<DockPanel>
 
 						<ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding StatusMessages}">
