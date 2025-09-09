@@ -347,6 +347,9 @@ namespace eSearch
             }
         }
 
+
+       
+
         public static string ESEARCH_PLUGINS_DIR
         {
             get
@@ -379,6 +382,19 @@ namespace eSearch
                 return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "Synonyms");
 #else
                 return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "Synonyms");
+#endif
+            }
+        }
+
+
+        public static string ESEARCH_LLM_SYSTEM_PROMPTS_DIR
+        {
+            get
+            {
+#if STANDALONE
+                return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "AI", "System Prompts");
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "AI", "System Prompts");
 #endif
             }
         }

@@ -71,6 +71,11 @@ namespace eSearch.Models
             return descriptionAttribute?.Description ?? value.ToString();
         }
 
+        public static bool MatchesWildcard(this string input, string pattern)
+        {
+            return System.Text.RegularExpressions.Regex.IsMatch(input, "^" + System.Text.RegularExpressions.Regex.Escape(pattern).Replace("\\*", ".*") + "$");
+        }
+
         public static void CrossPlatformOpenBrowser(string url)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

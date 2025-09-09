@@ -36,7 +36,7 @@
 				
 				<DockPanel>
 					<StackPanel DockPanel.Dock="Left" Width="175" Margin="5" Spacing="5">
-						<Label>Configured Servers</Label>
+						<Label Content="{Binding S[Configured~Servers]}"/>
 						<ListBox Height="350"
 								 ItemsSource="{Binding  AvailableMCPServers}"
 								 SelectedItem="{Binding SelectedMCPServer}"

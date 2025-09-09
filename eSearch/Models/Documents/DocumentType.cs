@@ -180,7 +180,8 @@ namespace eSearch.Models.Documents
                     new DocumentType("txt", "Text file"),
                     new DocumentType("tex", "TeX"),
                     new DocumentType("md", "Markdown"),
-                    new DocumentType("markdown", "Markdown")
+                    new DocumentType("markdown", "Markdown"),
+                    new DocumentType("lang", "Language file")
                 };
             }
         }

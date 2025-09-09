@@ -22,6 +22,7 @@ using DesktopSearch2.Views;
 using eSearch.Converters;
 using eSearch.Models.AI;
 using System.Reflection;
+using eSearch.ViewModels.StatusUI;
 
 
 namespace eSearch.ViewModels
@@ -967,6 +968,25 @@ namespace eSearch.ViewModels
         {
             // SearchReportGenerator.GenerateSearchReport(Session.Query, Results);
         }
+
+        public ObservableCollection<StatusControlViewModel> StatusMessages { 
+            get
+            {
+                if (_statusMessages.Count == 0)
+                {
+#if DEBUG
+                    _statusMessages.Add(new DesignStatusControlViewModel());
+#endif
+                }
+                return _statusMessages;
+            } 
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _statusMessages, value);
+            }
+        }
+
+        private ObservableCollection<StatusControlViewModel> _statusMessages = new ObservableCollection<StatusControlViewModel>();
 
         /*
         public void MenuAppearanceSystem()

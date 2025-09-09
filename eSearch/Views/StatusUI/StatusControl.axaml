@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:eSearch.ViewModels"
+			 xmlns:vmStatus="using:eSearch.ViewModels.StatusUI"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="125"
+             x:Class="eSearch.Views.StatusUI.StatusControl">
+	<Design.DataContext>
+		<vmStatus:DesignStatusControlViewModel/>
+	</Design.DataContext>
+	<StackPanel Orientation="Vertical" Spacing="5" Margin="8">
+		<Label Content="{Binding StatusTitle}"
+               FontWeight="Bold"
+			   FontSize="14"
+               IsVisible="{Binding StatusTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+		<Label Content="{Binding StatusMessage}"
+               IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+			   FontSize="12"/>
+		<ProgressBar
+            Value="{Binding StatusProgress}"
+            Maximum="100" Minimum="0"
+            Margin="10"
+            IsVisible="{Binding StatusProgress, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+	</StackPanel>
+</UserControl>

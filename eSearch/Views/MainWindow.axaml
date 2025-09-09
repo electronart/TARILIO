@@ -1,12 +1,14 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:eSearch.ViewModels"
+		
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:eSearch.ViewModels;assembly=eSearch"
 		xmlns:localView="clr-namespace:eSearch.Views;assembly=eSearch"
 		xmlns:converters="clr-namespace:eSearch.Converters;assembly=eSearch"
 		xmlns:llmctrls="clr-namespace:eSearch.Views.LLMConversations;assembly=eSearch"
+		xmlns:statusctrl="clr-namespace:eSearch.Views.StatusUI;assembly=eSearch"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="eSearch.Views.MainWindow"
 		Icon="{Binding ApplicationIcon}"
@@ -191,17 +193,18 @@
 			<DockPanel x:Name="SearchAndSidebar">
 				<Panel x:Name="Sidebar" Width="200" VerticalAlignment="Top" IsVisible="{Binding ShowWordWheel}">
 					<DockPanel>
-						<!--
-						<Button Content="{Binding S[List...]}"
-								Command="{Binding ClickWheelListOptions}"
-								HorizontalAlignment="Right"
-								Margin="5"
-								DockPanel.Dock="Top"
-								/>
-						-->
+
+						<ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding StatusMessages}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<statusctrl:StatusControl/>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
 						<localView:WordWheelControl DataContext="{Binding}"
 													Width="200"
 													x:Name="WordWheelControl"/>
+						
 					</DockPanel>
 				</Panel>
 				<DockPanel >
@@ -309,14 +312,9 @@
 												Height="30"
 												Classes="TransparentBtn"
 												IsVisible="{Binding !Session.Query.UseAISearch}"
+												IsEnabled="{Binding SelectedResult, Converter={x:Static ObjectConverters.IsNotNull}}"
+												ToolTip.Tip="{Binding S[Copy~Document...]}"
 												>
-											<ToolTip.Tip>
-												<MultiBinding Converter="{x:Static converters:FuncConverters.SelectString}">
-													<Binding Path="Session.Query.UseAISearch"/>
-													<Binding Path="S[Copy~Response...]"/>
-													<Binding Path="S[Copy~Document...]"/>
-												</MultiBinding>
-											</ToolTip.Tip>
 											<Image Source="{Binding I[icons8-copy-16.png]}"
 												   Width="16"
 												   Height="16"
