@@ -105,6 +105,8 @@ namespace eSearch.Views
             this.Opened += MainWindow_Opened;
             Program.OnLanguageChanged += Program_OnLanguageChanged;
 
+            
+
         }
 
         private void MenuItemDebugStatusTest_Click(object? sender, RoutedEventArgs e)
@@ -1451,6 +1453,33 @@ namespace eSearch.Views
                 queryTextBox.SelectAll();
                 queryTextBox.Focus();
                 if (Program.ProgramConfig.SearchAsYouType && !viewModel.Session.Query.UseAISearch) UpdateSearchResults();
+                UpdateMainStatusDisplay();
+            }
+        }
+
+        private void UpdateMainStatusDisplay()
+        {
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                if (mwvm.Session.Query.UseAISearch)
+                {
+                    SetMainStatusViewModel(null);
+                } else
+                {
+                    // Searching regular indexes..
+                    if (mwvm.SelectedIndex != null)
+                    {
+                        IndexStatusControlViewModel vm = new IndexStatusControlViewModel(mwvm.SelectedIndex);
+                        vm.ClickAction = () =>
+                        {
+                            MenuItemIndexManageIndexes_Click(this, null);
+                        };
+                        SetMainStatusViewModel(vm);
+                    } else
+                    {
+                        SetMainStatusViewModel(null);
+                    }
+                }
             }
         }
 
@@ -1976,7 +2005,7 @@ namespace eSearch.Views
 
         private SearchSource? _previousSearchSource = null;
 
-        private void SetMainStatusViewModel(StatusControlViewModel viewModel)
+        private void SetMainStatusViewModel(StatusControlViewModel? viewModel)
         {
             if (DataContext is MainWindowViewModel mwvm)
             {
@@ -1989,8 +2018,11 @@ namespace eSearch.Views
                         disposable.Dispose();
                     }
                 }
-                viewModel.Tag = this;
-                mwvm.StatusMessages.Insert(0, viewModel);
+                if (viewModel != null)
+                {
+                    viewModel.Tag = this;
+                    mwvm.StatusMessages.Insert(0, viewModel);
+                }
             }
         }
 
@@ -2035,7 +2067,7 @@ namespace eSearch.Views
                 if (e.PropertyName?.Equals(nameof(mwvm.SelectedSearchSource)) ?? false)
                 {
                     var newSearchSource = mwvm.SelectedSearchSource;
-
+                    UpdateMainStatusDisplay();
                     if (newSearchSource?.Source is IIndex index)
                     {
                         mwvm.SelectedIndex = index;
