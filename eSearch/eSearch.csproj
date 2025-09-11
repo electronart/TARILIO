@@ -154,11 +154,13 @@
     <PackageReference Include="FileSignatures" Version="5.0.2" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
     <PackageReference Include="LLamaSharp" Version="0.25.0" />
-    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.25.0" />
-    <PackageReference Include="LLamaSharp.Backend.Cuda11" Version="0.24.0" />
-    <PackageReference Include="LLamaSharp.Backend.Cuda12" Version="0.25.0" />
-    <PackageReference Include="LLamaSharp.Backend.Vulkan" Version="0.25.0" />
-	<PackageReference Include="LLamaSharp.Backend.OpenCL" Version="0.13.0" />
+	<!-- Note that LlamaSharp Backends are Excluded from output since the dll's overwrite each other.-->
+	<!-- Manual dll placement logic is further up this csproj file which places the dll's in native_libs directory for each backend-->
+    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.25.0"    ExcludeAssets="runtime"/>
+    <PackageReference Include="LLamaSharp.Backend.Cuda11" Version="0.24.0" ExcludeAssets="runtime"/>
+    <PackageReference Include="LLamaSharp.Backend.Cuda12" Version="0.25.0" ExcludeAssets="runtime"/>
+    <PackageReference Include="LLamaSharp.Backend.Vulkan" Version="0.25.0" ExcludeAssets="runtime"/>
+	<PackageReference Include="LLamaSharp.Backend.OpenCL" Version="0.13.0" ExcludeAssets="runtime"/>
     <PackageReference Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Analysis.Phonetic" Version="4.8.0-beta00016" />
