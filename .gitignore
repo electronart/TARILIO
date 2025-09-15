@@ -380,3 +380,9 @@ Bug Tests
 /eSearchInstaller/eSearch RELEASE
 /eSearchInstaller/eSearch RELEASE
 /TARILIOInstaller/TARILIO RELEASE
+/eSearch/llamasharp_dlls/native_libs/llama-cpu-avx2
+/eSearch/llamasharp_dlls/native_libs/llama-cuda11-win-x64
+/eSearch/llamasharp_dlls/native_libs/llama-cuda12-win-x64
+/eSearch/llamasharp_dlls/native_libs/llama-opencl-win-x64
+/eSearch/llamasharp_dlls/native_libs/llama-vulkan-win-x64
+/eSearch/llamasharp_dlls/LLamaSharp.dll
