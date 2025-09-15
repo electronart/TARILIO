@@ -249,20 +249,25 @@ namespace eSearch
 
         private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)
         {
-            try
+            Dispatcher.UIThread.Post(() =>
             {
-                if (Program.GetMainWindow().DataContext is MainWindowViewModel vm)
+                try
                 {
-                    // TODO Non intuitive code - It's detecting expired serials in the case
-                    // The application is left open permanently.
-                    vm.RaisePropertyChanged(nameof(vm.ProductTagText));
+
+                    if (Program.GetMainWindow()?.DataContext is MainWindowViewModel vm)
+                    {
+                        // TODO Non intuitive code - It's detecting expired serials in the case
+                        // The application is left open permanently.
+                        vm.RaisePropertyChanged(nameof(vm.ProductTagText));
+                    }
                 }
-            } catch (Exception ex)
-            {
-                // Non fatal.
-                Debug.WriteLine("Exception in UI Update Timer ");
-                Debug.WriteLine(ex);
-            }
+                catch (Exception ex)
+                {
+                    // Non fatal.
+                    Debug.WriteLine("Exception in UI Update Timer ");
+                    Debug.WriteLine(ex);
+                }
+            });
         }
 
         static Dictionary<string, string> cefFlags = new Dictionary<string, string>
