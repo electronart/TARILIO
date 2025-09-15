@@ -32,48 +32,38 @@ namespace eSearch.Models.Documents
 
         private IDocument.SkipReason _shouldSkipIndexingThisDocument = IDocument.SkipReason.DontSkip;
 
-        List<IParser> Parsers
+        private static readonly List<IParser> Parsers = new List<IParser>
         {
-            get
-            {
-                if (_parsers == null)
-                {
-                    _parsers = new List<IParser>()
-                    {
-                        new CSVParser_Sep(),
-                        new EconvoParser(),
-                        //new CSVParser(),
-                        new DocParser(),
-                        new DocXParser(),
-                        new PptParser(),
-                        new PptXParser(),
-                        new ToxyParsers.RTFParser(),
-                        // new ToxyParsers.CSVParser(), - Disused - Prefer plain text parser because we use the raw csv data at render time.
-                        new ToxyParsers.Excel2003Parser(),
-                        new EmlParser(),
-                        new PdfParserPDFPig(),
-                        new PlainTextParser(),
-                        new EpubParser2(),
-                        new PlainTextParser(),
-                        new XlsXParser(),
-                        new PSTParser(),
-                        new HtmlParser(),
-                        new XmlParser(),
-                        new TagLibSharpParser(),
-                        new ArchiveParser(),
-                        new MarkDownParserMarkDig(),
-                        new IpynbParser(),
-                        new JsonLParser(),
-                        
-                        new TikaParser3() // TikaParser should always be last. It will be used as fallback.
-                    };
-                }
-                return _parsers;
-            }
-        }
+            new CSVParser_Sep(),
+            new EconvoParser(),
+            //new CSVParser(),
+            new DocParser(),
+            new DocXParser(),
+            new PptParser(),
+            new PptXParser(),
+            new ToxyParsers.RTFParser(),
+            // new ToxyParsers.CSVParser(), - Disused - Prefer plain text parser because we use the raw csv data at render time.
+            new ToxyParsers.Excel2003Parser(),
+            new EmlParser(),
+            new PdfParserPDFPig(),
+            new PlainTextParser(),
+            new EpubParser2(),
+            new PlainTextParser(),
+            new XlsXParser(),
+            new PSTParser(),
+            new HtmlParser(),
+            new XmlParser(),
+            new TagLibSharpParser(),
+            new ArchiveParser(),
+            new MarkDownParserMarkDig(),
+            new IpynbParser(),
+            new JsonLParser(),
+
+            new TikaParser3() // TikaParser should always be last. It will be used as fallback.
+        };
 
 
-        List<string> KnownExecutableExtensions = new List<string>
+        private static readonly List<string> KnownExecutableExtensions = new List<string>
         {
     ".dll",
     ".dat",
@@ -296,7 +286,7 @@ namespace eSearch.Models.Documents
     ".smm",
 };
 
-        List<string> KnownIndexExtensions = new List<string>
+        private static readonly List<string> KnownIndexExtensions = new List<string>
         {
             ".ix",
             ".cfe",
