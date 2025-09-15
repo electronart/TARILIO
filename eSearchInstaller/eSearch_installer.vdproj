@@ -33,6 +33,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_1322C2C424A74FAB9ADD85ED6413224C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_17D948E8A532437ABD75D20A8CBD49CE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -76,6 +82,12 @@
         "Entry"
         {
         "MsmKey" = "8:_313E77718C854FE88909E217D98EE688"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_33DD22FCB4714EDBA182478DA364906E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -585,6 +597,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E03381940090448C842A6B986958AB51"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E1017D8A9D4D476C83D01CB87C522C36"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -658,13 +676,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A6D3BF81C13FB7C268153F7919BE0644"
+        "OwnerKey" = "8:_45C29631549444FDBD6B69AECF5BE802"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_45C29631549444FDBD6B69AECF5BE802"
+        "OwnerKey" = "8:_A6D3BF81C13FB7C268153F7919BE0644"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -846,6 +864,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1322C2C424A74FAB9ADD85ED6413224C"
+            {
+            "SourcePath" = "8:..\\eSearch\\overwrite_ggmls\\ggml-base.dll"
+            "TargetName" = "8:ggml-base.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_92675654DE3141FDB7B4056A26A37046"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_17D948E8A532437ABD75D20A8CBD49CE"
             {
             "SourcePath" = "8:Include Files\\Synonyms\\UT_sample_jours_de_la_semaine_français.xml"
@@ -992,6 +1030,26 @@
             "TargetName" = "8:Greek.dat"
             "Tag" = "8:"
             "Folder" = "8:_9D658461146E4FF28397EE7088F30ADC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_33DD22FCB4714EDBA182478DA364906E"
+            {
+            "SourcePath" = "8:OverwriteDLLs.vbs"
+            "TargetName" = "8:OverwriteDLLs.vbs"
+            "Tag" = "8:"
+            "Folder" = "8:_5A28C29878D94098A4424E44BE28C9F8"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2657,6 +2715,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E03381940090448C842A6B986958AB51"
+            {
+            "SourcePath" = "8:..\\eSearch\\overwrite_ggmls\\ggml-cpu.dll"
+            "TargetName" = "8:ggml-cpu.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_92675654DE3141FDB7B4056A26A37046"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E1017D8A9D4D476C83D01CB87C522C36"
             {
             "SourcePath" = "8:Include Files\\Stop word files\\Dutch.dat"
@@ -3012,6 +3090,17 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_92675654DE3141FDB7B4056A26A37046"
+                    {
+                    "Name" = "8:overwrite_dlls"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_13D3025CCAA24555BE8DF26223B0CB32"
+                        "Folders"
+                        {
+                        }
+                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_A87D4AA144264F6AB8906DD57CED7037"
@@ -3042,7 +3131,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:eSearch"
         "ProductCode" = "8:{D0C3E217-F012-4442-BB1B-664A72E9B25B}"
-        "PackageCode" = "8:{C36D5A38-12C3-405C-9959-2CFFAA5746E6}"
+        "PackageCode" = "8:{854902DD-DE30-4330-8382-8DEB088894E5}"
         "UpgradeCode" = "8:{4EE3EB0E-D78C-40EC-A3BC-19286DCE891E}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -3611,7 +3700,7 @@
             "Folder" = "8:_5A28C29878D94098A4424E44BE28C9F8"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"

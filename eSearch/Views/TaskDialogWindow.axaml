@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="using:eSearch.ViewModels"
         mc:Ignorable="d"
-		Width="500" Height="200"
+		Width="500" MinHeight="200"
         x:Class="eSearch.Views.TaskDialogWindow"
         Title="{Binding S[eSearch]}"
 		Classes="tool_window"
@@ -12,6 +12,7 @@
 		Icon="{Binding ApplicationIcon}"
 		ExtendClientAreaToDecorationsHint="True"
 		CanResize="False"
+		SizeToContent="Height"
 		>
 	<Window.Styles>
 		<StyleInclude Source="/Views/ViewStyles/ToolWindowStyle.axaml"></StyleInclude>

@@ -26,6 +26,9 @@ using DocumentFormat.OpenXml.Office2019.Drawing.Model3D;
 using System.Net.Http.Headers;
 using LLama;
 using LLama.Common;
+using Microsoft.Extensions.Logging;
+using eSearch.Models.Logging;
+using LLama.Sampling;
 
 namespace eSearch.Models.AI
 {
@@ -299,7 +302,7 @@ namespace eSearch.Models.AI
             {
                 Content = GetSystemPrompt(aiConfig),
                 Role = aiConfig.SystemPromptRole.ToLower(),
-                Model = aiConfig.Model ?? string.Empty,
+                Model = aiConfig.GetDisplayedModelName()
             });
             return conversation;
         }
@@ -468,8 +471,13 @@ namespace eSearch.Models.AI
             }
             #endregion
 
+            ILogger? logger = null;
+#if DEBUG
+            logger = new MSLogger(new DebugLogger());
+#endif
+
             LoadedLocalLLM llm = await Program.GetOrLoadLocalLLM(llmConfig, cancellationToken);
-            var executor = new InteractiveExecutor(llm.GetNewContext());
+            var executor = new InteractiveExecutor(llm.GetNewContext(),logger);
             var chatHistory = new LLama.Common.ChatHistory();
             for (int i = 0; i < conversation.Messages.Count - 1; i++)
             {
@@ -489,18 +497,47 @@ namespace eSearch.Models.AI
 
             // Create chat session with history
             var session = new ChatSession(executor, chatHistory);
+            session.WithOutputTransform(new LLamaTransforms.KeywordTextOutputStreamTransform(
+            new string[] { "User:", "Assistant:", "System:" },
+            redundancyLength: 8));
 
+            var temperature = 0.7f;
+            int chars = 0;
+            int maxRetries = 5;
+            int retries = 0;
+            Random random = new Random();
+
+        retryPoint:
+            uint seed = (uint)random.Next();
+            var samplingPipeline = new DefaultSamplingPipeline
+            {
+                Temperature = temperature,
+                Seed = seed,
+            };
             // Inference parameters
             var inferenceParams = new InferenceParams
             {
-                // MaxTokens = 512, // Limit generation; -1 for no limit (risks infinite generation)
-                AntiPrompts = new List<string> { "User:" }, // Stop at next user prompt
+                MaxTokens = 512, // Limit generation; -1 for no limit (risks infinite generation)
+                AntiPrompts = new List<string> { "User:", "\nUser:" }, // Stop at next user prompt
+                
+                SamplingPipeline = samplingPipeline
             };
-
             // Stream the response tokens
+            
             await foreach (var token in session.ChatAsync(userMessage, inferenceParams, cancellationToken))
             {
-                yield return token;
+                chars += token?.Length ?? 0;
+                yield return token ?? "";
+            }
+            if (chars == 0 && retries < maxRetries)
+            {
+                temperature -= 0.1f;
+                ++retries;
+                goto retryPoint;
+            }
+            if (retries >= maxRetries && chars == 0)
+            {
+                yield return S.Get("Sorry, the model didn't generate a response. Try rephrasing your query.");
             }
         }
 

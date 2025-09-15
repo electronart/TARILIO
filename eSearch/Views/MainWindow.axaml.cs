@@ -99,14 +99,7 @@ namespace eSearch.Views
 
             menuItemDebugStatusTest.Click += MenuItemDebugStatusTest_Click;
 
-
-
-
-            this.Opened += MainWindow_Opened;
             Program.OnLanguageChanged += Program_OnLanguageChanged;
-
-            
-
         }
 
         private void MenuItemDebugStatusTest_Click(object? sender, RoutedEventArgs e)
@@ -120,35 +113,6 @@ namespace eSearch.Views
             if (DataContext is MainWindowViewModel mwvm)
             {
                 mwvm.StatusMessages.Add(statusVM1);
-            }
-        }
-
-
-
-        private async void MainWindow_Opened(object? sender, EventArgs e)
-        {
-            // Wait for the window to open so we have a valid parent for this.
-            string errorMsg = string.Empty;
-
-            try
-            {
-                MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
-                var res = LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
-                {
-                    await TaskDialogWindow.OKDialog("Error", msg, this);
-                }, wrappedDebugLogger);
-                if (res != true)
-                {
-                    errorMsg = "LlamaSharp lib failed to load. Check logs for details.";
-                }
-            } catch (Exception ex)
-            {
-                errorMsg = ex.ToString();
-            }
-
-            if (errorMsg != string.Empty)
-            {
-                await TaskDialogWindow.OKDialog(S.Get("An error occurred"), errorMsg, this);
             }
         }
 
@@ -1967,7 +1931,7 @@ namespace eSearch.Views
                             var userMessage = new Message { 
                                 Role = "user", 
                                 Content = mwvm.Session.Query.Query, 
-                                Model = Program.ProgramConfig.GetSelectedConfiguration()?.Model ?? string.Empty 
+                                Model = Program.ProgramConfig.GetSelectedConfiguration()?.GetDisplayedModelName() ?? string.Empty 
                             };
                             mwvm.CurrentLLMConversation.Messages.Add(new LLMMessageViewModel(userMessage));
                             var conversation = mwvm.CurrentLLMConversation.ExtractConversation();

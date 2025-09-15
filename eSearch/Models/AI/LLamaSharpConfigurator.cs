@@ -201,22 +201,26 @@ public class LLamaBackendConfigurator
     /// <summary>
     /// Tries a backend with config reset to avoid singleton side effects. Returns true if DryRun succeeds.
     /// </summary>
-    private static bool TryBackendWithReset(string subfolder, bool useLlava, Action<string> promptCallback, ILogger logger, out bool success, out string reason)
+    private static bool TryBackendWithReset(string subfolder, bool useLlava, Action<string> promptCallback, ILogger? logger, out bool success, out string reason)
     {
+        var dllFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, subfolder);
+        var dllPath = Path.Combine(dllFolder, "llama.dll");
+        var cpuDllFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, CpuSubfolder); // ggml.dll in cuda seems to depend on ggml-cpu.dll
+        var llavaPath = useLlava ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, subfolder, "llava.dll") : null;
+
         success = false;
         reason = null;
 
         // Reset: Re-apply base config to clear any prior state (no-op if already set, but forces fresh)
         NativeLibraryConfig.All
-            .WithSearchDirectory(NativeLibsFolder)
+            .WithSearchDirectories(new string[] { dllFolder, cpuDllFolder})
             .WithLogCallback(logger)
             .WithCuda(subfolder.Contains("cuda"))
             .WithAutoFallback(false);  // Disable for this test to isolate
 
         NativeLibraryConfig.LLava.SkipCheck(true);
 
-        var dllPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, subfolder, "llama.dll");
-        var llavaPath = useLlava ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, subfolder, "llava.dll") : null;
+        
 
         if (!File.Exists(dllPath))
         {
@@ -228,7 +232,9 @@ public class LLamaBackendConfigurator
         NativeLibraryConfig.All.WithLibrary(dllPath, llavaPath);
 
         // DryRun: Test without committing
+
         var drySuccess = NativeLibraryConfig.LLama.DryRun(out var loadedLib); // TODO LLama only, NOT llava
+
         //var drySuccess = NativeLibraryConfig.All.DryRun(out var loadedLib, out var ignored); 
         if (!drySuccess)
         {
@@ -240,6 +246,7 @@ public class LLamaBackendConfigurator
 
         success = true;
         return true;
+        
     }
 
 

@@ -34,6 +34,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InstallCorrectDLLs.cs" />
     <Compile Include="InstallEventLog.cs">
       <SubType>Component</SubType>
     </Compile>

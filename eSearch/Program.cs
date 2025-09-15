@@ -4,8 +4,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using System;
 using System.IO;
-using Avalonia.Themes.Fluent;
-using Avalonia.Platform;
 using System.Diagnostics;
 using eSearch.ViewModels;
 using eSearch.Models.Localization;
@@ -17,27 +15,24 @@ using System.Reflection;
 using System.Text;
 using eSearch.Models.Configuration;
 using Newtonsoft.Json;
-using Avalonia.Controls.Primitives;
 using System.Timers;
 using ReactiveUI;
-using com.sun.istack.@internal;
 using eSearch.Models.Plugins;
 using S = eSearch.ViewModels.TranslationsViewModel;
-using eSearch.Interop.AI;
 using eSearch.Models.AI.MCP.Tools;
 using Xilium.CefGlue;
 using DynamicData;
-using UglyToad.PdfPig.Fonts.TrueType.Names;
 using eSearch.Interop;
 using eSearch.Models.Logging;
 using eSearch.Models.Indexing;
 using eSearch.Interop.Indexing;
 using System.Threading;
 using Timer = System.Timers.Timer;
-using ProgressCalculation;
 using eSearch.Models.AI;
 using System.Threading.Tasks;
 using eSearch.ViewModels.StatusUI;
+using eSearch.Views;
+using Avalonia.Threading;
 
 namespace eSearch
 {
@@ -64,6 +59,9 @@ namespace eSearch
         [STAThread]
         public static void Main(string[] args)
         {
+
+            
+
             WasLaunchedWithSearchOnlyArgument =           args.Contains("-s");
             WasLaunchedWithAIDisabledArgument =           args.Contains("-a");
             WasLaunchedWithCreateLLMConnectionsDisabled = args.Contains("-x");
@@ -88,11 +86,83 @@ namespace eSearch
                 }
             }
             #endregion
+            // If we got this far it's not an indexing task, we're launching the UI.
+
+            
+
             BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
-            timer = new Timer(60000);
-            timer.Elapsed += Timer_Elapsed;
-            timer.Start();
+            .AfterSetup((AppBuilder) =>
+            {
+                timer = new Timer(60000);
+                timer.Elapsed += Timer_Elapsed;
+                timer.Start();
+
+                string? llama_sharp_error = init_llama_sharp();
+
+                if (llama_sharp_error != null)
+                {
+                    Debug.WriteLine(llama_sharp_error);
+                    Debug.WriteLine("BREAK");
+                }
+
+            }).StartWithClassicDesktopLifetime(args);
+            
+
+            
+
+            
+            //if (llama_sharp_error != null)
+            //{
+            //    Dispatcher.UIThread.Post(async () =>
+            //    {
+            //        Window? mainWindow = null;
+            //        while (mainWindow == null)
+            //        {
+            //            mainWindow = Program.GetMainWindow();
+            //            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            //        }
+            //        await TaskDialogWindow.OKDialog(S.Get("An error occurred"), llama_sharp_error, mainWindow);
+            //    });
+            //}
+        }
+
+        private static string? init_llama_sharp()
+        {
+            // Wait for the window to open so we have a valid parent for this.
+            string errorMsg = string.Empty;
+
+            try
+            {
+                MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
+                var res = LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
+                {
+                    Dispatcher.UIThread.Post(async () =>
+                    {
+                        // Non-fatal..
+                        Window? mainWindow = null;
+                        while (mainWindow == null)
+                        {
+                            mainWindow = Program.GetMainWindow();
+                            await Task.Delay(TimeSpan.FromSeconds(1)); // Ugly hack... wait for a parent UI..
+                        }
+                        await TaskDialogWindow.OKDialog(S.Get("An error occurred"), msg, mainWindow);
+                    });
+                }, wrappedDebugLogger);
+                if (res != true)
+                {
+                    errorMsg = "LlamaSharp lib failed to load. Check logs for details.";
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMsg = ex.ToString();
+            }
+
+            if (errorMsg != string.Empty)
+            {
+                return errorMsg;
+            }
+            return null;
         }
 
         private static System.Timers.Timer  _scheduledIndexProgressReportTimer;
@@ -250,7 +320,7 @@ namespace eSearch
 
         public static Avalonia.Controls.Window? GetMainWindow()
         {
-            if (Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 return desktop.MainWindow;
             }

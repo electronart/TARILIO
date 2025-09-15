@@ -67,6 +67,24 @@ namespace eSearch.Models.Configuration
             return "???"; // Should be impossible.
         }
 
+
+        /// <summary>
+        /// The displayed model name factors things like whether this is a local model, perplexity model/ api model etc.
+        /// </summary>
+        /// <returns></returns>
+        public string GetDisplayedModelName()
+        {
+            switch(LLMService)
+            {
+                case LLMService.LocalModel:
+                    return Path.GetFileNameWithoutExtension(LocalLLMConfiguration?.ModelPath ?? "???");
+                case LLMService.Perplexity:
+                    return PerplexityModel.ToString();
+                default:
+                    return Model ?? "???";
+            }
+        }
+
         public bool IsConfigured()
         {
             if (LLMService == LLMService.Perplexity)

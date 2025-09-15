@@ -1,0 +1,5 @@
+I was having trouble with dll resolution using the nuget packages. I've simply copied out the dll's that eSearch needs here.
+
+LLamaSharp is an opensource C# library based on llama.cpp. the native_libs folder contains different dll's required by llamasharp depending on hardware/platform
+
+https://github.com/SciSharp/LLamaSharp

@@ -44,31 +44,6 @@
         <DefineConstants>$(DefineConstants);</DefineConstants>
     </PropertyGroup>
 	<!-- For llamaSharp... -->
-	<!-- TODO GPU Support is Windows Only-->
-	<ItemGroup>
-		<!-- CPU Backend -->
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cpu\*\runtimes\win-x64\native\avx2\*.dll" Link="native_libs\llama-cpu-avx2\%(Filename).dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<!-- CUDA12 Backend -->
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda12.windows\*\runtimes\win-x64\native\cuda12\*.dll" Link="native_libs\llama-cuda12-win-x64\%(Filename).dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<!-- CUDA11 Backend -->
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.cuda11.windows\*\runtimes\win-x64\native\cuda11\*.dll" Link="native_libs\llama-cuda11-win-x64\%(Filename).dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<!-- Vulkan Backend -->
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.vulkan.windows\*\runtimes\win-x64\native\vulkan\*.dll" Link="native_libs\llama-vulkan-win-x64\%(Filename).dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<!-- OpenCL Backend -->
-		<None Include="$(NuGetPackageRoot)\llamasharp.backend.opencl\*\runtimes\win-x64\native\clblast\*.dll" Link="native_libs\llama-opencl-win-x64\%(Filename).dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-
-	<!-- Ensure native_libs folder is created in output -->
 	<Target Name="EnsureNativeLibsFolder" BeforeTargets="Build">
 		<MakeDir Directories="$(OutputPath)native_libs" />
 	</Target>
@@ -118,6 +93,7 @@
     <None Remove="Assets\text_contrast.js" />
     <None Remove="Assets\tiff_esearch_render.js" />
   </ItemGroup>
+	<!-- Tika -->
   <ItemGroup>
     <None Include="..\Tika\tika-app-2.9.0.jar" Link="tika-app-2.9.0.jar">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -126,26 +102,36 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+	
   <ItemGroup>
     <TrimmerRootDescriptor Include="Roots.xml" />
   </ItemGroup>
-  <ItemGroup>
+	<!-- LLamaSharp Native DLL's -->
+	<ItemGroup>
+		<None Include="llamasharp_dlls\native_libs\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>native_libs\%(RecursiveDir)\%(Filename)%(Extension)</TargetPath>
+		</None>
+		<None Include="llamasharp_dlls\native_libs\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>%(Filename)%(Extension)</TargetPath>
+		</None>
+	</ItemGroup>
+	
+
+	<ItemGroup>
     <PackageReference Include="Avalonia" Version="11.2.6" />
     <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.2.6" />
     <PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.1.5" />
     <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.1.1" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.6" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.6" />
-    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.6" />
-    <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Debug - Portable'">
-      <Version>11.0.10</Version>
-    </PackageReference>
     <PackageReference Include="Avalonia.Diagnostics" Version="11.2.6" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.6" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.6" />
     <PackageReference Include="CefGlue.Avalonia" Version="120.6099.210" />
     <PackageReference Include="CefGlue.Common" Version="120.6099.210" />
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
     <PackageReference Include="Core.System.Configuration.Install" Version="1.1.0" />
     <PackageReference Include="CsvHelper" Version="33.1.0" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.20.0" />
@@ -153,14 +139,8 @@
     <PackageReference Include="DocumentFormat.OpenXml.Linq" Version="2.19.0" />
     <PackageReference Include="FileSignatures" Version="5.0.2" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
-    <PackageReference Include="LLamaSharp" Version="0.25.0" />
 	<!-- Note that LlamaSharp Backends are Excluded from output since the dll's overwrite each other.-->
 	<!-- Manual dll placement logic is further up this csproj file which places the dll's in native_libs directory for each backend-->
-    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.25.0"    ExcludeAssets="runtime"/>
-    <PackageReference Include="LLamaSharp.Backend.Cuda11" Version="0.24.0" ExcludeAssets="runtime"/>
-    <PackageReference Include="LLamaSharp.Backend.Cuda12" Version="0.25.0" ExcludeAssets="runtime"/>
-    <PackageReference Include="LLamaSharp.Backend.Vulkan" Version="0.25.0" ExcludeAssets="runtime"/>
-	<PackageReference Include="LLamaSharp.Backend.OpenCL" Version="0.13.0" ExcludeAssets="runtime"/>
     <PackageReference Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Analysis.Phonetic" Version="4.8.0-beta00016" />
@@ -169,6 +149,7 @@
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.0.0" />
     <PackageReference Include="Magick.NET.Core" Version="14.0.0" />
     <PackageReference Include="Markdig" Version="0.38.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.54.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.54.0" />
     <PackageReference Include="MimeKit" Version="4.10.0" />
@@ -201,6 +182,9 @@
   
   <ItemGroup>
     <ProjectReference Include="..\eSearchInterop\eSearch.Interop.csproj" />
+    <Reference Include="LLamaSharp">
+      <HintPath>llamasharp_dlls\LLamaSharp.dll</HintPath>
+    </Reference>
 	
 	<Reference Condition="$(DefineConstants.Contains('TARILIO'))" Include="TARILIO">
 		<!-- TARILIO_SOLUTION_PATH is an environment variable on the system. -->
@@ -218,7 +202,6 @@
 		<Content Include="openjdk-22.0.1_windows-x64_bin\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		
 		
 		
 		<Content Include="Original\**">
@@ -301,27 +284,6 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(DefineConstants.Contains('STANDALONE'))">
     <Exec Command="call ..\PortableBuilder\bin\Debug\PortableBuilder.exe &quot;$(Configuration)&quot;" />
   </Target>
-	<Target Name="CheckLLamaSharpNativeDirectories" BeforeTargets="Build">
-		<!-- Get package versions from PackageReference -->
-		<ItemGroup>
-			<LLamaCpuPackage Include="@(PackageReference)" Condition="'%(Identity)' == 'LLamaSharp.Backend.Cpu'" />
-			<LLamaCuda11Package Include="@(PackageReference)" Condition="'%(Identity)' == 'LLamaSharp.Backend.Cuda11'" />
-			<LLamaCuda12Package Include="@(PackageReference)" Condition="'%(Identity)' == 'LLamaSharp.Backend.Cuda12'" />
-			<LLamaVulkanPackage Include="@(PackageReference)" Condition="'%(Identity)' == 'LLamaSharp.Backend.Vulkan'" />
-			<LLamaOpenCLPackage Include="@(PackageReference)" Condition="'%(Identity)' == 'LLamaSharp.Backend.OpenCL'" />
-		</ItemGroup>
-		<!-- Check CPU backend avx2 directory -->
-		<Error Text="The directory '$(NuGetPackageRoot)\llamasharp.backend.cpu\%(LLamaCpuPackage.Version)\runtimes\win-x64\native\avx2' does not exist. Ensure the LLamaSharp.Backend.Cpu package is restored and contains the avx2 native DLLs. Run 'dotnet restore' or check your NuGet configuration." Condition="'%(LLamaCpuPackage.Version)' != '' AND !Exists('$(NuGetPackageRoot)\llamasharp.backend.cpu\%(LLamaCpuPackage.Version)\runtimes\win-x64\native\avx2')" />
-		<!-- Check CUDA12 backend directory -->
-		<Error Text="The directory '$(NuGetPackageRoot)\llamasharp.backend.cuda12.windows\%(LLamaCuda12Package.Version)\runtimes\win-x64\native\cuda12' does not exist. Ensure the LLamaSharp.Backend.Cuda12.Windows package is restored and contains the cuda12 native DLLs. Run 'dotnet restore' or check your NuGet configuration." Condition="'%(LLamaCuda12Package.Version)' != '' AND !Exists('$(NuGetPackageRoot)\llamasharp.backend.cuda12.windows\%(LLamaCuda12Package.Version)\runtimes\win-x64\native\cuda12')" />
-		<!-- Check CUDA11 backend directory -->
-		<Error Text="The directory '$(NuGetPackageRoot)\llamasharp.backend.cuda11.windows\%(LLamaCuda11Package.Version)\runtimes\win-x64\native\cuda11' does not exist. Ensure the LLamaSharp.Backend.Cuda11.Windows package is restored and contains the cuda11 native DLLs. Run 'dotnet restore' or check your NuGet configuration." Condition="'%(LLamaCuda11Package.Version)' != '' AND !Exists('$(NuGetPackageRoot)\llamasharp.backend.cuda11.windows\%(LLamaCuda11Package.Version)\runtimes\win-x64\native\cuda11')" />
-		<!-- Check Vulkan backend directory -->
-		<Error Text="The directory '$(NuGetPackageRoot)\llamasharp.backend.vulkan.windows\%(LLamaVulkanPackage.Version)\runtimes\win-x64\native\vulkan' does not exist. Ensure the LLamaSharp.Backend.Vulkan.Windows package is restored and contains the vulkan native DLLs. Run 'dotnet restore' or check your NuGet configuration." Condition="'%(LLamaVulkanPackage.Version)' != '' AND !Exists('$(NuGetPackageRoot)\llamasharp.backend.vulkan.windows\%(LLamaVulkanPackage.Version)\runtimes\win-x64\native\vulkan')" />
-		<!-- Check OpenCL backend directory -->
-		<Error Text="The directory '$(NuGetPackageRoot)\llamasharp.backend.opencl\%(LLamaOpenCLPackage.Version)\runtimes\win-x64\native\clblast' does not exist. Ensure the LLamaSharp.Backend.OpenCL package is restored and contains the clblast native DLLs. Run 'dotnet restore' or check your NuGet configuration." Condition="'%(LLamaOpenCLPackage.Version)' != '' AND !Exists('$(NuGetPackageRoot)\llamasharp.backend.opencl\%(LLamaOpenCLPackage.Version)\runtimes\win-x64\native\clblast')" />
-	</Target>
-	
 	<!-- Make build fail if openjdk isn't present -->
    <Target Name="CheckOpenJDKDirectory" BeforeTargets="Build">
 	    <Error Text="The directory 'openjdk-22.0.1_windows-x64_bin' does not exist. Please ensure it is present before building. https://jdk.java.net/archive/" Condition="!Exists('openjdk-22.0.1_windows-x64_bin')" />

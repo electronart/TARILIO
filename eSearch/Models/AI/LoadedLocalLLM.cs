@@ -1,9 +1,12 @@
 ﻿using eSearch.Models.Configuration;
+using eSearch.Models.Logging;
 using LLama;
 using LLama.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,10 +44,19 @@ namespace eSearch.Models.AI
         ModelParams? modelParams = null;
         LLamaWeights? weights = null;
 
+        [HandleProcessCorruptedStateExceptions]
         public LLamaContext GetNewContext()
         {
             if (weights == null || modelParams == null) { throw new ArgumentException("Model not loaded"); }
-            return weights.CreateContext(modelParams);
+            try
+            {
+                MSLogger logger = new MSLogger(new DebugLogger());
+                return weights.CreateContext(modelParams, logger);
+            } catch (Exception ex)
+            {
+                Debug.WriteLine($"Caught in GetNewContext: {ex.ToString()}");
+                throw;  // Re-throw to let outer catch handle
+            }
         }
 
         public void Dispose()
