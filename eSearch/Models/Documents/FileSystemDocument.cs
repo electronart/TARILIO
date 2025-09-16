@@ -467,11 +467,22 @@ namespace eSearch.Models.Documents
 
         List<IMetaData> _metadata;
 
+
+
         public IEnumerable<IDocument>? SubDocuments
         {
             get
             {
-                if (_subDocuments == null) ExtractDataFromDocument();
+                if (_subDocuments == null)
+                {
+                    if (CanHaveSubDocumentsOrExtractedFiles())
+                    {
+                        ExtractDataFromDocument();
+                    } else
+                    {
+                        _subDocuments = new List<IDocument>();
+                    }
+                }
                 return _subDocuments;
             } set
             {
@@ -490,12 +501,36 @@ namespace eSearch.Models.Documents
         {
             get
             {
-                if (_extractedFiles == null) ExtractDataFromDocument();
+                if (_extractedFiles == null)
+                {
+                    if (CanHaveSubDocumentsOrExtractedFiles())
+                    {
+                        ExtractDataFromDocument();
+                    }
+                    else
+                    {
+                        _extractedFiles = new List<string>(); // Performance - Delays calling ExtractData which is a heavy method.
+                    }
+                }
                 return _extractedFiles;
             }
         }
 
         private List<string> _extractedFiles = null;
+
+        /// <summary>
+        /// Returns true if the document can contain subdocuments or extracted files (eg. zip files and databases)
+        /// For most documents this will return false. By performing this check we avoid extracting document data on
+        /// the main indexer thread, instead delaying it to the point where it can be performed in the parallel operation
+        /// in LuceneIndexe AddDocuments method, improving performance.
+        /// </summary>
+        /// <returns></returns>
+        private bool CanHaveSubDocumentsOrExtractedFiles()
+        {
+            IParser? parserToUse = GetAppropriateDocParser();
+            if (parserToUse == null) return false;
+            return (parserToUse.DoesParserExtractFiles || parserToUse.DoesParserProduceSubDocuments);
+        }
 
         public string HtmlRender
         {
@@ -598,6 +633,24 @@ namespace eSearch.Models.Documents
             }
         }
 
+        /// <summary>
+        /// Look through docparsers to find one that supports the current filetype.
+        /// </summary>
+        /// <returns></returns>
+        private IParser? GetAppropriateDocParser()
+        {
+            string extension = FileType;
+            extension = extension.Replace(".", "").ToLower();
+            foreach (var parser in Parsers)
+            {
+                if (parser.Extensions.Contains(extension))
+                {
+                    return parser;
+                }
+            }
+            return null;
+        }
+
         public ParseResult GetParseResult()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -621,15 +674,7 @@ namespace eSearch.Models.Documents
                 };
             }
 
-            IParser docParser = null;
-            foreach (var parser in Parsers)
-            {
-                if (parser.Extensions.Contains(extension))
-                {
-                    docParser = parser;
-                    break;
-                }
-            }
+            IParser? docParser = GetAppropriateDocParser();
 
             if (docParser == null)
             {

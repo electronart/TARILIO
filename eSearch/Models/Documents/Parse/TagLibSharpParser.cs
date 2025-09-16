@@ -24,6 +24,10 @@ namespace eSearch.Models.Documents.Parse
             }
         }
 
+        public bool DoesParserExtractFiles => false;
+
+        public bool DoesParserProduceSubDocuments => false;
+
         private string[] VideoExtensions
         {
             get { return new string[] {"mkv", "ogv", "avi", "wmv", "asf", "mp4", "m4v", "mpeg", "mpg", "mpe", "mpv", "mpg", "m2v", }; } // Video 

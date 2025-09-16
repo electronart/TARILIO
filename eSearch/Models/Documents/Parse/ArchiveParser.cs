@@ -17,6 +17,10 @@ namespace eSearch.Models.Documents.Parse
             }
         }
 
+        public bool DoesParserExtractFiles => true;
+
+        public bool DoesParserProduceSubDocuments => false;
+
         public void Parse(string filePath, out ParseResult parseResult)
         {
             // https://github.com/adamhathcock/sharpcompress/wiki/API-Examples

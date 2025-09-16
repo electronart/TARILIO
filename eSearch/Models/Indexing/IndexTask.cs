@@ -205,14 +205,18 @@ namespace eSearch.Models.Indexing
                                 }
                             }
                             #endregion
-                            string displayName = document.DisplayName;
+                            string displayName = string.Empty;
                             if (!string.IsNullOrWhiteSpace(document.FileName))
                             {
+                                // For all FileSystemDocuments, use the filename. This avoids calling the extraction mehtod.
                                 displayName = Path.GetFileNameWithoutExtension(document.FileName);
+                            } else
+                            {
+                                displayName = document.DisplayName ?? "Unnamed"; // On FileSystemDocument this would call ExtractDataFromDocument which is undesired.
                             }
                             if (removeNotFound)
                             {
-                                FoundFileNames.Add(document.FileName);
+                                FoundFileNames.Add(document.FileName ?? displayName);
                             }
 
                             if (document.ShouldSkipIndexing == IDocument.SkipReason.DontSkip) // Some documents are skipped due to parse errors or being ignored file types etc.

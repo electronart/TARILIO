@@ -14,6 +14,10 @@ namespace eSearch.Models.Documents.Parse.ToxyParsers
             get { return new string[] { "xls" }; }
         }
 
+        public bool DoesParserExtractFiles => false;
+
+        public bool DoesParserProduceSubDocuments => false;
+
         public void Parse(string filePath, out ParseResult parseResult)
         {
             parseResult = new ParseResult();

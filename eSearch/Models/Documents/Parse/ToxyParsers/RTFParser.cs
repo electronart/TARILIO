@@ -16,6 +16,10 @@ namespace eSearch.Models.Documents.Parse.ToxyParsers
             get { return new string[] { "rtf" }; }
         }
 
+        public bool DoesParserExtractFiles => false;
+
+        public bool DoesParserProduceSubDocuments => false;
+
         public void Parse(string filePath, out ParseResult parseResult)
         {
             Toxy.ParserContext context = new Toxy.ParserContext(filePath);

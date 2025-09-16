@@ -27,6 +27,10 @@ namespace eSearch.Models.Documents.Parse
             get { return new string[] { "pdf" }; }
         }
 
+        public bool DoesParserExtractFiles => false;
+
+        public bool DoesParserProduceSubDocuments => false;
+
         public void ParseOld(string filePath, out ParseResult parseResult)
         {
             parseResult = new ParseResult();

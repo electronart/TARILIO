@@ -35,6 +35,10 @@ namespace eSearch.Models.Documents.Parse
             }
         }
 
+        public bool DoesParserExtractFiles => false;
+
+        public bool DoesParserProduceSubDocuments => true;
+
         List<IDocument> _parsedRecords = null;
 
         public void Parse(string filePath, out ParseResult parseResult)

@@ -272,7 +272,7 @@ namespace eSearch.Models.Indexing
         {
             if (_indexWriter == null) throw new Exception("Index Writer was not opened");
             var luceneDocs = documents.AsParallel()
-                .WithDegreeOfParallelism(Math.Clamp(Environment.ProcessorCount,1,999)) // Adjust based on CPU cores; test for optimal (e.g., /2 if I/O-bound).
+                .WithDegreeOfParallelism(Math.Clamp(Environment.ProcessorCount,1,8)) // Adjust based on CPU cores
                 .Select(document => CreateLuceneDocument(document))
                 .ToList();
             _indexWriter.AddDocuments(luceneDocs);
@@ -408,7 +408,8 @@ namespace eSearch.Models.Indexing
                 var indexConfig = Program.IndexLibrary.GetConfiguration(this);
 
                 var indexWriterConfig = new IndexWriterConfig(AppLuceneVersion, analyser);
-                indexWriterConfig.RAMBufferSizeMB = 256;
+                double recommendedRAMBufferMB = MemoryUtils.GetRecommendedRAMBufferSizeMB();
+                indexWriterConfig.RAMBufferSizeMB = recommendedRAMBufferMB;
                 if (create)
                 {
                     indexWriterConfig.OpenMode = OpenMode.CREATE;
