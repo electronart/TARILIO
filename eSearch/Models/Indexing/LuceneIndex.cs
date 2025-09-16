@@ -271,11 +271,10 @@ namespace eSearch.Models.Indexing
         public void AddDocuments(IEnumerable<IDocument> documents)
         {
             if (_indexWriter == null) throw new Exception("Index Writer was not opened");
-            var luceneDocs = new List<Document>();
-            foreach (var document in documents)
-            {
-                luceneDocs.Add(CreateLuceneDocument(document));
-            }
+            var luceneDocs = documents.AsParallel()
+                .WithDegreeOfParallelism(Math.Clamp(Environment.ProcessorCount,1,999)) // Adjust based on CPU cores; test for optimal (e.g., /2 if I/O-bound).
+                .Select(document => CreateLuceneDocument(document))
+                .ToList();
             _indexWriter.AddDocuments(luceneDocs);
 
         }
