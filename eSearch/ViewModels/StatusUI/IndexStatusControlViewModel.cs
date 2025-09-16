@@ -35,7 +35,7 @@ namespace eSearch.ViewModels.StatusUI
         private string GetIndexStatusMessage()
         {
             var lastUpdated = _index.LastUpdated;
-            var elapsed = DateTime.Now - lastUpdated;
+            var elapsed = DateTime.UtcNow - lastUpdated;
 
             string strElapsed  = FormatElapsedTime(elapsed);
             strElapsed = String.Format(S.Get("Updated: {0} ago"), strElapsed);
@@ -54,8 +54,12 @@ namespace eSearch.ViewModels.StatusUI
 
         private static string FormatElapsedTime(TimeSpan elapsed)
         {
+            if (elapsed.TotalSeconds < 30)
+            {
+                return S.Get("Just now");
+            }
             if (elapsed.TotalSeconds < 60)
-                return elapsed.Seconds == 1 ? "1 Second" : $"{elapsed.Seconds} Seconds";
+                return $"{elapsed.Seconds} Seconds";
             if (elapsed.TotalMinutes < 60)
                 return elapsed.Minutes == 1 ? "1 Minute" : $"{elapsed.Minutes} Minutes";
             if (elapsed.TotalHours < 24)
