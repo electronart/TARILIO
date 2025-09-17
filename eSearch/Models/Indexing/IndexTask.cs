@@ -5,6 +5,7 @@ using eSearch.Models.DataSources;
 using eSearch.Models.Documents;
 using eSearch.Models.TaskManagement;
 using eSearch.ViewModels;
+using Microsoft.VisualBasic;
 using ProgressCalculation;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,8 @@ namespace eSearch.Models.Indexing
         private int _progress    = 0;
         private int _maxProgress = 1;
         private string _progressStatus  = "";
+
+        private long _currentBatchSize = 0l;
 
         public int GetProgress()
         {
@@ -160,14 +163,20 @@ namespace eSearch.Models.Indexing
                     List<IDocument> documentBatch = new List<IDocument>(); // We add Documents in Batches of up to 512 or however many documents we retrieve in 3 seconds whichever comes first.
                     IDocument document = null;
                     bool isDiscoveryComplete;
+                    long max_batch_size_bytes = ( (long)(MemoryUtils.GetRecommendedRAMBufferSizeMB() * 1048576) / 2 ); // * 1048576 converts mb to bytes
                     do
                     {
-                        if (_batchWatch.ElapsedMilliseconds > 3000 || documentBatch.Count > 1024)
+                        if (_batchWatch.ElapsedMilliseconds > 3000 || documentBatch.Count > 16384 || _currentBatchSize > max_batch_size_bytes)
                         {
                             try
                             {
-                                Index.AddDocuments(documentBatch);
+                                Index.AddDocuments(documentBatch, out var failures);
+                                foreach(var failure in failures)
+                                {
+                                    Logger.Log(Severity.ERROR, $"Skipped ${failure.Key.FileName} Due to a Parse Error", failure.Value);
+                                }
                                 IndexedDocuments += documentBatch.Count;
+                                _currentBatchSize = 0;
                                 documentBatch.Clear();
                                 _batchWatch.Restart();
                             }
@@ -223,7 +232,7 @@ namespace eSearch.Models.Indexing
                             {
 
                                 documentBatch.Add(document);
-
+                                _currentBatchSize += document.FileSize;
 
                                 if (document.ExtractedFiles != null)
                                 {

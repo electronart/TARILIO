@@ -32,6 +32,7 @@ using S = eSearch.ViewModels.TranslationsViewModel;
 using eSearch.Interop.Indexing;
 using Avalonia.Controls;
 using ConcurrentCollections;
+using System.Collections.Concurrent;
 
 namespace eSearch.Models.Indexing
 {
@@ -269,15 +270,29 @@ namespace eSearch.Models.Indexing
             _indexWriter.AddDocument(doc);
         }
 
-        public void AddDocuments(IEnumerable<IDocument> documents)
+        public void AddDocuments(IEnumerable<IDocument> documents, out Dictionary<IDocument, Exception> failedDocuments)
         {
             if (_indexWriter == null) throw new Exception("Index Writer was not opened");
+            var failures = new ConcurrentDictionary<IDocument, Exception>();
             var luceneDocs = documents.AsParallel()
-                .WithDegreeOfParallelism(Math.Clamp(Environment.ProcessorCount,1,8)) // Adjust based on CPU cores
-                .Select(document => CreateLuceneDocument(document))
+                .WithDegreeOfParallelism(Math.Clamp(Environment.ProcessorCount, 1, 8)) // Adjust based on CPU cores
+                .Select(document => {
+                    try
+                    {
+                        return CreateLuceneDocument(document);
+                    } catch (Exception ex)
+                    {
+                        failures.TryAdd(document, ex);
+                        return null;
+                    }
+                })
+                .Where(doc => doc != null)
                 .ToList();
-            _indexWriter.AddDocuments(luceneDocs);
-
+            if (luceneDocs.Count > 0)
+            {
+                _indexWriter.AddDocuments(luceneDocs);
+            }
+            failedDocuments = failures.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
         private Document CreateLuceneDocument(IDocument document)
