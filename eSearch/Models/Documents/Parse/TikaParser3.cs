@@ -22,7 +22,7 @@ namespace eSearch.Models.Documents.Parse
             get { 
                 return new string[] { 
                         // application/java-vm
-                    "class",
+                    // "class",
     
                     // audio/x-wav
                     "wav",
