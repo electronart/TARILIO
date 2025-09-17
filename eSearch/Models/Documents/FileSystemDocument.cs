@@ -32,7 +32,10 @@ namespace eSearch.Models.Documents
 
         private IDocument.SkipReason _shouldSkipIndexingThisDocument = IDocument.SkipReason.DontSkip;
 
-        private static readonly List<IParser> Parsers = new List<IParser>
+        // TODO Not happy with the way this is implemented.
+        // At first I thought to make this list static but then realized some parsers have concurrency issues due to class vars
+        // Think maybe making the extensions static would be better and then only construct the Parser that we need per document rather than all of them.
+        private readonly List<IParser> Parsers = new List<IParser>
         {
             new CSVParser_Sep(),
             new EconvoParser(),
