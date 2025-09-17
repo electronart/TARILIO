@@ -591,7 +591,8 @@ namespace eSearch.Models.Documents
                 try
                 {
                     bool testForMagicNumbers = true;
-                    string extension = Path.GetExtension(FileName).ToLower().Substring(1);
+                    string extension = Path.GetExtension(FileName)?.ToLower() ?? string.Empty;
+                    if (extension.Length > 1) extension = extension.Substring(1); // Some files do not have extensions, also get rid of the "."
                     if (extension == "epub" || extension == "ipynb")
                     {
                         testForMagicNumbers = false;
@@ -618,6 +619,7 @@ namespace eSearch.Models.Documents
                         }
                     }
                     #endregion
+                    if (string.IsNullOrWhiteSpace(extension)) return "Unknown";
                     return extension; // Exclude the .
                 }
                 catch (ArgumentException ex)
