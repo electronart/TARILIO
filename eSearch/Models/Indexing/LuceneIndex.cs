@@ -31,6 +31,7 @@ using eSearch.Models.Search.LuceneCustomFieldComparers;
 using S = eSearch.ViewModels.TranslationsViewModel;
 using eSearch.Interop.Indexing;
 using Avalonia.Controls;
+using ConcurrentCollections;
 
 namespace eSearch.Models.Indexing
 {
@@ -333,7 +334,7 @@ namespace eSearch.Models.Indexing
         // I am caching the lower case versions of field names as they are requested
         // This is for performance reasons, without this IsKnownField method is a hot
         // path within the application during indexing.
-        private HashSet<string> _knownFieldNamesLowerCaseCache = new HashSet<string>();
+        private ConcurrentHashSet<string> _knownFieldNamesLowerCaseCache = new ConcurrentHashSet<string>();
 
         private bool IsKnownField(string name)
         {
@@ -341,11 +342,12 @@ namespace eSearch.Models.Indexing
             #region First try against the cache.
             if (_knownFieldNamesLowerCaseCache.Contains(nameLowerCase)) return true;
             #endregion
-            foreach (string knownFieldName in KnownFieldNames)
+            int i = KnownFieldNames.Count;
+            while (i --> 0)
             {
-                if (knownFieldName.ToLower() == nameLowerCase)
+                if (KnownFieldNames[i].ToLower() == nameLowerCase)
                 {
-                    _knownFieldNamesLowerCaseCache.Add(knownFieldName.ToLower());
+                    _knownFieldNamesLowerCaseCache.Add(KnownFieldNames[i].ToLower());
                     return true;
                 }
             }
