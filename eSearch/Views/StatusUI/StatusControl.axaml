@@ -11,10 +11,25 @@
 		<vmStatus:DesignStatusControlViewModel/>
 	</Design.DataContext>
 	<StackPanel Orientation="Vertical" Spacing="5" Margin="8">
-		<Label Content="{Binding StatusTitle}"
-               FontWeight="Bold"
-			   FontSize="14"
-               IsVisible="{Binding StatusTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+		<DockPanel>
+			<Button DockPanel.Dock="Right" 
+					x:Name="BtnDismiss"
+					Classes="TransparentBtn"
+					Content="x"
+					IsVisible="{Binding DismissAction, Converter={x:Static ObjectConverters.IsNotNull}}"
+					>
+					<Image Source="{Binding I[icons8-close-32.png]}"
+						Width="16"
+						Height="16"
+					/>
+			</Button>
+			<Label Content="{Binding StatusTitle}"
+				   FontWeight="Bold"
+				   FontSize="14"
+				   IsVisible="{Binding StatusTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+			/>
+		</DockPanel>
+
 		<TextBlock Text="{Binding StatusMessage}"
 				   Margin="2"
                    TextWrapping="Wrap"

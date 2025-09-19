@@ -15,8 +15,17 @@ public partial class StatusControl : UserControl
     public StatusControl()
     {
         InitializeComponent();
+        this.BtnDismiss.Click += BtnDismiss_Click;
         this.PointerPressed += OnPointerPressed;
         Background = Brushes.Transparent; // Make control hit-testable for cursor.
+    }
+
+    private void BtnDismiss_Click(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is StatusControlViewModel vm)
+        {
+            vm.DismissAction?.Invoke();
+        }
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)

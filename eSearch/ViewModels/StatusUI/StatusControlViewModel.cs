@@ -69,6 +69,23 @@ namespace eSearch.ViewModels.StatusUI
 
         private string? _statusMessage = null;
 
+        /// <summary>
+        /// When not null, a dismiss button is shown. the action will be carried out when clicked.
+        /// </summary>
+        public Action? DismissAction
+        {
+            get
+            {
+                return _dismissAction;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _dismissAction, value);
+            }
+        }
+
+        private Action? _dismissAction = null;
+
         public float? StatusProgress
         {
             get
