@@ -623,18 +623,20 @@ namespace eSearch
                 try
                 {
                     _loadedLocalLLM = await LoadedLocalLLM.LoadLLM(config, cancellationToken, modelLoadProgress);
+                    
+                    status.StatusTitle = S.Get("Model Loaded");
+                    status.StatusProgress = 100;
                     return _loadedLocalLLM;
                 } catch (Exception ex)
                 {
                     // TODO - Display error on the UI.
 
                     Debug.WriteLine($"Error loading LLM Model: {ex.ToString()}");
+                    status.StatusTitle = S.Get("Error loading model");
                     throw;
                 } finally
                 {
                     mwvm.LocalLLMIsModelLoading = false;
-                    status.StatusTitle = S.Get("Model Loaded");
-                    status.StatusProgress = 100;
                     await Task.Delay(TimeSpan.FromSeconds(5)); // Just to keep the status visible for a moment.
                     mwvm.StatusMessages.Remove(status);
                 }
