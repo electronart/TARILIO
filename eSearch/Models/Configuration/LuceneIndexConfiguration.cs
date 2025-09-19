@@ -105,7 +105,7 @@ namespace eSearch.Models.Configuration
 
         public IDataSource GetMainDataSource()
         {
-            return GetMultiDataSource().Result;
+            return Task.Run(() => GetMultiDataSource()).Result;
         }
 
         [JsonIgnore]
