@@ -142,7 +142,7 @@ namespace eSearch.Models.Configuration
 
                 var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
 
-                await foreach(var str in Completions.GetCompletionStreamViaMCPAsync(this, testConvo, cts.Token))
+                await foreach(var str in Completions.GetCompletionStreamViaMCPAsync(this, testConvo, null, cts.Token))
                 {
                     cts.Cancel();
                     return new Tuple<bool, string>(true, "success");

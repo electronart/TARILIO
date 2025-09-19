@@ -29,6 +29,9 @@ using LLama.Common;
 using Microsoft.Extensions.Logging;
 using eSearch.Models.Logging;
 using LLama.Sampling;
+using eSearch.Models.Documents;
+using DynamicData;
+using Lucene.Net.Util;
 
 namespace eSearch.Models.AI
 {
@@ -295,6 +298,8 @@ namespace eSearch.Models.AI
         }
 
 
+
+
         public static Conversation GetDefaultConversationStarter(AISearchConfiguration aiConfig)
         {
             Conversation conversation = new Conversation();
@@ -310,6 +315,7 @@ namespace eSearch.Models.AI
         public static async IAsyncEnumerable<string> GetCompletionStreamViaMCPAsync(
         AISearchConfiguration aiConfig,
         Conversation conversation,
+        IEnumerable<FileSystemDocument>? attachments,
         CancellationToken cancellationToken = default)
         {
             if (aiConfig.LocalLLMConfiguration != null)
@@ -392,6 +398,10 @@ namespace eSearch.Models.AI
 
             // Convert conversation to Semantic Kernel format
             var chatHistory = new MSK.ChatCompletion.ChatHistory();
+            
+
+
+
             foreach (var message in conversation.Messages)
             {
                 chatHistory.AddMessage(
@@ -404,6 +414,34 @@ namespace eSearch.Models.AI
                     },
                     message.Content
                 );
+                if (message.Role == "system")
+                {
+                    #region Handle attachments, if any
+                    if (attachments != null && attachments.Any())
+                    {
+                        List<MSK.TextContent> txtAttachments = new List<TextContent>();
+                        foreach (var attachment in attachments)
+                        {
+                            var txtContent = attachment.Text; // HEAVY This will trigger the parser to extract contents if its not already parsed.
+                            var fileName = Path.GetFileName(attachment.FileName);
+                            Dictionary<string, object?> metaData = new Dictionary<string, object?>();
+                            metaData.Add("Filename", Path.GetFileName(fileName));
+                            TextContent content = new TextContent { Text = txtContent, Metadata = metaData };
+                            txtAttachments.Add(content);
+                        }
+
+                        var attachmentCollection = new ChatMessageContentItemCollection();
+                        foreach (var attachment in txtAttachments)
+                        {
+                            attachmentCollection.Add(attachment);
+                        }
+                        foreach (var attachment in txtAttachments)
+                        {
+                            chatHistory.Add(new ChatMessageContent(MSK.ChatCompletion.AuthorRole.System, attachmentCollection));
+                        }
+                    }
+                    #endregion
+                }
             }
 
             // Get chat completion service

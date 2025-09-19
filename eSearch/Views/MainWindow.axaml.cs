@@ -1961,7 +1961,7 @@ namespace eSearch.Views
                             var conversation = mwvm.CurrentLLMConversation.ExtractConversation();
                             CancellationTokenSource cancellationSource = new CancellationTokenSource();
                             CancellationToken cancellationToken = cancellationSource.Token;
-                            var stream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfiguration, conversation, cancellationToken);
+                            var stream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfiguration, conversation, null, cancellationToken);
                             var responseMsg = new LLMMessageViewModel("assistant", stream, cancellationSource);
                             mwvm.CurrentLLMConversation.Messages.Add(responseMsg);
                             mwvm.Session.Query.Query = string.Empty; // Clear the query on submission.
