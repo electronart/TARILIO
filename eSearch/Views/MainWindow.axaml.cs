@@ -22,6 +22,7 @@ using eSearch.Utils;
 using eSearch.ViewModels;
 using eSearch.ViewModels.StatusUI;
 using eSearch.Views.StatusUI;
+using ICSharpCode.SharpZipLib.Core;
 using ModelContextProtocol.Client;
 using Newtonsoft.Json;
 using org.apache.sis.@internal.jaxb.gmx;
@@ -34,11 +35,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using static eSearch.Models.AI.HuggingFaceUtils;
 using S = eSearch.ViewModels.TranslationsViewModel;
 
 namespace eSearch.Views
@@ -177,42 +180,63 @@ namespace eSearch.Views
                             {
                                 return;
                             }
-                            // Now we have FileName/FileSize of the model to get from the repo.
-                            try
-                            {
-                                var statusVM = new StatusControlViewModel
-                                {
-                                    StatusTitle = S.Get("Downloading Model"),
-                                    StatusMessage = string.Empty,
-                                };
-
-                                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromHours(2)); // TODO Need UI Support for cancelling downloads...
-                                // TODO This needs to be a status item that the user can see progress on and cancel.
-                                Progress<HuggingFaceUtils.DownloadProgress> downloadProgress = new System.Progress<HuggingFaceUtils.DownloadProgress>();
-                                downloadProgress.ProgressChanged += (sender, downloadProgress) =>
-                                {
-                                    statusVM.StatusProgress = ((float?)downloadProgress.Percent) ?? null;
-                                    statusVM.StatusMessage = 
-                                    Path.GetFileNameWithoutExtension(fileName) 
-                                    + Environment.NewLine 
-                                    + downloadProgress.EstimatedTimeRemaining;
-
-#if DEBUG
-                                   Debug.WriteLine($"Model Download Progress {downloadProgress.Percent.ToString("N2")}% Time Remaining: {downloadProgress.EstimatedTimeRemaining}");
-#endif
-
-
-                                };
-                                await hfUtils.DownloadModelFileAsync(modelID, fileName, Program.ESEARCH_LLM_MODELS_DIR, downloadProgress, downloadAuthToken, cts.Token);
-                                // TODO Once the model is downloaded, we need probably to show it in the setup UI.
-                                Debug.WriteLine("Model finished downloading..");
-                            }
-                            finally
-                            {
-                                // TODO Remove the Status Item...
-                            }
                         }
+                        // Now we have FileName/FileSize of the model to get from the repo.
 
+                        var statusVM = new StatusControlViewModel
+                        {
+                            StatusTitle = S.Get("Downloading Model"),
+                            StatusMessage = string.Empty,
+                        };
+                        mwvm.StatusMessages.Add(statusVM);
+                        Progress<HuggingFaceUtils.DownloadProgress> downloadProgress = new System.Progress<HuggingFaceUtils.DownloadProgress>();
+                        EventHandler<HuggingFaceUtils.DownloadProgress> progressHandler = (sender, downloadProgress) =>
+                        {
+                            if (downloadProgress.Percent < 100)
+                            {
+                                statusVM.StatusProgress = ((float?)downloadProgress.Percent) ?? null;
+                                statusVM.StatusMessage =
+                                Path.GetFileNameWithoutExtension(fileName)
+                                + Environment.NewLine
+                                + downloadProgress.EstimatedTimeRemaining;
+                            }
+                        };
+                        try
+                        {
+                            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromHours(2)); // TODO Need UI Support for cancelling downloads...
+                            // TODO This needs to be a status item that the user can see progress on and cancel.
+                            downloadProgress.ProgressChanged += progressHandler;
+                            await hfUtils.DownloadModelFileAsync(modelID, fileName, Program.ESEARCH_LLM_MODELS_DIR, downloadProgress, downloadAuthToken, cts.Token);
+                            downloadProgress.ProgressChanged -= progressHandler;
+                            // TODO Once the model is downloaded, we need probably to show it in the setup UI.
+                            statusVM.StatusTitle = S.Get("Model downloaded");
+                            statusVM.StatusMessage = Path.GetFileNameWithoutExtension(fileName) + Environment.NewLine + S.Get("Click to setup");
+                            statusVM.StatusProgress = null; // Hide the progress bar.
+                            statusVM.DismissAction = () =>
+                            {
+                                mwvm.StatusMessages.Remove(statusVM);
+                            };
+                            statusVM.ClickAction = async () =>
+                            {
+                                await LLMConnectionConfigurationWindow.ShowDialogWithNewLocalModelSelected(this, fileName);
+                            };
+                        }
+                        catch (UnauthorizedAccessException ex)
+                        {
+                            mwvm.StatusMessages.Remove(statusVM);
+                            throw; // Go to the handler further down.
+                        }
+                        catch (Exception ex)
+                        {
+                            downloadProgress.ProgressChanged -= progressHandler;
+                            statusVM.StatusTitle    = S.Get("Download failed");
+                            statusVM.StatusMessage  = ex.Message;
+                            statusVM.StatusProgress = null; // Hide progress bar.
+                            statusVM.DismissAction = () =>
+                            {
+                                mwvm.StatusMessages.Remove(statusVM);
+                            };
+                        }
                     }
                     catch (UnauthorizedAccessException ex)
                     {

@@ -453,6 +453,19 @@ public partial class LLMConnectionConfigurationWindow : Window
         }
     }
 
+    public static async Task<TaskDialogResult> ShowDialogWithNewLocalModelSelected(Window owner, string modelFileName)
+    {
+        var vm = LLMConnectionWindowViewModel.FromProgramConfiguration();
+        var dialog = new LLMConnectionConfigurationWindow();
+        dialog.DataContext = vm;
+        var task = ((Window)dialog).ShowDialog(owner);
+        dialog.BtnAddConnection_Click(null, null);
+        vm.SelectedService = LLMService.LocalModel;
+        vm.LocalModelSelected = vm.LocalModelsAvailable.FirstOrDefault(modelFile => modelFile.Contains(modelFileName));
+        await task;
+        return dialog.DialogResult;
+    }
+
     public static async Task<TaskDialogResult> ShowDialog(Window owner)
     {
         var vm = LLMConnectionWindowViewModel.FromProgramConfiguration();
