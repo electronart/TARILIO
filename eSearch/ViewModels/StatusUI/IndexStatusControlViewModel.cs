@@ -38,7 +38,7 @@ namespace eSearch.ViewModels.StatusUI
             var elapsed = DateTime.UtcNow - lastUpdated;
 
             string strElapsed  = FormatElapsedTime(elapsed);
-            strElapsed = String.Format(S.Get("Updated: {0} ago"), strElapsed);
+            strElapsed = String.Format(S.Get("Updated: {0}"), strElapsed);
 
             string strSchedule;
             var indexConfig = Program.IndexLibrary.GetConfiguration(_index);
@@ -59,16 +59,15 @@ namespace eSearch.ViewModels.StatusUI
                 return S.Get("Just now");
             }
             if (elapsed.TotalSeconds < 60)
-                return $"{elapsed.Seconds} Seconds";
+                return $"{elapsed.Seconds} Seconds ago";
             if (elapsed.TotalMinutes < 60)
-                return elapsed.Minutes == 1 ? "1 Minute" : $"{elapsed.Minutes} Minutes";
+                return elapsed.Minutes == 1 ? S.Get("1 Minute ago") : String.Format( S.Get("{0} Minutes ago"), elapsed.Minutes );
             if (elapsed.TotalHours < 24)
-                return elapsed.Hours == 1 ? "1 Hour" : $"{elapsed.Hours} Hours";
+                return elapsed.Hours == 1 ? S.Get("1 Hour ago") : String.Format(S.Get("{0} Hours ago"), elapsed.Hours);
             if (elapsed.TotalDays < 30)
-                return elapsed.Days == 1 ? "1 Day" : $"{elapsed.Days} Days";
-
+                return elapsed.Days == 1 ? S.Get("1 Day ago") : String.Format(S.Get("{0} Days ago"), elapsed.Days);
             // For longer periods, fall back to a date format or custom logic
-            return "Over a Month";
+            return S.Get("Over a Month ago");
         }
 
         public void Dispose()

@@ -386,3 +386,5 @@ Bug Tests
 /eSearch/llamasharp_dlls/native_libs/llama-opencl-win-x64
 /eSearch/llamasharp_dlls/native_libs/llama-vulkan-win-x64
 /eSearch/llamasharp_dlls/LLamaSharp.dll
+/eSearch/llamasharp_dlls/llama.dll
+/eSearch/llamasharp_dlls/llava_shared.dll
