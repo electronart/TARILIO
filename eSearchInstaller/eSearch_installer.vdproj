@@ -33,12 +33,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1322C2C424A74FAB9ADD85ED6413224C"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_17D948E8A532437ABD75D20A8CBD49CE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -183,6 +177,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_53FF216413F745E0B6E33CD888A97293"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5D9C0E10AFFE41B1A30F753C4C0E4E0A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -196,6 +196,12 @@
         "Entry"
         {
         "MsmKey" = "8:_5E3F7869E5F34EEA9B1DC4540B842E3B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_616F52C6A6EB4B70AB41648134314DCA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -262,12 +268,6 @@
         "Entry"
         {
         "MsmKey" = "8:_6AB1137DBF874E3B8AE9F4C29FD96617"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6C7783675FE342F983AA3A89BB77A428"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -597,12 +597,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_E03381940090448C842A6B986958AB51"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_E1017D8A9D4D476C83D01CB87C522C36"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -857,26 +851,6 @@
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
             "Permanent" = "11:TRUE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1322C2C424A74FAB9ADD85ED6413224C"
-            {
-            "SourcePath" = "8:..\\eSearch\\overwrite_ggmls\\ggml-base.dll"
-            "TargetName" = "8:ggml-base.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_92675654DE3141FDB7B4056A26A37046"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
@@ -1397,6 +1371,26 @@
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
             "Permanent" = "11:TRUE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_616F52C6A6EB4B70AB41648134314DCA"
+            {
+            "SourcePath" = "8:..\\eSearch\\overwrite_ggmls\\ggml-cpu.dll"
+            "TargetName" = "8:ggml-cpu.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_5A28C29878D94098A4424E44BE28C9F8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
@@ -2715,26 +2709,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E03381940090448C842A6B986958AB51"
-            {
-            "SourcePath" = "8:..\\eSearch\\overwrite_ggmls\\ggml-cpu.dll"
-            "TargetName" = "8:ggml-cpu.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_92675654DE3141FDB7B4056A26A37046"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E1017D8A9D4D476C83D01CB87C522C36"
             {
             "SourcePath" = "8:Include Files\\Stop word files\\Dutch.dat"
@@ -3090,17 +3064,6 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_92675654DE3141FDB7B4056A26A37046"
-                    {
-                    "Name" = "8:overwrite_dlls"
-                    "AlwaysCreate" = "11:FALSE"
-                    "Condition" = "8:"
-                    "Transitive" = "11:FALSE"
-                    "Property" = "8:_13D3025CCAA24555BE8DF26223B0CB32"
-                        "Folders"
-                        {
-                        }
-                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_A87D4AA144264F6AB8906DD57CED7037"
@@ -3131,7 +3094,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:eSearch"
         "ProductCode" = "8:{D0C3E217-F012-4442-BB1B-664A72E9B25B}"
-        "PackageCode" = "8:{854902DD-DE30-4330-8382-8DEB088894E5}"
+        "PackageCode" = "8:{629FF75A-59FE-4D5A-9929-B704E22CF13C}"
         "UpgradeCode" = "8:{4EE3EB0E-D78C-40EC-A3BC-19286DCE891E}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -3259,7 +3222,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_6C7783675FE342F983AA3A89BB77A428"
+            "Target" = "8:_53FF216413F745E0B6E33CD888A97293"
             "Folder" = "8:_09B072FA5C70418B9DF8AAF1320E97CA"
             "WorkingFolder" = "8:_5A28C29878D94098A4424E44BE28C9F8"
             "Icon" = "8:_8F123437921849C5820A1060D7165BF7"
@@ -3692,7 +3655,7 @@
                 {
                 }
             }
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6C7783675FE342F983AA3A89BB77A428"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_53FF216413F745E0B6E33CD888A97293"
             {
             "SourcePath" = "8:..\\eSearch\\obj\\eSearch DEBUG\\net8.0\\win-x64\\apphost.exe"
             "TargetName" = "8:"
@@ -3700,7 +3663,7 @@
             "Folder" = "8:_5A28C29878D94098A4424E44BE28C9F8"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:FALSE"
+            "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
