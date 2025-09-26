@@ -331,13 +331,25 @@ public partial class LLMConnectionConfigurationWindow : Window
                         viewModel.HideServerURL = true;
                         break;
                 }
+                #endregion
 
-                viewModel.HideAPIKey = viewModel.SelectedService == LLMService.LocalModel;
+                #region Hide/Show API Key Field as appropriate
+                switch(viewModel.SelectedService)
+                {
+                    case LLMService.LocalModel:
+                    case LLMService.Ollama:
+                    case LLMService.LMStudio:
+                        viewModel.HideAPIKey = true;
+                        break;
+                    default:
+                        viewModel.HideAPIKey = false;
+                        break;
+                }
 
+                #endregion
                 viewModel.HidePerplexityModelSelectionDropDown = viewModel.SelectedService != LLMService.Perplexity;
                 viewModel.HideLocalModelDropDown = viewModel.SelectedService != LLMService.LocalModel;
                 viewModel.HideModelNameTextBox = viewModel.SelectedService == LLMService.Perplexity || viewModel.SelectedService == LLMService.LocalModel;
-                #endregion
                 #region Clear Inputs
                 viewModel.ServerURL        = string.Empty;
                 viewModel.APIKey           = string.Empty;

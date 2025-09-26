@@ -29,16 +29,24 @@
 				   IsVisible="{Binding StatusTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
 			/>
 		</DockPanel>
-
 		<TextBlock Text="{Binding StatusMessage}"
 				   Margin="2"
                    TextWrapping="Wrap"
                    IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                    FontSize="12"/>
+		
 		<ProgressBar
             Value="{Binding StatusProgress}"
             Maximum="100" Minimum="0"
             Margin="10"
-            IsVisible="{Binding StatusProgress, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+            IsVisible="{Binding StatusProgress, Converter={x:Static ObjectConverters.IsNotNull}}"
+			IsIndeterminate="{Binding StatusProgressIsIndeterminate}"
+			/>
+		<TextBlock Text="{Binding StatusError}"
+				   Margin="2"
+				   Classes="Error"
+				   TextWrapping="Wrap"
+				   IsVisible="{Binding StatusError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+				   FontSize="12"/>
 	</StackPanel>
 </UserControl>

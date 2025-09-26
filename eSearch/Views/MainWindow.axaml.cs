@@ -1232,19 +1232,59 @@ namespace eSearch.Views
 
         private IndexStatusControlViewModel? _selectedIndexStatusViewer = null;
 
-        public async void SelectAndDisplayIndex(IIndex? index)
+        public async Task SelectAndDisplayIndex(IIndex? index)
         {
             if (DataContext is MainWindowViewModel mwvm)
             {
-                index?.OpenRead();
-                
-                mwvm.SelectedIndex = index;
-                if (mwvm.SelectedIndex != null) mwvm.SelectedIndex.OpenRead();
-                mwvm.Results = new EmptySearchResultsProvider();
-                await init_wheel(index);
-                if (Program.ProgramConfig.SearchAsYouType)
+                try
                 {
-                    UpdateSearchResults();
+                    if (_selectedIndexStatusViewer != null)
+                    {
+                        mwvm.StatusMessages.Remove(_selectedIndexStatusViewer);
+                        _selectedIndexStatusViewer.Dispose();
+                        _selectedIndexStatusViewer = null;
+                    }
+
+                    if (index != null)
+                    {
+                        _selectedIndexStatusViewer = new IndexStatusControlViewModel(index);
+                        _selectedIndexStatusViewer.StatusProgress = 0;
+                        SetMainStatusViewModel(_selectedIndexStatusViewer);
+                    } else
+                    {
+                        SetMainStatusViewModel(null);
+                    }
+
+
+                    mwvm.IsIndexLoading = true;
+                    index?.OpenRead();
+
+                    mwvm.SelectedIndex = index;
+                    if (mwvm.SelectedIndex != null) mwvm.SelectedIndex.OpenRead();
+                    mwvm.Results = new EmptySearchResultsProvider();
+                    var init_wheel_task = init_wheel(index);
+                    if (Program.ProgramConfig.SearchAsYouType && !PauseSearchUpdates)
+                    {
+                        var searchTask = UpdateSearchResults();
+                        await Task.WhenAll(init_wheel_task, searchTask); // Await both concurrently.
+                    } else
+                    {
+                        await init_wheel_task;
+                    }
+
+                    if (_selectedIndexStatusViewer != null)
+                    {
+                        _selectedIndexStatusViewer.StatusProgress = null; // Hide the progress bar since we're done loading.
+                        _selectedIndexStatusViewer.ClickAction = () =>
+                        {
+                            MenuItemIndexManageIndexes_Click(this, null);
+                        };
+                    }
+
+
+                } finally
+                {
+                    mwvm.IsIndexLoading = false;
                 }
             }
         }
@@ -1436,11 +1476,10 @@ namespace eSearch.Views
                 }
                 else
                 {
-                    await init_wheel(viewModel.SelectedIndex);
+                    await SelectAndDisplayIndex(viewModel.SelectedIndex);
                 }
                 queryTextBox.SelectAll();
                 queryTextBox.Focus();
-                if (Program.ProgramConfig.SearchAsYouType && !viewModel.Session.Query.UseAISearch) UpdateSearchResults();
                 UpdateMainStatusDisplay();
             }
         }
@@ -1553,10 +1592,8 @@ namespace eSearch.Views
                             mwvm.ShowMetadataPanel = false;
                         } else
                         {
-                            await init_wheel(mwvm.SelectedIndex);
-                            
+                            await SelectAndDisplayIndex(mwvm.SelectedIndex);
                         }
-                        if (Program.ProgramConfig.SearchAsYouType) UpdateSearchResults();
                     }
                     
                 }
@@ -1726,7 +1763,6 @@ namespace eSearch.Views
                     _searchWorker?.CancelAsync();
                     if (PauseSearchUpdates) return;
                     mwvm.Results = new EmptySearchResultsProvider();
-                    List<ResultViewModel>? results = null;
                     if (!mwvm.Session.Query.UseAISearch)
                     {
                         #region Do Work
@@ -1744,7 +1780,15 @@ namespace eSearch.Views
 
                                     if (mwvm.Session?.Query != null)
                                     {
-                                        mwvm.Results = mwvm.SelectedIndex.PerformSearch(mwvm.Session.Query);
+                                        IVirtualReadOnlyObservableCollectionProvider<ResultViewModel>? results = null;
+                                        await Task.Run(() =>
+                                        {
+                                            results = mwvm.SelectedIndex.PerformSearch(mwvm.Session.Query);
+                                        });
+                                        if (results != null)
+                                        {
+                                            mwvm.Results = results;
+                                        }
                                     }
                                 }
                             }
@@ -2166,16 +2210,6 @@ namespace eSearch.Views
                 }
                 if (e.PropertyName?.Equals(nameof(mwvm.SelectedIndex)) ?? false)
                 {
-
-                    if (_selectedIndexStatusViewer != null)
-                    {
-                        mwvm.StatusMessages.Remove(_selectedIndexStatusViewer);
-                        _selectedIndexStatusViewer.Dispose();
-                        _selectedIndexStatusViewer = null;
-                    }
-                    
-
-
                     PauseSearchUpdates = true;
                     htmlDocumentControl.RenderBlankPageThemeColored();
                     mwvm.ShowDocumentLocation      = false;
@@ -2184,16 +2218,8 @@ namespace eSearch.Views
                     mwvm.Session.SelectedIndexId   = mwvm.SelectedIndex?.Id ?? null;
                     mwvm.Results = new EmptySearchResultsProvider();
                     init_columns();
-                    if (mwvm.SelectedIndex != null)
-                    {
-                        _selectedIndexStatusViewer = new IndexStatusControlViewModel(mwvm.SelectedIndex);
-                        _selectedIndexStatusViewer.ClickAction = () =>
-                        {
-                            MenuItemIndexManageIndexes_Click(this, null);
-                        };
-                        SetMainStatusViewModel(_selectedIndexStatusViewer);
-                    }
-                    await init_wheel(mwvm.SelectedIndex);
+                    
+                    await SelectAndDisplayIndex(mwvm.SelectedIndex);
                     PauseSearchUpdates = false;
 
                     

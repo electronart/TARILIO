@@ -460,6 +460,20 @@ namespace eSearch.ViewModels
         private ObservableCollection<SearchSource> _availableSearchSources = new ObservableCollection<SearchSource>();
 
 
+        public bool IsIndexLoading
+        {
+            get
+            {
+                return _isIndexLoading;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _isIndexLoading, value);
+            }
+        }
+
+        private bool _isIndexLoading = false;
+
         public StringPair DocCopyToolTipTextPair
         {
             get

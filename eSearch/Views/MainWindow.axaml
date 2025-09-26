@@ -94,11 +94,12 @@
 						<!--<MenuItem Header="{Binding S[History...]}"/>-->
 						<!--<MenuItem Header="{Binding S[Report...]}" Command="{Binding DebugExportSearchReport}"/>-->
 					</MenuItem>
-					<MenuItem Header="{Binding S[_Index]}" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}">
+					<MenuItem Header="{Binding S[_Index]}">
 						<MenuItem.IsEnabled>
 							<MultiBinding Converter="{x:Static BoolConverters.And}">
 								<Binding Path="!ProgramIsRunningInSearchOnlyMode" />
 								<Binding Path="!Session.Query.UseAISearch" />
+								<Binding Path="!IsIndexLoading"/>
 							</MultiBinding>
 						</MenuItem.IsEnabled>
 						<MenuItem Header="{Binding S[New...]}" x:Name="menuItemIndexNew" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
