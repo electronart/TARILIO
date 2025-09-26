@@ -1,0 +1,746 @@
+# Product:  eSearch
+# RFC 4646 Language Code. Used for Localisation of date strings Eg. en-GB, de-DE etc.
+RFC4646
+en-GB
+# --- Common ---
+Cancelled
+Cancelled
+Size
+Size
+Copy
+Copy
+File not found
+File not found
+OK
+OK
+Cancel
+Cancel
+Append Note:
+Append Note:
+Copy to:
+Copy to:
+Clipboard
+Clipboard
+File:
+File:
+Append Date
+Append Date
+Save
+Save
+Type
+Type
+Name
+Name
+Title
+Title
+Score
+Score
+Close
+Close
+Copy Response...
+Copy Response...
+Copy Document...
+Copy Document...
+Help
+Help
+Copy Conversation
+Copy Conversation
+Error
+Error
+Plugins
+Plugins
+Remove
+Remove
+Columns
+Columns
+Words
+Words
+Rows
+Rows
+Soundex
+Soundex
+Filters
+Filters
+All
+All
+Selected
+Selected
+Include
+Include
+Paragraphs
+Paragraphs
+Search Settings
+Search Settings
+Synonyms
+Synonyms
+New...
+New...
+eSearch
+eSearch
+Delete
+Delete
+Update...
+Update...
+Rename...
+Rename...
+Something went wrong
+Something went wrong
+Delete {0}?
+Delete {0}?
+Delete...
+Delete...
+# --- AboutWindow.axaml ---
+Serial...
+Serial...
+Licenses and acknowledgements
+Licenses and Notes
+# --- AboutWindowViewModel.cs ---
+Evaluation ({0} days remaining)
+Evaluation ({0} days remaining)
+Does not expire
+Does not expire
+Expires {0}
+Expires {0}
+Expired {0}
+Expired {0}
+Serial: None
+Serial: None
+# --- ColorPickerWindow.axaml ---
+# --- CompletionStreamingJSBinding.cs ---
+# --- CopyConversationWindow.axaml ---
+Transcript:
+Transcript:
+# --- CopyConversationWindow.axaml.cs ---
+# --- CopyConversationWindowViewModel.cs ---
+# --- CopyDocumentWindow.axaml ---
+Copy Response
+Copy Response
+Copy Document
+Copy Document
+Copied text:
+Copied text:
+Append File name:
+Append File name:
+Append Query:
+Append Query:
+# --- CopyDocumentWindow.axaml.cs ---
+Copy
+Copy
+# --- CopyResultsTask.cs ---
+Cancel Copying?
+Cancel Copying?
+Folder will not contain all files
+Folder will not contain all files
+# --- DataColumn.cs ---
+Created
+Created
+Modified
+Modified
+Indexed
+Indexed
+Accessed
+Accessed
+Path
+Path
+Parser
+Parser
+# --- DocumentType.cs ---
+Documents
+Documents
+Presentations
+Presentations
+Publications
+Publications
+Text
+Text
+Emails
+Emails
+Spreadsheets
+Spreadsheets
+Audio
+Audio
+Images
+Images
+Videos
+Videos
+Data
+Data
+Archives
+Archives
+Source Code
+Source Code
+# --- ExportConversationWindow.axaml ---
+Export Conversation
+Export Conversation
+Export
+Export
+Export as
+Export as
+File
+File
+# --- ExportSearchResultsViewModel.cs ---
+Select output file type
+Select output file type
+XML (.xml)
+XML (.xml)
+Comma Separated Values (.csv)
+Comma Separated Values (·csv)
+Tab Separated (.txt)
+Tab Separated (.txt)
+Results
+Results
+# --- ExportSearchResultsWindow.axaml ---
+Export Search Results
+Export Search Results
+All rows
+All rows
+Output as
+Output as
+All columns
+All columns
+Output Directory
+Output Directory
+# --- ExportSearchResultsWindow.axaml.cs ---
+Select at least one Column to export
+Select at least one Column to export
+Select output format
+Select output format
+No results are checked
+No results are checked
+Select an output directory.
+Select an output directory.
+Output Directory not found
+Output Directory not found
+Must enter a file name
+Must enter a file name
+File name contains illegal characters
+File name contains illegal characters
+# --- FontPickerWindow.axaml ---
+# --- HtmlDocumentControl.axaml.cs ---
+Search Report
+Search Report
+Document Information
+Document Information
+Size
+Size
+Hits in Context
+Hits in Context
+# --- IndexProgressWindow.axaml ---
+View log
+View log
+# --- IndexProgressWindow.axaml.cs ---
+Paused
+Paused
+Cancel Indexing?
+Cancel Indexing?
+Index will only contain partial results.
+Index will only contain partial results.
+Cancelling
+Cancelling
+# --- IndexSettingsWindow.axaml ---
+Index Settings
+Index Settings
+Stop words
+Stop words
+Maximum word length
+Maximum word length
+Maximum file size (MB)
+Maximum file size (MB)
+Case sensitive
+Case sensitive
+# --- IndexTask.cs ---
+Opening Index
+Opening Index
+Indexing {0}
+Indexing {0}
+Cleaning up...
+Cleaning up...
+Finished
+Finished
+{0} Document(s) Indexed
+{0} Document(s) Indexed 
+Error(s) during indexing. Check log for details.
+Error(s) during indexing. Check log for details
+# --- ListContentsWindow.axaml ---
+List Contents
+List Contents
+Words Found
+Words Found
+Words in index
+Words in index
+Save as...
+Save as...
+Word count
+Word count
+File count
+File count
+Field count
+Field count
+# --- LLMConnectionConfigurationWindow.axaml ---
+Connect to API
+Connect to API
+Connections
+Connections
+Service
+Service
+Server URL
+Server URL
+API Key
+API Key
+Model
+Model
+Custom System Prompt
+Custom System Prompt
+Test
+Test
+# --- LLMConnectionConfigurationWindow.axaml.cs ---
+Rename
+Rename
+Connected Successfully.
+Connected Successfully.
+API Key Required
+API Key Required
+Model Name required
+Model Name required
+Server URL Required
+Server URL Required
+# --- LLMMessageStreamingJSBinding.cs ---
+Generation Cancelled
+Generation Cancelled
+# --- LLMService.cs ---
+OpenAI
+OpenAI
+Custom...
+Custom...
+# --- LuceneWordWheel.cs ---
+Loading...
+Loading...
+# --- MainWindow.axaml ---
+_File
+_File
+View...
+View...
+Export Search Results...
+Export Search Results...
+Print...
+Print...
+Launch at Startup
+Launch at Startup
+_Exit
+_Exit
+_AI
+_AI
+_AI Connections
+_AI Connections
+_MCP Servers
+_MCP Servers
+Show System Prompt
+Show System Prompt
+Export Conversation...
+Export Conversation...
+Import Conversation...
+Import Conversation...
+History...
+History...
+Report...
+Report...
+_Index
+_Index
+Manage Indexes...
+Manage Indexes...
+_View
+_View
+Theme
+Theme
+Dark
+Dark
+Light
+Light
+System
+System
+High Contrast
+High Contrast
+Layout
+Layout
+Horizontal
+Horizontal
+Vertical
+Vertical
+Language
+Language
+English
+English
+Pseudo Locale
+Pseudo Locale
+From File...
+From File...
+Word List
+Word List
+About
+About
+List...
+List...
+Register...
+Register...
+Results Settings...
+Results Settings...
+Copy Results...
+Copy Results...
+Viewer Settings...
+Viewer Settings...
+Document Metadata
+Document Metadata
+View in folder
+View in folder
+Previous Hit
+Previous Hit
+Next Hit
+Next Hit
+Key
+Key
+Value
+Value
+# --- MainWindow.axaml.cs ---
+Import Conversation
+Import Conversation
+Note:
+Note:
+Must provide a filename or check append date.
+Must provide a filename or check append date.
+Query: 
+Query: 
+Filename:
+Filename:
+Select output folder
+Select output folder
+Enter a query
+Enter a query
+An error occurred
+An error occurred
+Show location
+Show location
+Location not available
+Location not available
+There is no metadata to display.
+There is no metadata to display.
+# --- MainWindowViewModel.cs ---
+File \"%s\" not found
+File \"%s\" not found
+# --- MCP_SearchServerTool.cs ---
+Search an index for documents.
+Search an index for documents.
+The name of the user's index to search
+The name of the user's index to search
+The Search Query to perform. Supports the Lucene Search Syntax
+The Search Query to perform. Supports the Lucene Search Syntax
+Returns the names of all indexes that can be searched.
+Returns the names of all indexes that can be searched.
+# --- MCPConnectionConfigurationWindow.axaml ---
+Configure MCP Servers
+Configure MCP Servers
+Configured Servers
+Configured Servers
+Configuration
+Configuration
+Save
+Save
+# --- MCPConnectionConfigurationWindow.axaml.cs ---
+Running
+Running
+Not Running
+Not Running
+Server Stopped
+Server Stopped
+Invalid Configuration
+Invalid Configuration
+Enter a valid MCP Server Configuration
+Enter a valid MCP Server Configuration
+\"{0}\" already exists.
+\"{0}\" already exists.
+Server must be given a unique name.
+Server must be given a unique name.
+# --- MessageControl.axaml ---
+Browser Debug...
+Browser Debug...
+Stop Generation
+Stop Generation
+Notes
+Notes
+Delete Message
+Delete Message
+Copy Message
+Copy Message
+Note
+Note
+# --- NewIndexWindow.axaml ---
+Index Name
+Index Name
+Index Contents
+Index Contents
+Include All
+Include All
+# --- NewIndexWindow.axaml.cs ---
+Index name required.
+Index name required.
+Select data to be indexed.
+Select data to be indexed.
+Select at least one content type to index.
+Select at least one content type to index.
+# --- NewIndexWindowViewModel.cs ---
+Update Index
+Update Index
+Create Index
+Create Index
+# --- PerplexityModel.cs ---
+sonar
+sonar
+sonar-pro
+sonar-pro
+sonar-reasoning
+sonar-reasoning
+sonar-reasoning-pro
+sonar-reasoning-pro
+llama-3.1-sonar-small-128k-online
+llama-3.1-sonar-small-128k-online
+llama-3.1-sonar-large-128k-online
+llama-3.1-sonar-large-128k-online
+llama-3.1-sonar-huge-128k-online
+llama-3.1-sonar-huge-128k-online
+# --- PluginsWindow.axaml ---
+Plugins
+Plugins
+Close
+Close
+Add...
+Add...
+# --- PluginsWindow.axaml.cs ---
+Remove Plugin {0}?
+Remove Plugin {0}?
+Open Plugin File
+Open Plugin File
+Could not install plugin
+Could not install plugin
+# --- Program.cs ---
+Scheduled Index of {0} is starting...
+Scheduled Index of {0} is starting...
+# --- ProgressCalculator.cs ---
+Calculating...
+Calculating...
+{0} day(s) remaining
+{0} day(s) remaining
+{0} hour(s) remaining
+{0} hour(s) remaining
+{0} minute(s) remaining
+{0} minute(s) remaining
+{0} second(s) remaining
+{0} second(s) remaining
+# --- RegistrationWindow.axaml ---
+Serial
+Serial
+Order Online
+Order Online
+Enter your Serial Number
+Enter your Serial Number
+Invalid Serial Number
+Invalid Serial Number
+# --- ResultsSettingsWindow.axaml ---
+Results Settings
+Results Settings
+Column Width
+Column Width
+Fit to content
+Fit to content
+Fit to window
+Fit to window
+Set Manually
+Set Manually
+Key Words in Context
+Key Words in Context
+Show
+Show
+Colour...
+Colour...
+Limit Results
+Limit Results
+# --- ResultsSettingsWindow.axaml.cs ---
+Select at least one column
+Select at least one column
+# --- ScheduleUtils.cs ---
+Scheduled Automatic Index Update of {0}
+Scheduled Automatic Index Update of {0}
+# --- SearchControl.axaml ---
+AI Mode
+AI Mode
+AND
+AND
+OR
+OR
+NOT
+NOT
+Stemming
+Stemming
+Any
+Any
+Boolean
+Boolean
+Search Document Metadata
+Search Document Metadata
+# --- SearchFilterWindow.axaml ---
+# --- SearchResultsReportWindow.axaml ---
+Search Results Report
+Search Results Report
+Rows
+Rows
+File list only
+File list only
+Full text
+Full text
+Hits in context
+Hits in context
+Words
+Words
+Output template
+Output template
+Run report...
+Run report...
+Run
+Run
+Open when done
+Open when done
+# --- SearchSettingsViewModel.cs ---
+None
+None
+Double Metaphone
+Double Metaphone
+# --- SearchSettingsWindow.axaml ---
+Use List
+Use List
+Stemming Language
+Stemming Language
+English Porter
+English Porter
+List Index Contents on Empty Query
+List Index Contents on Empty Query
+Search as you Type
+Search as you Type
+English WordNet
+English WordNet
+Synonym files:
+Synonym files:
+Synonym Groups
+Synonym Groups
+Sort
+Sort
+Expansion
+Expansion
+Edit...
+Edit...
+# --- SearchSettingsWindow.axaml.cs ---
+%GROUP% will be deleted.
+%GROUP% will be deleted.
+Delete Synonyms Group?
+Delete Synonyms Group?
+Rename Synonyms Group
+Rename Synonyms Group
+Synonym Group Name
+Synonym Group Name
+New Synonyms Group
+New Synonyms Group
+Name
+Name
+Check at least one Synonym file from the drop down.
+Check at least one Synonym file from the drop down.
+No list file supplied
+No list file supplied
+File does not exist
+File does not exist
+# --- TaskDialogWindow.axaml.cs ---
+Something went wrong. Retry?
+Something went wrong. Retry?
+Retry
+Retry
+# --- TaskScheduleWindow.axaml ---
+Schedule Index
+Schedule Index
+Starting:
+Starting:
+Repeat Every:
+Repeat Every:
+# --- TaskScheduleWindowViewModel.cs ---
+Enter starting date.
+Enter starting date.
+Select the repeat interval.
+Select the repeat interval.
+Day(s)
+Day(s)
+Week(s)
+Week(s)
+# --- TextInputDialog.axaml ---
+# --- TikaServer.cs ---
+# --- UpdateIndexWindow.axaml ---
+Manage Indexes
+Manage Indexes
+Index
+Index
+Schedule Index...
+Schedule Index...
+Cancel Schedule
+Cancel Schedule
+Rebuild...
+Rebuild...
+# --- UpdateIndexWindow.axaml.cs ---
+Rename Index
+Rename Index
+Delete
+Delete
+Delete this index.
+Delete this index.
+Schedule: Every {0} at {1} from {2}
+Schedule: Every {0} at {1} from {2}
+Not Scheduled.
+Not Scheduled.
+{0} Document(s)
+{0} Document(s)
+No Index Selected.
+No Index Selected.
+# --- Utils.cs ---
+RFC4646
+en-GB
+# --- ViewerSettingsWindow.axaml ---
+Viewer Settings
+Viewer Settings
+Cancel
+Cancel
+View Large Files
+View Large Files
+Mb
+Mb
+Fully
+Fully
+First page only
+First page only
+In Report View
+In Report View
+Amount of context
+Amount of context
+PDF
+PDF
+Viewer
+Viewer
+Adobe Acrobat
+Adobe Acrobat
+Plain Text
+Plain Text
+View File Types
+View File Types
+New...
+New...
+Rename...
+Rename...
+Hit Highlight
+Hit Highlight
+Unformatted Text
+Unformatted Text
+No word wrap
+No word wrap
+# --- ViewerSettingsWindowViewModel.cs ---

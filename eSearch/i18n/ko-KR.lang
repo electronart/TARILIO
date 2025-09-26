@@ -1,0 +1,736 @@
+# Product:  eSearch
+# RFC 4646 Language Code. Used for Localisation of date strings Eg. en-GB, de-DE etc.
+RFC4646
+ko-KR
+# --- Common ---
+Cancelled
+취소됨
+Size
+크기
+Copy
+복사
+File not found
+파일을 찾을 수 없습니다
+OK
+알겠습니다
+Cancel
+취소합니다
+Append Note:
+메모 추가
+Copy to:
+복사하여 
+Clipboard
+잘라내기
+File:
+파일:
+Append Date
+날짜 추가
+Save
+저장합니다
+Type
+입력
+Name
+이름
+Title
+제목
+Score
+점수
+Close
+닫기
+Help
+도움말
+Copy Conversation
+대화 복사하기
+Error
+오류
+Plugins
+플러그인
+Remove
+삭제
+Columns
+열
+Words
+단어
+Rows
+행
+Soundex
+소리 유사 검색
+Filters
+필터
+All
+모두
+Selected
+선택됨
+Include
+포함
+Paragraphs
+단락 
+Search Settings
+검색 설정 
+Synonyms
+동의어
+New...
+새...
+eSearch
+eSearch
+Delete
+삭제
+Update...
+업데이트
+Rename...
+이름 변경...
+Something went wrong
+뭔가 잘못되었습니다
+Delete {0}?
+{0} 삭제하시겠습니까?
+Delete...
+삭제...
+# --- AboutWindow.axaml ---
+Serial...
+시리얼...
+Licenses and acknowledgements
+라이선스 및 인정
+# --- AboutWindowViewModel.cs ---
+Evaluation ({0} days remaining)
+평가 기간 ({0}일 남았습니다)
+Does not expire
+만료되지 않음
+Expires {0}
+만료됨 {0}
+Expired {0}
+만료됨 {0}
+Serial: None
+시리얼 번호: 없음
+# --- ColorPickerWindow.axaml ---
+# --- CompletionStreamingJSBinding.cs ---
+# --- CopyConversationWindow.axaml ---
+Transcript:
+기록
+# --- CopyConversationWindow.axaml.cs ---
+# --- CopyConversationWindowViewModel.cs ---
+# --- CopyDocumentWindow.axaml ---
+Copied text:
+복사된 텍스트
+Append File name:
+추가 파일 이름:
+Append Query:
+추가 쿼리
+# --- CopyDocumentWindow.axaml.cs ---
+Copy
+복사
+# --- CopyResultsTask.cs ---
+Cancel Copying?
+복사 취소하시겠습니까?
+Folder will not contain all files
+폴더에 모든 파일이 포함되지 않습니다
+# --- DataColumn.cs ---
+Created
+생성됨
+Modified
+수정됨
+Indexed
+색인됨
+Accessed
+접근됨
+Path
+경로
+Parser
+파서
+# --- DocumentType.cs ---
+Documents
+문서
+Presentations
+프레젠테이션
+Publications
+출판물
+Text
+텍스트
+Emails
+이메일
+Spreadsheets
+스프레드시트
+Audio
+오디오
+Images
+이미지
+Videos
+비디오
+Data
+데이터
+Archives
+보관물
+Source Code
+소스 코드
+# --- ExportConversationWindow.axaml ---
+Export Conversation
+대화 내보내기
+Export
+내보내기
+Export as
+ (파일 형식)으로 내보내기
+File
+파일
+# --- ExportSearchResultsViewModel.cs ---
+Select output file type
+출력 파일 형식 선택
+XML (.xml)
+XML (.xml)
+Comma Separated Values (.csv)
+쉼표로 분리된 값 파일 (.csv)
+Tab Separated (.txt)
+탭으로 분리된 텍스트 파일 (.txt) 
+Results
+결과
+# --- ExportSearchResultsWindow.axaml ---
+Export Search Results
+검색 결과 내보내기
+All rows
+모든 행
+Output as
+한국어: 결과로 출력
+All columns
+모든 열
+Output Directory
+출력 디렉토리
+# --- ExportSearchResultsWindow.axaml.cs ---
+Select at least one Column to export
+최소 한 열을 선택하여 내보내기
+Select output format
+출력 형식 선택
+No results are checked
+결과가 선택되지 않았습니다
+Select an output directory.
+출력 디렉토리 선택
+Output Directory not found
+출력 디렉토리가 없습니다
+Must enter a file name
+파일 이름이 필요합니다
+File name contains illegal characters
+파일 이름에 유효하지 않은 문자가 포함되어 있습니다 
+# --- FontPickerWindow.axaml ---
+# --- HtmlDocumentControl.axaml.cs ---
+Search Report
+검색 보고서
+Document Information
+문서 정보
+Size
+크기
+Hits in Context
+맥락 내 검색 결과
+# --- IndexProgressWindow.axaml ---
+View log
+로그 보기
+# --- IndexProgressWindow.axaml.cs ---
+Paused
+일시 중단
+Cancel Indexing?
+인덱싱 취소하시겠습니까?
+Index will only contain partial results.
+인덱스는 부분적인 결과만 포함합니다
+Cancelling
+취소 중
+# --- IndexSettingsWindow.axaml ---
+Index Settings
+인덱스 설정
+Stop words
+차단어
+Maximum word length
+최대 단어 길이
+Maximum file size (MB)
+최대 파일 크기 (MB)
+Case sensitive
+대소문자 구분
+# --- IndexTask.cs ---
+Opening Index
+인덱스 생성
+Indexing {0}
+인덱싱 중: {0} 
+Cleaning up...
+정리 중…
+Finished
+완료되었습니다
+{0} Document(s) Indexed
+{0} 문서 인덱싱 완료
+Error(s) during indexing. Check log for details.
+인덱싱 중 오류 발생. 로그를 확인하세요
+# --- ListContentsWindow.axaml ---
+List Contents
+목록 내용
+Words Found
+찾은 단어
+Words in index
+인덱스 단어
+Save as...
+이름으로 저장
+Word count
+단어 수
+File count
+파일 개수
+Field count
+필드 개수
+# --- LLMConnectionConfigurationWindow.axaml ---
+Connect to API
+API 연결
+Service
+서비스
+Server URL
+서버 주소
+API Key
+API 키
+Model
+모델
+Test
+테스트
+# --- LLMConnectionConfigurationWindow.axaml.cs ---
+Rename
+이름 변경
+Connected Successfully.
+연결 성공
+API Key Required
+API 키가 필요합니다
+Model Name required
+모델 이름이 필요합니다
+Server URL Required
+서버 주소가 필요합니다
+# --- LLMMessageStreamingJSBinding.cs ---
+Generation Cancelled
+생성 취소
+# --- LLMService.cs ---
+OpenAI
+OpenAI
+Custom...
+사용자 지정…
+# --- LuceneWordWheel.cs ---
+Loading...
+불러오기 중…
+# --- MainWindow.axaml ---
+_File
+_파일
+View...
+표시 모드…
+Export Search Results...
+검색 결과 내보내기…
+Print...
+인쇄…
+Launch at Startup
+시작 시 자동 실행…
+_Exit
+_종료…
+_AI
+_AI (에이아이)
+_AI Connections
+_AI 연결
+_MCP Servers
+_MCP 서버
+Show System Prompt
+시스템 메시지 표시
+Export Conversation...
+대화 내보내기
+Import Conversation...
+대화 가져오기
+History...
+내역...
+Report...
+보고서...
+_Index
+색인
+Manage Indexes...
+색인 관리
+_View
+보기
+Theme
+테마
+Dark
+어두운
+Light
+밝은
+System
+시스템
+High Contrast
+높은 대비
+Layout
+레이아웃
+Horizontal
+수평
+Vertical
+수직
+Language
+언어
+English
+영어
+Pseudo Locale
+가상 지역
+From File...
+파일에서…
+Word List
+단어 목록
+About
+정보
+List...
+목록
+Register...
+등록...
+Results Settings...
+결과 설정...
+Copy Results...
+결과 복사...
+Viewer Settings...
+뷰어 설정...
+Document Metadata
+문서 메타데이터 
+View in folder
+폴더 보기
+Previous Hit
+이전 검색어
+Next Hit
+다음 검색어
+Key
+키
+Value
+값
+# --- MainWindow.axaml.cs ---
+Import Conversation
+대화 가져오기
+Note:
+참고:
+Must provide a filename or check append date.
+파일 이름을 지정하거나 추가 날짜를 확인하십시오.
+Query: 
+질문:
+Filename:
+파일명:
+Select output folder
+출력 폴더 선택: 
+Enter a query
+질문을 입력하세요
+An error occurred
+오류가 발생했습니다
+Show location
+위치 표시
+Location not available
+위치 정보가 없습니다
+There is no metadata to display.
+표시할 메타데이터가 없습니다
+# --- MainWindowViewModel.cs ---
+Copy Response...
+응답 복사…
+Copy Document...
+문서 복사…
+File \"%s\" not found
+파일 \"%s"\ 을 찾을 수 없습니다
+# --- MCP_SearchServerTool.cs ---
+Search an index for documents.
+인덱스에서 문서를 검색합니다
+The name of the user's index to search
+검색할 인덱스 이름
+The Search Query to perform. Supports the Lucene Search Syntax
+검색 쿼리를 입력하세요. Lucene 검색 구문을 지원합니다
+Returns the names of all indexes that can be searched.
+검색 가능한 인덱스 목록을 표시합니다
+# --- MCPConnectionConfigurationWindow.axaml ---
+Configure MCP Servers
+MCP 서버 구성
+Configuration
+구성
+Save
+Save
+# --- MCPConnectionConfigurationWindow.axaml.cs ---
+Running
+실행 중
+Not Running
+실행 중 안됨
+Server Stopped
+서버 중단됨
+Invalid Configuration
+유효하지 않은 구성
+Enter a valid MCP Server Configuration
+유효한 MCP 서버 구성을 입력하세요
+\"{0}\" already exists.
+\"{0}"\ 이 이미 존재합니다
+Server must be given a unique name.
+서버 이름은 고유해야 합니다
+# --- MessageControl.axaml ---
+Browser Debug...
+브라우저 디버깅...
+Stop Generation
+생성 중지
+Notes
+메모
+Delete Message
+메시지 삭제
+Copy Message
+메시지 복사
+Note
+메모
+# --- NewIndexWindow.axaml ---
+Index Name
+인덱스 이름
+Index Contents
+인덱스 내용
+Include All
+모두 포함
+# --- NewIndexWindow.axaml.cs ---
+Index name required.
+인덱스 이름이 필요합니다
+Select data to be indexed.
+인덱싱할 데이터를 선택하세요
+Select at least one content type to index.
+최소 1개 이상의 콘텐츠 유형을 선택하세요
+# --- NewIndexWindowViewModel.cs ---
+Update Index
+인덱스 업데이트
+Create Index
+인덱스 생성
+# --- PerplexityModel.cs ---
+sonar
+sonar
+sonar-pro
+sonsr-pro
+sonar-reasoning
+sonar-reasoning
+sonar-reasoning-pro
+sonar-reasoning-pro
+llama-3.1-sonar-small-128k-online
+llama-3.1-sonar-small-128k-online
+llama-3.1-sonar-large-128k-online
+llama-3.1-sonar-large-128k-online
+llama-3.1-sonar-huge-128k-online
+llama-3.1-sonar-huge-128k-online
+# --- PluginsWindow.axaml ---
+Plugins
+플러그인
+Close
+닫기
+Add...
+추가하기
+# --- PluginsWindow.axaml.cs ---
+Remove Plugin {0}?
+{0} 플러그인을 제거하시겠습니까?
+Open Plugin File
+플러그인 파일 열기
+Could not install plugin
+플러그인 설치 실패
+# --- Program.cs ---
+Scheduled Index of {0} is starting...
+{0} 인덱스 예약 작업 시작 중…
+# --- ProgressCalculator.cs ---
+Calculating...
+계산 중…
+{0} day(s) remaining
+{0} 일 남았습니다
+{0} hour(s) remaining
+{0} 시간 남았습니다
+{0} minute(s) remaining
+{0} 분 남았습니다
+{0} second(s) remaining
+{0} 초 남았습니다
+# --- RegistrationWindow.axaml ---
+Serial
+시리얼
+Order Online
+온라인 주문
+Enter your Serial Number
+Enter your Serial Number
+Invalid Serial Number
+유효하지 않은 시리얼 번호
+# --- ResultsSettingsWindow.axaml ---
+Results Settings
+결과 설정
+Column Width
+열 너비
+Fit to content
+내용 맞춤
+Fit to window
+창에 맞춤
+Set Manually
+수동 설정
+Key Words in Context
+문맥 속 키워드
+Show
+보여주다
+Colour...
+컬러…
+Limit Results
+결과 제한
+# --- ResultsSettingsWindow.axaml.cs ---
+Select at least one column
+최소 한 열 하나 이상 선택
+# --- ScheduleUtils.cs ---
+Scheduled Automatic Index Update of {0}
+“{0}의 예약된 자동 인덱스 업데이트
+# --- SearchControl.axaml ---
+AI Mode
+AI 모드
+AND
+논리 AND
+OR
+논리 OR
+NOT
+아니거나
+Stemming
+어간 추출
+Any
+어떤
+Boolean
+부울
+Search Document Metadata
+검색 문서 메타데이터
+# --- SearchFilterWindow.axaml ---
+# --- SearchResultsReportWindow.axaml ---
+Search Results Report
+검색 결과 보고서
+Rows
+행
+File list only
+파일 목록만
+Full text
+전체 텍스트
+Hits in context
+검색어 맥락
+Words
+단어
+Output template
+출력 템플릿
+Run report...
+보고서 실행…
+Run
+실행하다
+Open when done
+완료 시 열기
+# --- SearchSettingsViewModel.cs ---
+None
+없다
+Double Metaphone
+더블 메타폰 
+# --- SearchSettingsWindow.axaml ---
+Use List
+목록 사용
+Stemming Language
+어간 언어 
+English Porter
+영어 포터
+List Index Contents on Empty Query
+빈 검색어 목록 인덱스 내용
+Search as you Type
+타이핑 중 검색
+English WordNet
+영어 워드넷
+Synonym files:
+동의어 파일들:
+Synonym Groups
+동의어 그룹
+Sort
+정렬
+Expansion
+확장
+Edit...
+편집…
+# --- SearchSettingsWindow.axaml.cs ---
+%GROUP% will be deleted.
+ %GROUP% 이 삭제됩니다
+Delete Synonyms Group?
+동의어 그룹 삭제하시겠습니까?
+Rename Synonyms Group
+동의어 그룹 이름 변경
+Synonym Group Name
+동의어 그룹 이름
+New Synonyms Group
+새로운 동의어 그룹
+Name
+이름을 입력하세요
+Check at least one Synonym file from the drop down.
+드롭다운에서 동의어 파일을 최소 하나 선택하세요
+No list file supplied
+리스트 파일이 제공되지 않았습니다
+File does not exist
+파일이 존재하지 않습니다
+# --- TaskDialogWindow.axaml.cs ---
+Something went wrong. Retry?
+무언가 잘못되었습니다. 다시 시도하세요
+Retry
+다시 시도하세요
+# --- TaskScheduleWindow.axaml ---
+Schedule Index
+일정 인덱스
+Starting:
+ 시작합니다:
+Repeat Every:
+매우 반복합니다:
+# --- TaskScheduleWindowViewModel.cs ---
+Enter starting date.
+시작 날짜를 입력하세요:
+Select the repeat interval.
+반복 간격을 선택하세요
+Day(s)
+일(들)
+Week(s)
+주(들)
+# --- TextInputDialog.axaml ---
+# --- TikaServer.cs ---
+# --- UpdateIndexWindow.axaml ---
+Manage Indexes
+인덱스 관리 
+Index
+인덱스
+Schedule Index...
+일정 인덱스를…
+Cancel Schedule
+일정 취소
+Rebuild...
+재구성…
+# --- UpdateIndexWindow.axaml.cs ---
+Rename Index
+인덱스 이름 변경
+Delete
+삭제
+Delete this index.
+이 인덱스를 삭제하세요
+Schedule: Every {0} at {1} from {2}
+일정: 매 {0}시 {1}분부터 {2}까지
+Not Scheduled.
+일정 예약 없음
+{0} Document(s)
+{0} 문서(들)
+No Index Selected.
+인덱스 선택 없음
+# --- Utils.cs ---
+RFC4646
+ko-KR
+# --- ViewerSettingsWindow.axaml ---
+Viewer Settings
+보기 설정
+Cancel
+취소
+View Large Files
+대용량 파일 보기
+Mb
+MB
+Fully
+완전
+First page only
+첫 페이지만 표시
+In Report View
+보고서 보기
+Amount of context
+컨텍스트 양
+PDF
+PDF
+Viewer
+보기
+Adobe Acrobat
+어도비 아크로바트
+Plain Text
+평문자
+View File Types
+파일 종류 보기
+New...
+새…
+Rename...
+이름 변경…
+Hit Highlight
+하이라이트 적용
+Unformatted Text
+서식 없는 텍스트
+No word wrap
+단어 줄 바꿈 안 함
+# --- ViewerSettingsWindowViewModel.cs ---
