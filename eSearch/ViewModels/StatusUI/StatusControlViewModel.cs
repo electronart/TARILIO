@@ -69,6 +69,20 @@ namespace eSearch.ViewModels.StatusUI
 
         private string? _statusMessage = null;
 
+        public string? StatusError
+        {
+            get
+            {
+                return _statusError;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _statusError, value);
+            }
+        }
+
+        private string? _statusError = null;
+
         /// <summary>
         /// When not null, a dismiss button is shown. the action will be carried out when clicked.
         /// </summary>
@@ -86,6 +100,9 @@ namespace eSearch.ViewModels.StatusUI
 
         private Action? _dismissAction = null;
 
+        /// <summary>
+        /// Set to 0 for indeterminate progress bar.
+        /// </summary>
         public float? StatusProgress
         {
             get
@@ -95,10 +112,25 @@ namespace eSearch.ViewModels.StatusUI
             set
             {
                 this.RaiseAndSetIfChanged(ref _statusProgress, value);
+                StatusProgressIsIndeterminate = value != null && value < 1;
             }
         }
 
         private float? _statusProgress = null;
+
+        public bool StatusProgressIsIndeterminate
+        {
+            get
+            {
+                return _statusProgressIsIndeterminate;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _statusProgressIsIndeterminate, value);
+            }
+        }
+
+        private bool _statusProgressIsIndeterminate = false;
 
         public Action? ClickAction
         {
@@ -124,6 +156,6 @@ namespace eSearch.ViewModels.StatusUI
 
     public class DesignStatusControlViewModel : StatusControlViewModel
     {
-        public DesignStatusControlViewModel() : base() { StatusTitle = "This is a sample title"; StatusMessage = "This is a sample status message."; StatusProgress = 32.0f; }
+        public DesignStatusControlViewModel() : base() { StatusTitle = "This is a sample title"; StatusMessage = "This is a sample status message."; StatusProgress = 32.0f; StatusError = "An error message."; }
     }
 }
