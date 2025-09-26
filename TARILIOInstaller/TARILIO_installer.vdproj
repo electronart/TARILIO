@@ -33,6 +33,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_10F6096F1D6244EB8FBF52702B0CF35D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_17D948E8A532437ABD75D20A8CBD49CE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -63,6 +69,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_1E298089069C4099B3B04535AEE62587"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_2055D28143E24A49940B653E4E570EEA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -70,6 +82,18 @@
         "Entry"
         {
         "MsmKey" = "8:_243E9CD7CA2E49D49797F6265B2BE8AD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_26E7D5A967AC4F6EB27C2327A3785785"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2782DCD1A6D74026A2BFB9A40AB34BD7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -147,6 +171,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_4BA159833BD341B1A436FF5127BD91E8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_4DA75357694C48E187AA07B16B64444D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -160,6 +190,12 @@
         "Entry"
         {
         "MsmKey" = "8:_4FE45044217C4525966E01B82EDD27DF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_538F19D0A68C441281CDB6B3F6C0BD2D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -285,6 +321,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_7A7BB39D844642DF899B8DB4DEB2E044"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7BD4860FAFCF427CBCAFF2CD65AEE27D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7D734E064595444FA91D0869171C867A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -399,12 +447,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A49811A732E448C9BA22E00EE38E70D2"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_A4A5330FC9674DC499163CDB4C42CD87"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -436,6 +478,12 @@
         "Entry"
         {
         "MsmKey" = "8:_ACC73A3CFAED4FA9A11B408E8A7B26FE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AE1152B024644218BFE8FE8ECF60AFB7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -477,6 +525,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C1393484561B42DC8DC59A4EFD6037B4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C1A3CB6BE51F4A57975695BC57D2E342"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C5BED30A7BA44F609675F2107BD05366"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -490,12 +550,6 @@
         "Entry"
         {
         "MsmKey" = "8:_C92ED366113E45DDA5CEB18E1DA86E1C"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_CC184E60FA9A47EBBFB5DED377801EE1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -526,6 +580,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D3165DC05C3C4614873414F749C5B1E0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D342246AFFF94D7995A8C6AA851B4E80"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -591,6 +651,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E6D326D11F3C4C59A02C5382391617C4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_EAE1E892172543069508EEAEADB3D3CB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -598,6 +664,12 @@
         "Entry"
         {
         "MsmKey" = "8:_EC3E470F6FF04B839D47602B8E37409A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EE82030571884C43A546766339039C0F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -633,12 +705,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_F9C4EE0C87774A688F29D55668DFD9F6"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_FE0923DB1B6D474BB2E6C2091E24A0FA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -658,13 +724,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A6D3BF81C13FB7C268153F7919BE0644"
+        "OwnerKey" = "8:_788684B13BD84A62B232F3D20AF7B16C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_788684B13BD84A62B232F3D20AF7B16C"
+        "OwnerKey" = "8:_A6D3BF81C13FB7C268153F7919BE0644"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -846,6 +912,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_10F6096F1D6244EB8FBF52702B0CF35D"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\pt-PT.lang"
+            "TargetName" = "8:pt-PT.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_17D948E8A532437ABD75D20A8CBD49CE"
             {
             "SourcePath" = "8:Include Files\\Synonyms\\UT_sample_jours_de_la_semaine_français.xml"
@@ -946,6 +1032,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1E298089069C4099B3B04535AEE62587"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\ko-KR.lang"
+            "TargetName" = "8:ko-KR.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2055D28143E24A49940B653E4E570EEA"
             {
             "SourcePath" = "8:Include Files\\Synonyms\\UT_sample_currencies.xml"
@@ -979,6 +1085,46 @@
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
             "Permanent" = "11:TRUE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_26E7D5A967AC4F6EB27C2327A3785785"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\nl-NL.lang"
+            "TargetName" = "8:nl-NL.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2782DCD1A6D74026A2BFB9A40AB34BD7"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\da-DK.lang"
+            "TargetName" = "8:da-DK.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
@@ -1226,6 +1372,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4BA159833BD341B1A436FF5127BD91E8"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\fr-FR.lang"
+            "TargetName" = "8:fr-FR.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4DA75357694C48E187AA07B16B64444D"
             {
             "SourcePath" = "8:Include Files\\Stop word files\\Uzbek.dat"
@@ -1279,6 +1445,26 @@
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
             "Permanent" = "11:TRUE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_538F19D0A68C441281CDB6B3F6C0BD2D"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\tr-TR.lang"
+            "TargetName" = "8:tr-TR.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
@@ -1639,6 +1825,46 @@
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
             "Permanent" = "11:TRUE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7A7BB39D844642DF899B8DB4DEB2E044"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\en-GB.lang"
+            "TargetName" = "8:en-GB.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7BD4860FAFCF427CBCAFF2CD65AEE27D"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\de-DE.lang"
+            "TargetName" = "8:de-DE.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
@@ -2026,26 +2252,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A49811A732E448C9BA22E00EE38E70D2"
-            {
-            "SourcePath" = "8:..\\eSearch\\i18n\\fr_FR.lang"
-            "TargetName" = "8:fr-FR.lang"
-            "Tag" = "8:"
-            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A4A5330FC9674DC499163CDB4C42CD87"
             {
             "SourcePath" = "8:Include Files\\Stop word files\\Latvian.dat"
@@ -2163,6 +2369,26 @@
             "TargetName" = "8:2.xml"
             "Tag" = "8:"
             "Folder" = "8:_0516C783E4BE4B69A4353748476EBCDA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AE1152B024644218BFE8FE8ECF60AFB7"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\template.lang"
+            "TargetName" = "8:template.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2297,6 +2523,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C1393484561B42DC8DC59A4EFD6037B4"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\ru-RU.lang"
+            "TargetName" = "8:ru-RU.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C1A3CB6BE51F4A57975695BC57D2E342"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\es-ES.lang"
+            "TargetName" = "8:es-ES.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C5BED30A7BA44F609675F2107BD05366"
             {
             "SourcePath" = "8:Include Files\\Stemming\\ST_Lithuanian.dat"
@@ -2350,26 +2616,6 @@
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
             "Permanent" = "11:TRUE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CC184E60FA9A47EBBFB5DED377801EE1"
-            {
-            "SourcePath" = "8:..\\eSearch\\i18n\\de-DE.lang"
-            "TargetName" = "8:de-DE.lang"
-            "Tag" = "8:"
-            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
@@ -2470,6 +2716,26 @@
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
             "Permanent" = "11:TRUE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D342246AFFF94D7995A8C6AA851B4E80"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\it-IT.lang"
+            "TargetName" = "8:it-IT.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
@@ -2677,6 +2943,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E6D326D11F3C4C59A02C5382391617C4"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\uk-UA.lang"
+            "TargetName" = "8:uk-UA.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EAE1E892172543069508EEAEADB3D3CB"
             {
             "SourcePath" = "8:Include Files\\Stemming\\ST_German.dat"
@@ -2703,6 +2989,26 @@
             "TargetName" = "8:tarilio-icon.ico"
             "Tag" = "8:"
             "Folder" = "8:_5A28C29878D94098A4424E44BE28C9F8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EE82030571884C43A546766339039C0F"
+            {
+            "SourcePath" = "8:..\\eSearch\\i18n\\po-PO.lang"
+            "TargetName" = "8:po-PO.lang"
+            "Tag" = "8:"
+            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2810,26 +3116,6 @@
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
             "Permanent" = "11:TRUE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F9C4EE0C87774A688F29D55668DFD9F6"
-            {
-            "SourcePath" = "8:..\\eSearch\\i18n\\template.lang"
-            "TargetName" = "8:template.lang"
-            "Tag" = "8:"
-            "Folder" = "8:_9C7935EE2D0D4614949324C736DD7531"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
