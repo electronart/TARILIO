@@ -322,7 +322,7 @@ namespace eSearch.Views
                 {
                     var topLevel = TopLevel.GetTopLevel(this);
                     if (topLevel == null) throw new Exception("Unexpected - TopLevel is null");
-                    var suggestExportToFolder = Program.ProgramConfig.PreferredConversationSaveLocation;
+                    var suggestExportToFolder = Program.ProgramConfig.ExportConversationConfig.Directory;
                     IStorageFolder? startFolder = await topLevel.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Documents);
                     if (suggestExportToFolder != null)
                     {

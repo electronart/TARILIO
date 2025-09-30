@@ -568,6 +568,16 @@ namespace eSearch
             }
         }
 
+        public static string ESEARCH_CONVERSATION_DIR
+        {
+            get
+            {
+                string dir = Path.Combine(ESEARCH_EXPORT_DIR, "Conversations");
+                System.IO.Directory.CreateDirectory(dir);
+                return dir;
+            }
+        }
+
 
         public  static IProgress<float>?            ModelLoadProgress;
         private static CancellationTokenSource?     ModelLoadCancelTokenSrc;
