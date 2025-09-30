@@ -15,17 +15,13 @@ using eSearch.Models.AI;
 using eSearch.Models.Configuration;
 using eSearch.Models.Documents.Parse;
 using eSearch.Models.Indexing;
-using eSearch.Models.Logging;
 using eSearch.Models.Search;
 using eSearch.Models.Voice;
 using eSearch.Utils;
 using eSearch.ViewModels;
 using eSearch.ViewModels.StatusUI;
-using eSearch.Views.StatusUI;
-using ICSharpCode.SharpZipLib.Core;
 using ModelContextProtocol.Client;
 using Newtonsoft.Json;
-using org.apache.sis.@internal.jaxb.gmx;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -35,7 +31,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Threading;
@@ -837,6 +832,7 @@ namespace eSearch.Views
                 Program.SaveProgramConfig();
                 mwvm.RaisePropertyChanged(nameof(mwvm.IsThemeHighContrast));
                 app.SetHighContrast(Program.ProgramConfig.IsThemeHighContrast);
+                UpdateTheme();
             }
         }
 
@@ -1302,15 +1298,16 @@ namespace eSearch.Views
 
         public void UpdateTheme()
         {
-            htmlDocumentControl.UpdateTheme();
-            if (ResultsGrid2 != null 
-                && ResultsGrid2.RowSelection?.SelectedItem is ResultViewModel rvm)
-            {
-                htmlDocumentControl.renderResultAccordingToSettings(rvm, this.DataContext as MainWindowViewModel);
-            } else
-            {
-                htmlDocumentControl.RenderBlankPageThemeColored();
-            }
+            HtmlDocumentControl.UpdateThemeOfAllInstances();
+            //htmlDocumentControl.UpdateTheme();
+            //if (ResultsGrid2 != null 
+            //    && ResultsGrid2.RowSelection?.SelectedItem is ResultViewModel rvm)
+            //{
+            //    htmlDocumentControl.renderResultAccordingToSettings(rvm, this.DataContext as MainWindowViewModel);
+            //} else
+            //{
+            //    htmlDocumentControl.RenderBlankPageThemeColored();
+            //}
         }
 
         public void UpdateLayout()
@@ -1928,7 +1925,7 @@ namespace eSearch.Views
                     }
 
                     var browser = GetHtmlDocumentControl() ?? null;
-                    browser?.renderHtmlBody(
+                    browser?.RenderHtmlBody(
                         "<h3>" + HttpUtility.HtmlEncode(modelName) + "</h3>" +
                         "<p>" + HttpUtility.HtmlEncode(S.Get("Enter a query")) + "</p>", false);
                     mwvm.ShowHitNavigation = false;
@@ -1988,7 +1985,7 @@ namespace eSearch.Views
                         catch (Exception ex)
                         {
                             var html = "<p>" + HttpUtility.HtmlEncode(ex.Message) + "</p>";
-                            browser.renderHtmlBody(html, false);
+                            browser.RenderHtmlBody(html, false);
                             mwvm.ShowHitNavigation = false;
                         }
                     } else
@@ -2002,16 +1999,27 @@ namespace eSearch.Views
                                 Model = Program.ProgramConfig.GetSelectedConfiguration()?.GetDisplayedModelName() ?? string.Empty 
                             };
                             mwvm.CurrentLLMConversation.Messages.Add(new LLMMessageViewModel(userMessage));
-                            var conversation = mwvm.CurrentLLMConversation.ExtractConversation();
-                            CancellationTokenSource cancellationSource = new CancellationTokenSource();
-                            CancellationToken cancellationToken = cancellationSource.Token;
-                            var stream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfiguration, conversation, null, cancellationToken);
-                            var responseMsg = new LLMMessageViewModel("assistant", stream, cancellationSource);
-                            mwvm.CurrentLLMConversation.Messages.Add(responseMsg);
+                            ContinueConversation();
                             mwvm.Session.Query.Query = string.Empty; // Clear the query on submission.
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Get the LLM to continue the conversation responding with a new assistant message.
+        /// </summary>
+        public void ContinueConversation()
+        {
+            if (DataContext is MainWindowViewModel mwvm && mwvm.SelectedSearchSource?.Source is AISearchConfiguration aiSearchConfiguration)
+            {
+                var conversation = mwvm.CurrentLLMConversation?.ExtractConversation() ?? new Models.AI.Conversation();
+                CancellationTokenSource cancellationSource = new CancellationTokenSource();
+                CancellationToken cancellationToken = cancellationSource.Token;
+                var stream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfiguration, conversation, null, cancellationToken);
+                var responseMsg = new LLMMessageViewModel("assistant", stream, cancellationSource);
+                mwvm.CurrentLLMConversation?.Messages.Add(responseMsg);
             }
         }
 
