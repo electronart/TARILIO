@@ -183,13 +183,6 @@ namespace eSearch.Models.Configuration
 #endif
         }
 
-        #region Preferences around Exporting Conversations
-        // Path to directory.
-        public string? PreferredConversationSaveLocation = null;
-        // "csv" or "jsonl" or "json"
-        public string? PreferredConversationFileFormat = null;
-        #endregion
-
         public string GetProductTagText()
         {
             #if TARILIO
