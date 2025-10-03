@@ -39,9 +39,23 @@ public partial class LLMConnectionConfigurationWindow : Window
         BtnPromptImport.Click += BtnPromptImport_Click;
         BtnPromptExport.Click += BtnPromptExport_Click;
         BtnOpenModelsDirectory.Click += BtnOpenModelsDirectory_Click;
-
+        BtnLocalServer.Click += BtnLocalServer_Click;
         //AutoCompleteBoxModelName.GotFocus += AutoCompleteBoxModelName_GotFocus;
 
+    }
+
+    private async void BtnLocalServer_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var dataContext = new LocalServerWindowViewModel();
+        dataContext.IsServerRunning = Program.RunningLocalLLMServer != null;
+        dataContext.Port = Program.ProgramConfig.LocalLLMServerConfig.Port;
+        dataContext.LogItems = Program.LLMServerSessionLog.LogItems;
+        var window = new LocalLLMServerWindow { DataContext = dataContext };
+        await window.ShowDialog(this);
+        if (DataContext is LLMConnectionWindowViewModel vm)
+        {
+            vm.IsServerRunning = Program.RunningLocalLLMServer != null;
+        }
     }
 
     private async void BtnOpenModelsDirectory_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

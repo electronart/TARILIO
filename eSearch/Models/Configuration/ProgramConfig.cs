@@ -70,6 +70,9 @@ namespace eSearch.Models.Configuration
 
         public ViewerConfig ViewerConfig = new ViewerConfig();
 
+        public LocalLLMConfiguration LocalLLMConfiguration = new LocalLLMConfiguration();
+
+        public LocalLLMServerConfiguration LocalLLMServerConfig = new LocalLLMServerConfiguration();
 
         /// <summary>
         /// List of Plugin Guids that are currently active.

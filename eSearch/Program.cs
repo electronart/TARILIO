@@ -52,6 +52,14 @@ namespace eSearch
 
         public static bool WasLaunchedWithCreateLLMConnectionsDisabled = false;
 
+        /// <summary>
+        /// When not null, represents a running server serving completions.
+        /// </summary>
+        public static LocalLLMServer? RunningLocalLLMServer = null;
+
+
+
+        public static InMemoryLog LLMServerSessionLog = new InMemoryLog(TimeSpan.FromDays(7));
 
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized

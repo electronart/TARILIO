@@ -4,7 +4,10 @@ using LLama;
 using LLama.Common;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Text;
@@ -37,12 +40,32 @@ namespace eSearch.Models.AI
             return l;
         }
 
+        public static List<string> GetAvailableModels()
+        {
+            List<string> models = new List<string>();
+            // Detect available models...
+            List<DirectoryInfo> directories = new List<DirectoryInfo>();
+            directories.Add(new DirectoryInfo(Program.ESEARCH_LLM_MODELS_DIR));
+
+            foreach (var directory in directories)
+            {
+                if (directory.Exists)
+                {
+                    foreach (var file in directory.GetFiles("*.gguf"))
+                    {
+                        models.Add(file.FullName);
+                    }
+                }
+            }
+            return models;
+        }
+
         
 
         public required LocalLLMConfiguration llm;
         // null until loaded but we don't return from LoadLLM until loaded.
         ModelParams? modelParams = null;
-        LLamaWeights? weights = null;
+        public LLamaWeights? weights = null;
 
         [HandleProcessCorruptedStateExceptions]
         public LLamaContext GetNewContext()

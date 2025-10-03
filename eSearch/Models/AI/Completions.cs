@@ -579,6 +579,71 @@ namespace eSearch.Models.AI
             }
         }
 
+
+        public static async IAsyncEnumerable<string> GetCompletionViaLocalLLMForPrompt(
+            LoadedLocalLLM llm,
+            string prompt,
+            float temperature = 0.7f,
+            int maxTokens = 512,
+            IReadOnlyList<string>? antiPrompts = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+
+
+            ILogger? logger = null;
+#if DEBUG
+            logger = new MSLogger(new DebugLogger());
+#endif
+            var context = llm.GetNewContext();
+            // Use StatelessExecutor for pure completion (prompt continuation)
+            var executor = new StatelessExecutor(llm.weights!, context.Params); // Assumes weights are accessible; adjust if private.
+
+            // Tokenize the prompt
+            var tokens = executor.Context.Tokenize(prompt);
+
+            int chars = 0;
+            int maxRetries = 5;
+            int retries = 0;
+            Random random = new Random();
+
+        retryPoint:
+            uint seed = (uint)random.Next();
+            var samplingPipeline = new DefaultSamplingPipeline
+            {
+                Temperature = temperature,
+                Seed = seed,
+            };
+
+            // Inference parameters
+            var inferenceParams = new InferenceParams
+            {
+                MaxTokens = maxTokens,
+                AntiPrompts = antiPrompts ?? new List<string> { },
+                SamplingPipeline = samplingPipeline
+            };
+
+            // Stream the response tokens
+            await foreach (var token in executor.InferAsync(prompt, inferenceParams, cancellationToken))
+            {
+                //var text = executor.Context.Detokenize(new[] { token });
+                chars += token.Length;
+                yield return token;
+            }
+
+            if (chars == 0 && retries < maxRetries)
+            {
+                temperature -= 0.1f;
+                ++retries;
+                goto retryPoint;
+            }
+            if (retries >= maxRetries && chars == 0)
+            {
+                yield return S.Get("Sorry, the model didn't generate a response. Try rephrasing your query.");
+            }
+        }
+
+
         public static string GetCompletionAsHtmlDisplay(Completion completion)
         {
             string body = "\n<span class='ai-answer'>";

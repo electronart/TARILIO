@@ -85,6 +85,13 @@
 												   />
 							</Button>
 						</StackPanel>
+						<Button HorizontalAlignment="Center" Width="175" x:Name="BtnLocalServer">
+							<StackPanel Spacing="5" Orientation="Horizontal">
+								<Label IsVisible="{Binding IsServerRunning}" Foreground="GreenYellow">•</Label>
+								<Label IsVisible="{Binding !IsServerRunning}" Foreground="OrangeRed">•</Label>
+								<Label Content="{Binding S[Local~Server...]}"/>
+							</StackPanel>
+						</Button>
 					</StackPanel>
 					<StackPanel Margin="5" Spacing="5" Orientation="Vertical" IsVisible="{Binding ShowConnectionForm}">
 						

@@ -67,6 +67,21 @@ namespace eSearch.ViewModels
         public string? PreviousDisplayName = null;
 
 
+        public bool IsServerRunning
+        {
+            get
+            {
+                return _isServerRunning;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _isServerRunning, value);
+            }
+        }
+
+        private bool _isServerRunning = false;
+
+
         public AISearchConfiguration ToAiSearchConfiguration()
         {
 
@@ -205,20 +220,8 @@ namespace eSearch.ViewModels
                 if (_localModelsAvailable == null)
                 {
                     _localModelsAvailable = new ObservableCollection<string>();
-                    // Detect available models...
-                    List<DirectoryInfo> directories = new List<DirectoryInfo>();
-                    directories.Add(new DirectoryInfo(Program.ESEARCH_LLM_MODELS_DIR));
-
-                    foreach(var directory in directories)
-                    {
-                        if (directory.Exists)
-                        {
-                            foreach (var file in directory.GetFiles("*.gguf"))
-                            {
-                                _localModelsAvailable.Add(file.FullName);
-                            }
-                        }
-                    }
+                    _localModelsAvailable.AddRange(LoadedLocalLLM.GetAvailableModels());
+                    
                 }
                 return _localModelsAvailable;
             }

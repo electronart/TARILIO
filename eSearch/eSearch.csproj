@@ -43,6 +43,11 @@
 	<PropertyGroup Condition="'$(Configuration)'=='eSearch RELEASE'">
 		<DefineConstants>$(DefineConstants);</DefineConstants>
 	</PropertyGroup>
+	<ItemGroup>
+		<!-- Add this for ASP.NET Core minimal APIs -->
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
 	<!-- For llamaSharp... -->
 	<!-- TODO GPU Support is Windows Only-->
 	<ItemGroup>
