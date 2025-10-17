@@ -29,7 +29,7 @@
 			<Button x:Name="BtnCancel" Width="150" HorizontalContentAlignment="Center" Content="{Binding S[Cancel]}"/>
 		</StackPanel>
 		<StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
-			<Label x:Name="Label" Content="{Binding Label}" Margin="15,0"></Label>
+			<TextBlock x:Name="Label" Inlines="{Binding LabelInlines}" Margin="15,0" TextWrapping="Wrap" />
 			<TextBox Text="{Binding Text}" x:Name="TextBoxInput" 
 					 Margin="15,0,15,5" TextWrapping="NoWrap" 
 					 AcceptsReturn="False" Watermark="{Binding Watermark}"

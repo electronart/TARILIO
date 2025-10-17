@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Selection;
@@ -7,6 +8,7 @@ using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using eSearch.CustomControls;
@@ -121,7 +123,27 @@ namespace eSearch.Views
                 string? downloadAuthToken = null;
 
             retryModelID:
-                var res = await TextInputDialog.ShowDialog(this, S.Get("Download Model"), S.Get("HuggingFace Model ID"), "bartowski/Llama-3.2-3B-Instruct-GGUF", string.Empty, null, 400);
+
+
+                //var hyperLinkRun = new Run { Text = "Hugging Face GGUF" };
+                //hyperLinkRun.C
+
+                var labelInlines = new InlineCollection
+                {
+                    new Run { Text = S.Get("Enter a GGUF Model ID From "), BaselineAlignment = BaselineAlignment.Center },
+                    new InlineUIContainer
+                    {
+                        Child = new HyperlinkButton
+                        {
+                            Content = "Hugging Face",
+                            NavigateUri = new Uri("https://huggingface.co/models?pipeline_tag=text-generation&library=gguf&sort=trending"),
+                            Padding = new Thickness(0),
+                            Margin = new Thickness(0),
+                            
+                        }
+                    }
+                };
+                var res = await TextInputDialog.ShowDialog(this, S.Get("Download Model"), labelInlines, "bartowski/Llama-3.2-3B-Instruct-GGUF", string.Empty, null, 400);
                 if (res.Item1 == TaskDialogResult.OK)
                 {
                     string modelID = res.Item2.Text;
@@ -129,6 +151,12 @@ namespace eSearch.Views
                     {
                         // Didn't enter a model.
                         await TaskDialogWindow.OKDialog(S.Get("Model ID Required"), S.Get("Must provide HuggingFace Model ID to download a model"), this);
+                        goto retryModelID;
+                    }
+                    string[] parts = modelID.Split(new char[] { '/' });
+                    if (parts.Length != 2 || (parts[0].Trim().Length == 0 || parts[1].Trim().Length == 0))
+                    {
+                        await TaskDialogWindow.OKDialog(S.Get("Invalid Model ID"), S.Get("Provide a valid Model ID. Eg in the format bartowski/gemma-2-2b-it-GGUF"),this);
                         goto retryModelID;
                     }
                 retryFetchModels:
@@ -152,7 +180,7 @@ namespace eSearch.Views
                             List<string> dialogOptions = new List<string>();
                             foreach (var model in models)
                             {
-                                dialogOptions.Add($"{model.Filename} ({Models.Utils.FileSizeHumanFriendly(model.FileSize)})");
+                                dialogOptions.Add($"{model.Filename}");
                             }
                             ModelChooserWindowViewModel vm = new ModelChooserWindowViewModel
                             {
@@ -255,14 +283,14 @@ namespace eSearch.Views
                             return;
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error interacting with Hugging Face: {ex.ToString()}");
+                        await TaskDialogWindow.OKDialog(S.Get("An error occurred"), ex.Message, this);
+                        return;
+                    }
                 }
             }
-        }
-
-        private void DownloadProgress_ProgressChanged(object? sender, HuggingFaceUtils.DownloadProgress e)
-        {
-            Debug.WriteLine($"Model Download Progress {e.Percent.ToString("N2")}% Time Remaining: {e.EstimatedTimeRemaining}");
-            // TODO UI.
         }
 
         private void Program_OnLanguageChanged(object? sender, EventArgs e)

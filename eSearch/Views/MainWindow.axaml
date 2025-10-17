@@ -42,409 +42,420 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
 		<vm:MainWindowViewModel/>
 	</Design.DataContext>
-	<DockPanel>
-		<DockPanel DockPanel.Dock="Top" x:Name="MenuOnly">
-			<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="10,5" Spacing="5">
-				<Image Source="{Binding ProductIcon}" Width="20" Height="20"/>
-				<Menu x:Name="MainMenu" MinWidth="340" Height="35" HorizontalAlignment="Left" TabIndex="0">
-					<MenuItem Header="{Binding S[_File]}">
-						<!--<MenuItem Header="{Binding S[View...]}"/>-->
-						<MenuItem Header="{Binding S[Export~Search~Results...]}" 
-								  Command="{Binding MenuFileExportSearchResults}"
-								  IsEnabled="{Binding !Session.Query.UseAISearch}"/>
-						<MenuItem Header="{Binding S[Print...]}" Command="{Binding MenuFilePrint}"/>
+	<Grid> <!-- The grid control is used to layer toasts over the main UI -->
+		<DockPanel> <!-- The main UI -->
+			<DockPanel DockPanel.Dock="Top" x:Name="MenuOnly">
+				<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="10,5" Spacing="5">
+					<Image Source="{Binding ProductIcon}" Width="20" Height="20"/>
+					<Menu x:Name="MainMenu" MinWidth="340" Height="35" HorizontalAlignment="Left" TabIndex="0">
+						<MenuItem Header="{Binding S[_File]}">
+							<!--<MenuItem Header="{Binding S[View...]}"/>-->
+							<MenuItem Header="{Binding S[Export~Search~Results...]}" 
+									  Command="{Binding MenuFileExportSearchResults}"
+									  IsEnabled="{Binding !Session.Query.UseAISearch}"/>
+							<MenuItem Header="{Binding S[Print...]}" Command="{Binding MenuFilePrint}"/>
 						
-						<Separator/>
-						<MenuItem Header="{Binding S[Launch~at~Startup]}" x:Name="menuItemLaunchAtStartup">
-							<MenuItem.Icon>
-								<CheckBox BorderThickness="0"
-										  IsHitTestVisible="False"
-										  x:Name="menuItemLaunchAtStartupCheckbox"/>
-							</MenuItem.Icon>
-						</MenuItem>
-						<MenuItem Header="{Binding S[_Exit]}" Command="{Binding MenuFileExit}"/>
-					</MenuItem>
-					<MenuItem Header="{Binding S[_AI]}"
-							  IsEnabled="{Binding Session.Query.UseAISearch}"
-							  >
-						<MenuItem Header="{Binding S[Import~LLMs...]}" x:Name="menuItemAIImportLLMs"/>
-						<MenuItem Header="{Binding S[_AI~Connections]}" 
-								  x:Name="menuItemSearchAISearch"
-								  IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
-								  />
-						<MenuItem Header="{Binding S[_MCP~Servers]}"
-								  x:Name="menuItemSearchMCPServers"
-								  IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
-								  />
-						<MenuItem Header="{Binding S[Show~System~Prompt]}" x:Name="menuItemShowSystemPrompt">
-							<MenuItem.Icon>
-								<CheckBox BorderThickness="0"
-										  IsHitTestVisible="False"
-										  IsChecked="{Binding Session.Query.ShowSystemPrompt}"/>
-							</MenuItem.Icon>
-						</MenuItem>
-						<Separator/>
-						<MenuItem 
-							Header="{Binding S[Export~Conversation...]}"
-							x:Name="menuItemAIExportConversation"/>
-						<MenuItem
-							Header="{Binding S[Import~Conversation...]}"
-							x:Name="menuItemAIImportConversation"/>
-							
-						<!--<MenuItem Header="{Binding S[History...]}"/>-->
-						<!--<MenuItem Header="{Binding S[Report...]}" Command="{Binding DebugExportSearchReport}"/>-->
-					</MenuItem>
-					<MenuItem Header="{Binding S[_Index]}">
-						<MenuItem.IsEnabled>
-							<MultiBinding Converter="{x:Static BoolConverters.And}">
-								<Binding Path="!ProgramIsRunningInSearchOnlyMode" />
-								<Binding Path="!Session.Query.UseAISearch" />
-								<Binding Path="!IsIndexLoading"/>
-							</MultiBinding>
-						</MenuItem.IsEnabled>
-						<MenuItem Header="{Binding S[New...]}" x:Name="menuItemIndexNew" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
-						<MenuItem Header="{Binding S[Update...]}" x:Name="menuItemIndexUpdate" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
-						<Separator/>
-						<MenuItem Header="{Binding S[Manage~Indexes...]}" x:Name="menuItemIndexManageIndexes"  IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
-					</MenuItem>
-					<MenuItem Header="{Binding S[_View]}">
-						<MenuItem Header="{Binding S[Theme]}">
-							<MenuItem Header="{Binding S[Dark]}" Command="{Binding MenuAppearanceDark}"/>
-							<MenuItem Header="{Binding S[Light]}" Command="{Binding MenuAppearanceLight}"/>
-							<MenuItem Header="{Binding S[System]}" Command="{Binding MenuAppearanceSystem}"/>
 							<Separator/>
-							<MenuItem Header="{Binding S[High~Contrast]}" x:Name="menuAppearanceHighContrast">
+							<MenuItem Header="{Binding S[Launch~at~Startup]}" x:Name="menuItemLaunchAtStartup">
 								<MenuItem.Icon>
 									<CheckBox BorderThickness="0"
 											  IsHitTestVisible="False"
-											  IsChecked="{Binding IsThemeHighContrast}"/>
+											  x:Name="menuItemLaunchAtStartupCheckbox"/>
 								</MenuItem.Icon>
 							</MenuItem>
+							<MenuItem Header="{Binding S[_Exit]}" Command="{Binding MenuFileExit}"/>
 						</MenuItem>
-						<MenuItem Header="{Binding S[Layout]}">
-							<MenuItem Header="{Binding S[Horizontal]}" 
-									  IsEnabled="{Binding !Session.Query.UseAISearch}"
-									  Command="{Binding MenuLayoutHorizontal}">
+						<MenuItem Header="{Binding S[_AI]}"
+								  IsEnabled="{Binding Session.Query.UseAISearch}"
+								  >
+							<MenuItem Header="{Binding S[Import~LLMs...]}" x:Name="menuItemAIImportLLMs"/>
+							<MenuItem Header="{Binding S[_AI~Connections]}" 
+									  x:Name="menuItemSearchAISearch"
+									  IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
+									  />
+							<MenuItem Header="{Binding S[_MCP~Servers]}"
+									  x:Name="menuItemSearchMCPServers"
+									  IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
+									  />
+							<MenuItem Header="{Binding S[Show~System~Prompt]}" x:Name="menuItemShowSystemPrompt">
 								<MenuItem.Icon>
 									<CheckBox BorderThickness="0"
 											  IsHitTestVisible="False"
-											  IsChecked="{Binding IsLayoutHorizontal}">
-									</CheckBox>
+											  IsChecked="{Binding Session.Query.ShowSystemPrompt}"/>
 								</MenuItem.Icon>
 							</MenuItem>
-							<MenuItem Header="{Binding S[Vertical]}"
-									  IsEnabled="{Binding !Session.Query.UseAISearch}"
-									  Command="{Binding MenuLayoutVertical}">
+							<Separator/>
+							<MenuItem 
+								Header="{Binding S[Export~Conversation...]}"
+								x:Name="menuItemAIExportConversation"/>
+							<MenuItem
+								Header="{Binding S[Import~Conversation...]}"
+								x:Name="menuItemAIImportConversation"/>
+							
+							<!--<MenuItem Header="{Binding S[History...]}"/>-->
+							<!--<MenuItem Header="{Binding S[Report...]}" Command="{Binding DebugExportSearchReport}"/>-->
+						</MenuItem>
+						<MenuItem Header="{Binding S[_Index]}">
+							<MenuItem.IsEnabled>
+								<MultiBinding Converter="{x:Static BoolConverters.And}">
+									<Binding Path="!ProgramIsRunningInSearchOnlyMode" />
+									<Binding Path="!Session.Query.UseAISearch" />
+									<Binding Path="!IsIndexLoading"/>
+								</MultiBinding>
+							</MenuItem.IsEnabled>
+							<MenuItem Header="{Binding S[New...]}" x:Name="menuItemIndexNew" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
+							<MenuItem Header="{Binding S[Update...]}" x:Name="menuItemIndexUpdate" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
+							<Separator/>
+							<MenuItem Header="{Binding S[Manage~Indexes...]}" x:Name="menuItemIndexManageIndexes"  IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
+						</MenuItem>
+						<MenuItem Header="{Binding S[_View]}">
+							<MenuItem Header="{Binding S[Theme]}">
+								<MenuItem Header="{Binding S[Dark]}" Command="{Binding MenuAppearanceDark}"/>
+								<MenuItem Header="{Binding S[Light]}" Command="{Binding MenuAppearanceLight}"/>
+								<MenuItem Header="{Binding S[System]}" Command="{Binding MenuAppearanceSystem}"/>
+								<Separator/>
+								<MenuItem Header="{Binding S[High~Contrast]}" x:Name="menuAppearanceHighContrast">
+									<MenuItem.Icon>
+										<CheckBox BorderThickness="0"
+												  IsHitTestVisible="False"
+												  IsChecked="{Binding IsThemeHighContrast}"/>
+									</MenuItem.Icon>
+								</MenuItem>
+							</MenuItem>
+							<MenuItem Header="{Binding S[Layout]}">
+								<MenuItem Header="{Binding S[Horizontal]}" 
+										  IsEnabled="{Binding !Session.Query.UseAISearch}"
+										  Command="{Binding MenuLayoutHorizontal}">
+									<MenuItem.Icon>
+										<CheckBox BorderThickness="0"
+												  IsHitTestVisible="False"
+												  IsChecked="{Binding IsLayoutHorizontal}">
+										</CheckBox>
+									</MenuItem.Icon>
+								</MenuItem>
+								<MenuItem Header="{Binding S[Vertical]}"
+										  IsEnabled="{Binding !Session.Query.UseAISearch}"
+										  Command="{Binding MenuLayoutVertical}">
+									<MenuItem.Icon>
+										<CheckBox BorderThickness="0"
+												  IsHitTestVisible="False"
+												  IsChecked="{Binding IsLayoutVertical}">
+										</CheckBox>
+									</MenuItem.Icon>
+								</MenuItem>
+							</MenuItem>
+							<MenuItem Header="{Binding S[Language]}">
+								<MenuItem Header="{Binding S[English]}" Command="{Binding MenuLanguageEnglish}"/>
+								<MenuItem IsVisible="False" Header="{Binding S[Pseudo~Locale]}" Command="{Binding MenuLanguagePsuedo}"/>
+								<MenuItem Header="{Binding S[From~File...]}" Command="{Binding MenuLanguageFromFile}"/>
+							</MenuItem>
+							<MenuItem Header="{Binding S[Word~List]}" Command="{Binding ToggleWheel}">
 								<MenuItem.Icon>
 									<CheckBox BorderThickness="0"
 											  IsHitTestVisible="False"
-											  IsChecked="{Binding IsLayoutVertical}">
-									</CheckBox>
-								</MenuItem.Icon>
-							</MenuItem>
-						</MenuItem>
-						<MenuItem Header="{Binding S[Language]}">
-							<MenuItem Header="{Binding S[English]}" Command="{Binding MenuLanguageEnglish}"/>
-							<MenuItem IsVisible="False" Header="{Binding S[Pseudo~Locale]}" Command="{Binding MenuLanguagePsuedo}"/>
-							<MenuItem Header="{Binding S[From~File...]}" Command="{Binding MenuLanguageFromFile}"/>
-						</MenuItem>
-						<MenuItem Header="{Binding S[Word~List]}" Command="{Binding ToggleWheel}">
-							<MenuItem.Icon>
-								<CheckBox BorderThickness="0"
-										  IsHitTestVisible="False"
-										  IsChecked="{Binding ShowWordWheel}">
+											  IsChecked="{Binding ShowWordWheel}">
 
-								</CheckBox>
-							</MenuItem.Icon>
+									</CheckBox>
+								</MenuItem.Icon>
+							</MenuItem>
 						</MenuItem>
-					</MenuItem>
-					<MenuItem Header="{Binding S[Plugins]}" x:Name="menuItemPlugins"/>
-					<MenuItem Header="{Binding S[Help]}">
-						<MenuItem Header="{Binding S[About]}" Command="{Binding HelpAboutApplication}"></MenuItem>
-					</MenuItem>
-					<MenuItem Header="Debug" IsVisible="{Binding IsDebugBuild}">
-						<MenuItem Header="DateTime Issue Test" Command="{Binding MenuDebugDateTime}"></MenuItem>
-						<MenuItem Header="Show Browser Debug" Command="{Binding ShowBrowserDebug}"/>
-						<MenuItem Header="Relative Path Test" Command="{Binding MenuDebugExpandPaths}"/>
-						<MenuItem Header="DialogTest" Command="{Binding MenuDebugDialogTest}"/>
-						<MenuItem Header="MCP">
-							<MenuItem Header="List tools to console" x:Name="MenuItemDebugMCPListTools"/>
+						<MenuItem Header="{Binding S[Plugins]}" x:Name="menuItemPlugins"/>
+						<MenuItem Header="{Binding S[Help]}">
+							<MenuItem Header="{Binding S[About]}" Command="{Binding HelpAboutApplication}"></MenuItem>
 						</MenuItem>
-						<MenuItem Header="List Avail Models" x:Name="menuItemDebugListModels"/>
-						<MenuItem Header="StatusTest Add" x:Name="menuItemDebugStatusTest"/>
-					</MenuItem>
-				</Menu>
-			</StackPanel>
-			<Button 
-				DockPanel.Dock="Right"  Margin="0,0,150,0" Padding="15,5"
-				Classes="ProductTag"
-				HorizontalAlignment="Right" VerticalAlignment="Top"
-				Command="{Binding HelpAboutApplication}"
-				Content="{Binding ProductTagText}"
-				TabIndex="1"
+						<MenuItem Header="Debug" IsVisible="{Binding IsDebugBuild}">
+							<MenuItem Header="DateTime Issue Test" Command="{Binding MenuDebugDateTime}"></MenuItem>
+							<MenuItem Header="Show Browser Debug" Command="{Binding ShowBrowserDebug}"/>
+							<MenuItem Header="Relative Path Test" Command="{Binding MenuDebugExpandPaths}"/>
+							<MenuItem Header="DialogTest" Command="{Binding MenuDebugDialogTest}"/>
+							<MenuItem Header="MCP">
+								<MenuItem Header="List tools to console" x:Name="MenuItemDebugMCPListTools"/>
+							</MenuItem>
+							<MenuItem Header="List Avail Models" x:Name="menuItemDebugListModels"/>
+							<MenuItem Header="StatusTest Add" x:Name="menuItemDebugStatusTest"/>
+						</MenuItem>
+					</Menu>
+				</StackPanel>
+				<Button 
+					DockPanel.Dock="Right"  Margin="0,0,150,0" Padding="15,5"
+					Classes="ProductTag"
+					HorizontalAlignment="Right" VerticalAlignment="Top"
+					Command="{Binding HelpAboutApplication}"
+					Content="{Binding ProductTagText}"
+					TabIndex="1"
+					>
+					eSearch LITE
+				</Button>
+			</DockPanel>
+			<Border 
+				Classes="MainPanel" 
+				DockPanel.Dock="Bottom" 
+				x:Name="UIOnly"
+				Margin="5"
 				>
-				eSearch LITE
-			</Button>
-		</DockPanel>
-		<Border 
-			Classes="MainPanel" 
-			DockPanel.Dock="Bottom" 
-			x:Name="UIOnly"
-			Margin="5"
-			>
-			<DockPanel x:Name="SearchAndSidebar">
-				<Panel x:Name="Sidebar" Width="200" VerticalAlignment="Stretch" IsVisible="{Binding ShowWordWheel}">
-					<DockPanel>
+				<DockPanel x:Name="SearchAndSidebar">
+					<Panel x:Name="Sidebar" Width="200" VerticalAlignment="Stretch" IsVisible="{Binding ShowWordWheel}">
+						<DockPanel>
 
-						<ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding StatusMessages}">
-							<ItemsControl.ItemTemplate>
-								<DataTemplate>
-									<statusctrl:StatusControl/>
-								</DataTemplate>
-							</ItemsControl.ItemTemplate>
-						</ItemsControl>
-						<localView:WordWheelControl DataContext="{Binding}"
-													Width="200"
-													x:Name="WordWheelControl"/>
+							<ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding StatusMessages}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<statusctrl:StatusControl/>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+							<localView:WordWheelControl DataContext="{Binding}"
+														Width="200"
+														x:Name="WordWheelControl"/>
 						
-					</DockPanel>
-				</Panel>
-				<DockPanel >
-					<localView:SearchControl x:Name="MWSearchControl" DataContext="{Binding}" DockPanel.Dock="Top"></localView:SearchControl>
-					<Panel
-						DockPanel.Dock="Top"
-						x:Name="RegistrationPromptPanel"
-						Background="BlanchedAlmond"
-						IsVisible="False"
-						>
-						<DockPanel Margin="3">
-							<Button
-								DockPanel.Dock="Right"
-								Content="{Binding S[Register...]}"
-								Command="{Binding ClickRegister}"
-								Padding="15,5"
-							/>
-							<Label Margin="0,3">Lite - Limited to 10 results.</Label>
 						</DockPanel>
 					</Panel>
-					<DockPanel>
+					<DockPanel >
+						<localView:SearchControl x:Name="MWSearchControl" DataContext="{Binding}" DockPanel.Dock="Top"></localView:SearchControl>
+						<Panel
+							DockPanel.Dock="Top"
+							x:Name="RegistrationPromptPanel"
+							Background="BlanchedAlmond"
+							IsVisible="False"
+							>
+							<DockPanel Margin="3">
+								<Button
+									DockPanel.Dock="Right"
+									Content="{Binding S[Register...]}"
+									Command="{Binding ClickRegister}"
+									Padding="15,5"
+								/>
+								<Label Margin="0,3">Lite - Limited to 10 results.</Label>
+							</DockPanel>
+						</Panel>
+						<DockPanel>
 
-						<Grid x:Name="ResultsAndDocumentView" RowDefinitions="*, 6, *" ColumnDefinitions="*">
-							<DockPanel x:Name="ResultsView" Grid.Row="0" IsVisible="{Binding !Session.Query.UseAISearch}">
-								<Border DockPanel.Dock="Right"
-										BorderThickness="1 0 0 0"
-										BorderBrush="LightGray">
-									<StackPanel Width="30">
-										<Button Width="30"
-												Height="30"
-												x:Name="ResultsSettingsButton"
-												Classes="TransparentBtn"
-												Padding="0"
-												ToolTip.Tip="{Binding S[Results~Settings...]}"
-												>
-											<Image Source="{Binding I[icons8-settings-16.png]}"
-												   Width="16"
-												   Height="16"
-												   />
-										</Button>
+							<Grid x:Name="ResultsAndDocumentView" RowDefinitions="*, 6, *" ColumnDefinitions="*">
+								<DockPanel x:Name="ResultsView" Grid.Row="0" IsVisible="{Binding !Session.Query.UseAISearch}">
+									<Border DockPanel.Dock="Right"
+											BorderThickness="1 0 0 0"
+											BorderBrush="LightGray">
+										<StackPanel Width="30">
+											<Button Width="30"
+													Height="30"
+													x:Name="ResultsSettingsButton"
+													Classes="TransparentBtn"
+													Padding="0"
+													ToolTip.Tip="{Binding S[Results~Settings...]}"
+													>
+												<Image Source="{Binding I[icons8-settings-16.png]}"
+													   Width="16"
+													   Height="16"
+													   />
+											</Button>
 										
-										<Button x:Name="ResultsCopyButton"
-												Width="30"
-												Height="30"
-												Classes="TransparentBtn"
-												Command="{Binding ClickCopyResults}"
-												ToolTip.Tip="{Binding S[Copy~Results...]}"
-												IsEnabled="False"
-												>
-											<Image Source="{Binding I[icons8-copy-16.png]}"
-												   Width="16"
-												   Height="16"
+											<Button x:Name="ResultsCopyButton"
+													Width="30"
+													Height="30"
+													Classes="TransparentBtn"
+													Command="{Binding ClickCopyResults}"
+													ToolTip.Tip="{Binding S[Copy~Results...]}"
+													IsEnabled="False"
+													>
+												<Image Source="{Binding I[icons8-copy-16.png]}"
+													   Width="16"
+													   Height="16"
 												   
-												   />
-										</Button>
-									</StackPanel>
-								</Border>
+													   />
+											</Button>
+										</StackPanel>
+									</Border>
 
-								<Grid x:Name="SearchResultsGridWrapper">
-									<TreeDataGrid
-									x:Name="ResultsGrid2"
-									CanUserResizeColumns="True"
-									CanUserSortColumns="True"
+									<Grid x:Name="SearchResultsGridWrapper">
+										<TreeDataGrid
+										x:Name="ResultsGrid2"
+										CanUserResizeColumns="True"
+										CanUserSortColumns="True"
 									
-									>
-										<TreeDataGrid.Styles>
-											<Style Selector="TreeDataGridRow">
-												<Setter Property="MinHeight" Value="40" />
-											</Style>
-											<Style Selector="TreeDataGridCell">
-												<Setter Property="Padding" Value="5"/>
-											</Style>
-										</TreeDataGrid.Styles>
-									</TreeDataGrid>
-								</Grid>
-							</DockPanel>
-							<GridSplitter 
-								x:Name="ResultsDocumentSplitter" 
-								Grid.Row="1" 
-								Background="DarkGray" 
-								ResizeDirection="Rows"
-								IsVisible="{Binding !IsGridSplitterHidden}"/>
-
-							<DockPanel x:Name="DocumentView" Grid.Row="2">
-
-								<Border DockPanel.Dock="Right"
-										BorderThickness="1 0 0 0"
-										BorderBrush="LightGray"
 										>
-									<StackPanel Width="30">
-										<Button Width="30"
-												Height="30"
-												x:Name="DocumentSettingsButton"
-												Classes="TransparentBtn"
-												ToolTip.Tip="{Binding S[Viewer~Settings...]}"
-												Command="{Binding ClickDocumentSettings}"
-												>
-											<Image Source="{Binding I[icons8-settings-16.png]}"
-												   Width="16"
-												   Height="16"
-												   />
-										</Button>
-										<Button x:Name="DocumentCopyButton"
-												Width="30"
-												Height="30"
-												Classes="TransparentBtn"
-												IsVisible="{Binding !Session.Query.UseAISearch}"
-												IsEnabled="{Binding SelectedResult, Converter={x:Static ObjectConverters.IsNotNull}}"
-												ToolTip.Tip="{Binding S[Copy~Document...]}"
-												>
-											<Image Source="{Binding I[icons8-copy-16.png]}"
-												   Width="16"
-												   Height="16"
-												   />
-										</Button>
-										<Button x:Name="ConversationCopyButton"
-												Width="30" Height="30"
-												Classes="TransparentBtn"
-												IsVisible="{Binding Session.Query.UseAISearch}"
-												ToolTip.Tip="{Binding S[Copy~Conversation]}">
-											<Image Source="{Binding I[icons8-copy-16.png]}"
-												   Width="16"
-												   Height="16"
-												   />
-										</Button>
-										<ToggleButton x:Name="DocumentMetadataButton"
-												Width="30"
-												Height="30"
-												Classes="TransparentBtn"
-												ToolTip.Tip="{Binding S[Document~Metadata]}"
-												IsVisible="{Binding !Session.Query.UseAISearch}"
-												IsEnabled="{Binding SelectedResult, Converter={x:Static ObjectConverters.IsNotNull}}"
-												IsChecked="{Binding ShowMetadataPanel}">
-											<Image Source="{Binding I[icons8-information-16.png]}"
-												   Width="16"
-												   Height="16"
-												   />
-										</ToggleButton>
-										<ToggleButton x:Name="DocumentViewLocationButton"
-												Width="30"
-												Height="30"
-												Classes="TransparentBtn"
-												ToolTip.Tip="{Binding DocumentLocationButtonToolTip}"
-												IsEnabled="{Binding SelectedResult, Converter={x:Static ObjectConverters.IsNotNull}}"
-												IsChecked="{Binding ShowDocumentLocation}"
-												>
-											<ToggleButton.IsVisible>
-												<MultiBinding Converter="{x:Static BoolConverters.And}">
-													<Binding Path="IsDocumentLocationAvailable"/>
-													<Binding Path="!Session.Query.UseAISearch"/>
-												</MultiBinding>
-											</ToggleButton.IsVisible>
-											<Image Source="{Binding I[icons8-location-16.png]}"
-												   Width="16"
-												   Height="16"
-												   />
-										</ToggleButton>
-										<Button x:Name="DocumentViewInFolderButton"
-												Width="30"
-												Height="30"
-												Classes="TransparentBtn"
-												ToolTip.Tip="{Binding S[View~in~folder]}"
-												Command="{Binding ClickDocumentViewInFolder}"
-												IsEnabled="{Binding SelectedResult, Converter={x:Static ObjectConverters.IsNotNull}}"
-												IsVisible="{Binding !Session.Query.UseAISearch}"
-												>
-											<Image Source="{Binding I[icons8-folder-16.png]}"
-												   Width="16"
-												   Height="16"
-												   />
-										</Button>
-									</StackPanel>
-								</Border>
-								<Border DockPanel.Dock="Top" BorderThickness="0 0 0 1" BorderBrush="LightGray" IsVisible="{Binding ShowHitNavigation}">
-									<StackPanel Height="30" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
-										<Button x:Name="BtnPrevHit"
-												Width="30"
-												Height="30"
-												Background="Transparent"
-												ToolTip.Tip="{Binding S[Previous~Hit]}"
-												Command="{Binding PrevHit}"
-												>
-											<Image Source="{Binding I[icons8-sort-left-16.png]}"
-												   Width="16"
-												   Height="16"
-												   />
-										</Button>
-										<NumericUpDown x:Name="InputSelectedHit"
-													   ShowButtonSpinner="False"
-													   Value="{Binding CurrentDocSelectedHit}"
-													   Maximum="{Binding CurrentDocHitCount}"
-													   Minimum="1"
-													   BorderThickness="0"
-													   Background="Transparent"
-													   >
+											<TreeDataGrid.Styles>
+												<Style Selector="TreeDataGridRow">
+													<Setter Property="MinHeight" Value="40" />
+												</Style>
+												<Style Selector="TreeDataGridCell">
+													<Setter Property="Padding" Value="5"/>
+												</Style>
+											</TreeDataGrid.Styles>
+										</TreeDataGrid>
+									</Grid>
+								</DockPanel>
+								<GridSplitter 
+									x:Name="ResultsDocumentSplitter" 
+									Grid.Row="1" 
+									Background="DarkGray" 
+									ResizeDirection="Rows"
+									IsVisible="{Binding !IsGridSplitterHidden}"/>
 
-										</NumericUpDown>
-										<Label>/</Label>
-										<Label Content="{Binding CurrentDocHitCount}"></Label>
-										<Button x:Name="BtnNextHit"
-												Width="30"
-												Height="30"
-												Background="Transparent"
-												ToolTip.Tip="{Binding S[Next~Hit]}"
-												Command="{Binding NextHit}"
-												>
-											<Image Source="{Binding I[icons8-sort-right-16.png]}"
-												   Width="16"
-												   Height="16"
-												   />
-										</Button>
-									</StackPanel>
-								</Border>
-								<Panel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsVisible="{Binding ShowMetadataPanel}">
-									<DataGrid x:Name="MetadataDataGrid" Name="MetadataDataGrid" IsReadOnly="True"  Margin="0" Padding="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-										<DataGrid.Columns>
-											<DataGridTextColumn Header="{Binding S[Key]}"  Binding="{Binding Key}"/>
-											<DataGridTextColumn Header="{Binding S[Value]}" Binding="{Binding Value}" />
-										</DataGrid.Columns>
-									</DataGrid>
-								</Panel>
-								<Grid>
-									<Panel IsVisible="{Binding !Session.Query.UseAISearch}">
-										<localView:HtmlDocumentControl x:Name="DocumentViewer" IsVisible="{Binding !ShowMetadataPanel}" />
-									</Panel>
-									<Panel IsVisible="{Binding Session.Query.UseAISearch}">
-										<llmctrls:LLMConversationControl
-												x:Name="llmConversationCtrl"
-										DataContext="{Binding CurrentLLMConversation}"/>
-									</Panel>
-								</Grid>
-							</DockPanel>
-						</Grid>
+								<DockPanel x:Name="DocumentView" Grid.Row="2">
 
+									<Border DockPanel.Dock="Right"
+											BorderThickness="1 0 0 0"
+											BorderBrush="LightGray"
+											>
+										<StackPanel Width="30">
+											<Button Width="30"
+													Height="30"
+													x:Name="DocumentSettingsButton"
+													Classes="TransparentBtn"
+													ToolTip.Tip="{Binding S[Viewer~Settings...]}"
+													Command="{Binding ClickDocumentSettings}"
+													>
+												<Image Source="{Binding I[icons8-settings-16.png]}"
+													   Width="16"
+													   Height="16"
+													   />
+											</Button>
+											<Button x:Name="DocumentCopyButton"
+													Width="30"
+													Height="30"
+													Classes="TransparentBtn"
+													IsVisible="{Binding !Session.Query.UseAISearch}"
+													IsEnabled="{Binding SelectedResult, Converter={x:Static ObjectConverters.IsNotNull}}"
+													ToolTip.Tip="{Binding S[Copy~Document...]}"
+													>
+												<Image Source="{Binding I[icons8-copy-16.png]}"
+													   Width="16"
+													   Height="16"
+													   />
+											</Button>
+											<Button x:Name="ConversationCopyButton"
+													Width="30" Height="30"
+													Classes="TransparentBtn"
+													IsVisible="{Binding Session.Query.UseAISearch}"
+													ToolTip.Tip="{Binding S[Copy~Conversation]}">
+												<Image Source="{Binding I[icons8-copy-16.png]}"
+													   Width="16"
+													   Height="16"
+													   />
+											</Button>
+											<ToggleButton x:Name="DocumentMetadataButton"
+													Width="30"
+													Height="30"
+													Classes="TransparentBtn"
+													ToolTip.Tip="{Binding S[Document~Metadata]}"
+													IsVisible="{Binding !Session.Query.UseAISearch}"
+													IsEnabled="{Binding SelectedResult, Converter={x:Static ObjectConverters.IsNotNull}}"
+													IsChecked="{Binding ShowMetadataPanel}">
+												<Image Source="{Binding I[icons8-information-16.png]}"
+													   Width="16"
+													   Height="16"
+													   />
+											</ToggleButton>
+											<ToggleButton x:Name="DocumentViewLocationButton"
+													Width="30"
+													Height="30"
+													Classes="TransparentBtn"
+													ToolTip.Tip="{Binding DocumentLocationButtonToolTip}"
+													IsEnabled="{Binding SelectedResult, Converter={x:Static ObjectConverters.IsNotNull}}"
+													IsChecked="{Binding ShowDocumentLocation}"
+													>
+												<ToggleButton.IsVisible>
+													<MultiBinding Converter="{x:Static BoolConverters.And}">
+														<Binding Path="IsDocumentLocationAvailable"/>
+														<Binding Path="!Session.Query.UseAISearch"/>
+													</MultiBinding>
+												</ToggleButton.IsVisible>
+												<Image Source="{Binding I[icons8-location-16.png]}"
+													   Width="16"
+													   Height="16"
+													   />
+											</ToggleButton>
+											<Button x:Name="DocumentViewInFolderButton"
+													Width="30"
+													Height="30"
+													Classes="TransparentBtn"
+													ToolTip.Tip="{Binding S[View~in~folder]}"
+													Command="{Binding ClickDocumentViewInFolder}"
+													IsEnabled="{Binding SelectedResult, Converter={x:Static ObjectConverters.IsNotNull}}"
+													IsVisible="{Binding !Session.Query.UseAISearch}"
+													>
+												<Image Source="{Binding I[icons8-folder-16.png]}"
+													   Width="16"
+													   Height="16"
+													   />
+											</Button>
+										</StackPanel>
+									</Border>
+									<Border DockPanel.Dock="Top" BorderThickness="0 0 0 1" BorderBrush="LightGray" IsVisible="{Binding ShowHitNavigation}">
+										<StackPanel Height="30" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+											<Button x:Name="BtnPrevHit"
+													Width="30"
+													Height="30"
+													Background="Transparent"
+													ToolTip.Tip="{Binding S[Previous~Hit]}"
+													Command="{Binding PrevHit}"
+													>
+												<Image Source="{Binding I[icons8-sort-left-16.png]}"
+													   Width="16"
+													   Height="16"
+													   />
+											</Button>
+											<NumericUpDown x:Name="InputSelectedHit"
+														   ShowButtonSpinner="False"
+														   Value="{Binding CurrentDocSelectedHit}"
+														   Maximum="{Binding CurrentDocHitCount}"
+														   Minimum="1"
+														   BorderThickness="0"
+														   Background="Transparent"
+														   >
+
+											</NumericUpDown>
+											<Label>/</Label>
+											<Label Content="{Binding CurrentDocHitCount}"></Label>
+											<Button x:Name="BtnNextHit"
+													Width="30"
+													Height="30"
+													Background="Transparent"
+													ToolTip.Tip="{Binding S[Next~Hit]}"
+													Command="{Binding NextHit}"
+													>
+												<Image Source="{Binding I[icons8-sort-right-16.png]}"
+													   Width="16"
+													   Height="16"
+													   />
+											</Button>
+										</StackPanel>
+									</Border>
+									<Panel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" IsVisible="{Binding ShowMetadataPanel}">
+										<DataGrid x:Name="MetadataDataGrid" Name="MetadataDataGrid" IsReadOnly="True"  Margin="0" Padding="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+											<DataGrid.Columns>
+												<DataGridTextColumn Header="{Binding S[Key]}"  Binding="{Binding Key}"/>
+												<DataGridTextColumn Header="{Binding S[Value]}" Binding="{Binding Value}" />
+											</DataGrid.Columns>
+										</DataGrid>
+									</Panel>
+									<Grid>
+										<Panel IsVisible="{Binding !Session.Query.UseAISearch}">
+											<localView:HtmlDocumentControl x:Name="DocumentViewer" IsVisible="{Binding !ShowMetadataPanel}" />
+										</Panel>
+										<Panel IsVisible="{Binding Session.Query.UseAISearch}">
+											<llmctrls:LLMConversationControl
+													x:Name="llmConversationCtrl"
+											DataContext="{Binding CurrentLLMConversation}"/>
+										</Panel>
+									</Grid>
+								</DockPanel>
+							</Grid>
+
+						</DockPanel>
 					</DockPanel>
 				</DockPanel>
-			</DockPanel>
 
-		</Border>
-	</DockPanel>
+			</Border>
+		</DockPanel>
+		<StackPanel Width="200" VerticalAlignment="Bottom" HorizontalAlignment="Left" Classes="MainPanel">
+			<ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding StatusMessages}" IsVisible="{Binding !ShowWordWheel}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<statusctrl:StatusControl/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</StackPanel>
+	</Grid>
 </Window>

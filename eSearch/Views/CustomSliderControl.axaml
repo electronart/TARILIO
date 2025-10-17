@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="150"
+             x:Class="eSearch.Views.CustomSliderControl">
+	<StackPanel Spacing="10">
+		<DockPanel>
+			<NumericUpDown x:Name="NumericUpDownTheValue" Width="150" Height="35" DockPanel.Dock="Right"></NumericUpDown>
+			<StackPanel Spacing="10" Margin="0,0,10,0">
+				<TextBlock x:Name="TextBlockSliderTitle" TextWrapping="WrapWithOverflow"/>
+				<TextBlock x:Name="TextBlockSliderDescription" TextWrapping="WrapWithOverflow" Opacity="0.7"/>
+			</StackPanel>
+		</DockPanel>
+	    <Slider x:Name="SliderTheValue" Margin="10,0"/>
+	</StackPanel>
+</UserControl>

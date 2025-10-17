@@ -124,7 +124,11 @@ namespace eSearch.Models.Configuration
         /// </summary>
         public string? CustomSystemPrompt = null;
 
-        
+        /// <summary>
+        /// By default, null.
+        /// Generation Parameters such as temperature, max tokens, top p etc.
+        /// </summary>
+        public LLMGenerationConfiguration? GenerationConfiguration { get; set; } = null;
 
 
         /// <summary>

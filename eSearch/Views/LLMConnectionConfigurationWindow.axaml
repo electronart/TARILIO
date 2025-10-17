@@ -4,18 +4,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="using:eSearch.ViewModels"
         mc:Ignorable="d" 
-		Width="650" Height="660"
+		Width="650" Height="700"
         x:Class="eSearch.LLMConnectionConfigurationWindow"
         Title="LLMConnectionConfigurationWindow"
 		ExtendClientAreaToDecorationsHint="True"
 		xmlns:utils="clr-namespace:eSearch.Utils;assembly=eSearch"
+        xmlns:views="using:eSearch.Views"
 		xmlns:converters="clr-namespace:eSearch.Converters;assembly=eSearch"
 		WindowStartupLocation="CenterOwner"
 		CanResize="False">
 	<Design.DataContext>
 		<!-- This only sets the DataContext for the previewer in an IDE,
             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-		<vm:LLMConnectionWindowViewModel/>
+		<vm:DesignLLMConnectionWindowViewModel/>
 	</Design.DataContext>
 	<Window.Resources>
 		<utils:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
@@ -93,94 +94,102 @@
 							</StackPanel>
 						</Button>
 					</StackPanel>
-					<StackPanel Margin="5" Spacing="5" Orientation="Vertical" IsVisible="{Binding ShowConnectionForm}">
-						
-						<Label Content="{Binding S[Service]}"></Label>
-						<ComboBox Width="400" ItemsSource="{Binding AvailableServices}" SelectedItem="{Binding SelectedService}" IsEnabled="{Binding EnableConnectionForm}">
-							<ComboBox.ItemTemplate>
-								<DataTemplate>
-									<TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"/>
-								</DataTemplate>
-							</ComboBox.ItemTemplate>
-						</ComboBox>
-						<Label Content="{Binding S[Server~URL]}" IsVisible="{Binding !HideServerURL}"></Label>
-						<TextBox Width="400" HorizontalAlignment="Left"
-								 IsEnabled="{Binding EnableConnectionForm}"
-								 IsVisible="{Binding !HideServerURL}" Text="{Binding ServerURL}"/>
-						<Label Content="{Binding S[API~Key]}" IsVisible="{Binding !HideAPIKey}"/>
-						<TextBox
-							IsEnabled="{Binding EnableConnectionForm}"
-							IsVisible="{Binding !HideAPIKey}"
-							Width="400" HorizontalAlignment="Left" Text="{Binding APIKey}" PasswordChar="•"/>
-						<Label Content="{Binding S[Model]}"/>
-						<ComboBox Width="400"
-								  SelectedItem="{Binding SelectedPerplexityModel}"
-								  ItemsSource="{Binding AvailablePerplexityModels}"
-								  IsEnabled="{Binding EnableConnectionForm}"
-								  IsVisible="{Binding !HidePerplexityModelSelectionDropDown}"
-							  />
-						<TextBox
-							     Width="400" HorizontalAlignment="Left"
-								 Text="{Binding EnteredModelName}"
-								 IsEnabled="{Binding EnableConnectionForm}"
-								 IsVisible="{Binding !HideModelNameTextBox}"/>
-						<DockPanel Width="400" HorizontalAlignment="Left"
-								   IsVisible="{Binding !HideLocalModelDropDown}">
-							<Button DockPanel.Dock="Right" Width="30" x:Name="BtnOpenModelsDirectory"
-									IsEnabled="{Binding EnableConnectionForm}">
-								<Image Source="{Binding I[icons8-folder-16.png]}"
-								Width="16"
-								Height="16"
-								/>
-							</Button>
-							<ComboBox 
-								Width="350"
-								SelectedItem="{Binding LocalModelSelected}"
-								ItemsSource="{Binding LocalModelsAvailable}"
-								IsEnabled="{Binding EnableConnectionForm}"
-								IsVisible="{Binding !HideLocalModelDropDown}"
-								DisplayMemberBinding="{Binding Converter={StaticResource PathToFileNameConverter}}"
-							/>
+					<StackPanel Spacing="5" Orientation="Vertical" IsVisible="{Binding ShowConnectionForm}">
+						<TabControl Height="490">
+							<TabItem Header="{Binding S[Connection]}">
+								<StackPanel Spacing="5">
+									<Label Content="{Binding S[Service]}"></Label>
+									<ComboBox Width="400" ItemsSource="{Binding AvailableServices}" SelectedItem="{Binding SelectedService}" IsEnabled="{Binding EnableConnectionForm}">
+										<ComboBox.ItemTemplate>
+											<DataTemplate>
+												<TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"/>
+											</DataTemplate>
+										</ComboBox.ItemTemplate>
+									</ComboBox>
+									<Label Content="{Binding S[Server~URL]}" IsVisible="{Binding !HideServerURL}"></Label>
+									<TextBox Width="400" HorizontalAlignment="Left"
+											 IsEnabled="{Binding EnableConnectionForm}"
+											 IsVisible="{Binding !HideServerURL}" Text="{Binding ServerURL}"/>
+									<Label Content="{Binding S[API~Key]}" IsVisible="{Binding !HideAPIKey}"/>
+									<TextBox
+										IsEnabled="{Binding EnableConnectionForm}"
+										IsVisible="{Binding !HideAPIKey}"
+										Width="400" HorizontalAlignment="Left" Text="{Binding APIKey}" PasswordChar="•"/>
+									<Label Content="{Binding S[Model]}"/>
+									<ComboBox Width="400"
+											  SelectedItem="{Binding SelectedPerplexityModel}"
+											  ItemsSource="{Binding AvailablePerplexityModels}"
+											  IsEnabled="{Binding EnableConnectionForm}"
+											  IsVisible="{Binding !HidePerplexityModelSelectionDropDown}"
+										  />
+									<TextBox
+											 Width="400" HorizontalAlignment="Left"
+											 Text="{Binding EnteredModelName}"
+											 IsEnabled="{Binding EnableConnectionForm}"
+											 IsVisible="{Binding !HideModelNameTextBox}"/>
+									<DockPanel Width="400" HorizontalAlignment="Left"
+											   IsVisible="{Binding !HideLocalModelDropDown}">
+										<Button DockPanel.Dock="Right" Width="30" x:Name="BtnOpenModelsDirectory"
+												IsEnabled="{Binding EnableConnectionForm}">
+											<Image Source="{Binding I[icons8-folder-16.png]}"
+											Width="16"
+											Height="16"
+											/>
+										</Button>
+										<ComboBox 
+											Width="350"
+											SelectedItem="{Binding LocalModelSelected}"
+											ItemsSource="{Binding LocalModelsAvailable}"
+											IsEnabled="{Binding EnableConnectionForm}"
+											IsVisible="{Binding !HideLocalModelDropDown}"
+											DisplayMemberBinding="{Binding Converter={StaticResource PathToFileNameConverter}}"
+										/>
 							
-						</DockPanel>
+									</DockPanel>
 						
-						<!--
-						<AutoCompleteBox
-							     x:Name="AutoCompleteBoxModelName"
-							     Width="400" HorizontalAlignment="Left"
-								 Text="{Binding EnteredModelName}"
-								 MinimumPrefixLength="0"
-								 IsEnabled="{Binding EnableConnectionForm}"
-								 IsVisible="{Binding HidePerplexityModelSelectionDropDown}"
-							 />
-							-->
-						<DockPanel Width="400" HorizontalAlignment="Left" Margin="0,5,5,5">
-							<StackPanel
-								Spacing="5"
-								DockPanel.Dock="Right"
-								Orientation="Horizontal"
-								IsEnabled="{Binding EnableConnectionForm}">
-								<Button Content="{Binding S[Import]}" x:Name="BtnPromptImport" MinWidth="80" Height="30" HorizontalContentAlignment="Center"/>
-								<Button Content="{Binding S[Export]}" x:Name="BtnPromptExport" MinWidth="80" Height="30" HorizontalContentAlignment="Center"/>
-							</StackPanel>
-							<Label Content="{Binding S[Custom~System~Prompt]}"/>
-						</DockPanel>
-						<ComboBox 
-							Width="400"
-							ItemsSource="{Binding SystemPromptRoles}"
-							SelectedItem="{Binding SelectedSystemPromptRole}"
-							IsEnabled="{Binding EnableConnectionForm}"
-						/>
-						<TextBox
-							Text="{Binding CustomSystemPrompt}"
-							Width="400" 
-							HorizontalAlignment="Left" 
-							Height="80" 
-							Watermark="{Binding DefaultSystemPrompt}"
-							IsEnabled="{Binding EnableConnectionForm}"
-							TextWrapping="Wrap"
-							AcceptsReturn="True"
-							/>
+									<!--
+									<AutoCompleteBox
+											 x:Name="AutoCompleteBoxModelName"
+											 Width="400" HorizontalAlignment="Left"
+											 Text="{Binding EnteredModelName}"
+											 MinimumPrefixLength="0"
+											 IsEnabled="{Binding EnableConnectionForm}"
+											 IsVisible="{Binding HidePerplexityModelSelectionDropDown}"
+										 />
+										-->
+									<DockPanel Width="400" HorizontalAlignment="Left" Margin="0,5,5,5">
+										<StackPanel
+											Spacing="5"
+											DockPanel.Dock="Right"
+											Orientation="Horizontal"
+											IsEnabled="{Binding EnableConnectionForm}">
+											<Button Content="{Binding S[Import]}" x:Name="BtnPromptImport" MinWidth="80" Height="30" HorizontalContentAlignment="Center"/>
+											<Button Content="{Binding S[Export]}" x:Name="BtnPromptExport" MinWidth="80" Height="30" HorizontalContentAlignment="Center"/>
+										</StackPanel>
+										<Label Content="{Binding S[Custom~System~Prompt]}"/>
+									</DockPanel>
+									<ComboBox 
+										Width="400"
+										ItemsSource="{Binding SystemPromptRoles}"
+										SelectedItem="{Binding SelectedSystemPromptRole}"
+										IsEnabled="{Binding EnableConnectionForm}"
+									/>
+									<TextBox
+										Text="{Binding CustomSystemPrompt}"
+										Width="400" 
+										HorizontalAlignment="Left" 
+										Height="80" 
+										Watermark="{Binding DefaultSystemPrompt}"
+										IsEnabled="{Binding EnableConnectionForm}"
+										TextWrapping="Wrap"
+										AcceptsReturn="True"
+										/>
+								</StackPanel>
+							</TabItem>
+							<TabItem Header="{Binding S[Advanced]}">
+								<views:LLMGenerationParametersControl DataContext="{Binding GenerationParameters}"/>
+							</TabItem>
+						</TabControl>
 						<Label Margin="10" Content="{Binding ValidationError}" Classes="Error" DockPanel.Dock="Bottom"/>
 						<StackPanel Orientation="Horizontal" Spacing="5" Margin="10,10" HorizontalAlignment="Left">
 							<Button x:Name="BtnEditConnection"
@@ -211,6 +220,7 @@
 						
 					</StackPanel>
 					
+
 				</DockPanel>
 				
 			</DockPanel>

@@ -33,6 +33,8 @@ namespace eSearch.ViewModels
             {
                 viewModel.ShowConnectionForm = false;
             }
+            
+            viewModel.IsServerRunning = Program.RunningLocalLLMServer != null;
             return viewModel;
         }
 
@@ -61,6 +63,9 @@ namespace eSearch.ViewModels
             PreviousDisplayName = aiSearchConfig.CustomDisplayName ?? string.Empty;
             SelectedPerplexityModel = AvailablePerplexityModels.SingleOrDefault(m => m.Value == aiSearchConfig.PerplexityModel, AvailablePerplexityModels[0]);
             LocalModelSelected = aiSearchConfig.LocalLLMConfiguration?.ModelPath ?? null;
+
+            LLMGenerationConfiguration generationConfig = aiSearchConfig.GenerationConfiguration ?? new LLMGenerationConfiguration();
+            GenerationParameters = LLMGenerationParametersViewModel.FromConfiguration(generationConfig);
         }
 
         public string? PreviousID = null;
@@ -142,6 +147,19 @@ namespace eSearch.ViewModels
 
         private AISearchConfiguration? _selectedConnection = null;
 
+        public LLMGenerationParametersViewModel? GenerationParameters
+        {
+            get
+            {
+                return _generationParameters;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _generationParameters, value);
+            }
+        }
+
+        private LLMGenerationParametersViewModel? _generationParameters = null;
 
         public bool ShowConnectionForm
         {
@@ -508,5 +526,21 @@ namespace eSearch.ViewModels
 
 
 
+    }
+
+    public class DesignLLMConnectionWindowViewModel : LLMConnectionWindowViewModel
+    {
+        public DesignLLMConnectionWindowViewModel()
+        {
+            this.AvailableConnections.Add(new AISearchConfiguration
+            {
+                APIKey = "Hidden field value",
+                LLMService = LLMService.Custom,
+                ServerURL = "http://example.com/v1",
+                Model = "big-model-120B",
+                CustomSystemPrompt = "You are a helpful robot assistant. Every 5 words, say either 'beep' or 'boop'"
+            });
+            this.SelectedConnection = this.AvailableConnections[0];
+        }
     }
 }

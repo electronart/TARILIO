@@ -151,11 +151,17 @@ public class LLamaBackendConfigurator
         if (selectedGpu.Vendor == "NVIDIA" && cudaInfo.Version != null)
         {
             // Prompt for common missing deps
-            var cudaBinPath = @"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v" + cudaInfo.Version + @"\bin";
-            if (!Directory.Exists(cudaBinPath) || !File.Exists(Path.Combine(cudaBinPath, "cudart64_12.dll")))
+            var cudaBinPath = Environment.GetEnvironmentVariable("CUDA_PATH");
+            if (cudaBinPath == null || !Directory.Exists(cudaBinPath))
             {
-                promptCallback?.Invoke("CUDA bin path invalid. Add '" + cudaBinPath + "' to your system PATH, and install cuDNN from https://developer.nvidia.com/cudnn if missing.");
+                promptCallback?.Invoke("CUDA bin path invalid. Check that CUDA Toolkit is installed. Ensure that CUDA_PATH is set.");
                 return SetBackend(CpuSubfolder, "CUDA env incomplete", promptCallback);
+            }
+
+            if (cudaInfo.MajorVersion >= 13)
+            {
+                promptCallback?.Invoke("eSearch is only compatible with CUDA Version 11 or 12. The installed version, " + cudaInfo.Version + " is not compatible.");
+                return SetBackend(CpuSubfolder, "CUDA Version incompatible", promptCallback);
             }
 
             // Try CUDA12 first (RTX 4090 compatible)

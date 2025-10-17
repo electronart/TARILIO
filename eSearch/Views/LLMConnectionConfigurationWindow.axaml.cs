@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using eSearch.Models;
 using eSearch.ViewModels;
 using System.Threading.Tasks;
@@ -9,13 +8,10 @@ using eSearch.Views;
 using S = eSearch.ViewModels.TranslationsViewModel;
 using eSearch.Models.AI;
 using System.Linq;
-using eSearch.Models.Configuration;
-using sun.misc;
 using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Reflection;
-using org.apache.xmlbeans.impl.xb.xsdschema;
 using System.IO;
 
 namespace eSearch;
@@ -207,36 +203,36 @@ public partial class LLMConnectionConfigurationWindow : Window
     //    }
     //}
 
-    /// <summary>
-    /// Uses reflection, unsafe HACK
-    /// </summary>
-    /// <param name="autoCompleteBox"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    private void InvokeDropDown(AutoCompleteBox autoCompleteBox)
-    {
-        if (autoCompleteBox == null)
-        {
-            throw new ArgumentNullException(nameof(autoCompleteBox));
-        }
+    ///// <summary>
+    ///// Uses reflection, unsafe HACK
+    ///// </summary>
+    ///// <param name="autoCompleteBox"></param>
+    ///// <exception cref="ArgumentNullException"></exception>
+    //private void InvokeDropDown(AutoCompleteBox autoCompleteBox)
+    //{
+    //    if (autoCompleteBox == null)
+    //    {
+    //        throw new ArgumentNullException(nameof(autoCompleteBox));
+    //    }
 
-        // Get the type (use autoCompleteBox.GetType() if it's a subclass)
-        Type type = typeof(AutoCompleteBox);
+    //    // Get the type (use autoCompleteBox.GetType() if it's a subclass)
+    //    Type type = typeof(AutoCompleteBox);
 
-        // Find the private method (adjust BindingFlags if it's static: add BindingFlags.Static and remove Instance)
-        MethodInfo method = type.GetMethod("OpeningDropDown",
-            BindingFlags.NonPublic | BindingFlags.Instance);
+    //    // Find the private method (adjust BindingFlags if it's static: add BindingFlags.Static and remove Instance)
+    //    MethodInfo method = type.GetMethod("OpeningDropDown",
+    //        BindingFlags.NonPublic | BindingFlags.Instance);
 
-        if (method != null)
-        {
-            // Invoke it (pass parameters as object[] if needed, e.g., new object[] { arg1, arg2 })
-            method.Invoke(autoCompleteBox, [false]);
-        }
-        else
-        {
-            // Handle case where method is not found (e.g., misspelled or doesn't exist)
-            Console.WriteLine("Method 'OpeningDropDown' not found.");
-        }
-    }
+    //    if (method != null)
+    //    {
+    //        // Invoke it (pass parameters as object[] if needed, e.g., new object[] { arg1, arg2 })
+    //        method.Invoke(autoCompleteBox, [false]);
+    //    }
+    //    else
+    //    {
+    //        // Handle case where method is not found (e.g., misspelled or doesn't exist)
+    //        Console.WriteLine("Method 'OpeningDropDown' not found.");
+    //    }
+    //}
 
     private void BtnEditConnection_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
