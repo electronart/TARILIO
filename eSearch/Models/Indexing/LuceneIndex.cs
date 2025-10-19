@@ -118,30 +118,33 @@ namespace eSearch.Models.Indexing
         {
             get
             {
-                using var directory = FSDirectory.Open(new DirectoryInfo(GetAbsolutePath()));
-
-                // Define Lucene-specific file patterns
-                var luceneFilePatterns = new[] { "segments_*", "*.si", "*.cfs", "*.cfe", "*.fdt", "*.fdx", "*.nvd", "*.nvm", "*.del", "*.tvx", "*.tvd", "*.tvf", "*.tim", "*.tip", "*.doc" };
-
-                // Get all files in the index directory
-                var indexFiles = System.IO.Directory
-                    .GetFiles(GetAbsolutePath())
-                    .Where(file => luceneFilePatterns.Any(pattern => Path.GetFileName(file).MatchesWildcard(pattern)))
-                    .ToList();
-
-                if (!indexFiles.Any())
+                if (System.IO.Directory.Exists(GetAbsolutePath()))
                 {
-                    Console.WriteLine("No Lucene index files found.");
-                    return DateTime.MinValue; // No Lucene files found
+                    using var directory = FSDirectory.Open(new DirectoryInfo(GetAbsolutePath()));
+
+                    // Define Lucene-specific file patterns
+                    var luceneFilePatterns = new[] { "segments_*", "*.si", "*.cfs", "*.cfe", "*.fdt", "*.fdx", "*.nvd", "*.nvm", "*.del", "*.tvx", "*.tvd", "*.tvf", "*.tim", "*.tip", "*.doc" };
+                    // Get all files in the index directory
+                    var indexFiles = System.IO.Directory
+                        .GetFiles(GetAbsolutePath())
+                        .Where(file => luceneFilePatterns.Any(pattern => Path.GetFileName(file).MatchesWildcard(pattern)))
+                        .ToList();
+
+                    if (!indexFiles.Any())
+                    {
+                        Console.WriteLine("No Lucene index files found.");
+                        return DateTime.MinValue; // No Lucene files found
+                    }
+
+                    // Find the most recent file modification time
+                    var lastModified = indexFiles
+                        .Select(file => new FileInfo(file).LastWriteTimeUtc)
+                        .OrderByDescending(time => time)
+                        .FirstOrDefault();
+
+                    return lastModified;
                 }
-
-                // Find the most recent file modification time
-                var lastModified = indexFiles
-                    .Select(file => new FileInfo(file).LastWriteTimeUtc)
-                    .OrderByDescending(time => time)
-                    .FirstOrDefault();
-
-                return lastModified;
+                return DateTime.MinValue;
             }
         }
 
