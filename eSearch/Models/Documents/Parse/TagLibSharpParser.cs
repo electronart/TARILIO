@@ -51,8 +51,11 @@ namespace eSearch.Models.Documents.Parse
 
         public void Parse(string filePath, out ParseResult parseResult)
         {
-            string extension = Path.GetExtension(filePath).ToLower()
-                .Substring(1); // Remove the period.
+            string extension = Path.GetExtension(filePath).ToLower();
+            if (extension.Length > 1)
+            { 
+               extension = extension.Substring(1); // Remove the period.
+            }
             var tFile = TagLib.File.Create(filePath);
 
             var title = Path.GetFileNameWithoutExtension(filePath);
@@ -104,7 +107,11 @@ namespace eSearch.Models.Documents.Parse
             if (value == null) return dict;
             // Skip tags like 'JoinedArtists' and 'FirstArtist' etc - Data duplication
             if (propertyName.StartsWith("Joined")) return dict;
-            if (propertyName.StartsWith("First")) return dict; 
+            if (propertyName.StartsWith("First")) return dict;
+            if (dict.ContainsKey(propertyName))
+            {
+                return dict; // Trying to add a property name that already exists would result in an exception otherwise.
+            }
 
             switch(value)
             {
