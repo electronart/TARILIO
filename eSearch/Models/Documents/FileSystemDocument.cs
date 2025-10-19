@@ -2,6 +2,8 @@
 using eSearch.Models.Documents.Parse;
 using eSearch.Models.Documents.Parse.ToxyParsers;
 using FileSignatures;
+using java.security;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +15,7 @@ using ToxyParsers = eSearch.Models.Documents.Parse.ToxyParsers;
 
 namespace eSearch.Models.Documents
 {
-    public class FileSystemDocument : IDocument
+    public class FileSystemDocument : IDocument, IPreloadableDocument
     {
 
 
@@ -579,6 +581,12 @@ namespace eSearch.Models.Documents
             }
         }
 
+        private static FileFormatInspector _formatInspector = null;
+
+
+
+
+        private string? _fileType = null; // Prevent an extra read by caching.
         /// <summary>
         /// Will calculate the extension and return it lowercase without the .
         /// TODO Will use magic numbers rather than solely relying on the file path.
@@ -590,42 +598,66 @@ namespace eSearch.Models.Documents
             {
                 try
                 {
-                    bool testForMagicNumbers = true;
-                    string extension = Path.GetExtension(FileName)?.ToLower() ?? string.Empty;
-                    if (extension.Length > 1) extension = extension.Substring(1); // Some files do not have extensions, also get rid of the "."
-                    if (extension == "epub" || extension == "ipynb")
+                    if (_fileType == null)
                     {
-                        testForMagicNumbers = false;
-                    }
-                    #region Magic Number Testing
-                    if (testForMagicNumbers)
-                    {
-                        try
+                        bool testForMagicNumbers = true;
+                        string extension = Path.GetExtension(FileName)?.ToLower() ?? string.Empty;
+                        if (extension.Length > 1) extension = extension.Substring(1); // Some files do not have extensions, also get rid of the "."
+                        if (extension == "epub" || extension == "ipynb")
                         {
-                            var inspector = new FileFormatInspector();
-                            using (var stream = new FileStream(FileName, FileMode.Open, FileAccess.Read))
+                            testForMagicNumbers = false;
+                        }
+                        #region Magic Number Testing
+                        if (testForMagicNumbers)
+                        {
+                            try
                             {
-                                var format = inspector.DetermineFileFormat(stream);
-                                if (format != null)
+                                if (_formatInspector == null)
                                 {
-                                    return format.Extension;
+                                    _formatInspector = new FileFormatInspector();
+                                }
+                                const int bufferSize = 1024;  // Safe for headers; adjust if deep checks fail often
+                                byte[] buffer = new byte[bufferSize];
+                                int bytesRead;
+
+                                using (var fs = new FileStream(FileName, FileMode.Open, FileAccess.Read))
+                                {
+                                    bytesRead = fs.Read(buffer, 0, bufferSize);
+                                }
+
+                                using (var ms = new MemoryStream(buffer, 0, bytesRead))
+                                {
+                                    var format = _formatInspector.DetermineFileFormat(ms);
+                                    if (format != null)
+                                    {
+                                        _fileType = format.Extension;
+                                        return format.Extension;
+                                    }
                                 }
                             }
+                            catch (Exception ex)
+                            {
+                                // Consider this non fatal.
+                                // TODO Logging.
+                            }
                         }
-                        catch (Exception ex)
+                        #endregion
+                        if (string.IsNullOrWhiteSpace(extension))
                         {
-                            // Consider this non fatal.
-                            // TODO Logging.
+
+                            _fileType = "Unknown";
+                        } else
+                        {
+                            _fileType = extension;
                         }
                     }
-                    #endregion
-                    if (string.IsNullOrWhiteSpace(extension)) return "Unknown";
-                    return extension; // Exclude the .
+                    return _fileType;
                 }
                 catch (ArgumentException ex)
                 {
                     // Invalid path.
-                    return "Unknown";
+                    _fileType = "Unknown";
+                    return _fileType;
                 }
             }
         }
@@ -691,6 +723,14 @@ namespace eSearch.Models.Documents
             }
             docParser.Parse(path, out var parseResult);
             return parseResult;
+        }
+
+        public async Task PreloadDocument()
+        {
+            await Task.Run(() =>
+            {
+                ExtractDataFromDocument();
+            });
         }
     }
 }
