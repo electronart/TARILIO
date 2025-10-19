@@ -38,7 +38,7 @@ namespace eSearch.Models.Documents.Parse
                 int s = 0;
                 while (s < numSlides)
                 {
-                    textContentsBuilder.Append("Slide ").Append(s + 1).Append(" - ").AppendLine(titles[s]).AppendLine();
+                    textContentsBuilder.Append("Slide ").Append(s + 1).Append(" - ").AppendLine(titles.Count > 0 ? titles[s] : "Untitled").AppendLine();
                     string[]? slideTexts = GetAllTextInSlide(presentationDocument, s);
                     if (slideTexts == null)
                     {
