@@ -32,12 +32,12 @@ namespace eSearch.Models.Configuration
         public decimal MinP = 0.2m;
         #endregion
 
-        public LLMGenerationConfiguration FromViewModel(LLMGenerationParametersViewModel viewModel)
+        public static LLMGenerationConfiguration FromViewModel(LLMGenerationParametersViewModel viewModel)
         {
             LLMGenerationConfiguration config = new LLMGenerationConfiguration
             {
                 Temperature = viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(Temperature)).Value,
-                TopP = (int)viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(TopP)).Value,
+                TopP = (decimal)viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(TopP)).Value,
                 TopK = (int)viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(TopK)).Value,
                 PenaltyRepetition = viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(PenaltyRepetition)).Value,
                 PenaltyPresence = viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(PenaltyPresence)).Value,
