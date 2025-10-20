@@ -302,9 +302,6 @@ namespace eSearch.ViewModels
             }
             set
             {
-
-                HideAPIKey = ( value == LLMService.Ollama || value == LLMService.LMStudio );
-
                 switch(value)
                 {
                     case LLMService.Custom:

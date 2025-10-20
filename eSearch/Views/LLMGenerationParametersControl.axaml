@@ -17,6 +17,13 @@
 					<localView:CustomSliderControl 
 						Title="{Binding Title}" 
 						Description="{Binding Description}"
+						SoftMinimum="{Binding MinValue}"
+						SoftMaximum="{Binding MaxValue}"
+						Minimum="{Binding MinValue}"
+						Maximum="{Binding MaxValue}"
+						Value="{Binding Value}"
+						Increment="{Binding Increment}"
+						FormatString="{Binding FormatString}"
 					/>
 					</Border>
 				</DataTemplate>

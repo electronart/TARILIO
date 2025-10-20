@@ -28,6 +28,8 @@ namespace eSearch.Views
         public static readonly StyledProperty<string> TitleProperty =
             AvaloniaProperty.Register<CustomSliderControl, string>(nameof(Title), "Control Title");
 
+        public event EventHandler ValueChanged;
+
         public string Title
         {
             get => GetValue(TitleProperty);
@@ -92,6 +94,24 @@ namespace eSearch.Views
             set => SetValue(ValueProperty, value);
         }
 
+        public static readonly StyledProperty<string> FormatStringProperty =
+            AvaloniaProperty.Register<CustomSliderControl, string>(nameof(FormatString), "0.0");
+
+        public string FormatString
+        {
+            get => GetValue(FormatStringProperty);
+            set => SetValue(FormatStringProperty, value);
+        }
+
+        public static readonly StyledProperty<double> IncrementProperty =
+            AvaloniaProperty.Register<CustomSliderControl, double>(nameof(Increment), 0.1d);
+
+        public double Increment
+        {
+            get => GetValue(IncrementProperty);
+            set => SetValue(IncrementProperty, value);
+        }
+
         // Property changed handlers
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
         {
@@ -102,7 +122,8 @@ namespace eSearch.Views
                 UpdateTexts();
             }
             else if (change.Property == MinimumProperty || change.Property == MaximumProperty ||
-                     change.Property == SoftMinimumProperty || change.Property == SoftMaximumProperty)
+                     change.Property == SoftMinimumProperty || change.Property == SoftMaximumProperty ||
+                     change.Property == FormatStringProperty || change.Property == IncrementProperty)
             {
                 UpdateLimits();
                 UpdateValues(); // Re-clamp if needed
@@ -110,6 +131,7 @@ namespace eSearch.Views
             else if (change.Property == ValueProperty)
             {
                 UpdateValues();
+                ValueChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -124,6 +146,8 @@ namespace eSearch.Views
             // Assume SoftMin/Max are within Min/Max; you can add validation if needed
             NumericUpDownTheValue.Minimum = (decimal)Minimum;
             NumericUpDownTheValue.Maximum = (decimal)Maximum;
+            NumericUpDownTheValue.Increment = (decimal)Increment;
+            NumericUpDownTheValue.FormatString = FormatString;
 
             SliderTheValue.Minimum = SoftMinimum;
             SliderTheValue.Maximum = SoftMaximum;

@@ -1,6 +1,8 @@
 ﻿using DynamicData;
 using eSearch.Models.Configuration;
+using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using S = eSearch.ViewModels.TranslationsViewModel;
 
 namespace eSearch.ViewModels
@@ -21,8 +23,10 @@ namespace eSearch.ViewModels
                 SoftMinValue = 0.1m,
                 SoftMaxValue = 1.5m,
                 MinValue = 0.0m,
-                MaxValue = 2.0m,
-                InternalPropertyName = nameof(config.Temperature)
+                MaxValue = 4.0m,
+                InternalPropertyName = nameof(config.Temperature),
+                FormatString = "0.00",
+                Increment = 0.05d
             });
 
             // Max Tokens
@@ -34,8 +38,10 @@ namespace eSearch.ViewModels
                 SoftMinValue = 1m,
                 SoftMaxValue = 512m,
                 MinValue = 1m,
-                MaxValue = 4096m,
-                InternalPropertyName = nameof(config.MaxTokens)
+                MaxValue = 16384,
+                InternalPropertyName = nameof(config.MaxTokens),
+                FormatString = "0",
+                Increment = 32
             });
 
             // Top P
@@ -48,8 +54,10 @@ namespace eSearch.ViewModels
                 SoftMaxValue = 0.95m,
                 MinValue = 0.0m,
                 MaxValue = 1.0m,
-                InternalPropertyName = nameof(config.TopP)
-            });
+                InternalPropertyName = nameof(config.TopP),
+                FormatString = "0.00",
+                Increment = 0.05,
+                });
 
             // Advanced Parameters
 
@@ -63,7 +71,9 @@ namespace eSearch.ViewModels
                 SoftMaxValue = 100m,
                 MinValue = 1m,
                 MaxValue = 1000m,
-                InternalPropertyName = nameof(config.TopK)
+                InternalPropertyName = nameof(config.TopK),
+                FormatString = "0",
+                Increment = 1
             });
 
             // Repeat Penalty
@@ -74,9 +84,11 @@ namespace eSearch.ViewModels
                 Value = config.PenaltyRepetition,
                 SoftMinValue = 1.0m,
                 SoftMaxValue = 2.0m,
-                MinValue = 0.1m,
+                MinValue = 0.0m,
                 MaxValue = 5.0m,
-                InternalPropertyName = nameof(config.PenaltyRepetition)
+                InternalPropertyName = nameof(config.PenaltyRepetition),
+                FormatString = "0.0",
+                Increment = 0.5
             });
 
             // Repeat Last N
@@ -89,7 +101,9 @@ namespace eSearch.ViewModels
                 SoftMaxValue = 512m,
                 MinValue = 1m,
                 MaxValue = 2048m,
-                InternalPropertyName = nameof(config.PenaltyRepetitionRange)
+                InternalPropertyName = nameof(config.PenaltyRepetitionRange),
+                FormatString = "0",
+                Increment = 1
             });
 
             // Presence Penalty
@@ -102,7 +116,9 @@ namespace eSearch.ViewModels
                 SoftMaxValue = 1.0m,
                 MinValue = -2.0m,
                 MaxValue = 2.0m,
-                InternalPropertyName = nameof(config.PenaltyPresence)
+                InternalPropertyName = nameof(config.PenaltyPresence),
+                FormatString = "0.00",
+                Increment = 0.05
             });
 
             // Frequency Penalty
@@ -115,7 +131,9 @@ namespace eSearch.ViewModels
                 SoftMaxValue = 1.0m,
                 MinValue = -2.0m,
                 MaxValue = 2.0m,
-                InternalPropertyName = nameof(config.PenaltyFrequency)
+                InternalPropertyName = nameof(config.PenaltyFrequency),
+                FormatString = "0.00",
+                Increment = 0.05
             });
 
             // Seed
@@ -128,7 +146,9 @@ namespace eSearch.ViewModels
                 SoftMaxValue = 1000000m,
                 MinValue = -1m,
                 MaxValue = 2147483647m,
-                InternalPropertyName = nameof(config.Seed)
+                InternalPropertyName = nameof(config.Seed),
+                FormatString = "0",
+                Increment = 1
             });
 
             // Min P
@@ -140,15 +160,36 @@ namespace eSearch.ViewModels
                 SoftMinValue = 0.05m,
                 SoftMaxValue = 0.5m,
                 MinValue = 0.0m,
-                MaxValue = 1.0m, 
-                InternalPropertyName = nameof(config.MinP)
+                MaxValue = 1.0m,
+                InternalPropertyName = nameof(config.MinP),
+                FormatString = "0.00",
+                Increment = 0.05
             });
+
+
+            // New: Subscribe to PropertyChanged for each slider VM after adding them
+            foreach (var slider in model.SliderProperties)
+            {
+
+                slider.PropertyChanged += model.OnSliderPropertyChanged;
+            }
 
             return model;
         }
 
 
-        
+        // Handler to re-raise the aggregated event
+        private void OnSliderPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(SliderPropertyViewModel.Value))
+            {
+                AnyParameterChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public event EventHandler? AnyParameterChanged; // New event for any slider value change
+
+
     }
 
     public class DesignLLMGenerationParametersViewModel : LLMGenerationParametersViewModel

@@ -13,6 +13,9 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
+using eSearch.Utils;
+using eSearch.Models.Configuration;
+using Avalonia.Threading;
 
 namespace eSearch;
 
@@ -36,8 +39,44 @@ public partial class LLMConnectionConfigurationWindow : Window
         BtnPromptExport.Click += BtnPromptExport_Click;
         BtnOpenModelsDirectory.Click += BtnOpenModelsDirectory_Click;
         BtnLocalServer.Click += BtnLocalServer_Click;
+
+        GenerationParametersControl.ParametersChanged += GenerationParametersControl_ParametersChanged;
         //AutoCompleteBoxModelName.GotFocus += AutoCompleteBoxModelName_GotFocus;
 
+    }
+
+    private Debouncer? _generationParameterChangedDebouncer = null;
+
+    private void GenerationParametersControl_ParametersChanged(object? sender, EventArgs e)
+    {
+        if (_generationParameterChangedDebouncer == null)
+        {
+            _generationParameterChangedDebouncer = new Debouncer(TimeSpan.FromMilliseconds(250), (ignored) =>
+            {
+                ApplyGenerationViewModelParametersToConfiguration();
+            }, null);
+        }
+        _generationParameterChangedDebouncer.OnBurstEvent();
+    }
+
+    private void ApplyGenerationViewModelParametersToConfiguration()
+    {
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            if (DataContext is LLMConnectionWindowViewModel vm)
+            {
+                if (vm.GenerationParameters != null && vm.SelectedConnection != null)
+                {
+                    var generationConfig = LLMGenerationConfiguration.FromViewModel(vm.GenerationParameters);
+                    var connection = vm.SelectedConnection;
+                    if (connection != null)
+                    {
+                        connection.GenerationConfiguration = generationConfig;
+                        Program.SaveProgramConfig();
+                    }
+                }
+            }
+        });
     }
 
     private async void BtnLocalServer_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -81,16 +120,21 @@ public partial class LLMConnectionConfigurationWindow : Window
                     // Set the default directory
                     Directory = prompts_dir,
                     // Set the default file extension
-                    DefaultExtension = "txt",
+                    DefaultExtension = "md",
                     // Configure file filters to allow only .txt files
                     Filters = new()
-            {
-                new FileDialogFilter
-                {
-                    Name = "Text Files",
-                    Extensions = { "txt" }
-                }
-            },
+                    {
+                                new FileDialogFilter
+                                {
+                                    Name = "Markdown File",
+                                    Extensions = { "md" }
+                                },
+                                new FileDialogFilter
+                                {
+                                    Name = "Text Files",
+                                    Extensions = { "txt" }
+                                }
+                    },
                     // Set the dialog title
                     Title = S.Get("Export Prompt")
                 };
@@ -126,10 +170,10 @@ public partial class LLMConnectionConfigurationWindow : Window
             // Add .txt filter (name is user-friendly, extensions are the actual filter)
             dialog.Filters = new List<FileDialogFilter>
         {
-            new FileDialogFilter
+                new FileDialogFilter
             {
-                Name = "Text Files",
-                Extensions = { "txt" }
+                Name = "Markdown or Plaintext",
+                Extensions = { "md" ,"txt"}
             },
             new FileDialogFilter
             {
@@ -315,6 +359,7 @@ public partial class LLMConnectionConfigurationWindow : Window
                 {
                     viewModel.PreviousID = null;
                     viewModel.ShowConnectionForm = false;
+                    viewModel.GenerationParameters = null;
                     BtnEditConnection.IsVisible = false;
                 }
                 else

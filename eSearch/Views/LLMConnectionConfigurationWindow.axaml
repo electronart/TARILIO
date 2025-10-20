@@ -86,7 +86,7 @@
 												   />
 							</Button>
 						</StackPanel>
-						<Button HorizontalAlignment="Center" Width="175" x:Name="BtnLocalServer">
+						<Button HorizontalAlignment="Center" HorizontalContentAlignment="Center" Width="175" x:Name="BtnLocalServer">
 							<StackPanel Spacing="5" Orientation="Horizontal">
 								<Label IsVisible="{Binding IsServerRunning}" Foreground="GreenYellow">•</Label>
 								<Label IsVisible="{Binding !IsServerRunning}" Foreground="OrangeRed">•</Label>
@@ -95,7 +95,7 @@
 						</Button>
 					</StackPanel>
 					<StackPanel Spacing="5" Orientation="Vertical" IsVisible="{Binding ShowConnectionForm}">
-						<TabControl Height="490">
+						<TabControl Height="590">
 							<TabItem Header="{Binding S[Connection]}">
 								<StackPanel Spacing="5">
 									<Label Content="{Binding S[Service]}"></Label>
@@ -184,39 +184,38 @@
 										TextWrapping="Wrap"
 										AcceptsReturn="True"
 										/>
+									<Label Margin="10" Content="{Binding ValidationError}" Classes="Error" DockPanel.Dock="Bottom"/>
+									<StackPanel Orientation="Horizontal" Spacing="5" Margin="10,10" HorizontalAlignment="Left">
+										<Button x:Name="BtnEditConnection"
+											Width="55"
+											Height="35"
+											HorizontalContentAlignment="Center"
+											HorizontalAlignment="Right"
+											IsVisible="{Binding !IsEditing}"
+										>
+											<Image Source="{Binding I[icons8-edit-32.png]}"
+																   Width="16"
+																   Height="16"
+															   />
+										</Button>
+										<StackPanel>
+											<Button IsEnabled="{Binding EnableConnectionForm}" Width="150" Height="35"
+													IsVisible="{Binding IsEditing}"
+													HorizontalContentAlignment="Center" x:Name="ButtonSetupTest" Content="{Binding S[Test]}"/>
+											<ProgressBar IsVisible="{Binding IsTesting}" MaxWidth="150" MinWidth="150"  IsIndeterminate="True"> </ProgressBar>
+										</StackPanel>
+										<Button Width="150" 
+												Height="35"
+												IsEnabled="{Binding EnableConnectionForm}" 
+												IsVisible="{Binding IsEditing}"
+												HorizontalContentAlignment="Center" x:Name="ButtonSetupCancel" Content="{Binding S[Cancel]}"/>
+									</StackPanel>
 								</StackPanel>
 							</TabItem>
-							<TabItem Header="{Binding S[Advanced]}">
-								<views:LLMGenerationParametersControl DataContext="{Binding GenerationParameters}"/>
+							<TabItem Header="{Binding S[Advanced]}" IsVisible="{Binding SelectedConnection, Converter={x:Static ObjectConverters.IsNotNull}}">
+								<views:LLMGenerationParametersControl x:Name="GenerationParametersControl" DataContext="{Binding GenerationParameters}"/>
 							</TabItem>
 						</TabControl>
-						<Label Margin="10" Content="{Binding ValidationError}" Classes="Error" DockPanel.Dock="Bottom"/>
-						<StackPanel Orientation="Horizontal" Spacing="5" Margin="10,10" HorizontalAlignment="Left">
-							<Button x:Name="BtnEditConnection"
-								Width="55"
-								Height="35"
-								HorizontalContentAlignment="Center"
-								HorizontalAlignment="Right"
-								IsVisible="{Binding !IsEditing}"
-							>
-								<Image Source="{Binding I[icons8-edit-32.png]}"
-													   Width="16"
-													   Height="16"
-												   />
-							</Button>
-							<StackPanel>
-								<Button IsEnabled="{Binding EnableConnectionForm}" Width="150" Height="35"
-										IsVisible="{Binding IsEditing}"
-										HorizontalContentAlignment="Center" x:Name="ButtonSetupTest" Content="{Binding S[Test]}"/>
-								<ProgressBar IsVisible="{Binding IsTesting}" MaxWidth="150" MinWidth="150"  IsIndeterminate="True"> </ProgressBar>
-							</StackPanel>
-							<Button Width="150" 
-									Height="35"
-									IsEnabled="{Binding EnableConnectionForm}" 
-									IsVisible="{Binding IsEditing}"
-									HorizontalContentAlignment="Center" x:Name="ButtonSetupCancel" Content="{Binding S[Cancel]}"/>
-						</StackPanel>
-						
 						
 					</StackPanel>
 					
