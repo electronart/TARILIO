@@ -43,6 +43,7 @@ namespace eSearch.Models.AI
                     // Map the completions endpoint
                     _app.MapPost("/v1/completions", HandleCompletionsAsync);
                     _app.MapPost("/v1/chat/completions", HandleChatCompletionsAsync);
+                    _app.MapGet("/", HandleRootGetRequest);
                     _runTask = _app.RunAsync();
                     Program.LLMServerSessionLog.Log(Interop.ILogger.Severity.INFO, String.Format(S.Get("Server Started. Listening on Port {0}"), _port));
                     success = true;
@@ -69,6 +70,13 @@ namespace eSearch.Models.AI
         public void Dispose()
         {
             StopAsync().GetAwaiter().GetResult();
+        }
+
+        private async Task HandleRootGetRequest(HttpContext context)
+        {
+            context.Response.StatusCode = 200;
+            await context.Response.WriteAsync("eSearch Server is running");
+            return;
         }
 
         private async Task HandleCompletionsAsync(HttpContext context)
