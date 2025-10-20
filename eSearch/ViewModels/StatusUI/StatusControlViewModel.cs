@@ -118,6 +118,23 @@ namespace eSearch.ViewModels.StatusUI
 
         private float? _statusProgress = null;
 
+        /// <summary>
+        /// When not null, a cancel button is shown. The action is performed when clicked.
+        /// </summary>
+        public Action? CancelAction
+        {
+            get
+            {
+                return _cancelAction;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _cancelAction, value);
+            }
+        }
+
+        private Action? _cancelAction = null;
+
         public bool StatusProgressIsIndeterminate
         {
             get
