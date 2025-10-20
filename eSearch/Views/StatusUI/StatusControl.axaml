@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="using:eSearch.ViewModels"
 			 xmlns:vmStatus="using:eSearch.ViewModels.StatusUI"
-             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="125"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="125"
              x:Class="eSearch.Views.StatusUI.StatusControl"
 			 Cursor="{Binding Cursor}">
 	<Design.DataContext>
@@ -15,7 +15,6 @@
 			<Button DockPanel.Dock="Right" 
 					x:Name="BtnDismiss"
 					Classes="TransparentBtn"
-					Content="x"
 					IsVisible="{Binding DismissAction, Converter={x:Static ObjectConverters.IsNotNull}}"
 					>
 					<Image Source="{Binding I[icons8-close-32.png]}"
@@ -34,14 +33,28 @@
                    TextWrapping="Wrap"
                    IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                    FontSize="12"/>
-		
-		<ProgressBar
-            Value="{Binding StatusProgress}"
-            Maximum="100" Minimum="0"
-            Margin="10"
-            IsVisible="{Binding StatusProgress, Converter={x:Static ObjectConverters.IsNotNull}}"
-			IsIndeterminate="{Binding StatusProgressIsIndeterminate}"
-			/>
+		<DockPanel>
+			<Button DockPanel.Dock="Right" 
+					x:Name="BtnCancel"
+					Classes="TransparentBtn"
+					IsVisible="{Binding CancelAction, Converter={x:Static ObjectConverters.IsNotNull}}"
+					ToolTip.Tip="{Binding S[Cancel]}"
+					>
+					<Image Source="{Binding I[icons8-cancel-32.png]}"
+						Width="16"
+						Height="16"
+					/>
+			</Button>
+			<ProgressBar
+				Value="{Binding StatusProgress}"
+				Maximum="100" Minimum="0"
+				Margin="10"
+				MinWidth="0"
+
+				IsVisible="{Binding StatusProgress, Converter={x:Static ObjectConverters.IsNotNull}}"
+				IsIndeterminate="{Binding StatusProgressIsIndeterminate}"
+				/>
+			</DockPanel>
 		<TextBlock Text="{Binding StatusError}"
 				   Margin="2"
 				   Classes="Error"

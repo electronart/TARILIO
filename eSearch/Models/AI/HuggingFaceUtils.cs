@@ -89,25 +89,44 @@ namespace eSearch.Models.AI
             long downloaded = existingSize;
             int bytesRead;
 
-            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
+            try
             {
-                await fileStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
-                downloaded += bytesRead;
 
-                // Report progress if reporter provided and totalSize known
-                if (progressReporter != null && totalSize > 0)
+                while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
                 {
-                    double percent = ProgressCalculator.GetXAsPercentOfYPrecise(downloaded, totalSize);
-                    long bytesRemaining = totalSize - downloaded;
-                    string eta = ProgressCalculator.GetHumanFriendlyTimeRemaining(startTime, (int)percent); // Use integer percent for ETA
+                    await fileStream.WriteAsync(buffer, 0, bytesRead, cancellationToken);
+                    downloaded += bytesRead;
 
-                    progressReporter.Report(new DownloadProgress
+                    // Report progress if reporter provided and totalSize known
+                    if (progressReporter != null && totalSize > 0)
                     {
-                        Percent = percent,
-                        BytesRemaining = bytesRemaining,
-                        EstimatedTimeRemaining = eta
-                    });
+                        double percent = ProgressCalculator.GetXAsPercentOfYPrecise(downloaded, totalSize);
+                        long bytesRemaining = totalSize - downloaded;
+                        string eta = ProgressCalculator.GetHumanFriendlyTimeRemaining(startTime, (int)percent); // Use integer percent for ETA
+
+                        progressReporter.Report(new DownloadProgress
+                        {
+                            Percent = percent,
+                            BytesRemaining = bytesRemaining,
+                            EstimatedTimeRemaining = eta
+                        });
+                    }
                 }
+
+            } catch (OperationCanceledException cancelException)
+            {
+                // Download cancelled. Attempt to clean up the file.
+                try
+                {
+                    if (File.Exists(localPath))
+                    {
+                        File.Delete(localPath);
+                    }
+                } catch (Exception ex)
+                {
+                    // Ignored.
+                }
+                throw;
             }
         }
 

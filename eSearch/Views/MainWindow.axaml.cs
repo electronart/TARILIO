@@ -226,11 +226,25 @@ namespace eSearch.Views
                         };
                         try
                         {
-                            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromHours(2)); // TODO Need UI Support for cancelling downloads...
+                            CancellationTokenSource cts = new CancellationTokenSource(); // TODO Need UI Support for cancelling downloads...
+                            statusVM.CancelAction = () =>
+                            {
+                                downloadProgress.ProgressChanged -= progressHandler;
+                                cts.Cancel();
+                                statusVM.StatusTitle = S.Get("Download Cancelled");
+                                statusVM.StatusMessage = Path.GetFileNameWithoutExtension(fileName);
+                                statusVM.StatusProgress = null;
+                                statusVM.CancelAction = null;
+                                statusVM.DismissAction = () =>
+                                {
+                                    mwvm.StatusMessages.Remove(statusVM);
+                                };
+                            };
                             // TODO This needs to be a status item that the user can see progress on and cancel.
                             downloadProgress.ProgressChanged += progressHandler;
                             await hfUtils.DownloadModelFileAsync(modelID, fileName, Program.ESEARCH_LLM_MODELS_DIR, downloadProgress, downloadAuthToken, cts.Token);
                             downloadProgress.ProgressChanged -= progressHandler;
+                            statusVM.CancelAction = null;
                             // TODO Once the model is downloaded, we need probably to show it in the setup UI.
                             statusVM.StatusTitle = S.Get("Model downloaded");
                             statusVM.StatusMessage = Path.GetFileNameWithoutExtension(fileName) + Environment.NewLine + S.Get("Click to setup");
@@ -244,6 +258,10 @@ namespace eSearch.Views
                                 await LLMConnectionConfigurationWindow.ShowDialogWithNewLocalModelSelected(this, fileName);
                             };
                         }
+                        catch (OperationCanceledException)
+                        {
+                            Debug.WriteLine("Download cancelled"); // Do nada. Cleanup will have happened in the DownloadModelAsync method.
+                        }
                         catch (UnauthorizedAccessException ex)
                         {
                             mwvm.StatusMessages.Remove(statusVM);
@@ -253,8 +271,10 @@ namespace eSearch.Views
                         {
                             downloadProgress.ProgressChanged -= progressHandler;
                             statusVM.StatusTitle    = S.Get("Download failed");
-                            statusVM.StatusMessage  = ex.Message;
+                            statusVM.StatusMessage = null;
+                            statusVM.StatusError    = ex.Message;
                             statusVM.StatusProgress = null; // Hide progress bar.
+                            statusVM.CancelAction = null;
                             statusVM.DismissAction = () =>
                             {
                                 mwvm.StatusMessages.Remove(statusVM);
