@@ -14,6 +14,10 @@ namespace eSearch.Models.Documents.Parse
             get { return new string[] { "docx" }; }
         }
 
+        public bool DoesParserExtractFiles => false;
+
+        public bool DoesParserProduceSubDocuments => false;
+
         public void Parse(string filePath, out ParseResult parseResult)
         {
             parseResult = new();

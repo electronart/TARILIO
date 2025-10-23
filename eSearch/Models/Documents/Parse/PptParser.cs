@@ -14,6 +14,10 @@ namespace eSearch.Models.Documents.Parse
             get { return new string[] { }; }
         }
 
+        public bool DoesParserExtractFiles => throw new NotImplementedException();
+
+        public bool DoesParserProduceSubDocuments => throw new NotImplementedException();
+
         public void Parse(string filePath, out ParseResult parseResult)
         {
             throw new NotImplementedException();

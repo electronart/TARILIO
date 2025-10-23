@@ -13,6 +13,10 @@ namespace eSearch.Models.Documents.Parse
     {
         public string[] Extensions =>  new string[] {"jsonl"};
 
+        public bool DoesParserExtractFiles => false;
+
+        public bool DoesParserProduceSubDocuments => true;
+
         private string filePath;
 
         public void Parse(string filePath, out ParseResult parseResult)

@@ -36,7 +36,7 @@ namespace eSearch.ViewModels
             {
                 if (_exportDirectory == null)
                 {
-                    _exportDirectory = Program.ESEARCH_EXPORT_DIR;
+                    _exportDirectory = Program.ESEARCH_CONVERSATION_DIR;
                 }
                 return _exportDirectory;
             }

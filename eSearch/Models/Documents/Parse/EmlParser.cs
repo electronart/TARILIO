@@ -27,6 +27,10 @@ namespace eSearch.Models.Documents.Parse
             get { return ["eml"]; }
         }
 
+        public bool DoesParserExtractFiles => true;
+
+        public bool DoesParserProduceSubDocuments => false;
+
         public void Parse(string filePath, out ParseResult parseResult)
         {
             var mimeMsg = MimeMessage.Load(filePath);

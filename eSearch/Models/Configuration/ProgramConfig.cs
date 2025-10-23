@@ -70,6 +70,9 @@ namespace eSearch.Models.Configuration
 
         public ViewerConfig ViewerConfig = new ViewerConfig();
 
+        public LocalLLMConfiguration LocalLLMConfiguration = new LocalLLMConfiguration();
+
+        public LocalLLMServerConfiguration LocalLLMServerConfig = new LocalLLMServerConfiguration();
 
         /// <summary>
         /// List of Plugin Guids that are currently active.
@@ -182,13 +185,6 @@ namespace eSearch.Models.Configuration
             return true;
 #endif
         }
-
-        #region Preferences around Exporting Conversations
-        // Path to directory.
-        public string? PreferredConversationSaveLocation = null;
-        // "csv" or "jsonl" or "json"
-        public string? PreferredConversationFileFormat = null;
-        #endregion
 
         public string GetProductTagText()
         {

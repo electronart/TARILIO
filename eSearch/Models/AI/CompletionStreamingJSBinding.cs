@@ -64,7 +64,7 @@ namespace eSearch.Models.AI
             {
                 throw new Exception("A completion stream is already in progress");
             }
-            currentStream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfig, conversation, aiSearchCancellationTokenSource.Token);
+            currentStream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfig, conversation, null, aiSearchCancellationTokenSource.Token);
             ReadStreamToOutputBufferAsync();
         }
 

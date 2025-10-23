@@ -460,6 +460,20 @@ namespace eSearch.ViewModels
         private ObservableCollection<SearchSource> _availableSearchSources = new ObservableCollection<SearchSource>();
 
 
+        public bool IsIndexLoading
+        {
+            get
+            {
+                return _isIndexLoading;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _isIndexLoading, value);
+            }
+        }
+
+        private bool _isIndexLoading = false;
+
         public StringPair DocCopyToolTipTextPair
         {
             get
@@ -778,6 +792,34 @@ namespace eSearch.ViewModels
             }
         }
 
+        public bool LocalLLMIsModelLoading
+        {
+            get
+            {
+                return _localLLMIsModelLoading;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _localLLMIsModelLoading, value);
+            }
+        }
+
+        private bool _localLLMIsModelLoading = false;
+
+        public float LocalLLMModelLoadProgress
+        {
+            get
+            {
+                return _localLLMModelLoadProgress;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _localLLMModelLoadProgress, value);
+            }
+        }
+
+        private float _localLLMModelLoadProgress = 0.0f;
+
         public void ClickClear()
         {
             OngoingTasks.Clear();
@@ -944,12 +986,6 @@ namespace eSearch.ViewModels
         public ObservableCollection<StatusControlViewModel> StatusMessages { 
             get
             {
-                if (_statusMessages.Count == 0)
-                {
-#if DEBUG
-                    _statusMessages.Add(new DesignStatusControlViewModel());
-#endif
-                }
                 return _statusMessages;
             } 
             set

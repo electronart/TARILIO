@@ -22,7 +22,7 @@ namespace eSearch.Models.Documents.Parse
             get { 
                 return new string[] { 
                         // application/java-vm
-                    "class",
+                    // "class",
     
                     // audio/x-wav
                     "wav",
@@ -281,6 +281,10 @@ namespace eSearch.Models.Documents.Parse
                 }; 
             }
         }
+
+        public bool DoesParserExtractFiles => false;
+
+        public bool DoesParserProduceSubDocuments => false;
 
         public void Parse(string filePath, out ParseResult parseResult)
         {

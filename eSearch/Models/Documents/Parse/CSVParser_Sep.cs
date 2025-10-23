@@ -21,6 +21,10 @@ namespace eSearch.Models.Documents.Parse
             }
         }
 
+        public bool DoesParserExtractFiles => false;
+
+        public bool DoesParserProduceSubDocuments => true;
+
         string? filePath;
 
         public void Parse(string filePath, out ParseResult parseResult)

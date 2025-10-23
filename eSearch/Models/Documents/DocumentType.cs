@@ -213,6 +213,7 @@ namespace eSearch.Models.Documents
                     new DocumentType("bz2","Bzip2 Compressed File"),
                     new DocumentType("zip","Zipped file"),
                     new DocumentType("gz","Gnu Zipped Archive"),
+                    new DocumentType("7z", "7-Zip Compressed File")
                 };
             }
         }

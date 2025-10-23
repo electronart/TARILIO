@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using eSearch.Models;
 using eSearch.ViewModels;
 using System.Threading.Tasks;
@@ -9,14 +8,14 @@ using eSearch.Views;
 using S = eSearch.ViewModels.TranslationsViewModel;
 using eSearch.Models.AI;
 using System.Linq;
-using eSearch.Models.Configuration;
-using sun.misc;
 using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Reflection;
-using org.apache.xmlbeans.impl.xb.xsdschema;
 using System.IO;
+using eSearch.Utils;
+using eSearch.Models.Configuration;
+using Avalonia.Threading;
 
 namespace eSearch;
 
@@ -38,9 +37,73 @@ public partial class LLMConnectionConfigurationWindow : Window
         BtnEditConnection.Click += BtnEditConnection_Click;
         BtnPromptImport.Click += BtnPromptImport_Click;
         BtnPromptExport.Click += BtnPromptExport_Click;
+        BtnOpenModelsDirectory.Click += BtnOpenModelsDirectory_Click;
+        BtnLocalServer.Click += BtnLocalServer_Click;
 
+        GenerationParametersControl.ParametersChanged += GenerationParametersControl_ParametersChanged;
         //AutoCompleteBoxModelName.GotFocus += AutoCompleteBoxModelName_GotFocus;
 
+    }
+
+    private Debouncer? _generationParameterChangedDebouncer = null;
+
+    private void GenerationParametersControl_ParametersChanged(object? sender, EventArgs e)
+    {
+        if (_generationParameterChangedDebouncer == null)
+        {
+            _generationParameterChangedDebouncer = new Debouncer(TimeSpan.FromMilliseconds(250), (ignored) =>
+            {
+                ApplyGenerationViewModelParametersToConfiguration();
+            }, null);
+        }
+        _generationParameterChangedDebouncer.OnBurstEvent();
+    }
+
+    private void ApplyGenerationViewModelParametersToConfiguration()
+    {
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            if (DataContext is LLMConnectionWindowViewModel vm)
+            {
+                if (vm.GenerationParameters != null && vm.SelectedConnection != null)
+                {
+                    var generationConfig = LLMGenerationConfiguration.FromViewModel(vm.GenerationParameters);
+                    var connection = vm.SelectedConnection;
+                    if (connection != null)
+                    {
+                        connection.GenerationConfiguration = generationConfig;
+                        Program.SaveProgramConfig();
+                    }
+                }
+            }
+        });
+    }
+
+    private async void BtnLocalServer_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var dataContext = new LocalServerWindowViewModel();
+        dataContext.IsServerRunning = Program.RunningLocalLLMServer != null;
+        dataContext.Port = Program.ProgramConfig.LocalLLMServerConfig.Port;
+        dataContext.LogItems = Program.LLMServerSessionLog.LogItems;
+        var window = new LocalLLMServerWindow { DataContext = dataContext };
+        await window.ShowDialog(this);
+        if (DataContext is LLMConnectionWindowViewModel vm)
+        {
+            vm.IsServerRunning = Program.RunningLocalLLMServer != null;
+        }
+    }
+
+    private async void BtnOpenModelsDirectory_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        try
+        {
+            string dir = Program.ESEARCH_LLM_MODELS_DIR;
+            Directory.CreateDirectory(dir);
+            eSearch.Models.Utils.ShowFolderInExplorerCrossPlatform(dir);
+        } catch (Exception ex)
+        {
+            await TaskDialogWindow.OKDialog(S.Get("An error occurred."), ex.ToString(), this);
+        }
     }
 
     private async void BtnPromptExport_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -48,6 +111,7 @@ public partial class LLMConnectionConfigurationWindow : Window
         try
         {
             string prompts_dir = Program.ESEARCH_LLM_SYSTEM_PROMPTS_DIR;
+            string poml_dir = Path.Combine(prompts_dir, "POML");
             Directory.CreateDirectory(prompts_dir);
             if (DataContext is LLMConnectionWindowViewModel vm)
             {
@@ -57,16 +121,26 @@ public partial class LLMConnectionConfigurationWindow : Window
                     // Set the default directory
                     Directory = prompts_dir,
                     // Set the default file extension
-                    DefaultExtension = "txt",
+                    DefaultExtension = "md",
                     // Configure file filters to allow only .txt files
                     Filters = new()
-            {
-                new FileDialogFilter
-                {
-                    Name = "Text Files",
-                    Extensions = { "txt" }
-                }
-            },
+                    {
+                                new FileDialogFilter
+                                {
+                                    Name = "Markdown File",
+                                    Extensions = { "md" }
+                                },
+                                new FileDialogFilter
+                                {
+                                    Name = "Text Files",
+                                    Extensions = { "txt" }
+                                },
+                                new FileDialogFilter
+                                {
+                                    Name = "POML Files",
+                                    Extensions = { "poml"}
+                                }
+                    },
                     // Set the dialog title
                     Title = S.Get("Export Prompt")
                 };
@@ -102,16 +176,16 @@ public partial class LLMConnectionConfigurationWindow : Window
             // Add .txt filter (name is user-friendly, extensions are the actual filter)
             dialog.Filters = new List<FileDialogFilter>
         {
-            new FileDialogFilter
+                new FileDialogFilter
             {
-                Name = "Text Files",
-                Extensions = { "txt" }
+                Name = "System Prompt Files",
+                Extensions = { "md" ,"txt", "poml"}
             },
             new FileDialogFilter
             {
                 Name = "All Files",
                 Extensions = { "*" }
-            }
+            },
         };
 
             // Show the dialog (pass 'this' as the parent Window)
@@ -179,36 +253,36 @@ public partial class LLMConnectionConfigurationWindow : Window
     //    }
     //}
 
-    /// <summary>
-    /// Uses reflection, unsafe HACK
-    /// </summary>
-    /// <param name="autoCompleteBox"></param>
-    /// <exception cref="ArgumentNullException"></exception>
-    private void InvokeDropDown(AutoCompleteBox autoCompleteBox)
-    {
-        if (autoCompleteBox == null)
-        {
-            throw new ArgumentNullException(nameof(autoCompleteBox));
-        }
+    ///// <summary>
+    ///// Uses reflection, unsafe HACK
+    ///// </summary>
+    ///// <param name="autoCompleteBox"></param>
+    ///// <exception cref="ArgumentNullException"></exception>
+    //private void InvokeDropDown(AutoCompleteBox autoCompleteBox)
+    //{
+    //    if (autoCompleteBox == null)
+    //    {
+    //        throw new ArgumentNullException(nameof(autoCompleteBox));
+    //    }
 
-        // Get the type (use autoCompleteBox.GetType() if it's a subclass)
-        Type type = typeof(AutoCompleteBox);
+    //    // Get the type (use autoCompleteBox.GetType() if it's a subclass)
+    //    Type type = typeof(AutoCompleteBox);
 
-        // Find the private method (adjust BindingFlags if it's static: add BindingFlags.Static and remove Instance)
-        MethodInfo method = type.GetMethod("OpeningDropDown",
-            BindingFlags.NonPublic | BindingFlags.Instance);
+    //    // Find the private method (adjust BindingFlags if it's static: add BindingFlags.Static and remove Instance)
+    //    MethodInfo method = type.GetMethod("OpeningDropDown",
+    //        BindingFlags.NonPublic | BindingFlags.Instance);
 
-        if (method != null)
-        {
-            // Invoke it (pass parameters as object[] if needed, e.g., new object[] { arg1, arg2 })
-            method.Invoke(autoCompleteBox, [false]);
-        }
-        else
-        {
-            // Handle case where method is not found (e.g., misspelled or doesn't exist)
-            Console.WriteLine("Method 'OpeningDropDown' not found.");
-        }
-    }
+    //    if (method != null)
+    //    {
+    //        // Invoke it (pass parameters as object[] if needed, e.g., new object[] { arg1, arg2 })
+    //        method.Invoke(autoCompleteBox, [false]);
+    //    }
+    //    else
+    //    {
+    //        // Handle case where method is not found (e.g., misspelled or doesn't exist)
+    //        Console.WriteLine("Method 'OpeningDropDown' not found.");
+    //    }
+    //}
 
     private void BtnEditConnection_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
@@ -291,6 +365,7 @@ public partial class LLMConnectionConfigurationWindow : Window
                 {
                     viewModel.PreviousID = null;
                     viewModel.ShowConnectionForm = false;
+                    viewModel.GenerationParameters = null;
                     BtnEditConnection.IsVisible = false;
                 }
                 else
@@ -317,8 +392,25 @@ public partial class LLMConnectionConfigurationWindow : Window
                         viewModel.HideServerURL = true;
                         break;
                 }
-                viewModel.HidePerplexityModelSelectionDropDown = viewModel.SelectedService != LLMService.Perplexity;
                 #endregion
+
+                #region Hide/Show API Key Field as appropriate
+                switch(viewModel.SelectedService)
+                {
+                    case LLMService.LocalModel:
+                    case LLMService.Ollama:
+                    case LLMService.LMStudio:
+                        viewModel.HideAPIKey = true;
+                        break;
+                    default:
+                        viewModel.HideAPIKey = false;
+                        break;
+                }
+
+                #endregion
+                viewModel.HidePerplexityModelSelectionDropDown = viewModel.SelectedService != LLMService.Perplexity;
+                viewModel.HideLocalModelDropDown = viewModel.SelectedService != LLMService.LocalModel;
+                viewModel.HideModelNameTextBox = viewModel.SelectedService == LLMService.Perplexity || viewModel.SelectedService == LLMService.LocalModel;
                 #region Clear Inputs
                 viewModel.ServerURL        = string.Empty;
                 viewModel.APIKey           = string.Empty;
@@ -416,6 +508,14 @@ public partial class LLMConnectionConfigurationWindow : Window
                     }
                     // DO NOT Require a model name, depending on the API, this is not required.
                     break;
+                case LLMService.LocalModel:
+                    // A model that eSearch itself runs.
+                    if (vm.LocalModelSelected == null)
+                    {
+                        reason = S.Get("No Model Selected");
+                        return false;
+                    }
+                    break;
             }
             reason = "Valid";
             return true;
@@ -424,6 +524,19 @@ public partial class LLMConnectionConfigurationWindow : Window
             reason = "Application Error: No DataContext Set";
             return false;
         }
+    }
+
+    public static async Task<TaskDialogResult> ShowDialogWithNewLocalModelSelected(Window owner, string modelFileName)
+    {
+        var vm = LLMConnectionWindowViewModel.FromProgramConfiguration();
+        var dialog = new LLMConnectionConfigurationWindow();
+        dialog.DataContext = vm;
+        var task = ((Window)dialog).ShowDialog(owner);
+        dialog.BtnAddConnection_Click(null, null);
+        vm.SelectedService = LLMService.LocalModel;
+        vm.LocalModelSelected = vm.LocalModelsAvailable.FirstOrDefault(modelFile => modelFile.Contains(modelFileName));
+        await task;
+        return dialog.DialogResult;
     }
 
     public static async Task<TaskDialogResult> ShowDialog(Window owner)

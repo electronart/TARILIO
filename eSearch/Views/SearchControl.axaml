@@ -6,7 +6,7 @@
 			 xmlns:localView="clr-namespace:eSearch.Views;assembly=eSearch"
 			 xmlns:customCtrl="clr-namespace:eSearch.CustomControls;assembly=eSearch"
 			 xmlns:myConverters="clr-namespace:eSearch.Converters;assembly=eSearch"
-			 mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="150"
+			 mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="150"
 			 x:Class="eSearch.Views.SearchControl"
 			 
 			 >

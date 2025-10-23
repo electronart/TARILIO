@@ -2,8 +2,11 @@
 using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace eSearch.Models.Configuration
@@ -46,6 +49,8 @@ namespace eSearch.Models.Configuration
 
             switch(LLMService)
             {
+                case LLMService.LocalModel:
+                    return Path.GetFileNameWithoutExtension(LocalLLMConfiguration?.ModelPath ?? "??");
                 case LLMService.Perplexity:
                     return "Perplexity";
                 case LLMService.ChatGPT:
@@ -60,6 +65,24 @@ namespace eSearch.Models.Configuration
                     }
             }
             return "???"; // Should be impossible.
+        }
+
+
+        /// <summary>
+        /// The displayed model name factors things like whether this is a local model, perplexity model/ api model etc.
+        /// </summary>
+        /// <returns></returns>
+        public string GetDisplayedModelName()
+        {
+            switch(LLMService)
+            {
+                case LLMService.LocalModel:
+                    return Path.GetFileNameWithoutExtension(LocalLLMConfiguration?.ModelPath ?? "???");
+                case LLMService.Perplexity:
+                    return PerplexityModel.ToString();
+                default:
+                    return Model ?? "???";
+            }
         }
 
         public bool IsConfigured()
@@ -78,6 +101,9 @@ namespace eSearch.Models.Configuration
 
         public LLMService LLMService { get; set; } = LLMService.Perplexity;
 
+        public LocalLLMConfiguration? LocalLLMConfiguration { get; set; } = null;
+
+    #region The following settings are only to be used if LocalLLMConfiguration is null, otherwise they should be ignored.
         public string ServerURL { get; set; } = string.Empty;
 
         public string APIKey { get; set; } = string.Empty;
@@ -85,6 +111,8 @@ namespace eSearch.Models.Configuration
         public PerplexityModel PerplexityModel { get; set; } = PerplexityModel.Sonar;
 
         public string Model { get; set; } = string.Empty;
+
+    #endregion
 
         /// <summary>
         /// The role to use when providing system prompts to LLM. Might be 'System' or 'Developer'
@@ -97,6 +125,13 @@ namespace eSearch.Models.Configuration
         public string? CustomSystemPrompt = null;
 
         /// <summary>
+        /// By default, null.
+        /// Generation Parameters such as temperature, max tokens, top p etc.
+        /// </summary>
+        public LLMGenerationConfiguration? GenerationConfiguration { get; set; } = null;
+
+
+        /// <summary>
         /// Test for success response. Will attempt to call the API.
         /// </summary>
         /// <returns>true if success, false otherwise with an error string</returns>
@@ -104,11 +139,23 @@ namespace eSearch.Models.Configuration
         {
             try
             {
-                var res = await Completions.CompleteText(this, "Testing, testing. This is a test. I repeat, this is a ");
-                return new Tuple<bool, string>(true, res.Text);
+                Debug.WriteLine("Testing configuration...");
+                Conversation testConvo = new Conversation();
+                testConvo.Messages.Add(new Message { Content = "You are a helpful assistant", Role = "system", Model = ""});
+                testConvo.Messages.Add(new Message { Content = "User: Testing the system. Respond with a quick and short message", Role = "user", Model = "" });
+
+                var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+
+                await foreach(var str in Completions.GetCompletionStreamViaMCPAsync(this, testConvo, null, cts.Token))
+                {
+                    cts.Cancel();
+                    return new Tuple<bool, string>(true, "success");
+                }
+                throw new Exception("Empty Response Message?");
 
             } catch (Exception ex)
             {
+                Debug.WriteLine($"An exception ocurred: {ex.ToString()}");
                 return new Tuple<bool, string>(false, ex.Message);
             }
         }

@@ -1,7 +1,6 @@
 ﻿using DynamicData;
 using eSearch.Models.Indexing;
 using Microsoft.Win32.TaskScheduler;
-using SharpCompress;
 using System;
 using System.Reflection;
 using S = eSearch.ViewModels.TranslationsViewModel;
@@ -25,13 +24,13 @@ namespace eSearch
                 ts.RootFolder.CreateFolder("eSearch", null, false);
                 #endregion
                 #region 1. Delete existing task for this index if it already exists.
-                ts.GetFolder("\\eSearch").Tasks.ForEach(task =>
+                foreach (var task in ts.GetFolder("\\eSearch").Tasks)
                 {
                     if (task.Definition.Data == "eSearch_IndexID=" + index.Id)
                     {
                         ts.GetFolder("\\eSearch").DeleteTask(task.Name, false);
                     }
-                });
+                }
                 #endregion
                 #region 2. Register New Task if schedule is not null (Otherwise this is a delete op)
                 if (schedule != null)

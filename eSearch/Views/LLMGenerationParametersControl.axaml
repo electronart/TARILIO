@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:eSearch.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+			 xmlns:localView="clr-namespace:eSearch.Views;assembly=eSearch"
+             x:Class="eSearch.Views.LLMGenerationParametersControl">
+	<Design.DataContext>
+		<vm:DesignLLMGenerationParametersViewModel/>
+	</Design.DataContext>
+	<ScrollViewer>
+		<ItemsControl ItemsSource="{Binding SliderProperties}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Border Margin="0,10,20,10">
+					<localView:CustomSliderControl 
+						Title="{Binding Title}" 
+						Description="{Binding Description}"
+						SoftMinimum="{Binding MinValue}"
+						SoftMaximum="{Binding MaxValue}"
+						Minimum="{Binding MinValue}"
+						Maximum="{Binding MaxValue}"
+						Value="{Binding Value}"
+						Increment="{Binding Increment}"
+						FormatString="{Binding FormatString}"
+					/>
+					</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</ScrollViewer>
+</UserControl>

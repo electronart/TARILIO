@@ -31,6 +31,8 @@ using eSearch.Models.Search.LuceneCustomFieldComparers;
 using S = eSearch.ViewModels.TranslationsViewModel;
 using eSearch.Interop.Indexing;
 using Avalonia.Controls;
+using ConcurrentCollections;
+using System.Collections.Concurrent;
 
 namespace eSearch.Models.Indexing
 {
@@ -116,30 +118,33 @@ namespace eSearch.Models.Indexing
         {
             get
             {
-                using var directory = FSDirectory.Open(new DirectoryInfo(GetAbsolutePath()));
-
-                // Define Lucene-specific file patterns
-                var luceneFilePatterns = new[] { "segments_*", "*.si", "*.cfs", "*.cfe", "*.fdt", "*.fdx", "*.nvd", "*.nvm", "*.del", "*.tvx", "*.tvd", "*.tvf", "*.tim", "*.tip", "*.doc" };
-
-                // Get all files in the index directory
-                var indexFiles = System.IO.Directory
-                    .GetFiles(GetAbsolutePath())
-                    .Where(file => luceneFilePatterns.Any(pattern => Path.GetFileName(file).MatchesWildcard(pattern)))
-                    .ToList();
-
-                if (!indexFiles.Any())
+                if (System.IO.Directory.Exists(GetAbsolutePath()))
                 {
-                    Console.WriteLine("No Lucene index files found.");
-                    return DateTime.MinValue; // No Lucene files found
+                    using var directory = FSDirectory.Open(new DirectoryInfo(GetAbsolutePath()));
+
+                    // Define Lucene-specific file patterns
+                    var luceneFilePatterns = new[] { "segments_*", "*.si", "*.cfs", "*.cfe", "*.fdt", "*.fdx", "*.nvd", "*.nvm", "*.del", "*.tvx", "*.tvd", "*.tvf", "*.tim", "*.tip", "*.doc" };
+                    // Get all files in the index directory
+                    var indexFiles = System.IO.Directory
+                        .GetFiles(GetAbsolutePath())
+                        .Where(file => luceneFilePatterns.Any(pattern => Path.GetFileName(file).MatchesWildcard(pattern)))
+                        .ToList();
+
+                    if (!indexFiles.Any())
+                    {
+                        Console.WriteLine("No Lucene index files found.");
+                        return DateTime.MinValue; // No Lucene files found
+                    }
+
+                    // Find the most recent file modification time
+                    var lastModified = indexFiles
+                        .Select(file => new FileInfo(file).LastWriteTimeUtc)
+                        .OrderByDescending(time => time)
+                        .FirstOrDefault();
+
+                    return lastModified;
                 }
-
-                // Find the most recent file modification time
-                var lastModified = indexFiles
-                    .Select(file => new FileInfo(file).LastWriteTimeUtc)
-                    .OrderByDescending(time => time)
-                    .FirstOrDefault();
-
-                return lastModified;
+                return DateTime.MinValue;
             }
         }
 
@@ -268,16 +273,29 @@ namespace eSearch.Models.Indexing
             _indexWriter.AddDocument(doc);
         }
 
-        public void AddDocuments(IEnumerable<IDocument> documents)
+        public void AddDocuments(IEnumerable<IDocument> documents, out Dictionary<IDocument, Exception> failedDocuments)
         {
             if (_indexWriter == null) throw new Exception("Index Writer was not opened");
-            var luceneDocs = new List<Document>();
-            foreach (var document in documents)
+            var failures = new ConcurrentDictionary<IDocument, Exception>();
+            var luceneDocs = documents.AsParallel()
+                .WithDegreeOfParallelism(Math.Clamp(Environment.ProcessorCount, 1, 8)) // Adjust based on CPU cores
+                .Select(document => {
+                    try
+                    {
+                        return CreateLuceneDocument(document);
+                    } catch (Exception ex)
+                    {
+                        failures.TryAdd(document, ex);
+                        return null;
+                    }
+                })
+                .Where(doc => doc != null)
+                .ToList();
+            if (luceneDocs.Count > 0)
             {
-                luceneDocs.Add(CreateLuceneDocument(document));
+                _indexWriter.AddDocuments(luceneDocs);
             }
-            _indexWriter.AddDocuments(luceneDocs);
-
+            failedDocuments = failures.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
         private Document CreateLuceneDocument(IDocument document)
@@ -334,7 +352,7 @@ namespace eSearch.Models.Indexing
         // I am caching the lower case versions of field names as they are requested
         // This is for performance reasons, without this IsKnownField method is a hot
         // path within the application during indexing.
-        private HashSet<string> _knownFieldNamesLowerCaseCache = new HashSet<string>();
+        private ConcurrentHashSet<string> _knownFieldNamesLowerCaseCache = new ConcurrentHashSet<string>();
 
         private bool IsKnownField(string name)
         {
@@ -342,11 +360,12 @@ namespace eSearch.Models.Indexing
             #region First try against the cache.
             if (_knownFieldNamesLowerCaseCache.Contains(nameLowerCase)) return true;
             #endregion
-            foreach (string knownFieldName in KnownFieldNames)
+            int i = KnownFieldNames.Count;
+            while (i --> 0)
             {
-                if (knownFieldName.ToLower() == nameLowerCase)
+                if (KnownFieldNames[i].ToLower() == nameLowerCase)
                 {
-                    _knownFieldNamesLowerCaseCache.Add(knownFieldName.ToLower());
+                    _knownFieldNamesLowerCaseCache.Add(KnownFieldNames[i].ToLower());
                     return true;
                 }
             }
@@ -409,7 +428,8 @@ namespace eSearch.Models.Indexing
                 var indexConfig = Program.IndexLibrary.GetConfiguration(this);
 
                 var indexWriterConfig = new IndexWriterConfig(AppLuceneVersion, analyser);
-                indexWriterConfig.RAMBufferSizeMB = 256;
+                double recommendedRAMBufferMB = MemoryUtils.GetRecommendedRAMBufferSizeMB();
+                indexWriterConfig.RAMBufferSizeMB = recommendedRAMBufferMB;
                 if (create)
                 {
                     indexWriterConfig.OpenMode = OpenMode.CREATE;

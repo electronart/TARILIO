@@ -13,9 +13,6 @@ namespace eSearch.Models.Documents.Parse
 {
     internal class PlainTextParser : IParser
     {
-        StringBuilder textContent = new StringBuilder();
-        string title = String.Empty;
-
         public string[] Extensions
         {
             get {
@@ -34,19 +31,18 @@ namespace eSearch.Models.Documents.Parse
             }
         }
 
+        public bool DoesParserExtractFiles => false;
+
+        public bool DoesParserProduceSubDocuments => false;
+
         private string[] _extensions = null;
 
         public void Parse(string filePath, out ParseResult parseResult)
         {
             parseResult = new();
             parseResult.ParserName = "PlainTextParser";
-
-            textContent.Clear();
-            textContent.Append(File.ReadAllText(filePath, Encoding.UTF8));
-            //textContent = textContent.Replace("<", "&lt;");
-            //textContent = textContent.Replace(">", "&gt;");
             parseResult.Title = Path.GetFileNameWithoutExtension(filePath);
-            parseResult.TextContent = textContent.ToString();
+            parseResult.TextContent = File.ReadAllText(filePath, Encoding.UTF8);
             parseResult.Authors = new string[] { Utils.GetFileOwner(filePath) };
         }
     }

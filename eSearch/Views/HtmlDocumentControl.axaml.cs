@@ -31,6 +31,22 @@ namespace eSearch.Views
     {
         private AvaloniaCefBrowser? browser = null;
 
+        private static readonly List<WeakReference<HtmlDocumentControl>> htmlDocumentControlInstances = new List<WeakReference<HtmlDocumentControl>>();
+
+        public static void UpdateThemeOfAllInstances()
+        {
+            var liveInstances = new List<HtmlDocumentControl>();
+            htmlDocumentControlInstances.RemoveAll(wr => !wr.TryGetTarget(out _));
+            foreach(var weakRef in htmlDocumentControlInstances)
+            {
+                if (weakRef.TryGetTarget(out var htmlDocumentControl))
+                {
+                    // TODO Update theme of this document control.
+                    htmlDocumentControl?.browser?.ExecuteJavaScript("window.eSearchThemeUpdate()");
+                }
+            }
+        }
+
         JSBindingObj browserJSObject {
             get
             {
@@ -44,21 +60,6 @@ namespace eSearch.Views
 
         JSBindingObj _browserJSObject;
 
-
-        CustomCSSAndJSProvider BrowserJSAndCSSProvider
-        {
-            get
-            {
-                if (_browserJSProvider == null)
-                {
-                    _browserJSProvider = new CustomCSSAndJSProvider();
-                }
-                return _browserJSProvider;
-            }
-        }
-
-        CustomCSSAndJSProvider _browserJSProvider = null;
-
         /// <summary>
         /// Strided list.
         /// --css-var-name, value, --css-var-name, value...
@@ -69,6 +70,8 @@ namespace eSearch.Views
         public HtmlDocumentControl()
         {
             InitializeComponent();
+            htmlDocumentControlInstances.Add(new WeakReference<HtmlDocumentControl>(this));
+            
 
             InitBrowser();
 
@@ -81,19 +84,9 @@ namespace eSearch.Views
 
         public void InitBrowser()
         {
-            if (browser != null)
-            {
-                try
-                {
-                    browserWrapper.Child = null;
-                    browser.Dispose();
-                } catch (NullReferenceException)
-                {
-                    // TODO We're swallowing this because CefGlue throws it eroneously
-                    // Not a great solution...
-                }
-                
-            }
+            SetBrowserChildNull();
+            browser?.Dispose();
+            browser = null;
 
             browser = new AvaloniaCefBrowser();
             browser.RegisterJavascriptObject(browserJSObject, "Search");
@@ -114,6 +107,19 @@ namespace eSearch.Views
             
         }
 
+        [DebuggerHidden]
+        [DebuggerNonUserCode]
+        private void SetBrowserChildNull()
+        {
+            try
+            {
+                browserWrapper.Child = null;
+            } catch (NullReferenceException)
+            {
+                // TODO We're swallowing this because CefGlue throws it eroneously
+                // Not a great solution...
+            }
+        }
 
         /// <summary>
         /// Will cause the browser control to automatically resize
@@ -209,10 +215,6 @@ namespace eSearch.Views
             {
                 app.getThemePrimaryColors(out var bgColor, out var txtColor, out var ctrlColor, out var chromeHigh);
                 var cefColor = new CefColor(bgColor.A, bgColor.R, bgColor.G, bgColor.B);
-                BrowserJSAndCSSProvider.RenderCustomHtml = "";
-                BrowserJSAndCSSProvider.CSSVariables.Clear();
-                BrowserJSAndCSSProvider.CSSVariables.Add("--eSearch-app-region-color");
-                BrowserJSAndCSSProvider.CSSVariables.Add(string.Format("{0:X2}{1:X2}{2:X2}", bgColor.R, bgColor.G, bgColor.B));
                 browser.Settings.BackgroundColor = cefColor;
                 SetBrowserAddress(BlackPageDataURI);
             }
@@ -221,8 +223,6 @@ namespace eSearch.Views
         public void renderBlankPageColored(Avalonia.Media.Color color)
         {
             var cefColor = new CefColor(color.A, color.R, color.G, color.B);
-
-            BrowserJSAndCSSProvider.RenderCustomHtml = "";
             browser.Settings.BackgroundColor = cefColor;
             SetBrowserAddress(BlackPageDataURI);
         }
@@ -286,18 +286,11 @@ namespace eSearch.Views
 
         public void RenderAILoadingScreen()
         {
-            BrowserJSAndCSSProvider.JSFileNames.Clear();
-            BrowserJSAndCSSProvider.CSSFileNames.Clear();
+            ExtraCSSFileNames.Clear();
+            ExtraCSSVariables.Clear();
+            ExtraJSFileNames.Clear();
             var html = Models.Utils.GetTextAsset("ai_loading_view.html");
-            if (Program.GetIsThemeDark())
-            {
-                BrowserJSAndCSSProvider.CSSFileNames.Add("result_style.css");
-                BrowserJSAndCSSProvider.CSSFileNames.Add("result_style_dark.css");
-            }
-            else
-            {
-                BrowserJSAndCSSProvider.CSSFileNames.Add("result_style.css");
-            }
+            
             RenderHTMLInBrowser(html);
         }
 
@@ -307,8 +300,9 @@ namespace eSearch.Views
             mwvm.ShowHitNavigation = true;
             displayedResult = result;
             SetBrowserAddress("about:blank");
-            BrowserJSAndCSSProvider.JSFileNames.Clear();
-            BrowserJSAndCSSProvider.CSSFileNames.Clear();
+            ExtraJSFileNames.Clear();
+            ExtraCSSFileNames.Clear();
+            ExtraCSSVariables.Clear();
 #if DEBUG
 #endif
 
@@ -326,7 +320,7 @@ namespace eSearch.Views
                         break;
                     case DesktopSearch2.Models.Configuration.ViewerConfig.OptionViewLargeFile.InReportView:
                         string htmlReport = getSearchReportHtmlBody(result);
-                        renderHtmlBody(htmlReport, false);
+                        RenderHtmlBody(htmlReport, false);
                         return;
                 }
             }
@@ -368,8 +362,8 @@ namespace eSearch.Views
                 {
                     
                     browserJSObject.SetTiffPath(result.FilePath);
-                    BrowserJSAndCSSProvider.JSFileNames.Add("tiff.min.js");
-                    BrowserJSAndCSSProvider.JSFileNames.Add("tiff_esearch_render.js");
+                    ExtraJSFileNames.Add("tiff.min.js");
+                    ExtraJSFileNames.Add("tiff_esearch_render.js");
                     SetBrowserAddress("about:blank");
                     mwvm.ShowHitNavigation = false;
                     return;
@@ -432,7 +426,7 @@ namespace eSearch.Views
                 html = "<pre data-keep-tags='span'><code class='language-" + extension + " line-numbers' data-keep-tags='span'>" + html + "</code></pre>";
             }
 
-            renderHtmlBody(html, isSrcCode, extension);
+            RenderHtmlBody(html, isSrcCode, extension);
         }
 
         /// <summary>
@@ -440,9 +434,8 @@ namespace eSearch.Views
         /// </summary>
         /// <param name="htmlBody"></param>
         /// <param name="isSourceCode">Passing this as true will change the font to a monospace font</param>
-        public void renderHtmlBody(string htmlBody, bool isSourceCode, string bodyClassList = "")
+        public void RenderHtmlBody(string htmlBody, bool isSourceCode, string bodyClassList = "")
         {
-            BrowserJSAndCSSProvider.RenderCustomHtml = "";
             SetBrowserAddress("about:blank");
             string prependRaw;
             if (bodyClassList == "")
@@ -471,53 +464,38 @@ namespace eSearch.Views
                 jsFiles.Add("text_contrast.js");
             }
             htmlBody = Models.Utils.AlterHtmlDoc(htmlBody, prependRaw, appendRaw);
-            BrowserJSAndCSSProvider.CSSFileNames = cssFiles.ToList();
-            BrowserJSAndCSSProvider.JSFileNames = jsFiles;
+            ExtraCSSFileNames.AddRange(cssFiles);
+            ExtraJSFileNames.AddRange(jsFiles);
+
             #region Configure CSS Variables
-            BrowserJSAndCSSProvider.CSSVariables.Clear();
+
+            ExtraCSSVariables.Clear();
             // TODO don't like doing string replace on the whole doc, might be a big doc - make a better solution later.
             if (!isSourceCode)
             {
                 // For non source code, use the users font preference.
-                BrowserJSAndCSSProvider.CSSVariables.Add("--eSearch-font-family");
-                BrowserJSAndCSSProvider.CSSVariables.Add(Program.ProgramConfig.ViewerConfig.FontFamilyName);
+                ExtraCSSVariables.Add("--eSearch-font-family");
+                ExtraCSSVariables.Add(Program.ProgramConfig.ViewerConfig.FontFamilyName);
 
             } else
             {
                 // For source code, use a monospace font so indents etc display correctly.
-                BrowserJSAndCSSProvider.CSSVariables.Add("--eSearch-font-family");
-                BrowserJSAndCSSProvider.CSSVariables.Add("monospace");
-            }
-
-            BrowserJSAndCSSProvider.CSSVariables.Add("--eSearch-font-size");
-            BrowserJSAndCSSProvider.CSSVariables.Add(Program.ProgramConfig.ViewerConfig.FontSizePt + "");
-
-            BrowserJSAndCSSProvider.CSSVariables.Add("--eSearch-highlight-color");
-            var color = Program.ProgramConfig.ViewerConfig.HitHighlightColor;
-            BrowserJSAndCSSProvider.CSSVariables.Add("rgb(" + color.R + "," + color.G + "," + color.B + ")");
-
-            if (Application.Current is App app)
-            {
-                app.getThemePrimaryColors(out var bgColor, out var txtColor, out var ctrlColor, out var chromeLow);
-                BrowserJSAndCSSProvider.CSSVariables.Add("--eSearch-app-region-color");
-                BrowserJSAndCSSProvider.CSSVariables.Add(string.Format("{0:X2}{1:X2}{2:X2}", bgColor.R, bgColor.G, bgColor.B));
-
-                BrowserJSAndCSSProvider.CSSVariables.Add("--eSearch-app-base-high-color");
-                BrowserJSAndCSSProvider.CSSVariables.Add(string.Format("{0:X2}{1:X2}{2:X2}", txtColor.R, txtColor.G, txtColor.B));
-
-                BrowserJSAndCSSProvider.CSSVariables.Add("--eSearch-app-alt-high-color");
-                BrowserJSAndCSSProvider.CSSVariables.Add(string.Format("{0:X2}{1:X2}{2:X2}", ctrlColor.R, ctrlColor.G, ctrlColor.B));
-
-                BrowserJSAndCSSProvider.CSSVariables.Add("--eSearch-app-chrome-low-color");
-                BrowserJSAndCSSProvider.CSSVariables.Add(string.Format("{0:X2}{1:X2}{2:X2}", chromeLow.R, chromeLow.G, chromeLow.B));
+                ExtraCSSVariables.Add("--eSearch-font-family");
+                ExtraCSSVariables.Add("monospace");
             }
 
             #endregion
-            RenderHTMLInBrowser(htmlBody);
+
+            RenderHTMLInBrowser(htmlBody, false);
         }
 
-        public void RenderHTMLInBrowser(string html)
+        public void RenderHTMLInBrowser(string html, bool resetExtraJSAndCSS = true)
         {
+            if (resetExtraJSAndCSS)
+            {
+                ExtraCSSVariables.Clear();
+                ExtraCSSFileNames.Clear();
+            }
             InitBrowser();
 
             StringBuilder urlBuilder = new StringBuilder();
@@ -525,39 +503,10 @@ namespace eSearch.Views
             //urlBuilder.Append(System.Convert.ToBase64String( Encoding.UTF8.GetBytes(html)) );
             string address = urlBuilder.ToString();
             browser.RegisterJavascriptObject(browserJSObject, "Search");// TODO - Workaround for https://github.com/OutSystems/CefGlue/pull/186
-            browser.RegisterJavascriptObject(BrowserJSAndCSSProvider, "ExtrasProvider");
-            BrowserJSAndCSSProvider.RenderCustomHtml = html;
+            browser.RegisterJavascriptObject(new CustomCSSAndJSProvider(GetCSSFileNames, GetCSSVariables, GetJSFileNames, html), "ExtrasProvider");
             expectedBrowserAddress = address;
             browser.Address = address;
-            return; // TEMP - testing.
-
-            string tempPath = Path.Combine(Path.GetTempPath(), "ResultRender.html");
-
-            if (File.Exists(tempPath))
-            {
-                // May throw
-                // System.IO.IOException: 'The process cannot access the file 
-                // If the user is scrolling back and forth between files fast.
-                int attempts = 0;
-            retryPoint:
-                try
-                {
-                    File.Delete(tempPath);
-                }
-                catch (IOException)
-                {
-                    if (attempts < 3)
-                    {
-                        Thread.Sleep(100);
-                        ++attempts;
-                        goto retryPoint;
-                    }
-                }
-            }
-
-            File.WriteAllText(tempPath, html);
-            var uri = new Uri(tempPath).AbsoluteUri;
-            SetBrowserAddress(uri);
+            return;
         }
 
         public string getSearchReportHtmlBody(ResultViewModel result)
@@ -613,7 +562,7 @@ namespace eSearch.Views
         public void RenderLLMMessage(LLMMessageViewModel message)
         {
             var jsBindingObj = new LLMMessageStreamingJSBinding(message);
-            renderHtmlBody(Models.Utils.GetTextAsset("ai_message_streaming_display.html"), false, "ai-message");
+            RenderHtmlBody(Models.Utils.GetTextAsset("ai_message_streaming_display.html"), false, "ai-message");
             browser.RegisterJavascriptObject(jsBindingObj, "aiStream");
 
         }
@@ -623,7 +572,7 @@ namespace eSearch.Views
             completionStreamingJSBinding = new CompletionStreamingJSBinding(existingConversation, aiSearchConfig);
             
             browser.UnregisterJavascriptObject("aiStream");
-            renderHtmlBody(Models.Utils.GetTextAsset("ai_streaming_display.html"), false);
+            RenderHtmlBody(Models.Utils.GetTextAsset("ai_streaming_display.html"), false);
             browser.RegisterJavascriptObject(completionStreamingJSBinding, "aiStream");
             
             foreach (var message in existingConversation.Messages)
@@ -646,7 +595,7 @@ namespace eSearch.Views
         public void PerformAndRenderStreamingAICompletion(AISearchConfiguration aiSearchConfig, string startText, CancellationToken cancellationToken)
         {
             completionStreamingJSBinding = new CompletionStreamingJSBinding(startText, aiSearchConfig);
-            renderHtmlBody(Models.Utils.GetTextAsset("ai_streaming_display.html"), false);
+            RenderHtmlBody(Models.Utils.GetTextAsset("ai_streaming_display.html"), false);
             browser.RegisterJavascriptObject(completionStreamingJSBinding, "aiStream");
         }
 
@@ -673,13 +622,74 @@ namespace eSearch.Views
 
         public void SetBrowserAddress(string browserAddress)
         {
-            BrowserJSAndCSSProvider.RenderCustomHtml = "";
+
             InitBrowser();
             browser.RegisterJavascriptObject(browserJSObject, "Search");// TODO - Workaround for https://github.com/OutSystems/CefGlue/pull/186
-            browser.RegisterJavascriptObject(BrowserJSAndCSSProvider, "ExtrasProvider");
+            browser.RegisterJavascriptObject(new CustomCSSAndJSProvider(GetCSSFileNames, GetCSSVariables, GetJSFileNames, ""), "ExtrasProvider");
             expectedBrowserAddress = browserAddress;
             browser.Address = browserAddress;
             
+        }
+
+        private List<string> ExtraCSSFileNames = new List<string>();
+
+        public IEnumerable<string> GetCSSFileNames()
+        {
+            foreach(var fileName in ExtraCSSFileNames)
+            {
+                yield return fileName;
+            }
+
+            yield return "result_style.css";
+            if (Program.GetIsThemeDark())
+            {
+                yield return "result_style_dark.css";
+            }
+        }
+
+        private List<string> ExtraCSSVariables = new List<string>();
+
+        public IEnumerable<string> GetCSSVariables()
+        {
+ 
+            foreach(var cssVar in ExtraCSSVariables)
+            {
+                yield return cssVar;
+            }
+
+            yield return "--eSearch-font-size";
+            yield return Program.ProgramConfig.ViewerConfig.FontSizePt + "";
+
+            yield return "--eSearch-highlight-color";
+            var color = Program.ProgramConfig.ViewerConfig.HitHighlightColor;
+            yield return "rgb(" + color.R + "," + color.G + "," + color.B + ")";
+
+            if (Application.Current is App app)
+            {
+                app.getThemePrimaryColors(out var bgColor, out var txtColor, out var ctrlColor, out var chromeLow);
+                yield return "--eSearch-app-region-color";
+                yield return (string.Format("{0:X2}{1:X2}{2:X2}", bgColor.R, bgColor.G, bgColor.B));
+
+                yield return "--eSearch-app-base-high-color";
+                yield return (string.Format("{0:X2}{1:X2}{2:X2}", txtColor.R, txtColor.G, txtColor.B));
+
+                yield return "--eSearch-app-alt-high-color";
+                yield return (string.Format("{0:X2}{1:X2}{2:X2}", ctrlColor.R, ctrlColor.G, ctrlColor.B));
+
+                yield return "--eSearch-app-chrome-low-color";
+                yield return (string.Format("{0:X2}{1:X2}{2:X2}", chromeLow.R, chromeLow.G, chromeLow.B));
+            }
+        }
+
+
+        private List<string> ExtraJSFileNames = new List<string>();
+
+        public IEnumerable<string> GetJSFileNames()
+        {
+            foreach(string extraJSFileName in ExtraJSFileNames)
+            {
+                yield return extraJSFileName;
+            }
         }
 
         public void clearResult()
@@ -882,6 +892,18 @@ namespace eSearch.Views
 
         public class CustomCSSAndJSProvider
         {
+            Func<IEnumerable<string>> GetCSSFileNames;
+            Func<IEnumerable<string>> GetCSSVariables;
+            Func<IEnumerable<string>> GetJSFileNames;
+
+            public CustomCSSAndJSProvider(Func<IEnumerable<string>> GetCSSFileNames, Func<IEnumerable<string>> GetCSSVariables, Func<IEnumerable<string>> GetJSFileNames, string RenderCustomHtml = "")
+            {
+                this.GetCSSFileNames    = GetCSSFileNames;
+                this.GetCSSVariables    = GetCSSVariables;
+                this.GetJSFileNames     = GetJSFileNames;
+                this.RenderCustomHtml   = RenderCustomHtml;
+            }
+
             /// <summary>
             /// When not an empty string, this is the html source that should be rendered.
             /// </summary>
@@ -892,36 +914,26 @@ namespace eSearch.Views
                 return RenderCustomHtml;
             }
 
-            // List of CSS File names as found in the Assets Directory.
-            public List<string> CSSFileNames = new List<string>();
-
-            // List of JS File names as found in the Assets Directory.
-            public List<string> JSFileNames = new List<string>();
-
-            // Strided list.
-            // --css-variable-name, value, --css-variable-name, value...
-            public List<string> CSSVariables = new List<string>();
-
             public int GetTotalCSSRules()
             {
-                return CSSFileNames.Count;
+                return GetCSSFileNames().Count();
             }
 
             public string GetCSS(int i)
             {
-                var css_file =      CSSFileNames[i];
+                var css_file =      GetCSSFileNames().ElementAt(i);
                 string contents =   Models.Utils.GetTextAsset(css_file);
                 return contents;
             }
 
             public int GetTotalJSRules()
             {
-                return JSFileNames.Count;
+                return GetJSFileNames().Count();
             }
 
             public string GetJS(int i)
             {
-                var js_file = JSFileNames[i];
+                var js_file = GetJSFileNames().ElementAt(i);
                 string contents = Models.Utils.GetTextAsset(js_file);
                 return contents;
             }
@@ -933,7 +945,7 @@ namespace eSearch.Views
             /// <returns></returns>
             public string[] GetExtraCSSVariables()
             {
-                return CSSVariables.ToArray();
+                return GetCSSVariables().ToArray();
             }
         }
 

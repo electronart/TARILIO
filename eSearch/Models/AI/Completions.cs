@@ -1,28 +1,41 @@
-﻿using eSearch.Models.Configuration;
+﻿using eSearch.Interop.AI;
+using eSearch.Models.Configuration;
+using eSearch.Models.Documents;
 using eSearch.Models.Documents.Parse;
+using eSearch.Models.Logging;
 using eSearch.Utils;
+using LLama;
+using LLama.Abstractions;
+using LLama.Common;
+using LLama.Native;
+using LLama.Sampling;
+using LLamaSharp.SemanticKernel;
+using LLamaSharp.SemanticKernel.ChatCompletion;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using ModelContextProtocol.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OpenAI;
 using System;
+using System.ClientModel;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using static eSearch.Models.AI.OpenAIChatCompletions;
+using MSK = Microsoft.SemanticKernel;
 using S = eSearch.ViewModels.TranslationsViewModel;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
-using eSearch.Interop.AI;
-using OpenAI;
-using System.ClientModel;
-using DocumentFormat.OpenXml.Office2019.Drawing.Model3D;
-using System.Net.Http.Headers;
 
 namespace eSearch.Models.AI
 {
@@ -159,24 +172,6 @@ namespace eSearch.Models.AI
         }
 
         /// <summary>
-        /// Note that this method does not handle exceptions but is likely to trigger them as it uses external network resources. Always try/catch.
-        /// </summary>
-        /// <param name="startText"></param>
-        /// <returns></returns>
-        public static async Task<Completion> CompleteText(AISearchConfiguration aiConfig, string startText, CancellationToken cancellationToken = default)
-        {
-            switch(aiConfig.LLMService)
-            {
-                case LLMService.Perplexity:
-
-                default:
-                    break;
-            }
-            var completion = await GetCompletionViaOpenAIUrlAsync(aiConfig, startText, cancellationToken);
-            return completion;
-        }
-
-        /// <summary>
         /// Note this is the NON-LOCALIZED version.
         /// </summary>
         public static string DEFAULT_SYSTEM_PROMPT = "Answer in English. You are a helpful research assistant";
@@ -186,92 +181,6 @@ namespace eSearch.Models.AI
             if (!string.IsNullOrWhiteSpace(aiConfig.CustomSystemPrompt)) return aiConfig.CustomSystemPrompt;
             return S.Get(DEFAULT_SYSTEM_PROMPT);
         }
-
-        private static async Task<Completion> GetCompletionViaOpenAIUrlAsync(
-            AISearchConfiguration aiConfig, 
-            string startText,
-            CancellationToken cancellationToken = default)
-        {
-
-            
-
-            Dictionary<string, string> systemMessage = new Dictionary<string, string>
-            {
-                { "role", aiConfig.SystemPromptRole.ToLower() },
-                { "content", GetSystemPrompt(aiConfig) }
-            };
-
-            Dictionary<string, string> userMessage = new Dictionary<string, string>
-            {
-                { "role", "user" },
-                { "content", startText }
-            };
-
-            Dictionary<string, object> requestParameters = new Dictionary<string, object>
-            {
-                { "messages", new List<Dictionary<string,string>> { systemMessage, userMessage } },
-                { "model", GetCurrentChatModel(aiConfig) }
-            };
-
-            string body = JsonConvert.SerializeObject(requestParameters);
-            string apiKey = Utils.Base64Decode(aiConfig.APIKey);
-            string url = GetOpenAIEndpointURL(aiConfig) + "/chat/completions";
-            string userAgent = "eSearch";
-
-
-            string       completedText = "";
-            List<string> citations = new List<string>();
-
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-                client.DefaultRequestHeaders.Add("User-Agent", userAgent);
-                client.Timeout = TimeSpan.FromSeconds(10 * 60);
-
-                HttpContent content = new StringContent(body, Encoding.UTF8, "application/json");
-                string responseBody;
-                try
-                {
-                    var response = await client.PostAsync(url, content, cancellationToken);
-                    responseBody = await response.Content.ReadAsStringAsync();
-                    response.EnsureSuccessStatusCode();
-
-                    
-                    var responseParameters = JObject.Parse(responseBody);
-                    if (responseParameters.Property("choices")?.Value is JArray jArray)
-                    {
-                        if (jArray.Count > 0 && jArray[0] is JObject choice)
-                        {
-                            completedText = (string)choice["message"]["content"] ?? string.Empty;
-                        }
-                    }
-                    if (responseParameters.Property("citations") != null) // This is not part of OpenAI Spec - It is a Perplexity Extension.
-                    {
-                        citations.AddRange(responseParameters["citations"].ToObject<List<string>>());
-                    }
-                    Completion completion = new Completion
-                    {
-                        Citations = citations,
-                        Text = completedText,
-                    };
-                    return completion;
-                }
-                catch (HttpRequestException ex)
-                {
-                    Debug.WriteLine($"Req Error: {ex.Message}");
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Unexpected Error: {ex.Message}", ex);
-                    throw;
-                }
-            }
-
-
-        }
-
-        List<string> outputsDebug;
         
 
         /// <param name="aiConfig"></param>
@@ -393,6 +302,8 @@ namespace eSearch.Models.AI
         }
 
 
+
+
         public static Conversation GetDefaultConversationStarter(AISearchConfiguration aiConfig)
         {
             Conversation conversation = new Conversation();
@@ -400,7 +311,7 @@ namespace eSearch.Models.AI
             {
                 Content = GetSystemPrompt(aiConfig),
                 Role = aiConfig.SystemPromptRole.ToLower(),
-                Model = aiConfig.Model ?? string.Empty,
+                Model = aiConfig.GetDisplayedModelName()
             });
             return conversation;
         }
@@ -408,8 +319,20 @@ namespace eSearch.Models.AI
         public static async IAsyncEnumerable<string> GetCompletionStreamViaMCPAsync(
         AISearchConfiguration aiConfig,
         Conversation conversation,
+        IEnumerable<FileSystemDocument>? attachments,
         CancellationToken cancellationToken = default)
         {
+            var generationConfig = (aiConfig.GenerationConfiguration != null) ? aiConfig.GenerationConfiguration : new LLMGenerationConfiguration();
+            var inferenceParams = GetInferenceParamsBasedOnConfig(generationConfig);
+            if (aiConfig.LocalLLMConfiguration != null)
+            {
+                // Using LocalLama
+                await foreach(var token in GetCompletionViaLocalLLM(aiConfig.LocalLLMConfiguration, conversation, inferenceParams, cancellationToken))
+                {
+                    yield return token;
+                }
+                yield break;
+            }
             // Set up Semantic Kernel with OpenAI
 
             var customHttpClient = new HttpClient();
@@ -465,9 +388,19 @@ namespace eSearch.Models.AI
                 }
             }
 
+            var genConfig = aiConfig.GenerationConfiguration != null ? aiConfig.GenerationConfiguration : new LLMGenerationConfiguration();
+
+            var random = new Random();
+
             var settings = new OpenAIPromptExecutionSettings
             {
                 // Defaults.
+                Temperature = (double)genConfig.Temperature,
+                MaxTokens = genConfig.MaxTokens,
+                TopP = (double?)genConfig.TopP,
+                FrequencyPenalty = (double?)genConfig.PenaltyFrequency,
+                PresencePenalty = (double?)genConfig.PenaltyPresence,
+                Seed = genConfig.Seed == -1 ? random.Next(9000) : (long)genConfig.Seed,
             };
 
             if (useKernelPlugins)
@@ -480,19 +413,51 @@ namespace eSearch.Models.AI
 #pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
             // Convert conversation to Semantic Kernel format
-            var chatHistory = new ChatHistory();
+            var chatHistory = new MSK.ChatCompletion.ChatHistory();
+            
+
+
+
             foreach (var message in conversation.Messages)
             {
                 chatHistory.AddMessage(
                     message.Role switch
                     {
-                        "system" => AuthorRole.System,
-                        "user" => AuthorRole.User,
-                        "assistant" => AuthorRole.Assistant,
+                        "system" => MSK.ChatCompletion.AuthorRole.System,
+                        "user" => MSK.ChatCompletion.AuthorRole.User,
+                        "assistant" => MSK.ChatCompletion.AuthorRole.Assistant,
                         _ => throw new ArgumentException($"Invalid role: {message.Role}")
                     },
                     message.Content
                 );
+                if (message.Role == "system")
+                {
+                    #region Handle attachments, if any
+                    if (attachments != null && attachments.Any())
+                    {
+                        List<MSK.TextContent> txtAttachments = new List<TextContent>();
+                        foreach (var attachment in attachments)
+                        {
+                            var txtContent = attachment.Text; // HEAVY This will trigger the parser to extract contents if its not already parsed.
+                            var fileName = Path.GetFileName(attachment.FileName);
+                            Dictionary<string, object?> metaData = new Dictionary<string, object?>();
+                            metaData.Add("Filename", Path.GetFileName(fileName));
+                            TextContent content = new TextContent { Text = txtContent, Metadata = metaData };
+                            txtAttachments.Add(content);
+                        }
+
+                        var attachmentCollection = new ChatMessageContentItemCollection();
+                        foreach (var attachment in txtAttachments)
+                        {
+                            attachmentCollection.Add(attachment);
+                        }
+                        foreach (var attachment in txtAttachments)
+                        {
+                            chatHistory.Add(new ChatMessageContent(MSK.ChatCompletion.AuthorRole.System, attachmentCollection));
+                        }
+                    }
+                    #endregion
+                }
             }
 
             // Get chat completion service
@@ -514,7 +479,7 @@ namespace eSearch.Models.AI
              *    
              */
 
-            AuthorRole? lastRole = null;
+            MSK.ChatCompletion.AuthorRole? lastRole = null;
             string? lastCompletionId = "X"; // This ensures there will always be a new message signal
 
 
@@ -547,13 +512,392 @@ namespace eSearch.Models.AI
             }
         }
 
-
-
-        public static async Task<Completion> CompleteText(string startText, CancellationToken cancellationToken = default)
+        public static async IAsyncEnumerable<string> GetCompletionViaLocalLLM(
+            LocalLLMConfiguration llmConfig, 
+            Conversation conversation,
+            IInferenceParams inferenceParams,
+            CancellationToken cancellationToken = default,
+            LoadedLocalLLM llm = null)
         {
-            var aiConfig = Program.ProgramConfig.GetSelectedConfiguration();
-            return await GetCompletionViaOpenAIUrlAsync(aiConfig, startText, cancellationToken);
+            #region Some basic validation...
+            if (string.IsNullOrEmpty(llmConfig.ModelPath) || !File.Exists(llmConfig.ModelPath))
+            {
+                throw new ArgumentException("Invalid or missing model path.", nameof(llmConfig.ModelPath));
+            }
+            if (llmConfig.ContextSize <= 0)
+            {
+                throw new ArgumentException("Context size must be positive.", nameof(llmConfig.ContextSize));
+            }
+            #endregion
+
+            ILogger? logger = null;
+#if DEBUG
+            logger = new MSLogger(new DebugLogger());
+#endif
+            if (llm == null)
+            {
+                llm = await Program.GetOrLoadLocalLLM(llmConfig, cancellationToken);
+            }
+            var executor = new InteractiveExecutor(llm.GetNewContext(),logger);
+            var chatHistory = new LLama.Common.ChatHistory();
+            for (int i = 0; i < conversation.Messages.Count - 1; i++)
+            {
+                var msg = conversation.Messages[i];
+                LLama.Common.AuthorRole role = msg.Role switch
+                {
+                    "system" =>     LLama.Common.AuthorRole.System,
+                    "user" =>       LLama.Common.AuthorRole.User,
+                    "assistant" =>  LLama.Common.AuthorRole.Assistant,
+                    _ => throw new ArgumentException($"Invalid role: {msg.Role}")
+                };
+                chatHistory.AddMessage(role, msg.Content);
+            }
+
+            var lastMsg = conversation.Messages.Last();
+            var userMessage = new LLama.Common.ChatHistory.Message(LLama.Common.AuthorRole.User, lastMsg.Content);
+
+            // Create chat session with history
+            var session = new ChatSession(executor, chatHistory);
+            session.WithOutputTransform(new LLamaTransforms.KeywordTextOutputStreamTransform(
+            new string[] { "User:", "Assistant:", "System:" },
+            redundancyLength: 8));
+
+            var temperature = 0.7f;
+            int chars = 0;
+            int maxRetries = 5;
+            int retries = 0;
+            
+
+        retryPoint:
+            // Stream the response tokens
+            
+            await foreach (var token in session.ChatAsync(userMessage, inferenceParams, cancellationToken))
+            {
+                chars += token?.Length ?? 0;
+                yield return token ?? "";
+            }
+            if (chars == 0 && retries < maxRetries)
+            {
+                temperature -= 0.1f;
+                ++retries;
+                goto retryPoint;
+            }
+            if (retries >= maxRetries && chars == 0)
+            {
+                yield return S.Get("Sorry, the model didn't generate a response. Try rephrasing your query.");
+            }
         }
+
+
+        public static async IAsyncEnumerable<string> GetChatCompletionViaLocalLLM(
+            LoadedLocalLLM llm,
+            ChatCompletionsRequest chatCompletionsRequest,
+            CancellationToken cancellationToken = default,
+            ILogger logger = null
+        )
+        {
+            // Extract key params from request
+            var temperature = chatCompletionsRequest.Temperature ?? 0.7f;
+            var maxTokens = chatCompletionsRequest.MaxTokens ?? 512;
+            bool useTools = (chatCompletionsRequest.Tools != null && chatCompletionsRequest.Tools.Count > 0) ||
+                            (chatCompletionsRequest.McpServers != null && chatCompletionsRequest.McpServers.Count > 0);
+
+            // Build Semantic Kernel
+            var builder = Kernel.CreateBuilder();
+            var executor = new InteractiveExecutor(llm.GetNewContext(), logger);
+            var chatCompletionService = new LLamaSharpChatCompletion(
+                executor,
+                new LLamaSharpPromptExecutionSettings
+                {
+                    MaxTokens = maxTokens,
+                    Temperature = temperature,
+                    StopSequences = chatCompletionsRequest.Stop ?? new List<string>()
+                }
+            );
+            builder.Services.AddSingleton<IChatCompletionService>(chatCompletionService);
+
+            var kernel = builder.Build();
+
+            // If tools/MCP present, register them
+            if (useTools)
+            {
+                // MCP servers
+                foreach (var mcpUrl in chatCompletionsRequest.McpServers ?? new List<string>())
+                {
+                    string? connectionError = null;
+                    try
+                    {
+                        var transportOptions = new SseClientTransportOptions
+                        {
+                            Endpoint = new Uri(mcpUrl), // Required: HTTP/HTTPS URI
+                            ConnectionTimeout = TimeSpan.FromSeconds(30), // Default
+                            UseStreamableHttp = false, // Use standard SSE (per spec)
+                            Name = $"McpClient_{mcpUrl.GetHashCode()}", // Optional: for logging
+                            AdditionalHeaders = null // Optional: add auth headers if needed
+                        };
+                        var transport = new SseClientTransport(transportOptions);
+                        var mcpClient = await McpClientFactory.CreateAsync(transport, null, null, cancellationToken);
+
+                        var tools = await mcpClient.ListToolsAsync();
+#pragma warning disable SKEXP0001 // Experimental API
+                        var kernelFunctions = tools.Select(t => t.AsKernelFunction()).ToList();
+#pragma warning restore SKEXP0001
+                        if (kernelFunctions.Count > 0)
+                        {
+                            string pluginName = $"McpPlugin_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+                            kernel.Plugins.AddFromFunctions(pluginName, kernelFunctions);
+                            Program.LLMServerSessionLog.Log(Interop.ILogger.Severity.INFO, $"Registered {kernelFunctions.Count} tools from MCP server {mcpUrl}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Program.LLMServerSessionLog.Log(Interop.ILogger.Severity.ERROR, $"Failed to connect to MCP server {mcpUrl}: {ex.Message}", ex);
+                        connectionError = $"Error connecting to MCP server {mcpUrl}: {ex.Message}\n";
+                    }
+                    if (connectionError != null)
+                    {
+                        yield return connectionError;
+                    }
+                }
+
+                // Static tools from request (if any; for hybrid)
+                // Static tools from request
+                if (chatCompletionsRequest.Tools != null && chatCompletionsRequest.Tools.Any())
+                {
+                    try
+                    {
+                        var kernelFunctions = new List<KernelFunction>();
+                        foreach (var tool in chatCompletionsRequest.Tools)
+                        {
+                            if (tool.Type != "function" || tool.Function == null)
+                            {
+                                Program.LLMServerSessionLog.Log(Interop.ILogger.Severity.WARNING, $"Skipping invalid tool: type={tool.Type}, function={tool.Function}");
+                                continue;
+                            }
+
+                            var function = tool.Function;
+                            var functionName = function.Name;
+                            if (string.IsNullOrEmpty(functionName))
+                            {
+                                Program.LLMServerSessionLog.Log(Interop.ILogger.Severity.WARNING, "Skipping tool with empty function name");
+                                continue;
+                            }
+
+                            var description = function.Description ?? $"Function {functionName}";
+                            var parametersSchema = function.Parameters.HasValue ? function.Parameters.Value : JsonDocument.Parse("{\"type\":\"object\",\"properties\":{}}").RootElement;
+
+                            // Parse JSON Schema parameters into KernelParameterMetadata
+                            var parameters = new List<KernelParameterMetadata>();
+                            if (parametersSchema.ValueKind == JsonValueKind.Object &&
+                                parametersSchema.TryGetProperty("properties", out var properties))
+                            {
+                                foreach (var prop in properties.EnumerateObject())
+                                {
+                                    var paramName = prop.Name;
+                                    var paramType = typeof(string); // Default to string
+                                    string paramDescription = "No description";
+                                    bool isRequired = false;
+
+                                    if (prop.Value.TryGetProperty("type", out var typeElement))
+                                    {
+                                        paramType = typeElement.GetString() switch
+                                        {
+                                            "string" => typeof(string),
+                                            "number" => typeof(double),
+                                            "integer" => typeof(int),
+                                            "boolean" => typeof(bool),
+                                            "array" => typeof(List<object>),
+                                            "object" => typeof(Dictionary<string, object>),
+                                            _ => typeof(string)
+                                        };
+                                    }
+
+                                    if (prop.Value.TryGetProperty("description", out var descElement))
+                                    {
+                                        paramDescription = descElement.GetString() ?? paramDescription;
+                                    }
+
+                                    if (parametersSchema.TryGetProperty("required", out var requiredElement) &&
+                                        requiredElement.EnumerateArray().Any(e => e.GetString() == paramName))
+                                    {
+                                        isRequired = true;
+                                    }
+
+                                    parameters.Add(new KernelParameterMetadata(paramName)
+                                    {
+                                        Description = paramDescription,
+                                        ParameterType = paramType,
+                                        IsRequired = isRequired
+                                    });
+                                }
+                            }
+
+                            // Create KernelFunction with no-execution logic (since static tools are client-executed; throw if unexpectedly invoked)
+                            var kernelFunction = KernelFunctionFactory.CreateFromMethod(
+                                method: (Kernel kernel, KernelArguments arguments) =>
+                                {
+                                    throw new NotSupportedException("Static tools are intended for client-side execution and cannot be invoked on the server.");
+                                },
+                                functionName: functionName,
+                                description: description,
+                                parameters: parameters,
+                                returnParameter: new KernelReturnParameterMetadata
+                                {
+                                    Description = "Result of the client-executed tool"
+                                }
+                            );
+
+                            kernelFunctions.Add(kernelFunction);
+                        }
+
+                        if (kernelFunctions.Any())
+                        {
+                            string pluginName = $"StaticToolPlugin_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+                            kernel.Plugins.AddFromFunctions(pluginName, kernelFunctions);
+                            Program.LLMServerSessionLog.Log(Interop.ILogger.Severity.INFO, $"Registered {kernelFunctions.Count} static tools from request");
+                        }
+                        else
+                        {
+                            Program.LLMServerSessionLog.Log(Interop.ILogger.Severity.WARNING, "No valid tools registered from request");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        var errorMessage = $"Failed to process static tools: {ex.Message}\n";
+                        Program.LLMServerSessionLog.Log(Interop.ILogger.Severity.ERROR, errorMessage, ex);
+                        throw;
+                    }
+                }
+            }
+
+            // Build ChatHistory from request messages
+            var chatHistory = new Microsoft.SemanticKernel.ChatCompletion.ChatHistory();
+            foreach (var msg in chatCompletionsRequest.Messages ?? new List<ChatMessage>())
+            {
+                chatHistory.AddMessage(
+                    msg.Role switch
+                    {
+                        "system" => MSK.ChatCompletion.AuthorRole.System,
+                        "user" => MSK.ChatCompletion.AuthorRole.User,
+                        "assistant" => MSK.ChatCompletion.AuthorRole.Assistant,
+                        _ => throw new ArgumentException($"Invalid role: {msg.Role}")
+                    },
+                    msg.Content
+                );
+            }
+
+            // Execution settings
+            var settings = new OpenAIPromptExecutionSettings
+            {
+                Temperature = temperature,
+                MaxTokens = maxTokens,
+                ToolCallBehavior = useTools ? ToolCallBehavior.AutoInvokeKernelFunctions : null
+            };
+
+            var chatService = kernel.GetRequiredService<IChatCompletionService>();
+
+            // Stream the response (yields tokens/chunks)
+            await foreach (var chunk in chatService.GetStreamingChatMessageContentsAsync(
+                chatHistory, settings, kernel, cancellationToken))
+            {
+                if (!string.IsNullOrEmpty(chunk.Content))
+                {
+                    yield return chunk.Content;  // Yield text tokens
+                }
+                // If you need to yield tool call info (e.g., for OpenAI-style deltas), check chunk.Metadata
+                // e.g., if (chunk.Metadata?.ContainsKey("ToolCalls") == true) { yield special marker }
+            }
+        }
+
+        private static IInferenceParams GetInferenceParamsBasedOnConfig(LLMGenerationConfiguration generationConfig)
+        {
+            System.Random random = new System.Random();
+            var samplingPipeline = new DefaultSamplingPipeline
+            {
+                Temperature = (float)generationConfig.Temperature,
+                TopP = (float)generationConfig.TopP,
+                TopK = generationConfig.TopK,
+                RepeatPenalty = (float)generationConfig.PenaltyRepetition,
+                FrequencyPenalty = (float)generationConfig.PenaltyFrequency,
+                PresencePenalty = (float)generationConfig.PenaltyPresence,
+                Seed = (generationConfig.Seed == -1) ? ((uint)random.Next()) : ((uint)generationConfig.Seed),
+                MinP = (float)generationConfig.MinP
+            };
+            var inferenceParams = new InferenceParams
+            {
+                MaxTokens = generationConfig.MaxTokens,
+                AntiPrompts = new List<string> { "User:", "\nUser:" }, // Stop at the next user prompt
+                SamplingPipeline = samplingPipeline
+            };
+            return inferenceParams;
+        }
+
+        public static async IAsyncEnumerable<string> GetCompletionViaLocalLLMForPrompt(
+            LoadedLocalLLM llm,
+            string prompt,
+            float temperature = 0.7f,
+            int maxTokens = 512,
+            IReadOnlyList<string>? antiPrompts = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+
+
+            ILogger? logger = null;
+#if DEBUG
+            logger = new MSLogger(new DebugLogger());
+#endif
+            var context = llm.GetNewContext();
+            // Use StatelessExecutor for pure completion (prompt continuation)
+            var executor = new StatelessExecutor(llm.weights!, context.Params); // Assumes weights are accessible; adjust if private.
+
+            // Tokenize the prompt
+            var tokens = context.Tokenize(prompt);
+
+            int chars = 0;
+            int maxRetries = 5;
+            int retries = 0;
+            Random random = new Random();
+
+        retryPoint:
+            uint seed = (uint)random.Next();
+            var samplingPipeline = new DefaultSamplingPipeline
+            {
+                Temperature = temperature,
+                Seed = seed,
+            };
+
+            // Inference parameters
+            var inferenceParams = new InferenceParams
+            {
+                MaxTokens = maxTokens,
+                AntiPrompts = antiPrompts ?? new List<string> { },
+                SamplingPipeline = samplingPipeline
+            };
+
+            // Stream the response tokens
+            await foreach (var token in executor.InferAsync(prompt, inferenceParams, cancellationToken))
+            {
+                //var text = executor.Context.Detokenize(new[] { token });
+                chars += token.Length;
+                yield return token;
+            }
+
+            if (chars == 0 && retries < maxRetries)
+            {
+                temperature -= 0.1f;
+                ++retries;
+                goto retryPoint;
+            }
+            if (retries >= maxRetries && chars == 0)
+            {
+                yield return S.Get("Sorry, the model didn't generate a response. Try rephrasing your query.");
+            }
+        }
+
+
+
+
 
         public static string GetCompletionAsHtmlDisplay(Completion completion)
         {
