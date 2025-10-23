@@ -1,4 +1,5 @@
 ﻿
+using ReactiveUI;
 using System.Diagnostics;
 
 namespace eSearch.ViewModels
@@ -19,6 +20,33 @@ namespace eSearch.ViewModels
         public bool     ContentVisible { get; set; }
         public string   ContentText { get; set; }
 
+        public bool ShowDetails { 
+            get
+            {
+                return _showDetails;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _showDetails, value);
+            }
+        }
+
+        private bool _showDetails = false;
+
+        public string? DetailsText
+        {
+            get
+            {
+                return _detailsText;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _detailsText, value);
+            }
+        }
+
+        private string? _detailsText = null;
+
         /// <summary>
         /// Pass String.empty on any element to hide it.
         /// </summary>
@@ -27,7 +55,7 @@ namespace eSearch.ViewModels
         /// <param name="button1"></param>
         /// <param name="button2"></param>
         /// <param name="button3"></param>
-        public TaskDialogWindowViewModel(string title, string text, string button1, string button2, string button3)
+        public TaskDialogWindowViewModel(string title, string text, string button1, string button2, string button3, string? details = null)
         {
             MainInstructionText = title;
             MainInstructionVisible = title != string.Empty;
@@ -39,6 +67,7 @@ namespace eSearch.ViewModels
             Button2Visible = button2 != string.Empty;
             Button3Text = button3;
             Button3Visible = button3 != string.Empty;
+            DetailsText = details;
             Debug.WriteLine("Button3Text " + button3 + " isVisible: " + Button3Visible);
         }
 
