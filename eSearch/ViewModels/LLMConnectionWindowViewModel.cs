@@ -4,6 +4,7 @@ using eSearch.Models;
 using eSearch.Models.AI;
 using eSearch.Models.Configuration;
 using eSearch.Utils;
+using Newtonsoft.Json;
 using NPOI.OpenXmlFormats.Spreadsheet;
 using ReactiveUI;
 using sun.tools.tree;
@@ -13,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using S = eSearch.ViewModels.TranslationsViewModel;
@@ -21,6 +23,28 @@ namespace eSearch.ViewModels
 {
     public class LLMConnectionWindowViewModel : ViewModelBase
     {
+        public LLMConnectionWindowViewModel()
+        {
+            DuplicateCommand = ReactiveCommand.Create(Duplicate);
+        }
+
+        public ReactiveCommand<Unit, Unit> DuplicateCommand { get; }
+
+        private void Duplicate()
+        {
+            if (SelectedConnection == null) return;
+            string id = SelectedConnection.Id;
+            string s = JsonConvert.SerializeObject(SelectedConnection, Formatting.Indented);
+            var duplicate = JsonConvert.DeserializeObject<AISearchConfiguration>(s);
+            duplicate.Id = Guid.NewGuid().ToString();
+            Program.ProgramConfig.AISearchConfigurations.Add(duplicate);
+            Program.SaveProgramConfig();
+
+            var refreshed = FromProgramConfiguration();
+            AvailableConnections.Clear();
+            AvailableConnections.AddRange(refreshed.AvailableConnections);
+            SelectedConnection = AvailableConnections.First(c => c.Id == id);
+        }
 
         public static LLMConnectionWindowViewModel FromProgramConfiguration()
         {
