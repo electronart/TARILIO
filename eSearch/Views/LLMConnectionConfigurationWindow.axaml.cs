@@ -111,6 +111,7 @@ public partial class LLMConnectionConfigurationWindow : Window
         try
         {
             string prompts_dir = Program.ESEARCH_LLM_SYSTEM_PROMPTS_DIR;
+            string poml_dir = Path.Combine(prompts_dir, "POML");
             Directory.CreateDirectory(prompts_dir);
             if (DataContext is LLMConnectionWindowViewModel vm)
             {
@@ -133,6 +134,11 @@ public partial class LLMConnectionConfigurationWindow : Window
                                 {
                                     Name = "Text Files",
                                     Extensions = { "txt" }
+                                },
+                                new FileDialogFilter
+                                {
+                                    Name = "POML Files",
+                                    Extensions = { "poml"}
                                 }
                     },
                     // Set the dialog title
@@ -172,14 +178,14 @@ public partial class LLMConnectionConfigurationWindow : Window
         {
                 new FileDialogFilter
             {
-                Name = "Markdown or Plaintext",
-                Extensions = { "md" ,"txt"}
+                Name = "System Prompt Files",
+                Extensions = { "md" ,"txt", "poml"}
             },
             new FileDialogFilter
             {
                 Name = "All Files",
                 Extensions = { "*" }
-            }
+            },
         };
 
             // Show the dialog (pass 'this' as the parent Window)

@@ -45,9 +45,30 @@
 								 SelectedItem="{Binding SelectedConnection}">
 							<ListBox.ItemTemplate>
 								<DataTemplate>
+									<Border 
+									HorizontalAlignment="Stretch" 
+									VerticalAlignment="Stretch"> 
 										<TextBlock Text="{Binding}"/>
+									</Border>
 								</DataTemplate>
 							</ListBox.ItemTemplate>
+							<ListBox.Styles>
+								<Style Selector="ListBoxItem">
+									<Setter Property="ContextMenu">
+										<Setter.Value>
+											<ContextMenu>
+												<MenuItem Header="{Binding $parent[ListBox].DataContext.S[Duplicate]}"
+															Command="{Binding $parent[ListBox].DataContext.DuplicateCommand}"
+												>
+													<MenuItem.Icon>
+														<Image Source="{Binding $parent[ListBox].DataContext.I[icons8-duplicate-32.png]}"/>
+													</MenuItem.Icon>
+												</MenuItem>
+											</ContextMenu>
+										</Setter.Value>
+									</Setter>
+								</Style>
+							</ListBox.Styles>
 						</ListBox>
 						<StackPanel Orientation="Horizontal"  Spacing="5" HorizontalAlignment="Left">
 							
