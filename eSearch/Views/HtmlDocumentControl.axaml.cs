@@ -69,8 +69,9 @@ namespace eSearch.Views
 
         public HtmlDocumentControl()
         {
-            htmlDocumentControlInstances.Add(new WeakReference<HtmlDocumentControl>(this));
             InitializeComponent();
+            htmlDocumentControlInstances.Add(new WeakReference<HtmlDocumentControl>(this));
+            
 
             InitBrowser();
 
@@ -83,19 +84,9 @@ namespace eSearch.Views
 
         public void InitBrowser()
         {
-            if (browser != null)
-            {
-                try
-                {
-                    browserWrapper.Child = null;
-                    browser.Dispose();
-                } catch (NullReferenceException)
-                {
-                    // TODO We're swallowing this because CefGlue throws it eroneously
-                    // Not a great solution...
-                }
-                
-            }
+            SetBrowserChildNull();
+            browser?.Dispose();
+            browser = null;
 
             browser = new AvaloniaCefBrowser();
             browser.RegisterJavascriptObject(browserJSObject, "Search");
@@ -116,6 +107,19 @@ namespace eSearch.Views
             
         }
 
+        [DebuggerHidden]
+        [DebuggerNonUserCode]
+        private void SetBrowserChildNull()
+        {
+            try
+            {
+                browserWrapper.Child = null;
+            } catch (NullReferenceException)
+            {
+                // TODO We're swallowing this because CefGlue throws it eroneously
+                // Not a great solution...
+            }
+        }
 
         /// <summary>
         /// Will cause the browser control to automatically resize
