@@ -101,6 +101,35 @@ namespace eSearch.Views
             return TaskDialogResult.Cancel;
         }
 
+        public static async Task ExceptionDialog(string MainInstruction, Exception ex, Window owner)
+        {
+            string msg = ex.Message;
+            if (ex.InnerException != null)
+            {
+                msg += "\n\n" + ex.InnerException.Message;
+            }
+#if DEBUG
+                msg += "\n\n --- DEBUG STACK TRACE --- \n\n";
+                msg += ex.StackTrace;
+#endif
+
+            string? details = null;
+            if (msg != ex.Message)
+            {
+                details = msg;
+            }
+
+
+            var _dlgOptions = new TaskDialogWindowViewModel(
+                MainInstruction,
+                ex.Message,
+                S.Get("OK"), string.Empty, string.Empty, details
+            );
+            var okDialog = new TaskDialogWindow();
+            okDialog.DataContext = _dlgOptions;
+            var r = await okDialog.ShowDialog<object>(owner); // Assignment not really necessary, but useful for UI flow.
+        }
+
         /// <summary>
         /// Will return OK on delete.
         /// </summary>

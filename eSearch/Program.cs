@@ -96,7 +96,40 @@ namespace eSearch
             #endregion
             // If we got this far it's not an indexing task, we're launching the UI.
 
+            #region Initialize LlamaSharp early
+            string? llama_error_msg = null;
+            Exception? llama_exception = null;
+            bool llama_initialized = false;
+            try
+            {
+                MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
+                llama_initialized = LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
+                {
+                    llama_error_msg = msg;
+                }, wrappedDebugLogger).GetAwaiter().GetResult();
+            } catch (Exception ex)
+            {
+                llama_exception = ex;
+            }
+            #endregion
             
+            var upTime = Program.GetSystemUptime();
+            if (upTime.TotalMinutes < 5 && !llama_initialized)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(30));
+                // Restart the app with same args
+                var psi = new ProcessStartInfo
+                {
+                    FileName = Environment.ProcessPath,
+                    WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                    UseShellExecute = true // Helps with desktop apps
+                };
+                Process.Start(psi);
+
+                // Exit current process immediately (prevents app from starting)
+                Environment.Exit(0);
+                return;
+            }
 
             BuildAvaloniaApp()
             .AfterSetup((AppBuilder) =>
@@ -107,10 +140,63 @@ namespace eSearch
 
                 string? llama_sharp_error = init_llama_sharp();
 
-                if (llama_sharp_error != null)
+                if (llama_error_msg != null && !llama_initialized)
                 {
-                    Debug.WriteLine(llama_sharp_error);
-                    Debug.WriteLine("BREAK");
+                    Window mainWindow = null;
+                    while (mainWindow == null)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(2));
+                        mainWindow = Program.GetMainWindow();
+                        
+                    }
+                    if (mainWindow.DataContext is MainWindowViewModel mwvm)
+                    {
+                        var errorStatus =
+                        new StatusControlViewModel
+                        {
+                            StatusTitle = "LlamaSharp not Initialized",
+                            StatusMessage = "Click for details",
+                            ClickAction = async () =>
+                            {
+                                await TaskDialogWindow.OKDialog("LlamaSharp Error", llama_error_msg, mainWindow);
+                            }
+                        };
+                        errorStatus.DismissAction = () =>
+                        {
+                            mwvm.StatusMessages.Remove(errorStatus);
+                        };
+                        mwvm.StatusMessages.Add(errorStatus);
+                    }
+                    Debug.WriteLine(llama_error_msg);
+                }
+                if (llama_exception != null)
+                {
+                    Window mainWindow = null;
+                    while (mainWindow == null)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(2));
+                        mainWindow = Program.GetMainWindow();
+
+                    }
+                    if (mainWindow.DataContext is MainWindowViewModel mwvm)
+                    {
+                        var errorStatus =
+                        new StatusControlViewModel
+                        {
+                            StatusTitle = "LlamaSharp not Initialized",
+                            StatusMessage = "Click for details",
+                            ClickAction = async () =>
+                            {
+                                await TaskDialogWindow.ExceptionDialog("LlamaSharp Exception", llama_exception, mainWindow);
+                            }
+                        };
+                        errorStatus.DismissAction = () =>
+                {
+                            mwvm.StatusMessages.Remove(errorStatus);
+                        };
+                        mwvm.StatusMessages.Add(errorStatus);
+                }
+                    Debug.WriteLine(llama_exception.ToString());
                 }
 
             }).StartWithClassicDesktopLifetime(args);
@@ -134,7 +220,14 @@ namespace eSearch
             //}
         }
 
-        private static string? init_llama_sharp()
+        // How long the whole computer has been up, not eSearch itself.
+        public static TimeSpan GetSystemUptime()
+        {
+            long milliseconds = Environment.TickCount64;
+            return TimeSpan.FromMilliseconds(milliseconds);
+        }
+
+        private static async Task<string?> init_llama_sharp()
         {
             // Wait for the window to open so we have a valid parent for this.
             string errorMsg = string.Empty;
@@ -650,7 +743,28 @@ namespace eSearch
                     // TODO - Display error on the UI.
 
                     Debug.WriteLine($"Error loading LLM Model: {ex.ToString()}");
-                    status.StatusTitle = S.Get("Error loading model");
+
+                    var errorStatus = new StatusControlViewModel
+                    {
+                        StatusTitle = S.Get("Error loading model"),
+                        StatusMessage = S.Get("Click for details"),
+                        StatusError = ex.Message
+                    };
+                    errorStatus.DismissAction = () =>
+                    {
+                        mwvm.StatusMessages.Remove(errorStatus);
+                    };
+                    errorStatus.ClickAction = async () =>
+                    {
+                        var window = Program.GetMainWindow();
+                        if (window != null) // Just making the compiler happy
+                        {
+                            await TaskDialogWindow.ExceptionDialog(S.Get("Error loading model"), ex, window);
+                        }
+                    };
+                    mwvm.StatusMessages.Remove(status);
+                    mwvm.StatusMessages.Add(errorStatus);
+
                     throw;
                 } finally
                 {
