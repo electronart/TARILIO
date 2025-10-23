@@ -53,6 +53,11 @@ namespace eSearch
         public static bool WasLaunchedWithCreateLLMConnectionsDisabled = false;
 
         /// <summary>
+        /// Could be "NONE" "CUDA 11", "CUDA 12", "VULKAN", "OPEN CL", "CPU"
+        /// </summary>
+        public static string LLAMA_BACKEND = "NONE";
+
+        /// <summary>
         /// When not null, represents a running server serving completions.
         /// </summary>
         public static LocalLLMServer? RunningLocalLLMServer = null;
