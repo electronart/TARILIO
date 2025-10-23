@@ -1,14 +1,16 @@
-﻿using System;
+﻿using eSearch;
+using LLama.Common;
+using LLama.Native;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
-using LLama.Native;
-using LLama.Common;
+using System.Threading.Tasks;
 using static java.security.cert.CertPathValidatorException;
-using Microsoft.Extensions.Logging;
 
 // TODO Supports LLama only, NOT LLava despite method signatures.
 
@@ -22,7 +24,7 @@ public class LLamaBackendConfigurator
     private const string Cuda11Subfolder = "llama-cuda11-win-x64";
     private const string Cuda12Subfolder = "llama-cuda12-win-x64";
     private const string VulkanSubfolder = "llama-vulkan-win-x64";
-    private const string OpenClSubfolder = "llama-opencl-win-x64";
+    //private const string OpenClSubfolder = "llama-opencl-win-x64";
 
     // Common DLL name used in all backend folders
     private const string LlamaDllName = "llama.dll";
@@ -99,10 +101,13 @@ public class LLamaBackendConfigurator
     }
 
 
+    
+
+
     /// <summary>
     /// Configures backend with resets to avoid singleton state issues. Call this EARLY (e.g., in Program.Main before any LLamaSharp use).
     /// </summary>
-    public static bool ConfigureBackend2(int? gpuIndex = null, bool useLlava = false, Action<string> promptCallback = null, ILogger logger = null)
+    public static async Task<bool> ConfigureBackend2(int? gpuIndex = null, bool useLlava = false, Action<string> promptCallback = null, ILogger logger = null)
     {
         // Base config: Apply ONCE at start (before any DryRun/WithLibrary)
         NativeLibraryConfig.All
@@ -125,8 +130,26 @@ public class LLamaBackendConfigurator
         }
 
         NativeLibraryConfig.LLava.SkipCheck(true); // Bypass llava validation in dryrun
+        List<GPUInfo> gpus = new List<GPUInfo>();
+        int retries = 0;
+    retryGetGPUs:
+        try
+        {
+            gpus = GetAvailableGPUs();
+        }
+        catch (Exception ex)
+        {
+            ++retries;
+            if (retries < 3)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(retries * 30));
+                goto retryGetGPUs;
+            } else
+            {
+                throw new InvalidOperationException("Could not detect available GPU's");
+            }
+        }
 
-        var gpus = GetAvailableGPUs();
         if (gpus.Count == 0)
         {
             return SetBackend(CpuSubfolder, null, promptCallback);
@@ -146,7 +169,7 @@ public class LLamaBackendConfigurator
         }
 
         string reason = string.Empty;
-        // Check/prep CUDA env (for RTX 4090 + 12.6)
+        // Check/prep CUDA env
         var cudaInfo = GetCudaVersion();
         if (selectedGpu.Vendor == "NVIDIA" && cudaInfo.Version != null)
         {
@@ -164,13 +187,13 @@ public class LLamaBackendConfigurator
                 return SetBackend(CpuSubfolder, "CUDA Version incompatible", promptCallback);
             }
 
-            // Try CUDA12 first (RTX 4090 compatible)
+            // Try CUDA12 first
             if (TryBackendWithReset(Cuda12Subfolder, useLlava, promptCallback, logger, out var cuda12Success, out reason))
             {
                 return true;
             }
 
-            // Fallback to CUDA11 (rare for 4090, but for completeness)
+            // Fallback to CUDA11 
             if (TryBackendWithReset(Cuda11Subfolder, useLlava, promptCallback, logger, out var cuda11Success, out var reason2))
             {
                 return true;
@@ -186,18 +209,17 @@ public class LLamaBackendConfigurator
         }
 
         // Non-NVIDIA or CUDA fallback: Vulkan -> OpenCL -> CPU
-        if (TryBackendWithReset(VulkanSubfolder, useLlava, promptCallback, logger, out var vulkanSuccess, out var reason3))
-        {
-            return true;
-        }
+        bool hasVulkan = await VulkanChecker.IsVulkanAvailableAsync(TimeSpan.FromSeconds(5));
+        string? reason3 = null;
 
-        if (TryBackendWithReset(OpenClSubfolder, useLlava, promptCallback, logger, out var openclSuccess, out var reason4))
+        if (hasVulkan && TryBackendWithReset(VulkanSubfolder, useLlava, promptCallback, logger, out var vulkanSuccess, out var _reason3))
         {
+            reason3 = _reason3;
             return true;
         }
 
         // Final CPU fallback
-        var cpuReason = $"{reason} {reason3} {reason4 ?? ""} Falling back to CPU.";
+        var cpuReason = $"{reason} {reason3 ?? "Vulkan Support not detected"} Falling back to CPU.";
         promptCallback?.Invoke(cpuReason);
         return SetBackend(CpuSubfolder, cpuReason, promptCallback);
     }
@@ -249,7 +271,7 @@ public class LLamaBackendConfigurator
             NativeLibraryConfig.All.WithSearchDirectory(NativeLibsFolder).WithAutoFallback(true);
             return false;
         }
-
+        Program.LLAMA_BACKEND = subfolder;
         success = true;
         return true;
         
@@ -322,13 +344,17 @@ public class LLamaBackendConfigurator
         return (null, 0);
     }
 
+
+
+
     private static string GetDllPath(string backendSubfolder)
     {
         return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, backendSubfolder, LlamaDllName);
     }
 
-    private static bool SetBackend(string backendSubfolder, string fallbackReason = null, Action<string> promptCallback = null)
+    private static bool SetBackend(string backendSubfolder, string? fallbackReason = null, Action<string>? promptCallback = null)
     {
+        Program.LLAMA_BACKEND = backendSubfolder;
         string dllPath = GetDllPath(backendSubfolder);
         string searchPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, NativeLibsFolder, backendSubfolder);
         NativeLibraryConfig.All
@@ -347,7 +373,49 @@ public class LLamaBackendConfigurator
         {
             promptCallback?.Invoke(fallbackReason);
         }
-
+        
         return true;
+    }
+}
+
+public class VulkanChecker
+{
+    public static async Task<bool> IsVulkanAvailableAsync(TimeSpan timeout)
+    {
+        try
+        {
+            using var process = new Process();
+            process.StartInfo.FileName = "vulkaninfo";
+            process.StartInfo.Arguments = "--summary";
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+
+            process.Start();
+
+            // Wait for exit with timeout
+            var exited = await Task.Run(() => process.WaitForExit((int)timeout.TotalMilliseconds));
+
+            if (!exited)
+            {
+                process.Kill();
+                return false; // Timed out
+            }
+
+            if (process.ExitCode != 0)
+            {
+                // Error occurred (e.g., command not found or Vulkan not supported)
+                return false;
+            }
+
+            string output = process.StandardOutput.ReadToEnd();
+            return !string.IsNullOrEmpty(output) && output.Contains("deviceName"); // Basic validation for GPU presence
+        }
+        catch (Exception)
+        {
+            // Command not found or other issues
+            return false;
+        }
     }
 }
