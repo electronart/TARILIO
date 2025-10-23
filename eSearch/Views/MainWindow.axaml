@@ -183,9 +183,7 @@
 					Command="{Binding HelpAboutApplication}"
 					Content="{Binding ProductTagText}"
 					TabIndex="1"
-					>
-					eSearch LITE
-				</Button>
+				/>
 			</DockPanel>
 			<Border 
 				Classes="MainPanel" 

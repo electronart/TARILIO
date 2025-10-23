@@ -456,9 +456,9 @@ namespace eSearch.Models.AI
                         Created = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                         Model = request.Model,
                         Choices = new List<ChatChoice>
-                {
-                    new ChatChoice { Index = 0, Delta = new ChatDelta { Content = "" }, FinishReason = "stop", Logprobs = null }
-                }
+                        {
+                            new ChatChoice { Index = 0, Delta = new ChatDelta { Content = "" }, FinishReason = "stop", Logprobs = null }
+                        }
                     };
                     await context.Response.WriteAsync($"data: {JsonConvert.SerializeObject(finalChunk)}\n\n");
                     await context.Response.WriteAsync("data: [DONE]\n\n");
@@ -489,15 +489,15 @@ namespace eSearch.Models.AI
                         Created = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                         Model = request.Model,
                         Choices = new List<ChatChoice>
-                {
-                    new ChatChoice
-                    {
-                        Index = 0,
-                        Message = new ChatMessage { Role = "assistant", Content = sb.ToString() },
-                        FinishReason = "stop",
-                        Logprobs = null
-                    }
-                },
+                        {
+                            new ChatChoice
+                            {
+                                Index = 0,
+                                Message = new ChatMessage { Role = "assistant", Content = sb.ToString() },
+                                FinishReason = "stop",
+                                Logprobs = null
+                            }
+                        },
                         Usage = new Usage
                         {
                             PromptTokens = promptTokens,

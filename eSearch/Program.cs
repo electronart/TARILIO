@@ -117,7 +117,7 @@ namespace eSearch
                 llama_exception = ex;
             }
             #endregion
-            
+
             var upTime = Program.GetSystemUptime();
             if (upTime.TotalMinutes < 5 && !llama_initialized)
             {
@@ -137,14 +137,13 @@ namespace eSearch
             }
 
             BuildAvaloniaApp()
-            .AfterSetup((AppBuilder) =>
+            .AfterSetup(async (AppBuilder) =>
             {
                 timer = new Timer(60000);
                 timer.Elapsed += Timer_Elapsed;
                 timer.Start();
 
-                string? llama_sharp_error = init_llama_sharp();
-
+                
                 if (llama_error_msg != null && !llama_initialized)
                 {
                     Window mainWindow = null;
@@ -196,11 +195,11 @@ namespace eSearch
                             }
                         };
                         errorStatus.DismissAction = () =>
-                {
+                        {
                             mwvm.StatusMessages.Remove(errorStatus);
                         };
                         mwvm.StatusMessages.Add(errorStatus);
-                }
+                    }
                     Debug.WriteLine(llama_exception.ToString());
                 }
 
@@ -240,7 +239,7 @@ namespace eSearch
             try
             {
                 MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
-                var res = LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
+                var res = await LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
                 {
                     Dispatcher.UIThread.Post(async () =>
                     {
