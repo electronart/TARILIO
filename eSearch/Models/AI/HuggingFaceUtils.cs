@@ -54,10 +54,19 @@ namespace eSearch.Models.AI
 
         private static readonly HttpClient _client = new HttpClient { Timeout = TimeSpan.FromHours(6) }; // Longer timeout for large files
 
+        private string ReplaceInvalidFilenameChars(string filename)
+        {
+            return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+        }
+
         public async Task DownloadModelFileAsync(string modelId, string filename, string localDir, IProgress<DownloadProgress>? progressReporter = null, string? token = null, CancellationToken cancellationToken = default)
         {
             // Construct local path, handling subdirs in filename
-            var localPath = Path.Combine(localDir, filename.Replace('/', Path.DirectorySeparatorChar));
+            var localPath = Path.Combine(
+                localDir, 
+                modelId.Replace('/', Path.DirectorySeparatorChar), 
+                filename.Replace('/', Path.DirectorySeparatorChar)
+            );
             Directory.CreateDirectory(Path.GetDirectoryName(localPath)); // Ensure dirs exist
 
             // Resumable: Get existing size

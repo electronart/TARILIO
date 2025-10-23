@@ -51,7 +51,8 @@ namespace eSearch.Models.AI
             {
                 if (directory.Exists)
                 {
-                    foreach (var file in directory.GetFiles("*.gguf"))
+                    
+                    foreach (var file in directory.GetFiles("*.gguf", SearchOption.AllDirectories))
                     {
                         models.Add(file.FullName);
                     }
