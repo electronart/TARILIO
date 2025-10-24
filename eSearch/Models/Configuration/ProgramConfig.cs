@@ -3,10 +3,12 @@ using DesktopSearch2.Views;
 using eSearch.Interop.AI;
 using eSearch.Models.AI.MCP;
 using eSearch.Models.AI.MCP.Tools;
+using eSearch.Utils;
 using eSearch.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -117,32 +119,46 @@ namespace eSearch.Models.Configuration
         {
             get
             {
-                if (OperatingSystem.IsWindows()) {
-                    if (Microsoft.Win32.Registry.GetValue("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "eSearch", null) == null)
-                    {
-                        return false;
-                    } else
-                    {
-                        return true;
-                    }
+                if (OperatingSystem.IsWindows())
+                {
+                    // We used to register eSearch in the startup registry (ie. to show on task manager startup applications
+                    // However, ran into issues with it related to llamasharp, so we switched to using shortcut in the startup folder
+                    // (shell:startup)
+                    Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                    key?.DeleteValue("eSearch", false);
                 }
-                return false;
+
+                return System.IO.File.Exists(GetStartupShortcutFilename());
             }
             set 
             {
-                if (OperatingSystem.IsWindows())
+
+                if (value)
                 {
-                    Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                    if (value == true)
+                    if (OperatingSystem.IsWindows())
                     {
-                        string location = Environment.ProcessPath;
-                        key.SetValue("eSearch", location);
-                    } else
+                        string fileName = GetStartupShortcutFilename();
+                        string? target = Environment.ProcessPath;
+                        if (target != null)
+                        {
+                            WindowsShortcutHelper.CreateShortcut(fileName, target);
+                        }
+                    }
+                } else
+                {
+                    if (File.Exists(GetStartupShortcutFilename()))
                     {
-                        key.DeleteValue("eSearch", false);
+                        File.Delete(GetStartupShortcutFilename());
                     }
                 }
             }
+        }
+
+        private string GetStartupShortcutFilename()
+        {
+            string startDir = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+            string fileName = GetProductTagText() + ".lnk";
+            return Path.Combine(startDir, fileName);
         }
 
 
