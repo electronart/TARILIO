@@ -1,5 +1,5 @@
 # eSearch project 
-Desktop full-text search information retrieval with integrated AI Assistants and MCP Client
+Desktop full-text search information retrieval with integrated AI Assistant, MCP Client, Local LLM server, Hugging Face LLM downloads.
 
 []([https://badge.mcpx.dev?type=client](https://badge.mcpx.dev/?type=client) 'MCP Client')
 <img src="https://badge.mcpx.dev?type=client" title="MCP Client"/>
