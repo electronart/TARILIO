@@ -16,6 +16,8 @@
 	</Design.DataContext>
 	<Border 
 		Background="{DynamicResource SystemChromeLowColor}"
+		BorderThickness="1 1 1 1"
+		BorderBrush="{DynamicResource SystemChromeMediumColor}"
 		CornerRadius="10"
 		Padding="15"
 		Margin="5">

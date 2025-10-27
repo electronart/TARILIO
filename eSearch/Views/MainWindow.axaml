@@ -232,7 +232,7 @@
 								<DockPanel x:Name="ResultsView" Grid.Row="0" IsVisible="{Binding !Session.Query.UseAISearch}">
 									<Border DockPanel.Dock="Right"
 											BorderThickness="1 0 0 0"
-											BorderBrush="LightGray">
+											BorderBrush="{DynamicResource SystemChromeHighColor}">
 										<StackPanel Width="30">
 											<Button Width="30"
 													Height="30"
@@ -293,7 +293,7 @@
 
 									<Border DockPanel.Dock="Right"
 											BorderThickness="1 0 0 0"
-											BorderBrush="LightGray"
+											BorderBrush="{DynamicResource SystemChromeHighColor}"
 											>
 										<StackPanel Width="30">
 											<Button Width="30"
