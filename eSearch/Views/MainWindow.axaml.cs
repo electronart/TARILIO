@@ -33,6 +33,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Threading;
@@ -103,6 +104,21 @@ namespace eSearch.Views
 
             MWSearchControl.SearchControlBorder.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
             this.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
+
+            menuItemHelpUserGuide.Click += MenuItemHelpUserGuide_Click;
+        }
+
+        private void MenuItemHelpUserGuide_Click(object? sender, RoutedEventArgs e)
+        {
+            string? exeDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
+            if (exeDir == null) return;
+            string guide_path = Path.Combine(exeDir, "docs", "eSearch-Pro-User-Guide.pdf");
+            if (File.Exists(guide_path))
+            {
+                var uri = new System.Uri(guide_path);
+                var url = uri.AbsoluteUri;
+                Models.Utils.CrossPlatformOpenBrowser(url);
+            }
         }
 
         private void MWSearchControl_PointerPressed(object? sender, PointerPressedEventArgs e)

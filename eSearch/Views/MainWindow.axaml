@@ -161,6 +161,7 @@
 						</MenuItem>
 						<MenuItem Header="{Binding S[Plugins]}" x:Name="menuItemPlugins"/>
 						<MenuItem Header="{Binding S[Help]}">
+							<MenuItem Header="{Binding S[User~Guide]}" x:Name="menuItemHelpUserGuide"/>
 							<MenuItem Header="{Binding S[About]}" Command="{Binding HelpAboutApplication}"></MenuItem>
 						</MenuItem>
 						<MenuItem Header="Debug" IsVisible="{Binding IsDebugBuild}">
