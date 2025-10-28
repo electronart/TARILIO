@@ -18,6 +18,7 @@
 		<myConverters:SearchTextBoxHeightConverter x:Key="SearchTextBoxHeightConverter"/>
 		<myConverters:SearchControlsVerticalAlignmentConverter x:Key="SearchControlsVerticalAlignmentConverter"/>
 	</UserControl.Resources>
+	<Border x:Name="SearchControlBorder" IsHitTestVisible="True" Background="Transparent">
 	<StackPanel Orientation="Vertical">
 		<DockPanel></DockPanel>
 		<Grid x:Name="SearchBoxRow" 
@@ -158,5 +159,6 @@
 			</StackPanel>
 		</DockPanel>
 	</StackPanel>
+	</Border>
 </UserControl>
 

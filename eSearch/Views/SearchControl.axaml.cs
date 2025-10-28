@@ -25,8 +25,6 @@ namespace eSearch.Views
             //ResponsiveLayoutUpdate();
         }
 
-        
-
         private void SearchControl_SizeChanged(object? sender, SizeChangedEventArgs e)
         {
             if (e.WidthChanged)

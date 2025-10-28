@@ -100,6 +100,23 @@ namespace eSearch.Views
             menuItemDebugStatusTest.Click += MenuItemDebugStatusTest_Click;
 
             Program.OnLanguageChanged += Program_OnLanguageChanged;
+
+            MWSearchControl.SearchControlBorder.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
+            this.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
+        }
+
+        private void MWSearchControl_PointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (e.Pointer.IsPrimary && e.Source == sender)
+            {
+                this.BeginMoveDrag(e);
+                e.Handled = true;
+                return;
+            }
+            if (e.Source != sender && sender != this)
+            {
+                Debug.WriteLine("BREAK");
+            }
         }
 
         private void MenuItemDebugStatusTest_Click(object? sender, RoutedEventArgs e)
