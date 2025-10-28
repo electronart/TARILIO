@@ -104,6 +104,7 @@ namespace eSearch.Views
 
             MWSearchControl.SearchControlBorder.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
             this.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
+            MainUIDockPanel.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
 
             menuItemHelpUserGuide.Click += MenuItemHelpUserGuide_Click;
         }

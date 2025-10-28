@@ -43,7 +43,7 @@
 		<vm:MainWindowViewModel/>
 	</Design.DataContext>
 	<Grid> <!-- The grid control is used to layer toasts over the main UI -->
-		<DockPanel> <!-- The main UI -->
+		<DockPanel x:Name="MainUIDockPanel" Background="Transparent"> <!-- The main UI -->
 			<DockPanel DockPanel.Dock="Top" x:Name="MenuOnly">
 				<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="10,5" Spacing="5">
 					<Image Source="{Binding ProductIcon}" Width="20" Height="20"/>
@@ -456,13 +456,19 @@
 				BorderBrush="{DynamicResource SystemChromeMediumColor}"
 				Background="{DynamicResource SystemRegionColor}"
 			>
-			<ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding StatusMessages}" IsVisible="{Binding !ShowWordWheel}">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate>
-						<statusctrl:StatusControl/>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
+				<Border.IsVisible>
+					<MultiBinding Converter="{x:Static BoolConverters.And}">
+						<Binding Path="!ShowWordWheel"/>
+						<Binding Path="!!StatusMessages.Count"/>
+					</MultiBinding>
+				</Border.IsVisible>
+				<ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding StatusMessages}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<statusctrl:StatusControl/>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
 			</Border>
 		</StackPanel>
 	</Grid>
