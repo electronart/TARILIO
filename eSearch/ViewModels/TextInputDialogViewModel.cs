@@ -34,7 +34,7 @@ namespace eSearch.ViewModels
             set
             {
                 string raw = value;
-                if (raw.Length > 50) raw = raw.Substring(0, 50);
+                if (raw.Length > MaxLength) raw = raw.Substring(0, MaxLength);
                 raw = raw.Replace("<", "").Replace(">", "").Replace("\"", "");
                 this.RaiseAndSetIfChanged(ref _text, raw);
                 this.RaisePropertyChanged(nameof(TextValid));
