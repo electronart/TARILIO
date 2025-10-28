@@ -448,6 +448,14 @@
 			</Border>
 		</DockPanel>
 		<StackPanel Width="200" VerticalAlignment="Bottom" HorizontalAlignment="Left" Classes="MainPanel">
+			<Border 
+				BorderThickness="1 1 1 1"
+				CornerRadius="10"
+				Margin="5"
+				Padding="5"
+				BorderBrush="{DynamicResource SystemChromeMediumColor}"
+				Background="{DynamicResource SystemRegionColor}"
+			>
 			<ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding StatusMessages}" IsVisible="{Binding !ShowWordWheel}">
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
@@ -455,6 +463,7 @@
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
+			</Border>
 		</StackPanel>
 	</Grid>
 </Window>
