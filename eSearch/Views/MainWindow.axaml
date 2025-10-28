@@ -286,7 +286,7 @@
 								<GridSplitter 
 									x:Name="ResultsDocumentSplitter" 
 									Grid.Row="1" 
-									Background="DarkGray" 
+									Background="{DynamicResource SystemChromeHighColor}" 
 									ResizeDirection="Rows"
 									IsVisible="{Binding !IsGridSplitterHidden}"/>
 
