@@ -63,7 +63,6 @@
 					<Label FontWeight="500" FontSize="18" Content="{Binding ProductTag}"/>
 					<Label Content="{Binding ApplicationVersion}"/>
 					<Label Content="{Binding LLamaBackend}"/>
-					<Button Margin="3" x:Name="ButtonHelp" Classes="hyperlink" Content="{Binding S[Help]}"/>
 				</StackPanel>
 			</DockPanel>
 			<Label Margin="5" Content="{Binding DisplayedSerial}"></Label>
