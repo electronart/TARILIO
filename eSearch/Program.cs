@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using DynamicData;
@@ -63,9 +65,28 @@ namespace eSearch
         /// </summary>
         public static LocalLLMServer? RunningLocalLLMServer = null;
 
-
+        public static List<Task> ProgramInitTasks = new List<Task>();
 
         public static InMemoryLog LLMServerSessionLog = new InMemoryLog(TimeSpan.FromDays(7));
+
+        // Either 'eSearch' or 'TARILIO'
+        public static string GetBaseProductTag()
+        {
+            StringBuilder sb = new StringBuilder();
+#if TARILIO
+            sb.Append("TARILIO");
+#else
+            sb.Append("eSearch");
+#endif
+#if STANDALONE
+            sb.Append(" Portable");
+#endif
+            return sb.ToString();
+        }
+
+
+
+
 
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -102,7 +123,7 @@ namespace eSearch
             #endregion
             // If we got this far it's not an indexing task, we're launching the UI.
 
-            #region Perform Necessary Initialization tasks in Parallel
+            #region Start Necessary Initialization tasks in Parallel
             Task initProgramConfig = Task.Run(() =>
             {
                 var programConfig = Program.ProgramConfig; // This will call the getter and cause it to perform IO.
@@ -134,27 +155,15 @@ namespace eSearch
                     llama_exception = ex;
                 }
             });
+
+            Program.ProgramInitTasks.Add(initLLamaSharp);
+            Program.ProgramInitTasks.Add(initTikaTask);
+            Program.ProgramInitTasks.Add(initProgramConfig);
             #endregion
             // Wait for all key parts to be initialized.
             Task.WaitAll(initProgramConfig, initLLamaSharp, initTikaTask);
 
-            var upTime = Program.GetSystemUptime();
-            if (upTime.TotalMinutes < 10 && !llama_initialized)
-            {
-                Thread.Sleep(TimeSpan.FromSeconds(30));
-                // Restart the app with same args
-                var psi = new ProcessStartInfo
-                {
-                    FileName = Environment.ProcessPath,
-                    WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
-                    UseShellExecute = true // Helps with desktop apps
-                };
-                Process.Start(psi);
-
-                // Exit current process immediately (prevents app from starting)
-                Environment.Exit(0);
-                return;
-            }
+            
 
             BuildAvaloniaApp()
             .AfterSetup(async (AppBuilder) =>
@@ -163,7 +172,7 @@ namespace eSearch
                 timer.Elapsed += Timer_Elapsed;
                 timer.Start();
 
-                
+                Task.WaitAll(initLLamaSharp);
                 if (llama_error_msg != null && !llama_initialized)
                 {
                     Window mainWindow = null;
@@ -950,6 +959,17 @@ namespace eSearch
             sb.Append(asm.GetName().Version.Revision);
             sb.Append(")");
             return sb.ToString();
+        }
+
+        public static Bitmap GetProductIcon()
+        {
+            var assemblyName = typeof(Program).Assembly.GetName().Name;
+#if TARILIO
+        var bitmap = new Bitmap(AssetLoader.Open(new System.Uri("avares://" + assemblyName + "/Assets/tarilio-icon.ico")));
+#else
+            var bitmap = new Bitmap(AssetLoader.Open(new System.Uri("avares://" + assemblyName + "/Assets/esearch-icon.ico")));
+#endif
+            return bitmap;
         }
 
         private static Metadata _programVersionMetadata = null;

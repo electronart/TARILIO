@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using com.sun.corba.se.spi.activation;
 using DocumentFormat.OpenXml.Drawing;
+using Avalonia.Threading;
 //using ControlCatalog.Models;
 //using ControlCatalog.Pages;
 #endregion
@@ -34,6 +35,8 @@ namespace eSearch
 {
     public partial class App : Application
     {
+        private SplashWindow? _splashWindow;
+
         public override void Initialize()
         {
             
@@ -43,58 +46,7 @@ namespace eSearch
             AvaloniaXamlLoader.Load(this);
 
 
-            DataContext = Program.ProgramConfig.AppDataContext;
-            Program.ProgramConfig.AppDataContext.MainWindowViewModel.Initializing = false;
-
-            BackgroundWorker cleanupWorker = new BackgroundWorker();
-            cleanupWorker.DoWork += CleanupWorker_DoWork;
-            cleanupWorker.RunWorkerAsync();
-            //SetLowContrast();
-            #region Init Themes to switch between
-                // Pull the 'styled' theme out so we can switch back to it.
-                foreach (var style in Styles)
-                {
-                    if (style is FluentTheme theme)
-                    {
-                        styledFluentTheme = theme;
-                    }
-                }
-            if (highContrastTheme == null) highContrastTheme = CreateHighContrastTheme();
-
-            #endregion
-            if (Program.ProgramConfig.IsThemeHighContrast)
-            {
-                ReplaceFluentTheme(highContrastTheme);
-            }
-            #region Init MCP Servers
-            Parallel.ForEach(Program.ProgramConfig.GetAllAvailableMCPServers(), availableServer =>
-            {
-                try
-                {
-                    var shouldBeRunning = Program.ProgramConfig.EnabledMCPServerNames.Contains(availableServer.DisplayName);
-                    var isRunning = availableServer.IsServerRunning;
-                    if (shouldBeRunning && !isRunning)
-                    {
-                        var started = availableServer.StartServer().Result;
-                        if (!started)
-                        {
-                            Debug.WriteLine("Failed to start Server " + availableServer.DisplayName);
-                        }
-                    }
-                    if (!shouldBeRunning && isRunning)
-                    {
-                        var stopped = availableServer.StopServer().Result;
-                        if (!stopped)
-                        {
-                            Debug.WriteLine("Failed to stop Server " + availableServer.DisplayName);
-                        }
-                    }
-                } catch (Exception ex)
-                {
-                    Debug.WriteLine($"MCP Server `{availableServer.DisplayName}` threw exception `{ex.ToString()}`");
-                }
-            });
-            #endregion
+            
         }
 
         FluentTheme? styledFluentTheme;
@@ -292,15 +244,121 @@ namespace eSearch
 
         public override void OnFrameworkInitializationCompleted()
         {
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
-                && Current.DataContext is AppDataContext appDataContext)
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow
+                _splashWindow = new SplashWindow();
+                desktop.MainWindow = _splashWindow;
+                _splashWindow.Show();
+                Task.Run(async () =>
                 {
-                    DataContext = appDataContext.MainWindowViewModel,
-                };
-                desktop.ShutdownRequested += Desktop_ShutdownRequested;
-                desktop.Exit += Desktop_Exit;
+                    try
+                    {
+                        Task.WaitAll(Program.ProgramInitTasks.ToArray());
+                        // Here's where the initialization logic goes that needs to appear before the main window...
+                        var upTime = Program.GetSystemUptime();
+                        if (upTime.TotalMinutes < 10 && Program.LLAMA_BACKEND == "NONE")
+                        {
+                            await Task.Delay(TimeSpan.FromSeconds(30));
+                            // Restart the app with same args
+                            var psi = new ProcessStartInfo
+                            {
+                                FileName = Environment.ProcessPath,
+                                WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                                UseShellExecute = true // Helps with desktop apps
+                            };
+                            Process.Start(psi);
+
+                            // Exit current process immediately (prevents app from starting)
+                            Environment.Exit(0);
+                            return;
+                        }
+
+                        await Dispatcher.UIThread.InvokeAsync(async () =>
+                        {
+                            DataContext = Program.ProgramConfig.AppDataContext;
+                            Program.ProgramConfig.AppDataContext.MainWindowViewModel.Initializing = false;
+
+                            #region Init Themes to switch between
+                            // Pull the 'styled' theme out so we can switch back to it.
+                            foreach (var style in Styles)
+                            {
+                                if (style is FluentTheme theme)
+                                {
+                                    styledFluentTheme = theme;
+                                }
+                            }
+                            if (highContrastTheme == null) highContrastTheme = CreateHighContrastTheme();
+
+                            #endregion
+                            if (Program.ProgramConfig.IsThemeHighContrast)
+                            {
+                                ReplaceFluentTheme(highContrastTheme);
+                            }
+                        });
+                        
+
+                        BackgroundWorker cleanupWorker = new BackgroundWorker();
+                        cleanupWorker.DoWork += CleanupWorker_DoWork;
+                        cleanupWorker.RunWorkerAsync();
+                        
+                        #region Init MCP Servers
+                        Parallel.ForEach(Program.ProgramConfig.GetAllAvailableMCPServers(), availableServer =>
+                        {
+                            try
+                            {
+                                var shouldBeRunning = Program.ProgramConfig.EnabledMCPServerNames.Contains(availableServer.DisplayName);
+                                var isRunning = availableServer.IsServerRunning;
+                                if (shouldBeRunning && !isRunning)
+                                {
+                                    var started = availableServer.StartServer().Result;
+                                    if (!started)
+                                    {
+                                        Debug.WriteLine("Failed to start Server " + availableServer.DisplayName);
+                                    }
+                                }
+                                if (!shouldBeRunning && isRunning)
+                                {
+                                    var stopped = availableServer.StopServer().Result;
+                                    if (!stopped)
+                                    {
+                                        Debug.WriteLine("Failed to stop Server " + availableServer.DisplayName);
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"MCP Server `{availableServer.DisplayName}` threw exception `{ex.ToString()}`");
+                            }
+                        });
+                        #endregion
+
+
+                        await Dispatcher.UIThread.InvokeAsync(async () =>
+                        {
+                            desktop.MainWindow = new MainWindow
+                            {
+                                DataContext = Program.ProgramConfig.AppDataContext.MainWindowViewModel,
+                            };
+                            desktop.MainWindow.Show();
+                            _splashWindow.Close();
+                            desktop.ShutdownRequested += Desktop_ShutdownRequested;
+                            desktop.Exit += Desktop_Exit;
+                            _splashWindow = null;
+                        });
+                    } catch (Exception ex)
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(async () =>
+                        {
+                            if (_splashWindow != null)
+                            {
+                                await TaskDialogWindow.ExceptionDialog("Error Starting Application", ex, _splashWindow);
+                                _splashWindow?.Close();
+                            }
+                        });
+                    }
+                });
+
+                
             }
             base.OnFrameworkInitializationCompleted();
         }

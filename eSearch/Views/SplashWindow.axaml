@@ -1,0 +1,40 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        MinWidth="400"
+        Width="400"
+        Height="170"
+        x:Class="eSearch.SplashWindow"
+        Design.DataContext="ViewModelBase}"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        
+        Title="SplashWindow">
+  <DockPanel Margin="10">
+      <Image 
+        DockPanel.Dock="Left" 
+        x:Name="ProductImg"
+        Width="60"
+        Height="60"
+        Margin="20"
+             
+        />
+      <StackPanel Orientation="Vertical" Margin="25,25,35,25" Spacing="20">
+          <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+		      <Label 
+              x:Name="ProductTag"
+              FontWeight="SemiBold" 
+              FontSize="20">Product Tag</Label>
+              <Label 
+              x:Name="ProductVersion"
+              >Product Version
+              </Label>
+          </StackPanel>
+          <ProgressBar IsIndeterminate="True"/>
+      </StackPanel>
+  </DockPanel>
+</Window>
