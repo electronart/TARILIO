@@ -36,7 +36,7 @@ namespace eSearch
     {
         public override void Initialize()
         {
-            TikaServer.EnsureRunning();
+            
             // Styles.Insert(0, Fluent);
             Styles.Add(DataGridFluent);
             //Styles.Insert(0, DataGridFluent);

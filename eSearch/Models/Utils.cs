@@ -385,10 +385,14 @@ namespace eSearch.Models
             psi.Arguments = " -version";
             psi.RedirectStandardError = true;
             psi.UseShellExecute = false;
+            psi.CreateNoWindow = true;
+            psi.WindowStyle = ProcessWindowStyle.Hidden;
 
-            Process pr = Process.Start(psi);
-            string strOutput = pr.StandardError.ReadLine().Split(' ')[2].Replace("\"", "");
+            Process? pr = Process.Start(psi);
+            string strOutput = pr?.StandardError.ReadLine()?.Split(' ')[2].Replace("\"", "") ?? "Process didn't start?";
+#if DEBUG
             Debug.WriteLine("Java Version \"" + strOutput + "\"");
+#endif
             errorTitle = "";
             errorMsg = "";
             return true;

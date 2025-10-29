@@ -2,37 +2,38 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
-using System;
-using System.IO;
-using System.Diagnostics;
-using eSearch.ViewModels;
-using eSearch.Models.Localization;
-using Xilium.CefGlue.Common;
-using System.Collections.Generic;
-using System.Linq;
-using eSearch.Models.Documents.Parse;
-using System.Reflection;
-using System.Text;
-using eSearch.Models.Configuration;
-using Newtonsoft.Json;
-using System.Timers;
-using ReactiveUI;
-using eSearch.Models.Plugins;
-using S = eSearch.ViewModels.TranslationsViewModel;
-using eSearch.Models.AI.MCP.Tools;
-using Xilium.CefGlue;
+using Avalonia.Threading;
 using DynamicData;
 using eSearch.Interop;
-using eSearch.Models.Logging;
-using eSearch.Models.Indexing;
 using eSearch.Interop.Indexing;
-using System.Threading;
-using Timer = System.Timers.Timer;
 using eSearch.Models.AI;
-using System.Threading.Tasks;
+using eSearch.Models.AI.MCP.Tools;
+using eSearch.Models.Configuration;
+using eSearch.Models.Documents;
+using eSearch.Models.Documents.Parse;
+using eSearch.Models.Indexing;
+using eSearch.Models.Localization;
+using eSearch.Models.Logging;
+using eSearch.Models.Plugins;
+using eSearch.ViewModels;
 using eSearch.ViewModels.StatusUI;
 using eSearch.Views;
-using Avalonia.Threading;
+using Newtonsoft.Json;
+using ReactiveUI;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Timers;
+using Xilium.CefGlue;
+using Xilium.CefGlue.Common;
+using S = eSearch.ViewModels.TranslationsViewModel;
+using Timer = System.Timers.Timer;
 
 namespace eSearch
 {
@@ -101,22 +102,41 @@ namespace eSearch
             #endregion
             // If we got this far it's not an indexing task, we're launching the UI.
 
-            #region Initialize LlamaSharp early
+            #region Perform Necessary Initialization tasks in Parallel
+            Task initProgramConfig = Task.Run(() =>
+            {
+                var programConfig = Program.ProgramConfig; // This will call the getter and cause it to perform IO.
+            });
+
+            Task initTikaTask = Task.Run(() =>
+            {
+                TikaServer.EnsureRunning();
+            });
+
             string? llama_error_msg = null;
-            Exception? llama_exception = null;
             bool llama_initialized = false;
-            try
+            Exception? llama_exception = null;
+
+            Task initLLamaSharp = Task.Run(() =>
             {
-                MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
-                llama_initialized = LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
+                
+                
+                try
                 {
-                    llama_error_msg = msg;
-                }, wrappedDebugLogger).GetAwaiter().GetResult();
-            } catch (Exception ex)
-            {
-                llama_exception = ex;
-            }
+                    MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
+                    llama_initialized = LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
+                    {
+                        llama_error_msg = msg;
+                    }, wrappedDebugLogger).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    llama_exception = ex;
+                }
+            });
             #endregion
+            // Wait for all key parts to be initialized.
+            Task.WaitAll(initProgramConfig, initLLamaSharp, initTikaTask);
 
             var upTime = Program.GetSystemUptime();
             if (upTime.TotalMinutes < 10 && !llama_initialized)
@@ -175,7 +195,7 @@ namespace eSearch
                 }
                 if (llama_exception != null)
                 {
-                    Window mainWindow = null;
+                    Window? mainWindow = null;
                     while (mainWindow == null)
                     {
                         await Task.Delay(TimeSpan.FromSeconds(2));
@@ -223,6 +243,7 @@ namespace eSearch
             //    });
             //}
         }
+
 
         // How long the whole computer has been up, not eSearch itself.
         public static TimeSpan GetSystemUptime()
