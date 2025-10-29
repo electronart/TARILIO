@@ -119,7 +119,7 @@ namespace eSearch
             #endregion
 
             var upTime = Program.GetSystemUptime();
-            if (upTime.TotalMinutes < 5 && !llama_initialized)
+            if (upTime.TotalMinutes < 10 && !llama_initialized)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(30));
                 // Restart the app with same args

@@ -3297,7 +3297,7 @@
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_9D67E3266BD84891AA55662B49799027"
                                     {
                                     "Name" = "8:Language Models"
-                                    "AlwaysCreate" = "11:FALSE"
+                                    "AlwaysCreate" = "11:TRUE"
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
                                     "Property" = "8:_993DFA15452A458B80FD7F757DE963FA"
@@ -3308,7 +3308,7 @@
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_AF7643E16E5D4AEBB98879A466F93D37"
                                     {
                                     "Name" = "8:System Prompts"
-                                    "AlwaysCreate" = "11:FALSE"
+                                    "AlwaysCreate" = "11:TRUE"
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
                                     "Property" = "8:_37774C149BB5496684EF3441085F33A4"
@@ -3317,7 +3317,7 @@
                                             "{9EF0B969-E518-4E46-987F-47570745A589}:_E27BF4942E8D4C619C6DAF57D56CD379"
                                             {
                                             "Name" = "8:POML"
-                                            "AlwaysCreate" = "11:FALSE"
+                                            "AlwaysCreate" = "11:TRUE"
                                             "Condition" = "8:"
                                             "Transitive" = "11:FALSE"
                                             "Property" = "8:_36B95541E59F46BDBA1494742ECF11E7"
@@ -3428,7 +3428,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:eSearch"
         "ProductCode" = "8:{D0C3E217-F012-4442-BB1B-664A72E9B25B}"
-        "PackageCode" = "8:{1B5071E3-FFEA-4024-B24C-5643EC508E33}"
+        "PackageCode" = "8:{0E037448-1582-49BB-910E-BBBDFF76F3B1}"
         "UpgradeCode" = "8:{4EE3EB0E-D78C-40EC-A3BC-19286DCE891E}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
