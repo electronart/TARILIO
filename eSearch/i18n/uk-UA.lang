@@ -3,471 +3,744 @@
 RFC4646
 uk-UA
 # --- Common ---
-Title
-[Ţîîţļéé]
-Score
-[Šçööŕéé]
-Created
-[Çŕééååţééð]
-Modified
-[Ṁööðîîƒîîééð]
-Indexed
-[ÎÎñðééẋééð]
-Path
-[Þååţĥ]
-File not found
-[Ƒîîļéé ñööţ ƒööûûñð]
-Something went wrong
-[Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ]
-OK
-[ÖÖĶ]
-Cancel
-[Çååñçééļ]
-Append Date
-[ÅÅþþééñð Ðååţéé]
-Words
-[Ŵööŕðš]
-Filters
-[Ƒîîļţééŕš]
-Rows
-[Ŕööŵš]
-All
-[ÅÅļļ]
-Selected
-[Šééļééçţééð]
-Include
-[ÎÎñçļûûðéé]
-Synonyms
-[Šýýñööñýýɱš]
-New...
-[Ñééŵ···]
-Name
-[Ñååɱéé]
-eSearch
-eSearch
-Delete
-[Ðééļééţéé]
-Update Index
-[ÛÛþðååţéé ÎÎñðééẋ]
-Update...
-[ÛÛþðååţéé···]
-Rename...
-[Ŕééñååɱéé···]
-Delete...
-[Ðééļééţéé···]
-# --- AboutWindow.axaml ---
-Serial...
-[Šééŕîîååļ···]
-Online Help
-[ÖÖñļîîñéé Ĥééļþ]
-Licenses and acknowledgments
-[Ļîîçééñšééš ååñð ååçķñööŵļééðĝɱééñţš]
-# --- AboutWindowViewModel.cs ---
-Evaluation ({0} days remaining)
-[ÉÉṽååļûûååţîîööñ ({0} ðååýýš ŕééɱååîîñîîñĝ)]
-Expires {0}
-[ÉÉẋþîîŕééš {0}]
-Expired {0}
-[ÉÉẋþîîŕééð {0}]
-Serial: None
-[Šééŕîîååļ∶ Ñööñéé]
-# --- ColorPickerWindow.axaml ---
-# --- CopyDocumentWindow.axaml ---
-Copy Document
-[Çööþýý Ðööçûûɱééñţ]
-Copied text:
-[Çööþîîééð ţééẋţ∶]
-Append Note:
-[ÅÅþþééñð Ñööţéé∶]
-Append File name:
-[ÅÅþþééñð Ƒîîļéé ñååɱéé∶]
+Cancelled
+Відмінено
+Size
+Розмір
 Copy
-[Çööþýý]
+Копіювати
+File not found
+Файл не знайдено
+OK
+Підтвердити
+Cancel
+Скасувати
+Append Note:
+Додати підтримку:
 Copy to:
-[Çööþýý ţöö∶]
+Копіювати до:
 Clipboard
 Буфер обміну
 File:
-[Ƒîîļéé∶]
+Файл:
+Append Date
+Додати дату
+Save
+Зберегти
+Type
+Друкувати
+Name
+Ім'я
+Title
+Заголовок
+Score
+Рахунок
+Close
+Закрити
+Copy Response...
+Копіювати відповідь...
+Copy Document...
+Скопіювати документ...
+Help
+Допомога
+Copy Conversation
+копіювати розмову
+Error
+Помилка
+Plugins
+Плагіни
+Remove
+Видалити
+Columns
+Стовпці
+Words
+Слова
+Rows
+Рядки
+Soundex
+Soundex
+Filters
+Фільтри
+All
+Усі
+Selected
+Обрано
+Include
+Включають
+Paragraphs
+Абзаци
+Search Settings
+Налаштування пошуку
+Synonyms
+Синоніми
+New...
+Новий
+eSearch
+eSearch
+Delete
+Видалити
+Update...
+Оновити...
+Rename...
+Перейменувати...
+Something went wrong
+Щось пішло не так
+Delete {0}?
+Видалити {0}?
+Delete...
+Видалити...
+# --- AboutWindow.axaml ---
+Serial...
+Серійний...
+Licenses and acknowledgements
+Ліцензії та подяки
+# --- AboutWindowViewModel.cs ---
+Evaluation ({0} days remaining)
+Оцінювання ({0} днів залишилося)
+Does not expire
+Не має сроку
+Expires {0}
+Закінчується {0}
+Expired {0}
+Прострочено {0}
+Serial: None
+Серійний∶ відсутній
+# --- ColorPickerWindow.axaml ---
+# --- CompletionStreamingJSBinding.cs ---
+# --- CopyConversationWindow.axaml ---
+Transcript:
+Розшифровка:
+# --- CopyConversationWindow.axaml.cs ---
+# --- CopyConversationWindowViewModel.cs ---
+# --- CopyDocumentWindow.axaml ---
+Copy Response
+Копіювати відповідь
+Copy Document
+Копіювати документ
+Copied text:
+Скопійований текст:
+Append File name:
+Додати назву файла:
+Append Query:
+Додати запит:
+# --- CopyDocumentWindow.axaml.cs ---
+Copy
+Копіювати
+# --- CopyResultsTask.cs ---
+Cancel Copying?
+Скасувати копіювання?
+Folder will not contain all files
+Папка не міститиме всіх файлів
 # --- DataColumn.cs ---
+Created
+Створено
+Modified
+Змінено
+Indexed
+Індексований
 Accessed
-[ÅÅççééššééð]
-File Size
-[Ƒîîļéé Šîîžéé]
+Доступ отримано
+Path
+Шлях
 Parser
-[Þååŕšééŕ]
+Парсер
+# --- DocumentType.cs ---
+Documents
+Документи
+Presentations
+Презентації
+Publications
+Публікації
+Text
+Текст
+Emails
+Електронна пошта
+Spreadsheets
+Таблиці
+Audio
+Аудіо
+Images
+Зображення
+Videos
+Відео
+Data
+Дані
+Archives
+Архіви 
+Source Code
+Вихідний код
+# --- ExportConversationWindow.axaml ---
+Export Conversation
+Експортувати розмову
+Export
+Експорт
+Export as
+Експортувати як
+File
+Файл
 # --- ExportSearchResultsViewModel.cs ---
 Select output file type
-[Šééļééçţ ööûûţþûûţ ƒîîļéé ţýýþéé]
+Вибрати тип вихідного файлу
 XML (.xml)
-[ẊṀĻ (·ẋɱļ)]
+Розширювана мова розмітки (.xml)
 Comma Separated Values (.csv)
-[Çööɱɱåå Šééþååŕååţééð Ṽååļûûééš (·çšṽ)]
-Tab Separated (.csv)
-[Ţååƀ Šééþååŕååţééð (·çšṽ)]
+Розділені комами значення (.csv)
+Tab Separated (.txt)
+Розділені табуляцією (.txt)
 Results
-[Ŕééšûûļţš]
+Результати
 # --- ExportSearchResultsWindow.axaml ---
 Export Search Results
-[ÉÉẋþööŕţ Šééååŕçĥ Ŕééšûûļţš]
-Save...
-[Šååṽéé···]
+Експортувати результати пошуку
 All rows
-[ÅÅļļ ŕööŵš]
+Усі рядки
 Output as
-[ÖÖûûţþûûţ ååš]
-Type
-[Ţýýþéé]
-Columns
-[Çööļûûɱñš]
+Вивести як
 All columns
-[ÅÅļļ çööļûûɱñš]
+Усі стовпці
 Output Directory
-[ÖÖûûţþûûţ Ðîîŕééçţööŕýý]
+Вихідний каталог
 # --- ExportSearchResultsWindow.axaml.cs ---
 Select at least one Column to export
-[Šééļééçţ ååţ ļééååšţ ööñéé Çööļûûɱñ ţöö ééẋþööŕţ]
+Виберіть принаймні один стовпець для експорту
 Select output format
-[Šééļééçţ ööûûţþûûţ ƒööŕɱååţ]
+Виберіть формат виводу
 No results are checked
-[Ñöö ŕééšûûļţš ååŕéé çĥééçķééð]
+Жодний результат не перевірено
 Select an output directory.
-[Šééļééçţ ååñ ööûûţþûûţ ðîîŕééçţööŕýý·]
+Виберіть каталог для виводу
 Output Directory not found
-[ÖÖûûţþûûţ Ðîîŕééçţööŕýý ñööţ ƒööûûñð]
+Вихідній каталог не знайдено
 Must enter a file name
-[Ṁûûšţ ééñţééŕ åå ƒîîļéé ñååɱéé]
+Потрібно ввести ім'я файлу
 File name contains illegal characters
-[Ƒîîļéé ñååɱéé çööñţååîîñš îîļļééĝååļ çĥååŕååçţééŕš]
+Ім'я файлу містить недопустимі символи
+# --- FontPickerWindow.axaml ---
 # --- HtmlDocumentControl.axaml.cs ---
 Search Report
-[Šééååŕçĥ Ŕééþööŕţ]
+Пошуковий звіт
 Document Information
-[Ðööçûûɱééñţ ÎÎñƒööŕɱååţîîööñ]
+Інформація про документ
 Size
-[Šîîžéé]
+Розмір
 Hits in Context
-[Ĥîîţš îîñ Çööñţééẋţ]
+Збігів в контексті
+# --- IndexProgressWindow.axaml ---
+View log
+Переглянути журнал
+# --- IndexProgressWindow.axaml.cs ---
+Paused
+Призупинено
+Cancel Indexing?
+Скасувати індексацію?
+Index will only contain partial results.
+Індекс міститиме лише часткові результати
+Cancelling
+Скасування
+# --- IndexSettingsWindow.axaml ---
+Index Settings
+Налаштування індексу
+Stop words
+Слова зупинення
+Maximum word length
+Максимальна длина слів
+Maximum file size (MB)
+Максимальній розмір файлів (MB)
+Case sensitive
+Чутливі до регістру
 # --- IndexTask.cs ---
 Opening Index
-[ÖÖþééñîîñĝ ÎÎñðééẋ]
+Початковий індекс
 Indexing {0}
-[ÎÎñðééẋîîñĝ {0}]
-Discovering...
-[Ðîîšçööṽééŕîîñĝ···]
+Індексування {0}
+Cleaning up...
+Прибираємося...
 Finished
-[Ƒîîñîîšĥééð]
+Завершенний
+{0} Document(s) Indexed
+{0} документів(а) проіндексовано
+Error(s) during indexing. Check log for details.
+Помилки(а) під час індексування. Перевірте звіт для
 # --- ListContentsWindow.axaml ---
 List Contents
-[Ļîîšţ Çööñţééñţš]
+Вміст списку
 Words Found
-[Ŵööŕðš Ƒööûûñð]
+Знайдені слова
 Words in index
-[Ŵööŕðš îîñ îîñðééẋ]
+Слова в індексі
 Save as...
-[Šååṽéé ååš···]
+Зберегти як...
 Word count
-[Ŵööŕð çööûûñţ]
+Кількість слів
 File count
-[Ƒîîļéé çööûûñţ]
+Кількість файлів
 Field count
-[Ƒîîééļð çööûûñţ]
+Кількість полів
+# --- LLMConnectionConfigurationWindow.axaml ---
+Connect to API
+Доєднайтеся до API
+Connections
+З'єднання
+Service
+Послуги
+Server URL
+Адреса сервера
+API Key
+Ключ API
+Model
+Зразок
+Custom System Prompt
+Користувацька системна підказка
+Test
+Тест
+# --- LLMConnectionConfigurationWindow.axaml.cs ---
+Rename
+Перейменувати
+Connected Successfully.
+Успішне підключення.
+API Key Required
+Потрібен ключ API
+Model Name required
+Потрібна назва зразка
+Server URL Required
+Потребується адреса серверу
+# --- LLMMessageStreamingJSBinding.cs ---
+Generation Cancelled
+Генерацію скасовано
+# --- LLMService.cs ---
+OpenAI
+OpenAI
+Custom...
+Користувацька...
+# --- LuceneWordWheel.cs ---
+Loading...
+Завантаження...
 # --- MainWindow.axaml ---
-File
-[Ƒîîļéé]
+_File
+_Файл
 View...
-[Ṽîîééŵ···]
+Перегляд...
 Export Search Results...
-[ÉÉẋþööŕţ Šééååŕçĥ Ŕééšûûļţš···]
-Search Report...
-[Šééååŕçĥ Ŕééþööŕţ···]
+Експортувати результати пошуку...
 Print...
-[Þŕîîñţ···]
+Друк...
+Launch at Startup
+Запуск при стартапі
 _Exit
-[‿ÉÉẋîîţ]
-_Search
-[‿Šééååŕçĥ]
+_Вихід
+_AI
+_ШІ
+_AI Connections
+_ШІ З'єднання
+_MCP Servers
+_MCP сервер
+Show System Prompt
+Показати системний запит
+Export Conversation...
+Експортувати розмову
+Import Conversation...
+Імпортувати розмову
 History...
-[Ĥîîšţööŕýý···]
+Історія...
 Report...
-[Ŕééþööŕţ···]
+Звіт...
 _Index
-[‿ÎÎñðééẋ]
+_Індекс
+Manage Indexes...
+Керувати індексами
 _View
-[‿Ṽîîééŵ]
-Appearance
-[ÅÅþþééååŕååñçéé]
+_Перегляд
+Theme
+Тема
 Dark
-[Ðååŕķ]
+Темний
 Light
-[Ļîîĝĥţ]
+Світлий
 System
-[Šýýšţééɱ]
+Система
+High Contrast
+Підвищена контрастність
 Layout
-[Ļååýýööûûţ]
+Розташування
 Horizontal
-[Ĥööŕîîžööñţååļ]
+Горизонтальний
 Vertical
-[Ṽééŕţîîçååļ]
+Вертикальний
 Language
-[Ļååñĝûûååĝéé]
+Мова
 English
-[ÉÉñĝļîîšĥ]
+Англійська
 Pseudo Locale
-[Þšééûûðöö Ļööçååļéé]
+Псевдолокація
 From File...
-[Ƒŕööɱ Ƒîîļéé···]
+З файлу...
 Word List
-[Ŵööŕð Ļîîšţ]
-Help
-[Ĥééļþ]
+Список слів
 About
-[ÅÅƀööûûţ]
+Про сайт
 List...
-[Ļîîšţ···]
+Список...
 Register...
-[Ŕééĝîîšţééŕ···]
+Зареєструвати...
 Results Settings...
-[Ŕééšûûļţš Šééţţîîñĝš···]
+Налаштування результатів...
 Copy Results...
-[Çööþýý Ŕééšûûļţš···]
-Created
-[Çŕééååţééð]
-Modified
-[Ṁööðîîƒîîééð]
-Indexed
-[ÎÎñðééẋééð]
-Path
-[Þååţĥ]
+Скопіювати результат...
 Viewer Settings...
-[Ṽîîééŵééŕ Šééţţîîñĝš···]
-Copy Document...
-[Çööþýý Ðööçûûɱééñţ···]
+Налаштування перегляду...
 Document Metadata
-[Ðööçûûɱééñţ Ṁééţååðååţåå]
+Метадані документа
 View in folder
-[Ṽîîééŵ îîñ ƒööļðééŕ]
+Переглянути в папці
 Previous Hit
-[Þŕééṽîîööûûš Ĥîîţ]
+Попередній збіг
 Next Hit
-[Ñééẋţ Ĥîîţ]
+Наступний збіг
 Key
-[Ķééýý]
+Ключ
 Value
-[Ṽååļûûéé]
+Значення
 # --- MainWindow.axaml.cs ---
-Something went wrong
-[Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ]
-There is no metadata to display.
-[Ţĥééŕéé îîš ñöö ɱééţååðååţåå ţöö ðîîšþļååýý·]
-# --- MainWindowViewModel.cs ---
-Filename:
-[Ƒîîļééñååɱéé∶]
+Import Conversation
+Імпортувати розмову
 Note:
-[Ñööţéé∶]
+Запис:
+Must provide a filename or check append date.
+Повинні надати назву файлу або перевірити додаток
+Query: 
+Запит:
+Filename:
+Назва файлу:
+Select output folder
+Оберіть вихідну папку
+Enter a query
+Введіть запит
+An error occurred
+Сталася помилка
+Show location
+Показати місцезнаходження
+Location not available
+Місцезнаходження недоступне
+There is no metadata to display.
+Немає метаданних для відображення
+# --- MainWindowViewModel.cs ---
 File \"%s\" not found
-[Ƒîîļéé ∖″‰š∖″ ñööţ ƒööûûñð]
+Файл \″%s\″ не знайдено
+# --- MCP_SearchServerTool.cs ---
+Search an index for documents.
+Пошук індексу для документів
+The name of the user's index to search
+Назва індекса користувача для пошуку
+The Search Query to perform. Supports the Lucene Search Syntax
+Пошуковий запит для виконання. Підтримує
+Returns the names of all indexes that can be searched.
+Повертає назви всіх індексів які можуть
+# --- MCPConnectionConfigurationWindow.axaml ---
+Configure MCP Servers
+Налаштувати сервери MCP
+Configured Servers
+Налаштовані сервери
+Configuration
+Конфігурація
+Save
+Зберегти
+# --- MCPConnectionConfigurationWindow.axaml.cs ---
+Running
+Працює
+Not Running
+Не працює
+Server Stopped
+Сервер зупинився
+Invalid Configuration
+Невірна конфігурація
+Enter a valid MCP Server Configuration
+Введіть коректну конфігурацію сервера MCP
+\"{0}\" already exists.
+\"{0}\" вже існує.
+Server must be given a unique name.
+У сервера повинна бути унікальна назва.
+# --- MessageControl.axaml ---
+Browser Debug...
+Дебагінг браузера...
+Stop Generation
+Зупинити генерацію
+Notes
+Записи
+Delete Message
+Видалити повідомлення
+Copy Message
+Копіювати повідомлення
+Note
+Запис
 # --- NewIndexWindow.axaml ---
 Index Name
-[ÎÎñðééẋ Ñååɱéé]
+Назва індексу
 Index Contents
-[ÎÎñðééẋ Çööñţééñţš]
+Зміст індексу
 Include All
-[ÎÎñçļûûðéé ÅÅļļ]
+Додати усі
+# --- NewIndexWindow.axaml.cs ---
+Index name required.
+Потребується назва індекса.
+Select data to be indexed.
+Оберіть інформацію для індексації.
+Select at least one content type to index.
+Оберіть принаймні один тип контенту для індексації.
 # --- NewIndexWindowViewModel.cs ---
+Update Index
+Оновити індекс
 Create Index
-[Çŕééååţéé ÎÎñðééẋ]
+Створити індекс
+# --- PerplexityModel.cs ---
+sonar
+Сонар
+sonar-pro
+Сонар-про
+sonar-reasoning
+Сонар-обгрунтування
+sonar-reasoning-pro
+Сонар-обгрунтування-про
+llama-3.1-sonar-small-128k-online
+Лама-3.1-сонар-маленький-128т-онлайн
+llama-3.1-sonar-large-128k-online
+Лама-3.1-сонар-великий-128т-онлайн
+llama-3.1-sonar-huge-128k-online
+Лама-3.1-сонар-величезний-128т-онлайн
+# --- PluginsWindow.axaml ---
+Plugins
+Плагіни
+Close
+Закрити
+Add...
+Додати...
+# --- PluginsWindow.axaml.cs ---
+Remove Plugin {0}?
+Видалити плагін {0}?
+Open Plugin File
+Відкрити файл плагіну
+Could not install plugin
+Не вдалося завантажити плагін
+# --- Program.cs ---
+Scheduled Index of {0} is starting...
+Запланована індексація {0} починається...
 # --- ProgressCalculator.cs ---
 Calculating...
-[Çååļçûûļååţîîñĝ···]
+Обчислюється...
 {0} day(s) remaining
-[{0} ðååýý(š) ŕééɱååîîñîîñĝ]
+{0} день(і/ів) залишилося(вся) 
 {0} hour(s) remaining
-[{0} ĥööûûŕ(š) ŕééɱååîîñîîñĝ]
+{0} година(ин/ини) залишил(а)ося 
 {0} minute(s) remaining
-[{0} ɱîîñûûţéé(š) ŕééɱååîîñîîñĝ]
+{0} хвилин(а/и) залишил(а)ося 
 {0} second(s) remaining
-[{0} šééçööñð(š) ŕééɱååîîñîîñĝ]
+{0} секунд(а/и) залишил(а)ося 
 # --- RegistrationWindow.axaml ---
 Serial
-[Šééŕîîååļ]
+Серійний
 Order Online
-[ÖÖŕðééŕ ÖÖñļîîñéé]
+Замовити онлайн
 Enter your Serial Number
-[ÉÉñţééŕ ýýööûûŕ Šééŕîîååļ Ñûûɱƀééŕ]
+Введіть свій серійний номер
 Invalid Serial Number
-[ÎÎñṽååļîîð Šééŕîîååļ Ñûûɱƀééŕ]
+Невірний серійний номер
 # --- ResultsSettingsWindow.axaml ---
 Results Settings
-[Ŕééšûûļţš Šééţţîîñĝš]
-Show Columns
-[Šĥööŵ Çööļûûɱñš]
+Налаштування результатів
 Column Width
-[Çööļûûɱñ Ŵîîðţĥ]
+Ширина стовпців
 Fit to content
-[Ƒîîţ ţöö çööñţééñţ]
+Підігнати до вмісту
 Fit to window
-[Ƒîîţ ţöö ŵîîñðööŵ]
+Підігнати під вікно
 Set Manually
-[Šééţ Ṁååñûûååļļýý]
+Встановити саморучно
 Key Words in Context
-[Ķééýý Ŵööŕðš îîñ Çööñţééẋţ]
+Ключові слова у контексті
 Show
-[Šĥööŵ]
+Відобразити
 Colour...
-[Çööļööûûŕ···]
-Number of Results
-[Ñûûɱƀééŕ ööƒ Ŕééšûûļţš]
+Колір...
 Limit Results
-[Ļîîɱîîţ Ŕééšûûļţš]
+Обмеження результатів
+# --- ResultsSettingsWindow.axaml.cs ---
+Select at least one column
+Оберіть принаймні один стовпець
+# --- ScheduleUtils.cs ---
+Scheduled Automatic Index Update of {0}
+Запланована автоматична індексація оновлення {0}
 # --- SearchControl.axaml ---
+AI Mode
+Режим ШІ
 AND
-[ÅÅÑÐ]
+І
 OR
-[ÖÖŔ]
+Або
 NOT
-[ÑÖÖŢ]
+Не
 Stemming
-[Šţééɱɱîîñĝ]
+Стеммінг
 Any
-[ÅÅñýý]
+Будь-який
 Boolean
-[Ɓööööļééååñ]
+Логічний
+Search Document Metadata
+Пошук метаданих документа
 # --- SearchFilterWindow.axaml ---
-# --- SearchFilterWindow2.axaml ---
 # --- SearchResultsReportWindow.axaml ---
 Search Results Report
-[Šééååŕçĥ Ŕééšûûļţš Ŕééþööŕţ]
+Пошук у звіті результатів
+Rows
+Рядки
 File list only
-[Ƒîîļéé ļîîšţ ööñļýý]
+Окремий список файлів
 Full text
-[Ƒûûļļ ţééẋţ]
+Повний текст
 Hits in context
-[Ĥîîţš îîñ çööñţééẋţ]
+Збігів у контексті
 Words
-[Ŵööŕðš]
-Paragraphs
-[Þååŕååĝŕååþĥš]
+Слова
 Output template
-[ÖÖûûţþûûţ ţééɱþļååţéé]
+Шаблон виводу
 Run report...
-[Ŕûûñ ŕééþööŕţ···]
+Демонструвати звіт...
 Run
-[Ŕûûñ]
+Запустити
 Open when done
-[ÖÖþééñ ŵĥééñ ðööñéé]
+Відкрити після завершення
 # --- SearchSettingsViewModel.cs ---
 None
-[Ñööñéé]
-Soundex
-[Šööûûñðééẋ]
+Жодний
 Double Metaphone
-[Ðööûûƀļéé Ṁééţååþĥööñéé]
+Подвійний метафон
 # --- SearchSettingsWindow.axaml ---
-Search Settings
-[Šééååŕçĥ Šééţţîîñĝš]
 Use List
-[ÛÛšéé Ļîîšţ]
+Список використання
 Stemming Language
-[Šţééɱɱîîñĝ Ļååñĝûûååĝéé]
+Мова стеммінгу
 English Porter
-[ÉÉñĝļîîšĥ Þööŕţééŕ]
-Phonetic Analysis
-[Þĥööñééţîîç ÅÅñååļýýšîîš]
+Портування до англійської
+List Index Contents on Empty Query
+Список змісту індекса у пустому запиті
+Search as you Type
+Шукайте під час друкування
 English WordNet
-[ÉÉñĝļîîšĥ ŴööŕðÑééţ]
+Англійський WordNet
 Synonym files:
-[Šýýñööñýýɱ ƒîîļééš∶]
+Синонимічні файли:
 Synonym Groups
-[Šýýñööñýýɱ Ĝŕööûûþš]
+Синонимічні групи:
 Sort
-[Šööŕţ]
+Сортувати
 Expansion
-[ÉÉẋþååñšîîööñ]
+Розширення
 Edit...
-[ÉÉðîîţ···]
+Редагувати...
 # --- SearchSettingsWindow.axaml.cs ---
 %GROUP% will be deleted.
-[‰ĜŔÖÖÛÛÞ‰ ŵîîļļ ƀéé ðééļééţééð·]
+%Group% буде видалено
 Delete Synonyms Group?
-[Ðééļééţéé Šýýñööñýýɱš Ĝŕööûûþ¿]
+Видалити синонимічну групу?
 Rename Synonyms Group
-[Ŕééñååɱéé Šýýñööñýýɱš Ĝŕööûûþ]
+Переіменувати синонимічну групу
 Synonym Group Name
-[Šýýñööñýýɱ Ĝŕööûûþ Ñååɱéé]
+Назва синонимічної групи
 New Synonyms Group
-[Ñééŵ Šýýñööñýýɱš Ĝŕööûûþ]
+нова синонимічна група
 Name
-[Ñååɱéé]
+Ім'я
 Check at least one Synonym file from the drop down.
-[Çĥééçķ ååţ ļééååšţ ööñéé Šýýñööñýýɱ ƒîîļéé ƒŕööɱ ţĥéé ðŕööþ ðööŵñ·]
+Перевірити принаймні одну синонимічну групу з
 No list file supplied
-[Ñöö ļîîšţ ƒîîļéé šûûþþļîîééð]
+Не надано файлу списку
 File does not exist
-[Ƒîîļéé ðööééš ñööţ ééẋîîšţ]
+Файла не існує
 # --- TaskDialogWindow.axaml.cs ---
 Something went wrong. Retry?
-[Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ· Ŕééţŕýý¿]
+Щось пішло не так. Спробувати ще раз?
 Retry
-[Ŕééţŕýý]
+Спробувати ще раз
+# --- TaskScheduleWindow.axaml ---
+Schedule Index
+Запланувати індекс
+Starting:
+Починається:
+Repeat Every:
+Повторювати кожний:
+# --- TaskScheduleWindowViewModel.cs ---
+Enter starting date.
+Введіть початкову дату.
+Select the repeat interval.
+Оберіть інтервал повторювання
+Day(s)
+День(ів)
+Week(s)
+Тиждень(ів)
+# --- TextInputDialog.axaml ---
 # --- TikaServer.cs ---
-Close
-[Çļööšéé]
 # --- UpdateIndexWindow.axaml ---
-Indexes
-[ÎÎñðééẋééš]
-Automatic...
-[ÅÅûûţööɱååţîîç···]
-Rebuild
-[Ŕééƀûûîîļð]
-Verify
-[Ṽééŕîîƒýý]
-# --- UpdateIndexWindowViewModel.cs ---
-No Index Selected.
-[Ñöö ÎÎñðééẋ Šééļééçţééð·]
-Delete {0}?
-[Ðééļééţéé {0}¿]
-Delete this index.
-[Ðééļééţéé ţĥîîš îîñðééẋ·]
+Manage Indexes
+Керування індексами
+Index
+Індекс
+Schedule Index...
+Запланувати індексацію...
+Cancel Schedule
+Відмінити розклад
+Rebuild...
+Відбудувати...
+# --- UpdateIndexWindow.axaml.cs ---
 Rename Index
-[Ŕééñååɱéé ÎÎñðééẋ]
+Переіменувати індекс
+Delete
+Видалити
+Delete this index.
+Видалити цей індекс.
+Schedule: Every {0} at {1} from {2}
+Розклад: кожні {0} на {1} від {2}
+Not Scheduled.
+Не заплановано.
+{0} Document(s)
+{0} документа(ів)
+No Index Selected.
+Індекс не обрано
+# --- Utils.cs ---
+RFC4646
+uk-UA
 # --- ViewerSettingsWindow.axaml ---
 Viewer Settings
-[Ṽîîééŵééŕ Šééţţîîñĝš]
-OK
-[ÖÖĶ]
+Налаштування перегляду
 Cancel
-[Çååñçééļ]
+Скасувати
 View Large Files
-[Ṽîîééŵ Ļååŕĝéé Ƒîîļééš]
+Відображати великі файли
 Mb
-[Ṁƀ]
+Мегабайти
 Fully
-[Ƒûûļļýý]
+Повністю
 First page only
-[Ƒîîŕšţ þååĝéé ööñļýý]
+Тільки перша сторінка
 In Report View
-[ÎÎñ Ŕééþööŕţ Ṽîîééŵ]
+У перегляді звіту
 Amount of context
-[ÅÅɱööûûñţ ööƒ çööñţééẋţ]
+Кількість контексту
 PDF
-[ÞÐƑ]
+PDF
 Viewer
-[Ṽîîééŵééŕ]
+Глядач
 Adobe Acrobat
-[ÅÅðööƀéé ÅÅçŕööƀååţ]
+Adobe Acrobat
 Plain Text
-[Þļååîîñ Ţééẋţ]
+Звичайний текст
 View File Types
-[Ṽîîééŵ Ƒîîļéé Ţýýþééš]
+Переглянути типи файлів
 New...
-[Ñééŵ···]
+Новий...
 Rename...
-[Ŕééñååɱéé···]
+Перейменувати...
 Hit Highlight
-[Ĥîîţ Ĥîîĝĥļîîĝĥţ]
+Виділення збігів
 Unformatted Text
-[ÛÛñƒööŕɱååţţééð Ţééẋţ]
+неформатований текст
 No word wrap
-[Ñöö ŵööŕð ŵŕååþ]
+Без переносу слів
 # --- ViewerSettingsWindowViewModel.cs ---
