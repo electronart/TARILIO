@@ -27,6 +27,8 @@ using System.Linq;
 using com.sun.corba.se.spi.activation;
 using DocumentFormat.OpenXml.Drawing;
 using Avalonia.Threading;
+using eSearch.Models.Logging;
+using eSearch.ViewModels.StatusUI;
 //using ControlCatalog.Models;
 //using ControlCatalog.Pages;
 #endregion
@@ -253,7 +255,40 @@ namespace eSearch
                 {
                     try
                     {
-                        Task.WaitAll(Program.ProgramInitTasks.ToArray());
+                        #region Init Tasks
+                        Task initProgramConfig = Task.Run(() =>
+                        {
+                            var programConfig = Program.ProgramConfig; // This will call the getter and cause it to perform IO.
+                        });
+
+                        Task initTikaTask = Task.Run(() =>
+                        {
+                            TikaServer.EnsureRunning();
+                        });
+
+                        string? llama_error_msg = null;
+                        bool llama_initialized = false;
+                        Exception? llama_exception = null;
+
+                        Task initLLamaSharp = Task.Run(() =>
+                        {
+
+
+                            try
+                            {
+                                MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
+                                llama_initialized = LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
+                                {
+                                    llama_error_msg = msg;
+                                }, wrappedDebugLogger).GetAwaiter().GetResult();
+                            }
+                            catch (Exception ex)
+                            {
+                                llama_exception = ex;
+                            }
+                        });
+                        Task.WaitAll(initLLamaSharp, initTikaTask, initProgramConfig);
+                        #endregion
                         // Here's where the initialization logic goes that needs to appear before the main window...
                         var upTime = Program.GetSystemUptime();
                         if (upTime.TotalMinutes < 10 && Program.LLAMA_BACKEND == "NONE")
@@ -335,15 +370,71 @@ namespace eSearch
 
                         await Dispatcher.UIThread.InvokeAsync(async () =>
                         {
-                            desktop.MainWindow = new MainWindow
+                            var _mainWindow = new MainWindow
                             {
-                                DataContext = Program.ProgramConfig.AppDataContext.MainWindowViewModel,
+                                DataContext = Program.ProgramConfig.AppDataContext.MainWindowViewModel
                             };
-                            desktop.MainWindow.Show();
+                            desktop.MainWindow = _mainWindow;
+                            _mainWindow.Show();
                             _splashWindow.Close();
                             desktop.ShutdownRequested += Desktop_ShutdownRequested;
                             desktop.Exit += Desktop_Exit;
                             _splashWindow = null;
+
+                            #region Display any llama sharp errors now
+                            if (llama_error_msg != null && !llama_initialized)
+                            {
+
+                                if (_mainWindow.DataContext is MainWindowViewModel mwvm)
+                                {
+                                    var errorStatus =
+                                    new StatusControlViewModel
+                                    {
+                                        StatusTitle = "LlamaSharp not Initialized",
+                                        StatusMessage = "Click for details",
+                                        ClickAction = async () =>
+                                        {
+                                            await TaskDialogWindow.OKDialog("LlamaSharp Error", llama_error_msg, _mainWindow);
+                                        }
+                                    };
+                                    errorStatus.DismissAction = () =>
+                                    {
+                                        mwvm.StatusMessages.Remove(errorStatus);
+                                    };
+                                    mwvm.StatusMessages.Add(errorStatus);
+                                }
+                                Debug.WriteLine(llama_error_msg);
+                            }
+                            if (llama_exception != null)
+                            {
+                                Window? mainWindow = null;
+                                while (mainWindow == null)
+                                {
+                                    await Task.Delay(TimeSpan.FromSeconds(2));
+                                    mainWindow = Program.GetMainWindow();
+
+                                }
+                                if (mainWindow.DataContext is MainWindowViewModel mwvm)
+                                {
+                                    var errorStatus =
+                                    new StatusControlViewModel
+                                    {
+                                        StatusTitle = "LlamaSharp not Initialized",
+                                        StatusMessage = "Click for details",
+                                        ClickAction = async () =>
+                                        {
+                                            await TaskDialogWindow.ExceptionDialog("LlamaSharp Exception", llama_exception, mainWindow);
+                                        }
+                                    };
+                                    errorStatus.DismissAction = () =>
+                                    {
+                                        mwvm.StatusMessages.Remove(errorStatus);
+                                    };
+                                    mwvm.StatusMessages.Add(errorStatus);
+                                }
+                                Debug.WriteLine(llama_exception.ToString());
+                            }
+                            #endregion
                         });
                     } catch (Exception ex)
                     {

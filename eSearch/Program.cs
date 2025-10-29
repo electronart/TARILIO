@@ -123,134 +123,16 @@ namespace eSearch
             #endregion
             // If we got this far it's not an indexing task, we're launching the UI.
 
-            #region Start Necessary Initialization tasks in Parallel
-            Task initProgramConfig = Task.Run(() =>
-            {
-                var programConfig = Program.ProgramConfig; // This will call the getter and cause it to perform IO.
-            });
-
-            Task initTikaTask = Task.Run(() =>
-            {
-                TikaServer.EnsureRunning();
-            });
-
-            string? llama_error_msg = null;
-            bool llama_initialized = false;
-            Exception? llama_exception = null;
-
-            Task initLLamaSharp = Task.Run(() =>
-            {
-                
-                
-                try
-                {
-                    MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
-                    llama_initialized = LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
-                    {
-                        llama_error_msg = msg;
-                    }, wrappedDebugLogger).GetAwaiter().GetResult();
-                }
-                catch (Exception ex)
-                {
-                    llama_exception = ex;
-                }
-            });
-
-            Program.ProgramInitTasks.Add(initLLamaSharp);
-            Program.ProgramInitTasks.Add(initTikaTask);
-            Program.ProgramInitTasks.Add(initProgramConfig);
-            #endregion
-            // Wait for all key parts to be initialized.
-            Task.WaitAll(initProgramConfig, initLLamaSharp, initTikaTask);
-
             
 
             BuildAvaloniaApp()
-            .AfterSetup(async (AppBuilder) =>
+            .AfterSetup((AppBuilder) =>
             {
                 timer = new Timer(60000);
                 timer.Elapsed += Timer_Elapsed;
                 timer.Start();
 
-                Task.WaitAll(initLLamaSharp);
-                if (llama_error_msg != null && !llama_initialized)
-                {
-                    Window mainWindow = null;
-                    while (mainWindow == null)
-                    {
-                        await Task.Delay(TimeSpan.FromSeconds(2));
-                        mainWindow = Program.GetMainWindow();
-                        
-                    }
-                    if (mainWindow.DataContext is MainWindowViewModel mwvm)
-                    {
-                        var errorStatus =
-                        new StatusControlViewModel
-                        {
-                            StatusTitle = "LlamaSharp not Initialized",
-                            StatusMessage = "Click for details",
-                            ClickAction = async () =>
-                            {
-                                await TaskDialogWindow.OKDialog("LlamaSharp Error", llama_error_msg, mainWindow);
-                            }
-                        };
-                        errorStatus.DismissAction = () =>
-                        {
-                            mwvm.StatusMessages.Remove(errorStatus);
-                        };
-                        mwvm.StatusMessages.Add(errorStatus);
-                    }
-                    Debug.WriteLine(llama_error_msg);
-                }
-                if (llama_exception != null)
-                {
-                    Window? mainWindow = null;
-                    while (mainWindow == null)
-                    {
-                        await Task.Delay(TimeSpan.FromSeconds(2));
-                        mainWindow = Program.GetMainWindow();
-
-                    }
-                    if (mainWindow.DataContext is MainWindowViewModel mwvm)
-                    {
-                        var errorStatus =
-                        new StatusControlViewModel
-                        {
-                            StatusTitle = "LlamaSharp not Initialized",
-                            StatusMessage = "Click for details",
-                            ClickAction = async () =>
-                            {
-                                await TaskDialogWindow.ExceptionDialog("LlamaSharp Exception", llama_exception, mainWindow);
-                            }
-                        };
-                        errorStatus.DismissAction = () =>
-                        {
-                            mwvm.StatusMessages.Remove(errorStatus);
-                        };
-                        mwvm.StatusMessages.Add(errorStatus);
-                    }
-                    Debug.WriteLine(llama_exception.ToString());
-                }
-
             }).StartWithClassicDesktopLifetime(args);
-            
-
-            
-
-            
-            //if (llama_sharp_error != null)
-            //{
-            //    Dispatcher.UIThread.Post(async () =>
-            //    {
-            //        Window? mainWindow = null;
-            //        while (mainWindow == null)
-            //        {
-            //            mainWindow = Program.GetMainWindow();
-            //            await Task.Delay(TimeSpan.FromMilliseconds(100));
-            //        }
-            //        await TaskDialogWindow.OKDialog(S.Get("An error occurred"), llama_sharp_error, mainWindow);
-            //    });
-            //}
         }
 
 
