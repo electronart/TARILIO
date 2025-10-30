@@ -1,38 +1,41 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.ReactiveUI;
-using System;
-using System.IO;
-using System.Diagnostics;
-using eSearch.ViewModels;
-using eSearch.Models.Localization;
-using Xilium.CefGlue.Common;
-using System.Collections.Generic;
-using System.Linq;
-using eSearch.Models.Documents.Parse;
-using System.Reflection;
-using System.Text;
-using eSearch.Models.Configuration;
-using Newtonsoft.Json;
-using System.Timers;
-using ReactiveUI;
-using eSearch.Models.Plugins;
-using S = eSearch.ViewModels.TranslationsViewModel;
-using eSearch.Models.AI.MCP.Tools;
-using Xilium.CefGlue;
+using Avalonia.Threading;
 using DynamicData;
 using eSearch.Interop;
-using eSearch.Models.Logging;
-using eSearch.Models.Indexing;
 using eSearch.Interop.Indexing;
-using System.Threading;
-using Timer = System.Timers.Timer;
 using eSearch.Models.AI;
-using System.Threading.Tasks;
+using eSearch.Models.AI.MCP.Tools;
+using eSearch.Models.Configuration;
+using eSearch.Models.Documents;
+using eSearch.Models.Documents.Parse;
+using eSearch.Models.Indexing;
+using eSearch.Models.Localization;
+using eSearch.Models.Logging;
+using eSearch.Models.Plugins;
+using eSearch.ViewModels;
 using eSearch.ViewModels.StatusUI;
 using eSearch.Views;
-using Avalonia.Threading;
+using Newtonsoft.Json;
+using ReactiveUI;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Timers;
+using Xilium.CefGlue;
+using Xilium.CefGlue.Common;
+using S = eSearch.ViewModels.TranslationsViewModel;
+using Timer = System.Timers.Timer;
 
 namespace eSearch
 {
@@ -62,9 +65,28 @@ namespace eSearch
         /// </summary>
         public static LocalLLMServer? RunningLocalLLMServer = null;
 
-
+        public static List<Task> ProgramInitTasks = new List<Task>();
 
         public static InMemoryLog LLMServerSessionLog = new InMemoryLog(TimeSpan.FromDays(7));
+
+        // Either 'eSearch' or 'TARILIO'
+        public static string GetBaseProductTag()
+        {
+            StringBuilder sb = new StringBuilder();
+#if TARILIO
+            sb.Append("TARILIO");
+#else
+            sb.Append("eSearch");
+#endif
+#if STANDALONE
+            sb.Append(" Portable");
+#endif
+            return sb.ToString();
+        }
+
+
+
+
 
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -101,128 +123,18 @@ namespace eSearch
             #endregion
             // If we got this far it's not an indexing task, we're launching the UI.
 
-            #region Initialize LlamaSharp early
-            string? llama_error_msg = null;
-            Exception? llama_exception = null;
-            bool llama_initialized = false;
-            try
-            {
-                MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
-                llama_initialized = LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
-                {
-                    llama_error_msg = msg;
-                }, wrappedDebugLogger).GetAwaiter().GetResult();
-            } catch (Exception ex)
-            {
-                llama_exception = ex;
-            }
-            #endregion
-
-            var upTime = Program.GetSystemUptime();
-            if (upTime.TotalMinutes < 10 && !llama_initialized)
-            {
-                Thread.Sleep(TimeSpan.FromSeconds(30));
-                // Restart the app with same args
-                var psi = new ProcessStartInfo
-                {
-                    FileName = Environment.ProcessPath,
-                    WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
-                    UseShellExecute = true // Helps with desktop apps
-                };
-                Process.Start(psi);
-
-                // Exit current process immediately (prevents app from starting)
-                Environment.Exit(0);
-                return;
-            }
+            
 
             BuildAvaloniaApp()
-            .AfterSetup(async (AppBuilder) =>
+            .AfterSetup((AppBuilder) =>
             {
                 timer = new Timer(60000);
                 timer.Elapsed += Timer_Elapsed;
                 timer.Start();
 
-                
-                if (llama_error_msg != null && !llama_initialized)
-                {
-                    Window mainWindow = null;
-                    while (mainWindow == null)
-                    {
-                        await Task.Delay(TimeSpan.FromSeconds(2));
-                        mainWindow = Program.GetMainWindow();
-                        
-                    }
-                    if (mainWindow.DataContext is MainWindowViewModel mwvm)
-                    {
-                        var errorStatus =
-                        new StatusControlViewModel
-                        {
-                            StatusTitle = "LlamaSharp not Initialized",
-                            StatusMessage = "Click for details",
-                            ClickAction = async () =>
-                            {
-                                await TaskDialogWindow.OKDialog("LlamaSharp Error", llama_error_msg, mainWindow);
-                            }
-                        };
-                        errorStatus.DismissAction = () =>
-                        {
-                            mwvm.StatusMessages.Remove(errorStatus);
-                        };
-                        mwvm.StatusMessages.Add(errorStatus);
-                    }
-                    Debug.WriteLine(llama_error_msg);
-                }
-                if (llama_exception != null)
-                {
-                    Window mainWindow = null;
-                    while (mainWindow == null)
-                    {
-                        await Task.Delay(TimeSpan.FromSeconds(2));
-                        mainWindow = Program.GetMainWindow();
-
-                    }
-                    if (mainWindow.DataContext is MainWindowViewModel mwvm)
-                    {
-                        var errorStatus =
-                        new StatusControlViewModel
-                        {
-                            StatusTitle = "LlamaSharp not Initialized",
-                            StatusMessage = "Click for details",
-                            ClickAction = async () =>
-                            {
-                                await TaskDialogWindow.ExceptionDialog("LlamaSharp Exception", llama_exception, mainWindow);
-                            }
-                        };
-                        errorStatus.DismissAction = () =>
-                        {
-                            mwvm.StatusMessages.Remove(errorStatus);
-                        };
-                        mwvm.StatusMessages.Add(errorStatus);
-                    }
-                    Debug.WriteLine(llama_exception.ToString());
-                }
-
             }).StartWithClassicDesktopLifetime(args);
-            
-
-            
-
-            
-            //if (llama_sharp_error != null)
-            //{
-            //    Dispatcher.UIThread.Post(async () =>
-            //    {
-            //        Window? mainWindow = null;
-            //        while (mainWindow == null)
-            //        {
-            //            mainWindow = Program.GetMainWindow();
-            //            await Task.Delay(TimeSpan.FromMilliseconds(100));
-            //        }
-            //        await TaskDialogWindow.OKDialog(S.Get("An error occurred"), llama_sharp_error, mainWindow);
-            //    });
-            //}
         }
+
 
         // How long the whole computer has been up, not eSearch itself.
         public static TimeSpan GetSystemUptime()
@@ -929,6 +841,17 @@ namespace eSearch
             sb.Append(asm.GetName().Version.Revision);
             sb.Append(")");
             return sb.ToString();
+        }
+
+        public static Bitmap GetProductIcon()
+        {
+            var assemblyName = typeof(Program).Assembly.GetName().Name;
+#if TARILIO
+        var bitmap = new Bitmap(AssetLoader.Open(new System.Uri("avares://" + assemblyName + "/Assets/tarilio-icon.ico")));
+#else
+            var bitmap = new Bitmap(AssetLoader.Open(new System.Uri("avares://" + assemblyName + "/Assets/esearch-icon.ico")));
+#endif
+            return bitmap;
         }
 
         private static Metadata _programVersionMetadata = null;
