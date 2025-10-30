@@ -109,6 +109,10 @@ public class LLamaBackendConfigurator
     /// </summary>
     public static async Task<bool> ConfigureBackend2(int? gpuIndex = null, bool useLlava = false, Action<string> promptCallback = null, ILogger logger = null)
     {
+        if (Program.WasLaunchedWithForceCPUOption)
+        {
+            return SetBackend(CpuSubfolder, null, promptCallback);
+        }
         // Base config: Apply ONCE at start (before any DryRun/WithLibrary)
         NativeLibraryConfig.All
             .WithSearchDirectory(NativeLibsFolder)  // Search all subfolders
@@ -212,10 +216,16 @@ public class LLamaBackendConfigurator
         bool hasVulkan = await VulkanChecker.IsVulkanAvailableAsync(TimeSpan.FromSeconds(5));
         string? reason3 = null;
 
-        if (hasVulkan && TryBackendWithReset(VulkanSubfolder, useLlava, promptCallback, logger, out var vulkanSuccess, out var _reason3))
+        try
         {
-            reason3 = _reason3;
-            return true;
+            if (hasVulkan && TryBackendWithReset(VulkanSubfolder, useLlava, promptCallback, logger, out var vulkanSuccess, out var _reason3))
+            {
+                reason3 = _reason3;
+                return true;
+            }
+        } catch (Exception ex)
+        {
+            Debug.WriteLine(ex.ToString()); // Fall through to CPU fallback
         }
 
         // Final CPU fallback
@@ -365,8 +375,11 @@ public class LLamaBackendConfigurator
         var success = NativeLibraryConfig.All.DryRun(out var loadedLib, out var ignored);
         if (!success)
         {
-            promptCallback?.Invoke($"Failed to load backend from {backendSubfolder}: {loadedLib}. {fallbackReason ?? ""}");
-            return false;
+            if (!Program.WasLaunchedWithForceCPUOption) // For some reason, the dry run fails, but CPU mode still works? Needs investigating.
+            {
+                promptCallback?.Invoke($"Failed to load backend from {backendSubfolder}: {loadedLib}. {fallbackReason ?? ""}");
+                return false;
+            }
         }
 
         if (!string.IsNullOrEmpty(fallbackReason))

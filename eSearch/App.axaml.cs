@@ -307,6 +307,22 @@ namespace eSearch
                             Environment.Exit(0);
                             return;
                         }
+                        if (llama_exception != null && !Program.WasLaunchedWithForceCPUOption)
+                        {
+                            // Retry launching with CPU.
+                            var psi = new ProcessStartInfo
+                            {
+                                FileName = Environment.ProcessPath,
+                                WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                                UseShellExecute = true,
+
+                            };
+                            psi.ArgumentList.Add("-forceCPU");
+                            Process.Start(psi);
+                            // Exit current process immediately (prevents app from starting)
+                            Environment.Exit(0);
+                            return;
+                        }
 
                         await Dispatcher.UIThread.InvokeAsync(async () =>
                         {
