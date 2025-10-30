@@ -1,12 +1,15 @@
 using Avalonia.Controls;
+using Avalonia.Threading;
 using com.sun.tools.@internal.ws.processor.model.jaxb;
 using DocumentFormat.OpenXml.Spreadsheet;
 using eSearch.Interop.Indexing;
 using eSearch.Models;
 using eSearch.Models.Indexing;
+using eSearch.Utils;
 using eSearch.ViewModels;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using S = eSearch.ViewModels.TranslationsViewModel;
@@ -30,6 +33,47 @@ namespace eSearch.Views
 
             BtnViewLog.IsVisible = false;
             BtnClose.IsVisible = false;
+            this.DataContextChanged += IndexProgressWindow_DataContextChanged;
+            this.Closed += IndexProgressWindow_Closed;
+        }
+
+        private async void IndexProgressWindow_Closed(object? sender, EventArgs e)
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (DataContext is ProgressViewModel pvm)
+                {
+                    pvm.PropertyChanged -= Pvm_PropertyChanged;
+                }
+            });
+        }
+
+        private void IndexProgressWindow_DataContextChanged(object? sender, EventArgs e)
+        {
+            if (DataContext is ProgressViewModel pvm)
+            {
+                pvm.PropertyChanged += Pvm_PropertyChanged;
+            }
+        }
+
+        private async void Pvm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (DataContext is ProgressViewModel pvm)
+                {
+                    try
+                    {
+                        TaskbarProgress.SetState(this, TaskbarProgress.TaskbarStates.Normal);
+                        TaskbarProgress.SetValue(this, (ulong)pvm.Progress, (ulong)pvm.MaxProgress);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Non fatal.
+                        Debug.WriteLine(ex.ToString());
+                    }
+                }
+            });
         }
 
         private void BtnViewLog_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -65,17 +109,23 @@ namespace eSearch.Views
 
         private async void CancelReq()
         {
-            IndexTask?.PauseIndexing();
-            var vm = DataContext as ProgressViewModel;
-            vm.Status = S.Get("Paused");
-            var res = await TaskDialogWindow.OKCancel(S.Get("Cancel Indexing?"), S.Get("Index will only contain partial results."), this);
-            if (res == TaskDialogResult.OK)
+            if (DataContext is ProgressViewModel pvm)
             {
-                IndexTask?.RequestCancel();
-                DialogResult = TaskDialogResult.Cancel;
-                vm.Status = S.Get("Cancelling");
+                pvm.PropertyChanged -= Pvm_PropertyChanged;
+                TaskbarProgress.SetState(this, TaskbarProgress.TaskbarStates.Paused);
+                IndexTask?.PauseIndexing();
+                var vm = DataContext as ProgressViewModel;
+                vm.Status = S.Get("Paused");
+                var res = await TaskDialogWindow.OKCancel(S.Get("Cancel Indexing?"), S.Get("Index will only contain partial results."), this);
+                if (res == TaskDialogResult.OK)
+                {
+                    IndexTask?.RequestCancel();
+                    DialogResult = TaskDialogResult.Cancel;
+                    vm.Status = S.Get("Cancelling");
+                }
+                IndexTask?.ResumeIndexing();
+                pvm.PropertyChanged += Pvm_PropertyChanged;
             }
-            IndexTask?.ResumeIndexing();
         }
 
         // TODO I don't like the way this is implemented - Error handling is complex
