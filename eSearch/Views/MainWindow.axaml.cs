@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Selection;
@@ -7,6 +8,7 @@ using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using eSearch.CustomControls;
@@ -31,11 +33,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using static eSearch.Models.AI.HuggingFaceUtils;
 using S = eSearch.ViewModels.TranslationsViewModel;
 
 namespace eSearch.Views
@@ -92,8 +96,255 @@ namespace eSearch.Views
 
             menuItemDebugListModels.Click += MenuItemDebugListModels_Click;
 
+            menuItemAIImportLLMs.Click += MenuItemAIImportLLMs_Click;
+
+            menuItemDebugStatusTest.Click += MenuItemDebugStatusTest_Click;
+
             Program.OnLanguageChanged += Program_OnLanguageChanged;
 
+            MWSearchControl.SearchControlBorder.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
+            this.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
+            MainUIDockPanel.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
+
+            menuItemHelpUserGuide.Click += MenuItemHelpUserGuide_Click;
+        }
+
+        private void MenuItemHelpUserGuide_Click(object? sender, RoutedEventArgs e)
+        {
+            string? exeDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
+            if (exeDir == null) return;
+            string guide_path = Path.Combine(exeDir, "docs", "eSearch-Pro-User-Guide.pdf");
+            if (File.Exists(guide_path))
+            {
+                var uri = new System.Uri(guide_path);
+                var url = uri.AbsoluteUri;
+                Models.Utils.CrossPlatformOpenBrowser(url);
+            }
+        }
+
+        private void MWSearchControl_PointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (e.Pointer.IsPrimary && e.Source == sender)
+            {
+                this.BeginMoveDrag(e);
+                e.Handled = true;
+                return;
+            }
+            if (e.Source != sender && sender != this)
+            {
+                Debug.WriteLine("BREAK");
+            }
+        }
+
+        private void MenuItemDebugStatusTest_Click(object? sender, RoutedEventArgs e)
+        {
+            var statusVM1 = new StatusControlViewModel
+            {
+                StatusTitle = "Test Title",
+                StatusMessage = "Test Message\nMultiline and a very long line that will overflow\nThird line..",
+                StatusProgress = null
+            };
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                mwvm.StatusMessages.Add(statusVM1);
+            }
+        }
+
+        private async void MenuItemAIImportLLMs_Click(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                string? downloadAuthToken = null;
+
+            retryModelID:
+
+
+                //var hyperLinkRun = new Run { Text = "Hugging Face GGUF" };
+                //hyperLinkRun.C
+
+                var labelInlines = new InlineCollection
+                {
+                    new Run { Text = S.Get("Enter a GGUF Model ID From "), BaselineAlignment = BaselineAlignment.Center },
+                    new InlineUIContainer
+                    {
+                        Child = new HyperlinkButton
+                        {
+                            Content = "Hugging Face",
+                            NavigateUri = new Uri("https://huggingface.co/models?pipeline_tag=text-generation&library=gguf&sort=trending"),
+                            Padding = new Thickness(0),
+                            Margin = new Thickness(0),
+                            
+                        }
+                    }
+                };
+                var res = await TextInputDialog.ShowDialog(this, S.Get("Download Model"), labelInlines, "bartowski/Llama-3.2-3B-Instruct-GGUF", string.Empty, null, 400);
+                if (res.Item1 == TaskDialogResult.OK)
+                {
+                    string modelID = res.Item2.Text;
+                    if (string.IsNullOrWhiteSpace(modelID))
+                    {
+                        // Didn't enter a model.
+                        await TaskDialogWindow.OKDialog(S.Get("Model ID Required"), S.Get("Must provide HuggingFace Model ID to download a model"), this);
+                        goto retryModelID;
+                    }
+                    string[] parts = modelID.Split(new char[] { '/' });
+                    if (parts.Length != 2 || (parts[0].Trim().Length == 0 || parts[1].Trim().Length == 0))
+                    {
+                        await TaskDialogWindow.OKDialog(S.Get("Invalid Model ID"), S.Get("Provide a valid Model ID. Eg in the format bartowski/gemma-2-2b-it-GGUF"),this);
+                        goto retryModelID;
+                    }
+                retryFetchModels:
+                    var hfUtils = new HuggingFaceUtils();
+                    try
+                    {
+                        var models = await hfUtils.GetPossibleModelsAsync(modelID, downloadAuthToken);
+                        if (models.Count == 0)
+                        {
+                            await TaskDialogWindow.OKDialog(S.Get("No Valid Models Found"), S.Get("No Valid Models were found in the provided repository.\nProvide a repository containing compatible models"), this);
+                            return;
+                        }
+                        string fileName;
+                        long fileSize;
+                        if (models.Count == 1)
+                        {
+                            (fileName, fileSize) = models[0];
+                        }
+                        else
+                        {
+                            List<string> dialogOptions = new List<string>();
+                            foreach (var model in models)
+                            {
+                                dialogOptions.Add($"{model.Filename}");
+                            }
+                            ModelChooserWindowViewModel vm = new ModelChooserWindowViewModel
+                            {
+                                AvailableModels = dialogOptions,
+                                SelectedModel = dialogOptions[0]
+                            };
+                            ModelChooserWindow window = new ModelChooserWindow { DataContext = vm };
+                            var choiceRes = await window.ShowDialog<object>(this);
+                            if (choiceRes is TaskDialogResult tdr && tdr == TaskDialogResult.OK)
+                            {
+                                var selectedModel = vm.SelectedModel;
+                                if (string.IsNullOrEmpty(selectedModel))
+                                {
+                                    return;
+                                }
+                                int index = dialogOptions.IndexOf(selectedModel);
+                                (fileName, fileSize) = models[index];
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }
+                        // Now we have FileName/FileSize of the model to get from the repo.
+
+                        var statusVM = new StatusControlViewModel
+                        {
+                            StatusTitle = S.Get("Downloading Model"),
+                            StatusMessage = string.Empty,
+                        };
+                        mwvm.StatusMessages.Add(statusVM);
+                        Progress<HuggingFaceUtils.DownloadProgress> downloadProgress = new System.Progress<HuggingFaceUtils.DownloadProgress>();
+                        EventHandler<HuggingFaceUtils.DownloadProgress> progressHandler = (sender, downloadProgress) =>
+                        {
+                            if (downloadProgress.Percent < 100)
+                            {
+                                statusVM.StatusProgress = ((float?)downloadProgress.Percent) ?? null;
+                                statusVM.StatusMessage =
+                                Path.GetFileNameWithoutExtension(fileName)
+                                + Environment.NewLine
+                                + downloadProgress.EstimatedTimeRemaining;
+                            }
+                        };
+                        try
+                        {
+                            CancellationTokenSource cts = new CancellationTokenSource(); // TODO Need UI Support for cancelling downloads...
+                            statusVM.CancelAction = () =>
+                            {
+                                downloadProgress.ProgressChanged -= progressHandler;
+                                cts.Cancel();
+                                statusVM.StatusTitle = S.Get("Download Cancelled");
+                                statusVM.StatusMessage = Path.GetFileNameWithoutExtension(fileName);
+                                statusVM.StatusProgress = null;
+                                statusVM.CancelAction = null;
+                                statusVM.DismissAction = () =>
+                                {
+                                    mwvm.StatusMessages.Remove(statusVM);
+                                };
+                            };
+                            // TODO This needs to be a status item that the user can see progress on and cancel.
+                            downloadProgress.ProgressChanged += progressHandler;
+                            await hfUtils.DownloadModelFileAsync(modelID, fileName, Program.ESEARCH_LLM_MODELS_DIR, downloadProgress, downloadAuthToken, cts.Token);
+                            downloadProgress.ProgressChanged -= progressHandler;
+                            statusVM.CancelAction = null;
+                            // TODO Once the model is downloaded, we need probably to show it in the setup UI.
+                            statusVM.StatusTitle = S.Get("Model downloaded");
+                            statusVM.StatusMessage = Path.GetFileNameWithoutExtension(fileName) + Environment.NewLine + S.Get("Click to setup");
+                            statusVM.StatusProgress = null; // Hide the progress bar.
+                            statusVM.DismissAction = () =>
+                            {
+                                mwvm.StatusMessages.Remove(statusVM);
+                            };
+                            statusVM.ClickAction = async () =>
+                            {
+                                await LLMConnectionConfigurationWindow.ShowDialogWithNewLocalModelSelected(this, fileName);
+                            };
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            Debug.WriteLine("Download cancelled"); // Do nada. Cleanup will have happened in the DownloadModelAsync method.
+                        }
+                        catch (UnauthorizedAccessException ex)
+                        {
+                            mwvm.StatusMessages.Remove(statusVM);
+                            throw; // Go to the handler further down.
+                        }
+                        catch (Exception ex)
+                        {
+                            downloadProgress.ProgressChanged -= progressHandler;
+                            statusVM.StatusTitle    = S.Get("Download failed");
+                            statusVM.StatusMessage = null;
+                            statusVM.StatusError    = ex.Message;
+                            statusVM.StatusProgress = null; // Hide progress bar.
+                            statusVM.CancelAction = null;
+                            statusVM.DismissAction = () =>
+                            {
+                                mwvm.StatusMessages.Remove(statusVM);
+                            };
+                        }
+                    }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        if (downloadAuthToken == null)
+                        {
+                            var tokenReqRes = await TextInputDialog.ShowDialog(this, S.Get("Token Required"), S.Get("Provide Authentication Token to access this model"), S.Get("Token"), string.Empty, null, 250);
+                            if (tokenReqRes.Item1 == TaskDialogResult.OK)
+                            {
+                                downloadAuthToken = tokenReqRes.Item2.Text;
+                                goto retryFetchModels;
+                            }
+                            else
+                            {
+                                // Cancelled.
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            await TaskDialogWindow.OKDialog(S.Get("Invalid Token"), S.Get("The token provided was rejected by HuggingFace"), this);
+                            return;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error interacting with Hugging Face: {ex.ToString()}");
+                        await TaskDialogWindow.OKDialog(S.Get("An error occurred"), ex.Message, this);
+                        return;
+                    }
+                }
+            }
         }
 
         private void Program_OnLanguageChanged(object? sender, EventArgs e)
@@ -148,7 +399,7 @@ namespace eSearch.Views
                 {
                     var topLevel = TopLevel.GetTopLevel(this);
                     if (topLevel == null) throw new Exception("Unexpected - TopLevel is null");
-                    var suggestExportToFolder = Program.ProgramConfig.PreferredConversationSaveLocation;
+                    var suggestExportToFolder = Program.ProgramConfig.ExportConversationConfig.Directory;
                     IStorageFolder? startFolder = await topLevel.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Documents);
                     if (suggestExportToFolder != null)
                     {
@@ -663,6 +914,7 @@ namespace eSearch.Views
                 Program.SaveProgramConfig();
                 mwvm.RaisePropertyChanged(nameof(mwvm.IsThemeHighContrast));
                 app.SetHighContrast(Program.ProgramConfig.IsThemeHighContrast);
+                UpdateTheme();
             }
         }
 
@@ -1058,19 +1310,59 @@ namespace eSearch.Views
 
         private IndexStatusControlViewModel? _selectedIndexStatusViewer = null;
 
-        public async void SelectAndDisplayIndex(IIndex? index)
+        public async Task SelectAndDisplayIndex(IIndex? index)
         {
             if (DataContext is MainWindowViewModel mwvm)
             {
-                index?.OpenRead();
-                
-                mwvm.SelectedIndex = index;
-                if (mwvm.SelectedIndex != null) mwvm.SelectedIndex.OpenRead();
-                mwvm.Results = new EmptySearchResultsProvider();
-                await init_wheel(index);
-                if (Program.ProgramConfig.SearchAsYouType)
+                try
                 {
-                    UpdateSearchResults();
+                    if (_selectedIndexStatusViewer != null)
+                    {
+                        mwvm.StatusMessages.Remove(_selectedIndexStatusViewer);
+                        _selectedIndexStatusViewer.Dispose();
+                        _selectedIndexStatusViewer = null;
+                    }
+
+                    if (index != null)
+                    {
+                        _selectedIndexStatusViewer = new IndexStatusControlViewModel(index);
+                        _selectedIndexStatusViewer.StatusProgress = 0;
+                        SetMainStatusViewModel(_selectedIndexStatusViewer);
+                    } else
+                    {
+                        SetMainStatusViewModel(null);
+                    }
+
+
+                    mwvm.IsIndexLoading = true;
+                    index?.OpenRead();
+
+                    mwvm.SelectedIndex = index;
+                    if (mwvm.SelectedIndex != null) mwvm.SelectedIndex.OpenRead();
+                    mwvm.Results = new EmptySearchResultsProvider();
+                    var init_wheel_task = init_wheel(index);
+                    if (Program.ProgramConfig.SearchAsYouType && !PauseSearchUpdates)
+                    {
+                        var searchTask = UpdateSearchResults();
+                        await Task.WhenAll(init_wheel_task, searchTask); // Await both concurrently.
+                    } else
+                    {
+                        await init_wheel_task;
+                    }
+
+                    if (_selectedIndexStatusViewer != null)
+                    {
+                        _selectedIndexStatusViewer.StatusProgress = null; // Hide the progress bar since we're done loading.
+                        _selectedIndexStatusViewer.ClickAction = () =>
+                        {
+                            MenuItemIndexManageIndexes_Click(this, null);
+                        };
+                    }
+
+
+                } finally
+                {
+                    mwvm.IsIndexLoading = false;
                 }
             }
         }
@@ -1088,15 +1380,16 @@ namespace eSearch.Views
 
         public void UpdateTheme()
         {
-            htmlDocumentControl.UpdateTheme();
-            if (ResultsGrid2 != null 
-                && ResultsGrid2.RowSelection?.SelectedItem is ResultViewModel rvm)
-            {
-                htmlDocumentControl.renderResultAccordingToSettings(rvm, this.DataContext as MainWindowViewModel);
-            } else
-            {
-                htmlDocumentControl.RenderBlankPageThemeColored();
-            }
+            HtmlDocumentControl.UpdateThemeOfAllInstances();
+            //htmlDocumentControl.UpdateTheme();
+            //if (ResultsGrid2 != null 
+            //    && ResultsGrid2.RowSelection?.SelectedItem is ResultViewModel rvm)
+            //{
+            //    htmlDocumentControl.renderResultAccordingToSettings(rvm, this.DataContext as MainWindowViewModel);
+            //} else
+            //{
+            //    htmlDocumentControl.RenderBlankPageThemeColored();
+            //}
         }
 
         public void UpdateLayout()
@@ -1262,11 +1555,37 @@ namespace eSearch.Views
                 }
                 else
                 {
-                    await init_wheel(viewModel.SelectedIndex);
+                    await SelectAndDisplayIndex(viewModel.SelectedIndex);
                 }
                 queryTextBox.SelectAll();
                 queryTextBox.Focus();
-                if (Program.ProgramConfig.SearchAsYouType && !viewModel.Session.Query.UseAISearch) UpdateSearchResults();
+                UpdateMainStatusDisplay();
+            }
+        }
+
+        private void UpdateMainStatusDisplay()
+        {
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                if (mwvm.Session.Query.UseAISearch)
+                {
+                    SetMainStatusViewModel(null);
+                } else
+                {
+                    // Searching regular indexes..
+                    if (mwvm.SelectedIndex != null)
+                    {
+                        IndexStatusControlViewModel vm = new IndexStatusControlViewModel(mwvm.SelectedIndex);
+                        vm.ClickAction = () =>
+                        {
+                            MenuItemIndexManageIndexes_Click(this, null);
+                        };
+                        SetMainStatusViewModel(vm);
+                    } else
+                    {
+                        SetMainStatusViewModel(null);
+                    }
+                }
             }
         }
 
@@ -1352,10 +1671,8 @@ namespace eSearch.Views
                             mwvm.ShowMetadataPanel = false;
                         } else
                         {
-                            await init_wheel(mwvm.SelectedIndex);
-                            
+                            await SelectAndDisplayIndex(mwvm.SelectedIndex);
                         }
-                        if (Program.ProgramConfig.SearchAsYouType) UpdateSearchResults();
                     }
                     
                 }
@@ -1525,7 +1842,6 @@ namespace eSearch.Views
                     _searchWorker?.CancelAsync();
                     if (PauseSearchUpdates) return;
                     mwvm.Results = new EmptySearchResultsProvider();
-                    List<ResultViewModel>? results = null;
                     if (!mwvm.Session.Query.UseAISearch)
                     {
                         #region Do Work
@@ -1543,7 +1859,15 @@ namespace eSearch.Views
 
                                     if (mwvm.Session?.Query != null)
                                     {
-                                        mwvm.Results = mwvm.SelectedIndex.PerformSearch(mwvm.Session.Query);
+                                        IVirtualReadOnlyObservableCollectionProvider<ResultViewModel>? results = null;
+                                        await Task.Run(() =>
+                                        {
+                                            results = mwvm.SelectedIndex.PerformSearch(mwvm.Session.Query);
+                                        });
+                                        if (results != null)
+                                        {
+                                            mwvm.Results = results;
+                                        }
                                     }
                                 }
                             }
@@ -1683,7 +2007,7 @@ namespace eSearch.Views
                     }
 
                     var browser = GetHtmlDocumentControl() ?? null;
-                    browser?.renderHtmlBody(
+                    browser?.RenderHtmlBody(
                         "<h3>" + HttpUtility.HtmlEncode(modelName) + "</h3>" +
                         "<p>" + HttpUtility.HtmlEncode(S.Get("Enter a query")) + "</p>", false);
                     mwvm.ShowHitNavigation = false;
@@ -1743,7 +2067,7 @@ namespace eSearch.Views
                         catch (Exception ex)
                         {
                             var html = "<p>" + HttpUtility.HtmlEncode(ex.Message) + "</p>";
-                            browser.renderHtmlBody(html, false);
+                            browser.RenderHtmlBody(html, false);
                             mwvm.ShowHitNavigation = false;
                         }
                     } else
@@ -1754,19 +2078,30 @@ namespace eSearch.Views
                             var userMessage = new Message { 
                                 Role = "user", 
                                 Content = mwvm.Session.Query.Query, 
-                                Model = Program.ProgramConfig.GetSelectedConfiguration()?.Model ?? string.Empty 
+                                Model = Program.ProgramConfig.GetSelectedConfiguration()?.GetDisplayedModelName() ?? string.Empty 
                             };
                             mwvm.CurrentLLMConversation.Messages.Add(new LLMMessageViewModel(userMessage));
-                            var conversation = mwvm.CurrentLLMConversation.ExtractConversation();
-                            CancellationTokenSource cancellationSource = new CancellationTokenSource();
-                            CancellationToken cancellationToken = cancellationSource.Token;
-                            var stream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfiguration, conversation, cancellationToken);
-                            var responseMsg = new LLMMessageViewModel("assistant", stream, cancellationSource);
-                            mwvm.CurrentLLMConversation.Messages.Add(responseMsg);
+                            ContinueConversation();
                             mwvm.Session.Query.Query = string.Empty; // Clear the query on submission.
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Get the LLM to continue the conversation responding with a new assistant message.
+        /// </summary>
+        public void ContinueConversation()
+        {
+            if (DataContext is MainWindowViewModel mwvm && mwvm.SelectedSearchSource?.Source is AISearchConfiguration aiSearchConfiguration)
+            {
+                var conversation = mwvm.CurrentLLMConversation?.ExtractConversation() ?? new Models.AI.Conversation();
+                CancellationTokenSource cancellationSource = new CancellationTokenSource();
+                CancellationToken cancellationToken = cancellationSource.Token;
+                var stream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfiguration, conversation, null, cancellationToken);
+                var responseMsg = new LLMMessageViewModel("assistant", stream, cancellationSource);
+                mwvm.CurrentLLMConversation?.Messages.Add(responseMsg);
             }
         }
 
@@ -1791,6 +2126,27 @@ namespace eSearch.Views
         private VoiceListener? voiceListener = null;
 
         private SearchSource? _previousSearchSource = null;
+
+        private void SetMainStatusViewModel(StatusControlViewModel? viewModel)
+        {
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                var existingStatus = mwvm.StatusMessages.FirstOrDefault(x => x?.Tag is MainWindow, null);
+                if (existingStatus != null)
+                {
+                    mwvm.StatusMessages.Remove(existingStatus);
+                    if (existingStatus is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                    }
+                }
+                if (viewModel != null)
+                {
+                    viewModel.Tag = this;
+                    mwvm.StatusMessages.Insert(0, viewModel);
+                }
+            }
+        }
 
         private async void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -1833,7 +2189,7 @@ namespace eSearch.Views
                 if (e.PropertyName?.Equals(nameof(mwvm.SelectedSearchSource)) ?? false)
                 {
                     var newSearchSource = mwvm.SelectedSearchSource;
-
+                    UpdateMainStatusDisplay();
                     if (newSearchSource?.Source is IIndex index)
                     {
                         mwvm.SelectedIndex = index;
@@ -1944,16 +2300,6 @@ namespace eSearch.Views
                 }
                 if (e.PropertyName?.Equals(nameof(mwvm.SelectedIndex)) ?? false)
                 {
-
-                    if (_selectedIndexStatusViewer != null)
-                    {
-                        mwvm.StatusMessages.Remove(_selectedIndexStatusViewer);
-                        _selectedIndexStatusViewer.Dispose();
-                        _selectedIndexStatusViewer = null;
-                    }
-                    
-
-
                     PauseSearchUpdates = true;
                     htmlDocumentControl.RenderBlankPageThemeColored();
                     mwvm.ShowDocumentLocation      = false;
@@ -1962,12 +2308,8 @@ namespace eSearch.Views
                     mwvm.Session.SelectedIndexId   = mwvm.SelectedIndex?.Id ?? null;
                     mwvm.Results = new EmptySearchResultsProvider();
                     init_columns();
-                    if (mwvm.SelectedIndex != null)
-                    {
-                        _selectedIndexStatusViewer = new IndexStatusControlViewModel(mwvm.SelectedIndex);
-                        mwvm.StatusMessages.Add(_selectedIndexStatusViewer);
-                    }
-                    await init_wheel(mwvm.SelectedIndex);
+                    
+                    await SelectAndDisplayIndex(mwvm.SelectedIndex);
                     PauseSearchUpdates = false;
 
                     

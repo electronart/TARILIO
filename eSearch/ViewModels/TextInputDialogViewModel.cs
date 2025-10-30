@@ -1,4 +1,5 @@
-﻿using NPOI.OpenXmlFormats.Dml.Chart;
+﻿using Avalonia.Controls.Documents;
+using NPOI.OpenXmlFormats.Dml.Chart;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -10,19 +11,19 @@ namespace eSearch.ViewModels
 {
     public class TextInputDialogViewModel : ViewModelBase
     {
-        public string Label
+        public InlineCollection LabelInlines
         {
             get
             {
-                return _label;
+                return _labelInlines;
             }
             set
             {
-                this.RaiseAndSetIfChanged(ref _label, value);
+                this.RaiseAndSetIfChanged(ref _labelInlines, value);
             }
         }
 
-        private string _label = "";
+        private InlineCollection _labelInlines = new InlineCollection();
 
         public string Text
         {
@@ -33,7 +34,7 @@ namespace eSearch.ViewModels
             set
             {
                 string raw = value;
-                if (raw.Length > 50) raw = raw.Substring(0, 50);
+                if (raw.Length > MaxLength) raw = raw.Substring(0, MaxLength);
                 raw = raw.Replace("<", "").Replace(">", "").Replace("\"", "");
                 this.RaiseAndSetIfChanged(ref _text, raw);
                 this.RaisePropertyChanged(nameof(TextValid));

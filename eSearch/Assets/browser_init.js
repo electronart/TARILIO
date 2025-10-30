@@ -66,3 +66,17 @@
         });
     }
 }
+
+function eSearchThemeUpdate() {
+    // This function is called from eSearch itself.
+    // It is used to update css variables after a theme update.
+    window.ExtrasProvider.getExtraCSSVariables().then(function (variables) {
+        let i = 0;
+        while (i < variables.length) {
+            let css_var_name = variables[i];
+            let css_var_value = variables[i + 1];
+            document.documentElement.style.setProperty(css_var_name, css_var_value);
+            i += 2;
+        }
+    });
+}

@@ -10,6 +10,7 @@
 		xmlns:vm="using:eSearch.ViewModels"
 		ExtendClientAreaToDecorationsHint="True"
 		Icon="{Binding ApplicationIcon}"
+		CanResize="False"
 	>
 	<Window.Styles>
 		<Style Selector="Button.hyperlink">
@@ -56,12 +57,12 @@
 		</StackPanel>
 		<StackPanel HorizontalAlignment="Center" Margin="20">
 			<DockPanel Margin="5">
-				<Image Source="{Binding ProductIcon}" Width="50" Height="50">
+				<Image Source="{Binding ProductIcon}" Width="50" Height="50" VerticalAlignment="Top" Margin="15">
 				</Image>
 				<StackPanel Margin="10">
-					<Label Content="{Binding ProductTag}"/>
+					<Label FontWeight="500" FontSize="18" Content="{Binding ProductTag}"/>
 					<Label Content="{Binding ApplicationVersion}"/>
-					<Button Margin="3" x:Name="ButtonHelp" Classes="hyperlink" Content="{Binding S[Help]}"/>
+					<Label Content="{Binding LLamaBackend}"/>
 				</StackPanel>
 			</DockPanel>
 			<Label Margin="5" Content="{Binding DisplayedSerial}"></Label>

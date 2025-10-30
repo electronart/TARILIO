@@ -10,6 +10,7 @@ using Directory = eSearch.Models.Indexing.Directory;
 using eSearch.Models.Configuration;
 using eSearch.Interop;
 using static eSearch.Interop.ILogger;
+using System.Collections.Concurrent;
 
 namespace eSearch.Models.DataSources
 {
@@ -17,10 +18,11 @@ namespace eSearch.Models.DataSources
     {
         
 
-        public Directory[]          Directories;
+        public Directory[]              Directories = [];
+        private ConcurrentQueue<string> _discoveredFilePaths = new ConcurrentQueue<string>();
 
-        public DirectoryDataSource(Directory[] directories) {
-            this.Directories = directories;
+        public DirectoryDataSource(Directory[] startDirectories) {
+            this.Directories = startDirectories;
         }
 
         #region File/Folder Discovery Work Tracking
@@ -41,21 +43,13 @@ namespace eSearch.Models.DataSources
 
         #region File Iteration Progress Tracking
         private int _iterationTotalFilesIterated = 0;
-        private int _iterationFileIndexInDir = 0;
-        /// <summary>
-        /// Each int in the list represents index of folder in level. If there's only one int, it's the top level, two ints, a second level etc.
-        /// </summary>
-        private List<int> _iterationDirectoryIndex = new List<int> { 0 };
         private string _iterationStatus = string.Empty;
         #endregion
 
-        private Directory       _currentDir     = null;
-        private List<string>    _currentFileList      = null;
 
+        private IEnumerable<IDocument>? _SubDocuments   = null;
 
-        private IEnumerable<IDocument> _SubDocuments   = null;
-
-        private IEnumerator<IDocument> _SubDocumentsRecursiveEnumerator = null;
+        private IEnumerator<IDocument>? _SubDocumentsRecursiveEnumerator = null;
 
         private IIndexConfiguration? _indexConfiguration = null;
 
@@ -92,7 +86,10 @@ namespace eSearch.Models.DataSources
                         document = _SubDocumentsRecursiveEnumerator.Current;
                         if (document.ExtractedFiles != null)
                         {
-                            _currentFileList.AddRange(document.ExtractedFiles);
+                            foreach(var extracted in document.ExtractedFiles)
+                            {
+                                _discoveredFilePaths.Enqueue(extracted);
+                            }
                         }
                         _stopWatch.Stop();
                         return;
@@ -117,121 +114,34 @@ namespace eSearch.Models.DataSources
                     document = null;
                     return;
                 }
-                if (_currentDir == null)
-                {
-                    // First run.
-                    if (Directories.Length == 0)
-                    {
-                        document = null;
-                        return;
-                    }
-                    _currentDir = Directories[0];
-                }
-                if (_currentFileList == null)
-                {
-                    // Will return null OR the full list of discovered files.
-                    _currentFileList = new List<string>();
-                    var discovered_files = _currentDir.GetDiscoveredFiles();
-                    if (discovered_files == null)
-                    {
-                        document = null;
-                        return; // Not yet discovered this directory.
-                    } else
-                    {
-                        _currentFileList.AddRange(discovered_files);
-                    }
-                }
-
-                
                 #endregion
-                _stopWatch.Restart();
-                
-                FileSystemDocument _document = new FileSystemDocument();
 
-
-
-                if (_currentFileList != null)
+                if (_discoveredFilePaths.TryDequeue(out var filePath))
                 {
-                    if (_iterationFileIndexInDir < _currentFileList.Count)
+                    FileSystemDocument _document = new FileSystemDocument();
+                    _document.SetDocument(filePath);
+                    document = _document;
+                    if (document.SubDocuments != null)
                     {
-                        string filePath = Path.Combine(_currentDir.Path, _currentFileList[_iterationFileIndexInDir]);
-                        _document.SetDocument(filePath);
-                        document = _document;
-                        if (document.SubDocuments != null)
-                        {
-                            _SubDocuments = document.SubDocuments;
-                            _totalExpectedSubDocuments += document.TotalKnownSubDocuments;
-                        }
-                        if (document.ExtractedFiles != null)
-                        {
-                            _currentFileList.AddRange(document.ExtractedFiles);
-                        }
-                        ++_iterationFileIndexInDir;
-                        ++_iterationTotalFilesIterated;
-                        return;
+                        _SubDocuments = document.SubDocuments;
+                        _totalExpectedSubDocuments += document.TotalKnownSubDocuments;
                     }
-                    else
+                    if (document.ExtractedFiles != null)
                     {
-                        // No more documents in this directory. 
-                        // Only proceed to next Directory if SubDirs has loaded.
-
-
-
-                        
-                        var subDirs = _currentDir.GetDiscoveredSubDirectories();
-                        if (subDirs == null)
+                        foreach (var extracted in document.ExtractedFiles)
                         {
-                            // SubDirs not yet loaded. Await discovery thread.
-                            document = null;
-                            return;
-                        }
-                        else
-                        {
-                            if (_goToNextDirectory())
-                            {
-                                _iterationFileIndexInDir = 0;
-#if DEBUG
-                                if (_currentDir.Path.Contains("Views"))
-                                {
-                                    Debug.WriteLine("Views");
-                                }
-                                _DEBUG_PATHS.Add(_currentDir.Path);
-#endif
-                                _currentFileList = null;
-                                GetNextDoc(out document, out bool complete);
-                                isDiscoveryComplete = complete;
-#if DEBUG
-                                if (document == null && complete)
-                                {
-                                    Debug.WriteLine("-- INDEXED PATHS --");
-                                    foreach(var path in _DEBUG_PATHS)
-                                    {
-                                        Debug.WriteLine(" - " + path);
-                                    }
-                                    
-                                    Debug.WriteLine("Complete");
-                                }
-#endif
-
-
-                                return;
-                            }
-                            else
-                            {
-                                // No more directories.
-                                document = null;
-                                return;
-                            }
-
+                            _discoveredFilePaths.Enqueue(extracted);  // Add to queue
                         }
                     }
-                }
-                else
+                    ++_iterationTotalFilesIterated;
+                    return;
+                } else
                 {
-                    // The file list has not yet loaded. Await discovery thread.
+                    // Empty queue - Wait if discovery ongoing
                     document = null;
                     return;
                 }
+                
             } catch (Exception ex)
             {
                 Debug.WriteLine("A fatal exception occurred whilst indexing?");
@@ -244,105 +154,34 @@ namespace eSearch.Models.DataSources
 
         public IEnumerator<IDocument> SubDocRecursiveEnumerator(IEnumerable<IDocument> topEnumerable)
         {
-            if (topEnumerable != null) {
-                var enumerator = topEnumerable.GetEnumerator();
-                while (enumerator.MoveNext())
+            if (topEnumerable == null) yield break;
+
+            var enumeratorStack = new Stack<IEnumerator<IDocument>>();
+            var currentEnumerator = topEnumerable.GetEnumerator();
+            enumeratorStack.Push(currentEnumerator);
+
+            while (enumeratorStack.Count > 0)
+            {
+                currentEnumerator = enumeratorStack.Peek();
+                if (currentEnumerator.MoveNext())
                 {
-                    var current = enumerator.Current;
+                    var current = currentEnumerator.Current;
                     ++_totalSubDocumentsFoundSoFar;
                     yield return current;
+
                     if (current.SubDocuments != null)
                     {
                         _totalExpectedSubDocuments += current.TotalKnownSubDocuments;
-                        var subEnumerator = SubDocRecursiveEnumerator(current.SubDocuments);
-                        while (subEnumerator.MoveNext())
-                        {
-                            ++_totalSubDocumentsFoundSoFar;
-                            yield return subEnumerator.Current;
-                        }
+                        var subEnumerator = current.SubDocuments.GetEnumerator();
+                        enumeratorStack.Push(subEnumerator);
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Goes to the next directory. This may be a sub directory, a directory on the same level, or a directory on a level above depending on conditions.
-        /// WARNING - Only call method if SubDirs in current directory has loaded.
-        /// </summary>
-        private bool _goToNextDirectory()
-        {
-            
-            #region Calculate current directory
-            Directory dir = _calculateCurrentDirectory();
-            #endregion
-            #region If there are subdirectories of current subdirectory, go down a level
-            var currentSubDirs = dir.GetDiscoveredSubDirectories();
-            if (currentSubDirs == null) throw new Exception("Unexpected - Current SubDirs null"); // Should not happen due to the order we iterate directories.
-            if (currentSubDirs.Length > 0)
-            {
-                _iterationDirectoryIndex.Add(0);
-                _currentDir = currentSubDirs[0];
-                _iterationFileIndexInDir = 0;
-                return true;
-            }
-            #endregion
-            #region Else, stay at current level then progressively go upwards until there are no more directories to index.
-            int level = _iterationDirectoryIndex.Count - 1;
-            while (level > -1)
-            {
-                _iterationDirectoryIndex[level] = _iterationDirectoryIndex[level] + 1;
-                if (_directoryExistsAtCurrentPosition())
+                else
                 {
-                    _currentDir = _calculateCurrentDirectory();
-                    _iterationFileIndexInDir = 0;
-                    return true;
+                    enumeratorStack.Pop();
+                    currentEnumerator.Dispose();
                 }
-                // No further directories at this level. Go up a level.
-                _iterationDirectoryIndex.RemoveAt(level);
-                --level;
             }
-            #endregion
-            // No further directories at all levels.
-            return false;
-
-        }
-
-        private bool _directoryExistsAtCurrentPosition()
-        {
-            int dirIndex = _iterationDirectoryIndex[0];
-            if (dirIndex >= Directories.Length) return false;
-            Directory dir = Directories[dirIndex]; // Current Directory at Level 0
-            int level = 1;
-            while (level < _iterationDirectoryIndex.Count)
-            {
-                int indexAtLevel = _iterationDirectoryIndex[level];
-                var subdirs = dir.GetDiscoveredSubDirectories();
-                if (subdirs == null) return false;
-                if (subdirs.Length > indexAtLevel)
-                {
-                    dir = subdirs[indexAtLevel];
-                } else
-                {
-                    return false;
-                }
-                ++level;
-            }
-            return true;
-        }
-
-        private Directory _calculateCurrentDirectory()
-        {
-            Directory dir = Directories[_iterationDirectoryIndex[0]]; // Current Directory at Level 0
-            int i = 1;
-            while (i < _iterationDirectoryIndex.Count)
-            {
-                int indexAtLevel = _iterationDirectoryIndex[i];
-                var subdirs = dir.GetDiscoveredSubDirectories();
-                if (subdirs == null) throw new Exception("Unexpected - SubDirs not loaded");
-                dir = subdirs[indexAtLevel];
-                ++i;
-            }
-            return dir;
         }
 
         private void _discoveryWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
@@ -356,7 +195,7 @@ namespace eSearch.Models.DataSources
             {
                 foreach (var directory in Directories)
                 {
-                    _discoverDirectory(directory);
+                    _discoverDirectory(directory.Path, directory.Recursive);
                 }
             } catch (Exception ex)
             {
@@ -364,123 +203,106 @@ namespace eSearch.Models.DataSources
             }
         }
 
-        /// <summary>
-        /// Note this method is recursive if the given directory has the Recursive property set true.
-        /// </summary>
-        /// <param name="directory">The directory to discover.</param>
-        private void _discoverDirectory(Directory directory)
+        private void _discoverDirectory(string initialPath, bool recursive)
         {
             try
             {
+                // Use a stack for iterative traversal
+                Stack<string> directoryStack = new Stack<string>();
+                directoryStack.Push(initialPath);
 
                 var enumerationOptions = new EnumerationOptions
                 {
-                    RecurseSubdirectories = false,
+                    RecurseSubdirectories = false,  // We handle recursion manually
                     IgnoreInaccessible = true
                 };
 
-                List<string> temp = new List<string>();
-                FileInfo[] fileInfo = null;
-                temp.Clear();
-                #region 1. Discover Files in this Directory.
-                _discoveryStatus = "Discovering " + directory.Path;
-
-                DirectoryInfo drInfo = new DirectoryInfo(directory.Path);
-                try
+                while (directoryStack.Count > 0)
                 {
-                    
-                    fileInfo = drInfo.GetFiles("*", enumerationOptions );
-                    foreach (var file in fileInfo)
-                    {
-                        bool skip = false;
-                        #region Check for reasons to skip this file
-                        if (_indexConfiguration != null)
-                        {
-                            #region File Extension?
-                            if (_indexConfiguration.SelectedFileExtensions != null)
-                            {
-                                string extension = Path.GetExtension(file.FullName);
-                                if (extension.Length > 1) extension = extension.Substring(1).ToLower(); // Length check is necessary due to files with no extension...
+                    string currentPath = directoryStack.Pop();
+                    _discoveryStatus = "Discovering " + currentPath;
 
-                                if (!_indexConfiguration.SelectedFileExtensions.Contains(extension))
-                                {
-                                    skip = true;
-                                }
-                            }
-                            #endregion
-                            #region File Size?
-                            if (_indexConfiguration.MaximumIndexedFileSizeMB > 0)
-                            {
-                                double fileSizeMB = (file.Length / 1024f) / 1024f;
-                                if (fileSizeMB > _indexConfiguration.MaximumIndexedFileSizeMB)
-                                {
-                                    skip = true;
-                                }
-                            }
-                            #endregion
-                        }
-                        #region Check the file is not hidden or system file.
-                        if (file.Attributes.HasFlag(FileAttributes.Hidden) || Path.GetFileName(file.Name).StartsWith("."))
-                        {
-                            skip = true;
-                        }
-                        if (file.Attributes.HasFlag(FileAttributes.System))
-                        {
-                            skip = true;
-                        }
-                        #endregion
-                        #endregion
-                        if (!skip) {
-                            ++_totalDiscoveredFiles;
-                            temp.Add(file.Name);
-                        }
-                        
-                    }
-                    directory.SetDiscoveredFiles(temp.ToArray());
-                    temp.Clear();
-                }
-                catch (SecurityException sex) { _logger?.Log(Severity.WARNING, "Access Denied (1): " + directory.Path, sex); }
-                catch (DirectoryNotFoundException) { _logger?.Log(Severity.WARNING, "No Such Directory: " + directory.Path); }
-                #endregion
-                temp.Clear();
-                #region 2. If the Directory is set Recursive, Discover each subdirectory.
-                if (directory.Recursive)
-                {
+                    DirectoryInfo dirInfo = new DirectoryInfo(currentPath);
+
                     try
                     {
-                        var subDirs = drInfo.GetDirectories("*", enumerationOptions);
-                        List<Directory> temp2 = new List<Directory>();
-                        foreach (var subDir in subDirs)
-                        {
-                            if (subDir.Attributes.HasFlag(FileAttributes.Hidden)) continue; // Skip hidden directories.
-                            if (subDir.Name.StartsWith(".")) continue; // Skip hidden directories (linux)
-                            if (subDir.Attributes.HasFlag(FileAttributes.System)) continue; // Skip system directories.
-                            temp2.Add(new Directory(subDir.FullName, true));
-                        }
-                        directory.SetDiscoveredSubDirectories(temp2.ToArray());
-                        foreach (var dir in temp2)
-                        {
-                            _discoverDirectory(dir);
+                        // Discover files
+                        foreach (var file in dirInfo.EnumerateFiles("*", enumerationOptions))
+                        {  // Use Enumerate for laziness
+                            bool skip = false;
+                            #region Check for reasons to skip this file
+                            if (_indexConfiguration != null)
+                            {
+                                #region File Extension?
+                                if (_indexConfiguration.SelectedFileExtensions != null)
+                                {
+                                    string extension = Path.GetExtension(file.FullName);
+                                    if (extension.Length > 1) extension = extension.Substring(1).ToLower();
+                                    if (!_indexConfiguration.SelectedFileExtensions.Contains(extension))
+                                    {
+                                        skip = true;
+                                    }
+                                }
+                                #endregion
+                                #region File Size?
+                                if (_indexConfiguration.MaximumIndexedFileSizeMB > 0)
+                                {
+                                    double fileSizeMB = (file.Length / 1024f) / 1024f;
+                                    if (fileSizeMB > _indexConfiguration.MaximumIndexedFileSizeMB)
+                                    {
+                                        skip = true;
+                                    }
+                                }
+                                #endregion
+                            }
+                            #region Check the file is not hidden or system file
+                            if (file.Attributes.HasFlag(FileAttributes.Hidden) || Path.GetFileName(file.Name).StartsWith("."))
+                            {
+                                skip = true;
+                            }
+                            if (file.Attributes.HasFlag(FileAttributes.System))
+                            {
+                                skip = true;
+                            }
+                            #endregion
+                            #endregion
+                            if (!skip)
+                            {
+                                ++_totalDiscoveredFiles;
+                                _discoveredFilePaths.Enqueue(file.FullName);  // Enqueue path directly
+                            }
                         }
                     }
                     catch (SecurityException sex)
                     {
-                        directory.SetDiscoveredSubDirectories(new Directory[0]);
-                        _logger.Log(Severity.WARNING, "Access Denied (2): " + directory.Path, sex);
+                        _logger?.Log(Severity.WARNING, "Access Denied (1): " + currentPath, sex);
                     }
-                    catch (UnauthorizedAccessException uaex)
+                    catch (DirectoryNotFoundException)
                     {
-                        directory.SetDiscoveredSubDirectories(new Directory[0]);
-                        _logger.Log(Severity.WARNING, "Access Denied (3): " + directory.Path, uaex); }
-                    catch (DirectoryNotFoundException) {
-                        directory.SetDiscoveredSubDirectories(new Directory[0]);
-                        _logger.Log(Severity.WARNING, "No Such Directory: " + directory.Path); 
+                        _logger?.Log(Severity.WARNING, "No Such Directory: " + currentPath);
+                    }
+
+                    // Discover subdirs if recursive
+                    if (recursive)
+                    {
+                        try
+                        {
+                            foreach (var subDir in dirInfo.EnumerateDirectories("*", enumerationOptions))
+                            {
+                                if (subDir.Attributes.HasFlag(FileAttributes.Hidden) || subDir.Name.StartsWith(".") || subDir.Attributes.HasFlag(FileAttributes.System)) continue;
+                                directoryStack.Push(subDir.FullName);  // Push path, not object
+                            }
+                        }
+                        catch (Exception ex)
+                        {  // Consolidated catch
+                            _logger?.Log(Severity.WARNING, "Access Denied or Error: " + currentPath, ex);
+                        }
                     }
                 }
-                #endregion
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
-                _logger?.Log(Severity.ERROR, "Unhandled Error whilst discovering directory " + directory.Path, e);
+                _logger?.Log(Severity.ERROR, "Unhandled Error whilst discovering directory " + initialPath, e);
             }
         }
 
@@ -503,12 +325,16 @@ namespace eSearch.Models.DataSources
 
         public void Rewind()
         {
-            _currentDir = null;
-            _currentFileList = null;
             _iterationTotalFilesIterated = 0;
-            _iterationFileIndexInDir = 0;
-            _iterationDirectoryIndex = new List<int> { 0 };
             _iterationStatus = string.Empty;
+
+
+            if (_discoveryWorker != null)
+            {
+                _discoveryWorker.CancelAsync();
+                _discoveryWorker.Dispose();
+                _discoveryWorker = null;
+            }
 
             _discoveryWorker = null;
             _totalDiscoveredFiles = 0;
@@ -519,6 +345,7 @@ namespace eSearch.Models.DataSources
 
             _totalExpectedSubDocuments = 0;
             _totalSubDocumentsFoundSoFar = 0;
+            _discoveredFilePaths = new ConcurrentQueue<string>();  // Reset queue
         }
 
         public string Description()

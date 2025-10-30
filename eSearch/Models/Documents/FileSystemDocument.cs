@@ -2,6 +2,8 @@
 using eSearch.Models.Documents.Parse;
 using eSearch.Models.Documents.Parse.ToxyParsers;
 using FileSignatures;
+using java.security;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +15,7 @@ using ToxyParsers = eSearch.Models.Documents.Parse.ToxyParsers;
 
 namespace eSearch.Models.Documents
 {
-    public class FileSystemDocument : IDocument
+    public class FileSystemDocument : IDocument, IPreloadableDocument
     {
 
 
@@ -32,48 +34,41 @@ namespace eSearch.Models.Documents
 
         private IDocument.SkipReason _shouldSkipIndexingThisDocument = IDocument.SkipReason.DontSkip;
 
-        List<IParser> Parsers
+        // TODO Not happy with the way this is implemented.
+        // At first I thought to make this list static but then realized some parsers have concurrency issues due to class vars
+        // Think maybe making the extensions static would be better and then only construct the Parser that we need per document rather than all of them.
+        private readonly List<IParser> Parsers = new List<IParser>
         {
-            get
-            {
-                if (_parsers == null)
-                {
-                    _parsers = new List<IParser>()
-                    {
-                        new CSVParser_Sep(),
-                        new EconvoParser(),
-                        //new CSVParser(),
-                        new DocParser(),
-                        new DocXParser(),
-                        new PptParser(),
-                        new PptXParser(),
-                        new ToxyParsers.RTFParser(),
-                        // new ToxyParsers.CSVParser(), - Disused - Prefer plain text parser because we use the raw csv data at render time.
-                        new ToxyParsers.Excel2003Parser(),
-                        new EmlParser(),
-                        new PdfParserPDFPig(),
-                        new PlainTextParser(),
-                        new EpubParser2(),
-                        new PlainTextParser(),
-                        new XlsXParser(),
-                        new PSTParser(),
-                        new HtmlParser(),
-                        new XmlParser(),
-                        new TagLibSharpParser(),
-                        new ArchiveParser(),
-                        new MarkDownParserMarkDig(),
-                        new IpynbParser(),
-                        new JsonLParser(),
-                        
-                        new TikaParser3() // TikaParser should always be last. It will be used as fallback.
-                    };
-                }
-                return _parsers;
-            }
-        }
+            new CSVParser_Sep(),
+            new EconvoParser(),
+            //new CSVParser(),
+            new DocParser(),
+            new DocXParser(),
+            new PptParser(),
+            new PptXParser(),
+            new ToxyParsers.RTFParser(),
+            // new ToxyParsers.CSVParser(), - Disused - Prefer plain text parser because we use the raw csv data at render time.
+            new ToxyParsers.Excel2003Parser(),
+            new EmlParser(),
+            new PdfParserPDFPig(),
+            new PlainTextParser(),
+            new EpubParser2(),
+            new PlainTextParser(),
+            new XlsXParser(),
+            new PSTParser(),
+            new HtmlParser(),
+            new XmlParser(),
+            new TagLibSharpParser(),
+            new ArchiveParser(),
+            new MarkDownParserMarkDig(),
+            new IpynbParser(),
+            new JsonLParser(),
+
+            new TikaParser3() // TikaParser should always be last. It will be used as fallback.
+        };
 
 
-        List<string> KnownExecutableExtensions = new List<string>
+        private static readonly List<string> KnownExecutableExtensions = new List<string>
         {
     ".dll",
     ".dat",
@@ -296,7 +291,7 @@ namespace eSearch.Models.Documents
     ".smm",
 };
 
-        List<string> KnownIndexExtensions = new List<string>
+        private static readonly List<string> KnownIndexExtensions = new List<string>
         {
             ".ix",
             ".cfe",
@@ -477,11 +472,22 @@ namespace eSearch.Models.Documents
 
         List<IMetaData> _metadata;
 
+
+
         public IEnumerable<IDocument>? SubDocuments
         {
             get
             {
-                if (_subDocuments == null) ExtractDataFromDocument();
+                if (_subDocuments == null)
+                {
+                    if (CanHaveSubDocumentsOrExtractedFiles())
+                    {
+                        ExtractDataFromDocument();
+                    } else
+                    {
+                        _subDocuments = new List<IDocument>();
+                    }
+                }
                 return _subDocuments;
             } set
             {
@@ -500,12 +506,36 @@ namespace eSearch.Models.Documents
         {
             get
             {
-                if (_extractedFiles == null) ExtractDataFromDocument();
+                if (_extractedFiles == null)
+                {
+                    if (CanHaveSubDocumentsOrExtractedFiles())
+                    {
+                        ExtractDataFromDocument();
+                    }
+                    else
+                    {
+                        _extractedFiles = new List<string>(); // Performance - Delays calling ExtractData which is a heavy method.
+                    }
+                }
                 return _extractedFiles;
             }
         }
 
         private List<string> _extractedFiles = null;
+
+        /// <summary>
+        /// Returns true if the document can contain subdocuments or extracted files (eg. zip files and databases)
+        /// For most documents this will return false. By performing this check we avoid extracting document data on
+        /// the main indexer thread, instead delaying it to the point where it can be performed in the parallel operation
+        /// in LuceneIndexe AddDocuments method, improving performance.
+        /// </summary>
+        /// <returns></returns>
+        private bool CanHaveSubDocumentsOrExtractedFiles()
+        {
+            IParser? parserToUse = GetAppropriateDocParser();
+            if (parserToUse == null) return false;
+            return (parserToUse.DoesParserExtractFiles || parserToUse.DoesParserProduceSubDocuments);
+        }
 
         public string HtmlRender
         {
@@ -551,6 +581,12 @@ namespace eSearch.Models.Documents
             }
         }
 
+        private static FileFormatInspector _formatInspector = null;
+
+
+
+
+        private string? _fileType = null; // Prevent an extra read by caching.
         /// <summary>
         /// Will calculate the extension and return it lowercase without the .
         /// TODO Will use magic numbers rather than solely relying on the file path.
@@ -562,40 +598,66 @@ namespace eSearch.Models.Documents
             {
                 try
                 {
-                    bool testForMagicNumbers = true;
-                    string extension = Path.GetExtension(FileName).ToLower().Substring(1);
-                    if (extension == "epub" || extension == "ipynb")
+                    if (_fileType == null)
                     {
-                        testForMagicNumbers = false;
-                    }
-                    #region Magic Number Testing
-                    if (testForMagicNumbers)
-                    {
-                        try
+                        bool testForMagicNumbers = true;
+                        string extension = Path.GetExtension(FileName)?.ToLower() ?? string.Empty;
+                        if (extension.Length > 1) extension = extension.Substring(1); // Some files do not have extensions, also get rid of the "."
+                        if (extension == "epub" || extension == "ipynb")
                         {
-                            var inspector = new FileFormatInspector();
-                            using (var stream = new FileStream(FileName, FileMode.Open, FileAccess.Read))
+                            testForMagicNumbers = false;
+                        }
+                        #region Magic Number Testing
+                        if (testForMagicNumbers)
+                        {
+                            try
                             {
-                                var format = inspector.DetermineFileFormat(stream);
-                                if (format != null)
+                                if (_formatInspector == null)
                                 {
-                                    return format.Extension;
+                                    _formatInspector = new FileFormatInspector();
+                                }
+                                const int bufferSize = 1024;  // Safe for headers; adjust if deep checks fail often
+                                byte[] buffer = new byte[bufferSize];
+                                int bytesRead;
+
+                                using (var fs = new FileStream(FileName, FileMode.Open, FileAccess.Read))
+                                {
+                                    bytesRead = fs.Read(buffer, 0, bufferSize);
+                                }
+
+                                using (var ms = new MemoryStream(buffer, 0, bytesRead))
+                                {
+                                    var format = _formatInspector.DetermineFileFormat(ms);
+                                    if (format != null)
+                                    {
+                                        _fileType = format.Extension;
+                                        return format.Extension;
+                                    }
                                 }
                             }
+                            catch (Exception ex)
+                            {
+                                // Consider this non fatal.
+                                // TODO Logging.
+                            }
                         }
-                        catch (Exception ex)
+                        #endregion
+                        if (string.IsNullOrWhiteSpace(extension))
                         {
-                            // Consider this non fatal.
-                            // TODO Logging.
+
+                            _fileType = "Unknown";
+                        } else
+                        {
+                            _fileType = extension;
                         }
                     }
-                    #endregion
-                    return extension; // Exclude the .
+                    return _fileType;
                 }
                 catch (ArgumentException ex)
                 {
                     // Invalid path.
-                    return "Unknown";
+                    _fileType = "Unknown";
+                    return _fileType;
                 }
             }
         }
@@ -606,6 +668,24 @@ namespace eSearch.Models.Documents
             {
                 return false; // FileSystemDocuments are not virtual documents.
             }
+        }
+
+        /// <summary>
+        /// Look through docparsers to find one that supports the current filetype.
+        /// </summary>
+        /// <returns></returns>
+        private IParser? GetAppropriateDocParser()
+        {
+            string extension = FileType;
+            extension = extension.Replace(".", "").ToLower();
+            foreach (var parser in Parsers)
+            {
+                if (parser.Extensions.Contains(extension))
+                {
+                    return parser;
+                }
+            }
+            return null;
         }
 
         public ParseResult GetParseResult()
@@ -631,15 +711,7 @@ namespace eSearch.Models.Documents
                 };
             }
 
-            IParser docParser = null;
-            foreach (var parser in Parsers)
-            {
-                if (parser.Extensions.Contains(extension))
-                {
-                    docParser = parser;
-                    break;
-                }
-            }
+            IParser? docParser = GetAppropriateDocParser();
 
             if (docParser == null)
             {
@@ -651,6 +723,14 @@ namespace eSearch.Models.Documents
             }
             docParser.Parse(path, out var parseResult);
             return parseResult;
+        }
+
+        public async Task PreloadDocument()
+        {
+            await Task.Run(() =>
+            {
+                ExtractDataFromDocument();
+            });
         }
     }
 }

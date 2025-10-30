@@ -175,6 +175,22 @@ namespace eSearch.Models
             return $@"{t:%s} seconds";
         }
 
+        public static string FileSizeHumanFriendly(long FileSize)
+        {
+            string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+            double len = FileSize;
+            int order = 0;
+            while (len >= 1024 && order < sizes.Length - 1)
+            {
+                order++;
+                len = len / 1024;
+            }
+
+            // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
+            // show a single decimal place, and no space.
+            return String.Format("{0:0} {1}", len, sizes[order]);
+        }
+
 
         /// <summary>
         /// Attempt to get the owner of a given file. May return an empty string on failure.
@@ -267,6 +283,57 @@ namespace eSearch.Models
             {
                 // TODO Error handling
                 throw;
+            }
+        }
+
+        public static void ShowFolderInExplorerCrossPlatform(string folderPath)
+        {
+            // Validate the folder path
+            if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+            {
+                throw new ArgumentException("Invalid or non-existent folder path.", nameof(folderPath));
+            }
+
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    // Windows: Use explorer.exe
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "explorer.exe",
+                        Arguments = $"\"{folderPath}\"",
+                        UseShellExecute = true
+                    });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    // macOS: Use 'open' command
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "open",
+                        Arguments = $"\"{folderPath}\"",
+                        UseShellExecute = true
+                    });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    // Linux: Try common file managers (xdg-open is the most portable)
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "xdg-open",
+                        Arguments = $"\"{folderPath}\"",
+                        UseShellExecute = true
+                    });
+                }
+                else
+                {
+                    throw new PlatformNotSupportedException("Unsupported operating system.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to open folder: {folderPath}", ex);
             }
         }
 

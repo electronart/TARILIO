@@ -1,0 +1,75 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:eSearch.ViewModels"
+        mc:Ignorable="d" Width="600" Height="500"
+        x:Class="eSearch.LocalLLMServerWindow"
+		ExtendClientAreaToDecorationsHint="True"
+        Title="LocalLLMServerWindow"
+		WindowStartupLocation="CenterOwner"
+		CanResize="False">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:LocalServerWindowViewModel/>
+	</Design.DataContext>
+	<DockPanel x:Name="TitleMenuAndUI" Margin="5">
+		<DockPanel x:Name="TitleOnly" DockPanel.Dock="Top">
+			<Label Height="30" Content="{Binding S[Local~Server]}"/>
+		</DockPanel>
+		<Border Classes="MainPanel" DockPanel.Dock="Bottom" x:Name="UIOnly">
+			<DockPanel Margin="5">
+				<StackPanel DockPanel.Dock="Bottom" Margin="5,5,15,15" Spacing="5" Orientation="Horizontal" HorizontalAlignment="Right">
+					<Button Width="150"
+							x:Name="ButtonClose"
+							HorizontalContentAlignment="Center"
+							Content="{Binding S[Close]}"/>
+				</StackPanel>
+				<StackPanel Margin="10">
+					<DockPanel>
+						<StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Spacing="10">
+							<Button x:Name="BtnStartServer" IsEnabled="{Binding !IsServerRunning}">
+								<Image Source="{Binding I[icons8-play-32.png]}"
+								   Width="16"
+								   Height="16"
+								 />
+							</Button>
+							<Button x:Name="BtnStopServer" IsEnabled="{Binding IsServerRunning}">
+								<Image Source="{Binding I[icons8-stop-32.png]}"
+								   Width="16"
+								   Height="16"
+								 />
+							</Button>
+						</StackPanel>
+						<StackPanel>
+							<Label Content="{Binding S[Server~Status]}" FontWeight="SemiBold" FontSize="18"/>
+							<Label Content="{Binding S[Running]}" IsVisible="{Binding IsServerRunning}"/>
+							<Label Content="{Binding S[Not~Running]}" IsVisible="{Binding !IsServerRunning}"/>
+						</StackPanel>
+					</DockPanel>
+					<StackPanel Margin="0,20" x:Name="SettingsPanel" Spacing="10">
+						<DockPanel>
+							<NumericUpDown Value="{Binding Port}" Width="200" 
+										   DockPanel.Dock="Right" Minimum="0" Maximum="65535" 
+										   IsEnabled="{Binding !IsServerRunning}"/>
+							<Label>Port</Label>
+						</DockPanel>
+						<Label Content="{Binding S[Logs]}"/>
+						<ListBox Height="200"
+								 ItemsSource="{Binding LogItems}">
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<StackPanel>
+										<TextBlock Text="{Binding DateTime}"/>
+										<TextBlock Text="{Binding Message}"/>
+									</StackPanel>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</StackPanel>
+				</StackPanel>
+			</DockPanel>
+		</Border>
+	</DockPanel>
+</Window>

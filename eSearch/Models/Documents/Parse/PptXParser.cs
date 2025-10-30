@@ -17,6 +17,10 @@ namespace eSearch.Models.Documents.Parse
             get { return new string[] { "pptx" }; }
         }
 
+        public bool DoesParserExtractFiles => false;
+
+        public bool DoesParserProduceSubDocuments => false;
+
         public void Parse(string filePath, out ParseResult parseResult)
         {
             parseResult = new();
@@ -34,7 +38,7 @@ namespace eSearch.Models.Documents.Parse
                 int s = 0;
                 while (s < numSlides)
                 {
-                    textContentsBuilder.Append("Slide ").Append(s + 1).Append(" - ").AppendLine(titles[s]).AppendLine();
+                    textContentsBuilder.Append("Slide ").Append(s + 1).Append(" - ").AppendLine(titles.Count > 0 ? titles[s] : "Untitled").AppendLine();
                     string[]? slideTexts = GetAllTextInSlide(presentationDocument, s);
                     if (slideTexts == null)
                     {

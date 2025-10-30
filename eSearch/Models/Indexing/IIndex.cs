@@ -84,7 +84,7 @@ namespace eSearch.Models.Indexing
         /// Remember to close index afterwards.
         /// </summary>
         /// <param name="documents"></param>
-        void AddDocuments(IEnumerable<IDocument> documents);
+        void AddDocuments(IEnumerable<IDocument> documents, out Dictionary<IDocument, Exception> failedDocuments);
 
         /// <summary>
         /// Close Index for writing.

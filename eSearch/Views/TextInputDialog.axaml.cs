@@ -3,6 +3,7 @@ using eSearch.Models;
 using eSearch.ViewModels;
 using System.Threading.Tasks;
 using System;
+using Avalonia.Controls.Documents;
 
 namespace eSearch.Views
 {
@@ -66,9 +67,19 @@ namespace eSearch.Views
 
         public static async Task<Tuple<TaskDialogResult, TextInputDialogViewModel>> ShowDialog(Window owner, string title, string label, string watermark, string existingInput, ValidateSubmission Validator = null, int maxLength = 50)
         {
+            var inlines = new InlineCollection
+            {
+                new Run {Text = label}
+            };
+            return await ShowDialog(owner, title, inlines, watermark, existingInput, Validator, maxLength);
+        }
+
+        // Inlines on the main label allow for hyperlinks and custom formatting.
+        public static async Task<Tuple<TaskDialogResult, TextInputDialogViewModel>> ShowDialog(Window owner, string title, InlineCollection labelInlines, string watermark, string existingInput, ValidateSubmission Validator = null, int maxLength = 50)
+        {
             var dlgConfig = new TextInputDialogViewModel();
             dlgConfig.Title = title;
-            dlgConfig.Label = label;
+            dlgConfig.LabelInlines = labelInlines;
             dlgConfig.Watermark = watermark;
             dlgConfig.Text = existingInput;
             dlgConfig.MaxLength = maxLength;

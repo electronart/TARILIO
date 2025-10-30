@@ -5,8 +5,10 @@ using eSearch.Models.DataSources;
 using eSearch.Models.Documents;
 using eSearch.Models.TaskManagement;
 using eSearch.ViewModels;
+using Microsoft.VisualBasic;
 using ProgressCalculation;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -38,7 +40,7 @@ namespace eSearch.Models.Indexing
 
         public HashSet<string> FoundFileNames = new HashSet<string>();
 
-        List<string> TempFilesToDelete = new List<string>();
+        private ConcurrentQueue<string> TempFilesToDelete = new ConcurrentQueue<string>();
 
         int RetrievedDocuments = 0;
         int IndexedDocuments = 0;
@@ -46,6 +48,8 @@ namespace eSearch.Models.Indexing
         private int _progress    = 0;
         private int _maxProgress = 1;
         private string _progressStatus  = "";
+
+        private long _currentBatchSize = 0L;
 
         public int GetProgress()
         {
@@ -119,7 +123,7 @@ namespace eSearch.Models.Indexing
             Execute(false);
         }
 
-        public void Execute(bool throwOnFailedToOpen = false)
+        public async Task Execute(bool throwOnFailedToOpen = false)
         {
             // In case the Index Directory previously failed to create...
             System.IO.Directory.CreateDirectory(Index.GetAbsolutePath());
@@ -138,12 +142,18 @@ namespace eSearch.Models.Indexing
                 _progressStatus = S.Get("Opening Index");
 
                 // Null when index all file types.
-                List<string> indexedExtensions = null;
+                ConcurrentBag<string>? indexedExtensions = null;
 
 
                 if (indexConfig != null)
                 {
-                    indexedExtensions = indexConfig.SelectedFileExtensions;
+                    if (indexConfig.SelectedFileExtensions != null)
+                    {
+                        indexedExtensions = new ConcurrentBag<string>(indexConfig.SelectedFileExtensions);
+                    } else
+                    {
+                        indexedExtensions = null;
+                    }
                     if (Source is ISupportsIndexConfigurationDataSource configurable)
                     {
                         configurable.UseIndexConfig(indexConfig);
@@ -157,24 +167,146 @@ namespace eSearch.Models.Indexing
 
                 try
                 {
-                    List<IDocument> documentBatch = new List<IDocument>(); // We add Documents in Batches of up to 512 or however many documents we retrieve in 3 seconds whichever comes first.
+                    var docProcessingQueue  = new BlockingCollection<IDocument>(1000); // Documents that need preloading/processing
+                    var readyDocQueue       = new ConcurrentQueue<IDocument>();        // Documents that are fully loaded/ready to be inserted into the index.
+                    var workers = new List<Task>();
+
+                    #region Set up workers for preloading documents
+                    int numProcessorsToUse = Math.Clamp(Environment.ProcessorCount, 1, 8);
+                    for (int i = 0; i < numProcessorsToUse; i++)
+                    {
+                        #region Check for Pause / Cancel
+                        mrse.WaitOne(); // This is the point where the thread will pause if Pause() has been called.
+
+                        if (Cancelling)
+                        {
+                            Logger.Log(Severity.INFO, "Index task was cancelled");
+                            Cancelled = true;
+                            return;
+                        }
+                        #endregion
+
+                        workers.Add(Task.Run(async () =>
+                        {
+                            while (!docProcessingQueue.IsCompleted)
+                            {
+                                mrse.WaitOne();  // Pause here too
+                                Thread.Yield();
+                                if (docProcessingQueue.TryTake(out var docToParse, TimeSpan.FromMilliseconds(500)))
+                                {
+                                    try
+                                    {
+                                        #region Check if this is an indexed file type.
+                                        // Do this before preloading to avoid preloading documents unecessarily.
+                                        if (indexedExtensions != null)
+                                        {
+                                            string fileType = docToParse.FileType; // Performance - Calling this results in IO due to magic number check.
+                                            if (!indexedExtensions.Contains(fileType)
+                                                && fileType != "Database Record"        // Eg. Contents of a CSV File.
+                                                )
+                                            {
+                                                // Skip - Not an indexed extension.
+                                                continue;
+                                            }
+                                        }
+                                        #endregion
+                                        if (docToParse is IPreloadableDocument preloadableDoc)
+                                        {
+                                            await preloadableDoc.PreloadDocument();
+                                        }
+                                        
+                                        if (docToParse.ExtractedFiles != null)
+                                        {
+                                            foreach ( var file in docToParse.ExtractedFiles )
+                                            {
+                                                TempFilesToDelete.Enqueue(file);
+                                            }
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Logger.Log(Severity.ERROR, "Error Preloading Document", ex);
+                                    }
+                                    finally
+                                    {
+                                        if (docToParse.ShouldSkipIndexing == IDocument.SkipReason.DontSkip)
+                                        {
+                                            readyDocQueue.Enqueue(docToParse); // It's ready to be be parsed now.
+                                            Interlocked.Add(ref _currentBatchSize, docToParse.FileSize); // Thread safe addition
+                                        }
+                                        else
+                                        {
+                                            switch (docToParse.ShouldSkipIndexing)
+                                            {
+                                                case IDocument.SkipReason.TooLarge:
+                                                    Logger.Log(Severity.INFO, "Skip " + docToParse.FileName + " - Too large");
+                                                    break;
+                                                case IDocument.SkipReason.ParseError:
+                                                    Logger.Log(Severity.WARNING, "Skip - " + docToParse.FileName + " - Parse Error \n " + docToParse.Text);
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }));
+                    }
+                    #endregion
+                    #region An additional worker in charge of updating progress display
+                    workers.Add(Task.Run( async () =>
+                    {
+                        TimeSpan updateFrequency = TimeSpan.FromMilliseconds(250);
+                        while (!docProcessingQueue.IsCompleted)
+                        {
+                            int totalDiscoveredDocs = Source.GetTotalDiscoveredDocuments();
+
+                            _maxProgress = totalDiscoveredDocs;
+                            _progress = RetrievedDocuments;
+                            string strTimeRemaining = ProgressCalculator.GetHumanFriendlyTimeRemainingLocalizablePrecise(startTime, Source.GetProgress());
+
+                            readyDocQueue.TryPeek(out var document);
+
+                            if (document?.FileName != null)
+                            {
+                                string currentDoc = RetrievedDocuments.ToString("N0");
+                                string totalDocs = totalDiscoveredDocs.ToString("N0");
+
+                                _progressStatus = String.Format(
+                                    S.Get("Indexing {0}"),
+                                    Path.GetFileName(document.FileName)
+                                )
+                                    + "\n" + currentDoc + " / " + totalDocs
+                                    + "\n" + strTimeRemaining;
+
+
+                            }
+                            await Task.Delay(updateFrequency);
+                        }
+                    }));
+                    #endregion
+
                     IDocument document = null;
                     bool isDiscoveryComplete;
+                    long max_batch_size_bytes = ( (long)(MemoryUtils.GetRecommendedRAMBufferSizeMB() * 1048576) / 2 ); // * 1048576 converts mb to bytes
+
+                    
+
                     do
                     {
-                        if (_batchWatch.ElapsedMilliseconds > 3000 || documentBatch.Count > 1024)
+                        mrse.WaitOne();
+                        Thread.Yield();
+                        if (Cancelling)
                         {
-                            try
-                            {
-                                Index.AddDocuments(documentBatch);
-                                IndexedDocuments += documentBatch.Count;
-                                documentBatch.Clear();
-                                _batchWatch.Restart();
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Log(Severity.ERROR, "Exception whilst adding documents to index " + ex.ToString());
-                            }
+                            Logger.Log(Severity.INFO, "Index task was cancelled");
+                            Cancelled = true;
+                            docProcessingQueue.CompleteAdding();  // Signal workers to stop
+                            return;
+                        }
+
+
+                        if (_batchWatch.ElapsedMilliseconds > 3000 || readyDocQueue.Count > 16384 || _currentBatchSize > max_batch_size_bytes)
+                        {
+                            FlushBatch(readyDocQueue);
                         }
                         Source.GetNextDoc(out document, out isDiscoveryComplete);
 
@@ -192,83 +324,36 @@ namespace eSearch.Models.Indexing
                         if (document != null)
                         {
                             ++RetrievedDocuments;
-                            #region Check if this is an indexed file type.
-                            if (indexedExtensions != null)
-                            {
-                                string fileType = document.FileType;
-                                if (!indexedExtensions.Contains(fileType)
-                                    && fileType != "Database Record"        // Eg. Contents of a CSV File.
-                                    )
-                                {
-                                    // Skip - Not an indexed extension.
-                                    continue;
-                                }
-                            }
-                            #endregion
-                            string displayName = document.DisplayName;
+                           
+                            string displayName = string.Empty;
                             if (!string.IsNullOrWhiteSpace(document.FileName))
                             {
+                                // For all FileSystemDocuments, use the filename. This avoids calling the extraction mehtod.
                                 displayName = Path.GetFileNameWithoutExtension(document.FileName);
+                            } else
+                            {
+                                displayName = document.DisplayName ?? "Unnamed"; // On FileSystemDocument this would call ExtractDataFromDocument which is undesired.
                             }
                             if (removeNotFound)
                             {
-                                FoundFileNames.Add(document.FileName);
+                                FoundFileNames.Add(document.FileName ?? displayName);
                             }
 
-                            if (document.ShouldSkipIndexing == IDocument.SkipReason.DontSkip) // Some documents are skipped due to parse errors or being ignored file types etc.
-                            {
-
-                                documentBatch.Add(document);
-
-
-                                if (document.ExtractedFiles != null)
-                                {
-                                    TempFilesToDelete.AddRange(document.ExtractedFiles);
-                                }
-                            }
-                            else
-                            {
-                                switch (document.ShouldSkipIndexing)
-                                {
-                                    case IDocument.SkipReason.TooLarge:
-                                        Logger.Log(Severity.INFO, "Skip " + document.FileName + " - Too large");
-                                        break;
-                                    case IDocument.SkipReason.ParseError:
-                                        Logger.Log(Severity.WARNING, "Skip - " + document.FileName + " - Parse Error \n " + document.Text);
-                                        break;
-                                }
-                            }
-
-                            int totalDiscoveredDocs = Source.GetTotalDiscoveredDocuments();
-
-                            _maxProgress = totalDiscoveredDocs;
-                            _progress = RetrievedDocuments;
-                            string strTimeRemaining = ProgressCalculator.GetHumanFriendlyTimeRemainingLocalizablePrecise(startTime, Source.GetProgress());
-
-
-
-                            if (document.FileName != null)
-                            {
-
-                                string currentDoc = RetrievedDocuments.ToString("N0");
-                                string totalDocs = totalDiscoveredDocs.ToString("N0");
-
-                                _progressStatus = String.Format(
-                                    S.Get("Indexing {0}"),
-                                    Path.GetFileName(document.FileName)
-                                )
-                                    + "\n" + currentDoc + " / " + totalDocs
-                                    + "\n" + strTimeRemaining;
-
-
-                            }
+                            docProcessingQueue.Add(document);
                         }
                         #endregion
                         if (document == null && !isDiscoveryComplete)
                         {
                             Thread.Sleep(50);
                         }
-                    } while (document != null || !isDiscoveryComplete || documentBatch.Count > 0);
+                    } while (document != null || !isDiscoveryComplete);
+
+                    docProcessingQueue.CompleteAdding(); // Done producing documents.
+                    //Wait for any last documents to be preloaded
+                    await Task.WhenAll(workers);
+                    // Flush any remaining ready docs
+                    FlushBatch(readyDocQueue);
+
                     #region If we should remove documents not found, do that now.
                     if (removeNotFound)
                     {
@@ -366,6 +451,39 @@ namespace eSearch.Models.Indexing
                         Path.Combine(Index.GetAbsolutePath(), "IndexTask.txt"), indexLog);
                 }
 
+            }
+        }
+
+        private void FlushBatch(ConcurrentQueue<IDocument> readyDocQueue)
+        {
+            try
+            {
+                List<IDocument> batch = new List<IDocument>();
+                int dequeuedCount = 0;
+                while (dequeuedCount < 16384 && readyDocQueue.TryDequeue(out var dequeuedDoc))
+                {
+                    batch.Add(dequeuedDoc);
+                    dequeuedCount++;
+                }
+
+                if (batch.Count > 0)
+                {
+                    Index.AddDocuments(batch, out var failures);
+                    foreach (var failure in failures)
+                    {
+                        Logger.Log(Severity.ERROR, $"Skipped {failure.Key.FileName} Due to a Parse Error", failure.Value);
+                    }
+                    Interlocked.Add(ref IndexedDocuments, batch.Count);  // Thread-safe
+                    foreach (var indexedDocument in batch)
+                    {
+                        Interlocked.Add(ref _currentBatchSize, -indexedDocument.FileSize); // This is actually subtract
+                    }
+                    _batchWatch.Restart();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(Severity.ERROR, "Exception whilst adding documents to index " + ex.ToString());
             }
         }
     }

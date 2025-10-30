@@ -98,7 +98,7 @@ namespace eSearch.ViewModels
                 {
                     Content = _recordedOutputContent.ToString(),
                     Role = _role,
-                    Model = Program.ProgramConfig.GetSelectedConfiguration()?.Model ?? string.Empty
+                    Model = Program.ProgramConfig.GetSelectedConfiguration()?.GetDisplayedModelName() ?? "???"
                 };
                 if (!string.IsNullOrEmpty(Note))
                 {
@@ -116,7 +116,7 @@ namespace eSearch.ViewModels
                     {
                         Content = _recordedOutputContent.ToString(),
                         Role = _role,
-                        Model = Program.ProgramConfig.GetSelectedConfiguration()?.Model ?? string.Empty
+                        Model = Program.ProgramConfig.GetSelectedConfiguration()?.GetDisplayedModelName() ?? string.Empty
                     };
                     if (!string.IsNullOrEmpty(Note))
                     {

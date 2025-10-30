@@ -25,6 +25,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Linq;
 using com.sun.corba.se.spi.activation;
+using DocumentFormat.OpenXml.Drawing;
 //using ControlCatalog.Models;
 //using ControlCatalog.Pages;
 #endregion
@@ -58,7 +59,8 @@ namespace eSearch
                         styledFluentTheme = theme;
                     }
                 }
-                highContrastTheme = new FluentTheme();
+            if (highContrastTheme == null) highContrastTheme = CreateHighContrastTheme();
+
             #endregion
             if (Program.ProgramConfig.IsThemeHighContrast)
             {
@@ -110,6 +112,31 @@ namespace eSearch
             Styles.Add(newFluentTheme);
         }
 
+        private FluentTheme CreateHighContrastTheme()
+        {
+            var theme = new FluentTheme();  // Keep this.
+
+            var lightPalette = new ColorPaletteResources
+            {
+                RegionColor = Colors.White,
+                BaseHigh = Colors.Black,
+                AltHigh = Colors.White,
+                ChromeLow = Colors.White
+            };
+
+            var darkPalette = new ColorPaletteResources
+            {
+                RegionColor = Colors.Black,
+                BaseHigh = Colors.White,
+                AltHigh = Colors.Black,
+                ChromeLow = Colors.Black
+            };
+
+            theme.Palettes[ThemeVariant.Light] = lightPalette;
+            theme.Palettes[ThemeVariant.Dark] = darkPalette;
+            return theme;
+        }
+
         public void getThemePrimaryColors(
             out Avalonia.Media.Color regionColor, 
             out Avalonia.Media.Color baseHighColor, 
@@ -131,6 +158,7 @@ namespace eSearch
                     }
                     catch (KeyNotFoundException) {
                         // Not using a palette.
+                        Debug.WriteLine("No palette");
                     }
                 }
             }

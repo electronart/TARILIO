@@ -4,8 +4,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using System;
 using System.IO;
-using Avalonia.Themes.Fluent;
-using Avalonia.Platform;
 using System.Diagnostics;
 using eSearch.ViewModels;
 using eSearch.Models.Localization;
@@ -17,24 +15,24 @@ using System.Reflection;
 using System.Text;
 using eSearch.Models.Configuration;
 using Newtonsoft.Json;
-using Avalonia.Controls.Primitives;
 using System.Timers;
 using ReactiveUI;
-using com.sun.istack.@internal;
 using eSearch.Models.Plugins;
 using S = eSearch.ViewModels.TranslationsViewModel;
-using eSearch.Interop.AI;
 using eSearch.Models.AI.MCP.Tools;
 using Xilium.CefGlue;
 using DynamicData;
-using UglyToad.PdfPig.Fonts.TrueType.Names;
 using eSearch.Interop;
 using eSearch.Models.Logging;
 using eSearch.Models.Indexing;
 using eSearch.Interop.Indexing;
 using System.Threading;
 using Timer = System.Timers.Timer;
-using ProgressCalculation;
+using eSearch.Models.AI;
+using System.Threading.Tasks;
+using eSearch.ViewModels.StatusUI;
+using eSearch.Views;
+using Avalonia.Threading;
 
 namespace eSearch
 {
@@ -54,6 +52,19 @@ namespace eSearch
 
         public static bool WasLaunchedWithCreateLLMConnectionsDisabled = false;
 
+        /// <summary>
+        /// Could be "NONE" "CUDA 11", "CUDA 12", "VULKAN", "OPEN CL", "CPU"
+        /// </summary>
+        public static string LLAMA_BACKEND = "NONE";
+
+        /// <summary>
+        /// When not null, represents a running server serving completions.
+        /// </summary>
+        public static LocalLLMServer? RunningLocalLLMServer = null;
+
+
+
+        public static InMemoryLog LLMServerSessionLog = new InMemoryLog(TimeSpan.FromDays(7));
 
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -61,6 +72,9 @@ namespace eSearch
         [STAThread]
         public static void Main(string[] args)
         {
+
+            
+
             WasLaunchedWithSearchOnlyArgument =           args.Contains("-s");
             WasLaunchedWithAIDisabledArgument =           args.Contains("-a");
             WasLaunchedWithCreateLLMConnectionsDisabled = args.Contains("-x");
@@ -85,11 +99,175 @@ namespace eSearch
                 }
             }
             #endregion
+            // If we got this far it's not an indexing task, we're launching the UI.
+
+            #region Initialize LlamaSharp early
+            string? llama_error_msg = null;
+            Exception? llama_exception = null;
+            bool llama_initialized = false;
+            try
+            {
+                MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
+                llama_initialized = LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
+                {
+                    llama_error_msg = msg;
+                }, wrappedDebugLogger).GetAwaiter().GetResult();
+            } catch (Exception ex)
+            {
+                llama_exception = ex;
+            }
+            #endregion
+
+            var upTime = Program.GetSystemUptime();
+            if (upTime.TotalMinutes < 10 && !llama_initialized)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(30));
+                // Restart the app with same args
+                var psi = new ProcessStartInfo
+                {
+                    FileName = Environment.ProcessPath,
+                    WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                    UseShellExecute = true // Helps with desktop apps
+                };
+                Process.Start(psi);
+
+                // Exit current process immediately (prevents app from starting)
+                Environment.Exit(0);
+                return;
+            }
+
             BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
-            timer = new Timer(60000);
-            timer.Elapsed += Timer_Elapsed;
-            timer.Start();
+            .AfterSetup(async (AppBuilder) =>
+            {
+                timer = new Timer(60000);
+                timer.Elapsed += Timer_Elapsed;
+                timer.Start();
+
+                
+                if (llama_error_msg != null && !llama_initialized)
+                {
+                    Window mainWindow = null;
+                    while (mainWindow == null)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(2));
+                        mainWindow = Program.GetMainWindow();
+                        
+                    }
+                    if (mainWindow.DataContext is MainWindowViewModel mwvm)
+                    {
+                        var errorStatus =
+                        new StatusControlViewModel
+                        {
+                            StatusTitle = "LlamaSharp not Initialized",
+                            StatusMessage = "Click for details",
+                            ClickAction = async () =>
+                            {
+                                await TaskDialogWindow.OKDialog("LlamaSharp Error", llama_error_msg, mainWindow);
+                            }
+                        };
+                        errorStatus.DismissAction = () =>
+                        {
+                            mwvm.StatusMessages.Remove(errorStatus);
+                        };
+                        mwvm.StatusMessages.Add(errorStatus);
+                    }
+                    Debug.WriteLine(llama_error_msg);
+                }
+                if (llama_exception != null)
+                {
+                    Window mainWindow = null;
+                    while (mainWindow == null)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(2));
+                        mainWindow = Program.GetMainWindow();
+
+                    }
+                    if (mainWindow.DataContext is MainWindowViewModel mwvm)
+                    {
+                        var errorStatus =
+                        new StatusControlViewModel
+                        {
+                            StatusTitle = "LlamaSharp not Initialized",
+                            StatusMessage = "Click for details",
+                            ClickAction = async () =>
+                            {
+                                await TaskDialogWindow.ExceptionDialog("LlamaSharp Exception", llama_exception, mainWindow);
+                            }
+                        };
+                        errorStatus.DismissAction = () =>
+                        {
+                            mwvm.StatusMessages.Remove(errorStatus);
+                        };
+                        mwvm.StatusMessages.Add(errorStatus);
+                    }
+                    Debug.WriteLine(llama_exception.ToString());
+                }
+
+            }).StartWithClassicDesktopLifetime(args);
+            
+
+            
+
+            
+            //if (llama_sharp_error != null)
+            //{
+            //    Dispatcher.UIThread.Post(async () =>
+            //    {
+            //        Window? mainWindow = null;
+            //        while (mainWindow == null)
+            //        {
+            //            mainWindow = Program.GetMainWindow();
+            //            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            //        }
+            //        await TaskDialogWindow.OKDialog(S.Get("An error occurred"), llama_sharp_error, mainWindow);
+            //    });
+            //}
+        }
+
+        // How long the whole computer has been up, not eSearch itself.
+        public static TimeSpan GetSystemUptime()
+        {
+            long milliseconds = Environment.TickCount64;
+            return TimeSpan.FromMilliseconds(milliseconds);
+        }
+
+        private static async Task<string?> init_llama_sharp()
+        {
+            // Wait for the window to open so we have a valid parent for this.
+            string errorMsg = string.Empty;
+
+            try
+            {
+                MSLogger wrappedDebugLogger = new MSLogger(new DebugLogger());
+                var res = await LLamaBackendConfigurator.ConfigureBackend2(null, false, async delegate (string msg)
+                {
+                    Dispatcher.UIThread.Post(async () =>
+                    {
+                        // Non-fatal..
+                        Window? mainWindow = null;
+                        while (mainWindow == null)
+                        {
+                            mainWindow = Program.GetMainWindow();
+                            await Task.Delay(TimeSpan.FromSeconds(1)); // Ugly hack... wait for a parent UI..
+                        }
+                        await TaskDialogWindow.OKDialog(S.Get("An error occurred"), msg, mainWindow);
+                    });
+                }, wrappedDebugLogger);
+                if (res != true)
+                {
+                    errorMsg = "LlamaSharp lib failed to load. Check logs for details.";
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMsg = ex.ToString();
+            }
+
+            if (errorMsg != string.Empty)
+            {
+                return errorMsg;
+            }
+            return null;
         }
 
         private static System.Timers.Timer  _scheduledIndexProgressReportTimer;
@@ -176,20 +354,25 @@ namespace eSearch
 
         private static void Timer_Elapsed(object? sender, ElapsedEventArgs e)
         {
-            try
+            Dispatcher.UIThread.Post(() =>
             {
-                if (Program.GetMainWindow().DataContext is MainWindowViewModel vm)
+                try
                 {
-                    // TODO Non intuitive code - It's detecting expired serials in the case
-                    // The application is left open permanently.
-                    vm.RaisePropertyChanged(nameof(vm.ProductTagText));
+
+                    if (Program.GetMainWindow()?.DataContext is MainWindowViewModel vm)
+                    {
+                        // TODO Non intuitive code - It's detecting expired serials in the case
+                        // The application is left open permanently.
+                        vm.RaisePropertyChanged(nameof(vm.ProductTagText));
+                    }
                 }
-            } catch (Exception ex)
-            {
-                // Non fatal.
-                Debug.WriteLine("Exception in UI Update Timer ");
-                Debug.WriteLine(ex);
-            }
+                catch (Exception ex)
+                {
+                    // Non fatal.
+                    Debug.WriteLine("Exception in UI Update Timer ");
+                    Debug.WriteLine(ex);
+                }
+            });
         }
 
         static Dictionary<string, string> cefFlags = new Dictionary<string, string>
@@ -247,7 +430,7 @@ namespace eSearch
 
         public static Avalonia.Controls.Window? GetMainWindow()
         {
-            if (Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 return desktop.MainWindow;
             }
@@ -357,7 +540,18 @@ namespace eSearch
 #else
                 return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "Plugins");
 #endif
+            }
+        }
 
+        public static string ESEARCH_LLM_MODELS_DIR
+        {
+            get
+            {
+#if STANDALONE
+            return Path.Combine(ESEARCH_PROGRAM_DATA_DIR, "AI", "Language Models");
+#else
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "eSearch", "AI", "Language Models");
+#endif
             }
         }
 
@@ -466,18 +660,132 @@ namespace eSearch
         {
             get
             {
-                #if STANDALONE
+#if STANDALONE
                 string dir = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Exports");
                 if (!System.IO.Directory.Exists(dir))
                 {
                     System.IO.Directory.CreateDirectory(dir);
                 }
                 return dir;
-                #else
+#else
                 return Path.Combine(Program.GetMainWindow().StorageProvider.TryGetWellKnownFolderAsync(Avalonia.Platform.Storage.WellKnownFolder.Documents).Result.Path.LocalPath, "eSearch");
-                #endif
+#endif
             }
         }
+
+        public static string ESEARCH_CONVERSATION_DIR
+        {
+            get
+            {
+                string dir = Path.Combine(ESEARCH_EXPORT_DIR, "Conversations");
+                System.IO.Directory.CreateDirectory(dir);
+                return dir;
+            }
+        }
+
+
+        public  static IProgress<float>?            ModelLoadProgress;
+        private static CancellationTokenSource?     ModelLoadCancelTokenSrc;
+
+
+        /// <summary>
+        /// Note, if an LLM is already loaded, and the LLM is different to the config, then this will UNLOAD the existing LLM.
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static async Task<LoadedLocalLLM> GetOrLoadLocalLLM(LocalLLMConfiguration config, CancellationToken cancellationToken)
+        {
+            if (_loadedLocalLLM != null)
+            {
+                if (_loadedLocalLLM.llm == config) return _loadedLocalLLM; // The LLM was already in memory
+                else
+                {
+                    // Another LLM is in memory...
+                    _loadedLocalLLM.Dispose();
+                    _loadedLocalLLM = null;
+                }   
+            }
+            // LLM is not in memory. Need to load it.
+
+            // Firstly, check if we're already loading a model, and if so, cancel.
+            if (ModelLoadCancelTokenSrc != null)
+            {
+                await ModelLoadCancelTokenSrc.CancelAsync();
+            }
+
+            if (Program.GetMainWindow()?.DataContext is MainWindowViewModel mwvm)
+            {
+                StatusControlViewModel status = new StatusControlViewModel
+                {
+                    StatusTitle = S.Get("Loading Model"),
+                    Tag = config,
+                    StatusProgress = 0.1f,
+                    StatusMessage = Path.GetFileNameWithoutExtension(config.ModelPath)
+                };
+                mwvm.StatusMessages.Add(status);
+
+                var modelLoadProgress = new Progress<float>();
+                modelLoadProgress.ProgressChanged += (sender, progress) =>
+                {
+#if DEBUG
+                    Debug.WriteLine($"Model Load Progress {progress * 100}%");
+#endif
+                    status.StatusProgress = Math.Clamp(progress * 100, 0, 100);
+                    mwvm.LocalLLMModelLoadProgress = progress;
+                };
+
+                mwvm.LocalLLMIsModelLoading = true;
+                try
+                {
+                    _loadedLocalLLM = await LoadedLocalLLM.LoadLLM(config, cancellationToken, modelLoadProgress);
+                    
+                    status.StatusTitle = S.Get("Model Loaded");
+                    status.StatusProgress = 100;
+                    return _loadedLocalLLM;
+                } catch (Exception ex)
+                {
+                    // TODO - Display error on the UI.
+
+                    Debug.WriteLine($"Error loading LLM Model: {ex.ToString()}");
+
+                    var errorStatus = new StatusControlViewModel
+                    {
+                        StatusTitle = S.Get("Error loading model"),
+                        StatusMessage = S.Get("Click for details"),
+                        StatusError = ex.Message
+                    };
+                    errorStatus.DismissAction = () =>
+                    {
+                        mwvm.StatusMessages.Remove(errorStatus);
+                    };
+                    errorStatus.ClickAction = async () =>
+                    {
+                        var window = Program.GetMainWindow();
+                        if (window != null) // Just making the compiler happy
+                        {
+                            await TaskDialogWindow.ExceptionDialog(S.Get("Error loading model"), ex, window);
+                        }
+                    };
+                    mwvm.StatusMessages.Remove(status);
+                    mwvm.StatusMessages.Add(errorStatus);
+
+                    throw;
+                } finally
+                {
+                    mwvm.LocalLLMIsModelLoading = false;
+                    await Task.Delay(TimeSpan.FromSeconds(5)); // Just to keep the status visible for a moment.
+                    mwvm.StatusMessages.Remove(status);
+                }
+            } else
+            {
+                throw new Exception("Must be run from Windowed eSearch");
+            }
+        }
+
+        /// <summary>
+        /// This could potentially be using a very large amount of RAM/VRAM when populated..
+        /// </summary>
+        private static LoadedLocalLLM? _loadedLocalLLM;
 
         public static TranslationsViewModel TranslationsViewModel { 
             get

@@ -91,8 +91,20 @@
 		<Style Selector="Window.tool_window Panel#PART_RestoreButton">
 			<Setter Property="IsVisible" Value="False"></Setter>
 		</Style>
+		<!--
 		<Style Selector="Label.Error">
+			
 			<Setter Property="Foreground" Value="Red"/>
+		</Style>
+		<Style Selector="TextBlock.Error">
+			<Setter Property="Foreground" Value="Red"/>
+		</Style>
+		-->
+		<Style Selector="Label.Error">
+			<Setter Property="Foreground" Value="{DynamicResource SystemErrorTextColor}"/>
+		</Style>
+		<Style Selector="TextBlock.Error">
+			<Setter Property="Foreground" Value="{DynamicResource SystemErrorTextColor}"/>
 		</Style>
 		<Style Selector="Button[IsEnabled=False] Image">
 			<Setter Property="Opacity" Value="0.35"/>

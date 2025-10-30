@@ -4,7 +4,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="using:eSearch.ViewModels"
         mc:Ignorable="d"
-		Width="500" Height="200"
+		MinWidth="500" MinHeight="200"
+		MaxWidth="600"
+		MaxHeight="800"
         x:Class="eSearch.Views.TaskDialogWindow"
         Title="{Binding S[eSearch]}"
 		Classes="tool_window"
@@ -12,6 +14,7 @@
 		Icon="{Binding ApplicationIcon}"
 		ExtendClientAreaToDecorationsHint="True"
 		CanResize="False"
+		SizeToContent="WidthAndHeight"
 		>
 	<Window.Styles>
 		<StyleInclude Source="/Views/ViewStyles/ToolWindowStyle.axaml"></StyleInclude>
@@ -22,15 +25,35 @@
 		<vm:TaskDialogWindowViewModel/>
 	</Design.DataContext>
 	<DockPanel x:Name="PanelMainContent" Margin="5">
-		<DockPanel Margin="15" x:Name="PanelButtons" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
-			<Button Margin="5,0" x:Name="Button1" IsVisible="{Binding Button1Visible}" Content="{Binding Button1Text}" Padding="15,5" 
-					MinWidth="110" HorizontalContentAlignment="Center">Button 1</Button>
-			<Button Margin="5,0" x:Name="Button2" IsVisible="{Binding Button2Visible}" Content="{Binding Button2Text}" Padding="15,5"
-					MinWidth="110" HorizontalContentAlignment="Center">Button 2</Button>
-			<Button Margin="5,0" x:Name="Button3" IsVisible="{Binding Button3Visible}" Content="{Binding Button3Text}" Padding="15,5"
-					MinWidth="110" HorizontalContentAlignment="Center">Button 3</Button>
-			
+		<TextBox x:Name="TextBlockDetails"
+		   IsReadOnly="True" DockPanel.Dock="Bottom" 
+		   MinHeight="200"
+		   MaxHeight="500"
+		   TextWrapping="Wrap"
+		   Text="{Binding DetailsText}"
+		   IsVisible="{Binding ShowDetails}"/>
+		<DockPanel DockPanel.Dock="Bottom">
+			<DockPanel Margin="15" x:Name="PanelButtons" DockPanel.Dock="Right" HorizontalAlignment="Right">
+				<Button Margin="5,0" x:Name="Button1" 
+						IsVisible="{Binding Button1Visible}" Content="{Binding Button1Text}" Padding="15,5" 
+						MinWidth="110" HorizontalContentAlignment="Center"/>
+				<Button Margin="5,0" x:Name="Button2" 
+						IsVisible="{Binding Button2Visible}" Content="{Binding Button2Text}" Padding="15,5"
+						MinWidth="110" HorizontalContentAlignment="Center"/>
+				<Button Margin="5,0" x:Name="Button3" 
+						IsVisible="{Binding Button3Visible}" Content="{Binding Button3Text}" Padding="15,5"
+						MinWidth="110" HorizontalContentAlignment="Center"/>
+			</DockPanel>
+			<DockPanel DockPanel.Dock="Left">
+				<ToggleButton Margin="15" x:Name="ButtonDetails" 
+				  Content="{Binding S[Details]}" 
+				  HorizontalContentAlignment="Center"
+				  IsChecked="{Binding ShowDetails}"
+				  IsVisible="{Binding DetailsText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+				  MinWidth="110"/>
+			</DockPanel>
 		</DockPanel>
+		
 		<DockPanel x:Name="PanelMainInstructionAndText">
 			<TextBlock Margin="10,25,10,10" FontSize="20" x:Name="LabelMainInstruction" DockPanel.Dock="Top" Text="{Binding MainInstructionText}">Main Instruction</TextBlock>
 			<TextBlock 

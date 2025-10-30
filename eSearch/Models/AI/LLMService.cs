@@ -20,5 +20,7 @@ namespace eSearch.Models.AI
         OpenRouter,
         Ollama,
         LMStudio,
+        [Description("Local Model")]
+        LocalModel
     }
 }

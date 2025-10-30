@@ -1,0 +1,746 @@
+# Product:  eSearch
+# RFC 4646 Language Code. Used for Localisation of date strings Eg. en-GB, de-DE etc.
+RFC4646
+uk-UA
+# --- Common ---
+Cancelled
+Відмінено
+Size
+Розмір
+Copy
+Копіювати
+File not found
+Файл не знайдено
+OK
+Підтвердити
+Cancel
+Скасувати
+Append Note:
+Додати підтримку:
+Copy to:
+Копіювати до:
+Clipboard
+Буфер обміну
+File:
+Файл:
+Append Date
+Додати дату
+Save
+Зберегти
+Type
+Друкувати
+Name
+Ім'я
+Title
+Заголовок
+Score
+Рахунок
+Close
+Закрити
+Copy Response...
+Копіювати відповідь...
+Copy Document...
+Скопіювати документ...
+Help
+Допомога
+Copy Conversation
+копіювати розмову
+Error
+Помилка
+Plugins
+Плагіни
+Remove
+Видалити
+Columns
+Стовпці
+Words
+Слова
+Rows
+Рядки
+Soundex
+Soundex
+Filters
+Фільтри
+All
+Усі
+Selected
+Обрано
+Include
+Включають
+Paragraphs
+Абзаци
+Search Settings
+Налаштування пошуку
+Synonyms
+Синоніми
+New...
+Новий
+eSearch
+eSearch
+Delete
+Видалити
+Update...
+Оновити...
+Rename...
+Перейменувати...
+Something went wrong
+Щось пішло не так
+Delete {0}?
+Видалити {0}?
+Delete...
+Видалити...
+# --- AboutWindow.axaml ---
+Serial...
+Серійний...
+Licenses and acknowledgements
+Ліцензії та подяки
+# --- AboutWindowViewModel.cs ---
+Evaluation ({0} days remaining)
+Оцінювання ({0} днів залишилося)
+Does not expire
+Не має сроку
+Expires {0}
+Закінчується {0}
+Expired {0}
+Прострочено {0}
+Serial: None
+Серійний∶ відсутній
+# --- ColorPickerWindow.axaml ---
+# --- CompletionStreamingJSBinding.cs ---
+# --- CopyConversationWindow.axaml ---
+Transcript:
+Розшифровка:
+# --- CopyConversationWindow.axaml.cs ---
+# --- CopyConversationWindowViewModel.cs ---
+# --- CopyDocumentWindow.axaml ---
+Copy Response
+Копіювати відповідь
+Copy Document
+Копіювати документ
+Copied text:
+Скопійований текст:
+Append File name:
+Додати назву файла:
+Append Query:
+Додати запит:
+# --- CopyDocumentWindow.axaml.cs ---
+Copy
+Копіювати
+# --- CopyResultsTask.cs ---
+Cancel Copying?
+Скасувати копіювання?
+Folder will not contain all files
+Папка не міститиме всіх файлів
+# --- DataColumn.cs ---
+Created
+Створено
+Modified
+Змінено
+Indexed
+Індексований
+Accessed
+Доступ отримано
+Path
+Шлях
+Parser
+Парсер
+# --- DocumentType.cs ---
+Documents
+Документи
+Presentations
+Презентації
+Publications
+Публікації
+Text
+Текст
+Emails
+Електронна пошта
+Spreadsheets
+Таблиці
+Audio
+Аудіо
+Images
+Зображення
+Videos
+Відео
+Data
+Дані
+Archives
+Архіви 
+Source Code
+Вихідний код
+# --- ExportConversationWindow.axaml ---
+Export Conversation
+Експортувати розмову
+Export
+Експорт
+Export as
+Експортувати як
+File
+Файл
+# --- ExportSearchResultsViewModel.cs ---
+Select output file type
+Вибрати тип вихідного файлу
+XML (.xml)
+Розширювана мова розмітки (.xml)
+Comma Separated Values (.csv)
+Розділені комами значення (.csv)
+Tab Separated (.txt)
+Розділені табуляцією (.txt)
+Results
+Результати
+# --- ExportSearchResultsWindow.axaml ---
+Export Search Results
+Експортувати результати пошуку
+All rows
+Усі рядки
+Output as
+Вивести як
+All columns
+Усі стовпці
+Output Directory
+Вихідний каталог
+# --- ExportSearchResultsWindow.axaml.cs ---
+Select at least one Column to export
+Виберіть принаймні один стовпець для експорту
+Select output format
+Виберіть формат виводу
+No results are checked
+Жодний результат не перевірено
+Select an output directory.
+Виберіть каталог для виводу
+Output Directory not found
+Вихідній каталог не знайдено
+Must enter a file name
+Потрібно ввести ім'я файлу
+File name contains illegal characters
+Ім'я файлу містить недопустимі символи
+# --- FontPickerWindow.axaml ---
+# --- HtmlDocumentControl.axaml.cs ---
+Search Report
+Пошуковий звіт
+Document Information
+Інформація про документ
+Size
+Розмір
+Hits in Context
+Збігів в контексті
+# --- IndexProgressWindow.axaml ---
+View log
+Переглянути журнал
+# --- IndexProgressWindow.axaml.cs ---
+Paused
+Призупинено
+Cancel Indexing?
+Скасувати індексацію?
+Index will only contain partial results.
+Індекс міститиме лише часткові результати
+Cancelling
+Скасування
+# --- IndexSettingsWindow.axaml ---
+Index Settings
+Налаштування індексу
+Stop words
+Слова зупинення
+Maximum word length
+Максимальна длина слів
+Maximum file size (MB)
+Максимальній розмір файлів (MB)
+Case sensitive
+Чутливі до регістру
+# --- IndexTask.cs ---
+Opening Index
+Початковий індекс
+Indexing {0}
+Індексування {0}
+Cleaning up...
+Прибираємося...
+Finished
+Завершенний
+{0} Document(s) Indexed
+{0} документів(а) проіндексовано
+Error(s) during indexing. Check log for details.
+Помилки(а) під час індексування. Перевірте звіт для
+# --- ListContentsWindow.axaml ---
+List Contents
+Вміст списку
+Words Found
+Знайдені слова
+Words in index
+Слова в індексі
+Save as...
+Зберегти як...
+Word count
+Кількість слів
+File count
+Кількість файлів
+Field count
+Кількість полів
+# --- LLMConnectionConfigurationWindow.axaml ---
+Connect to API
+Доєднайтеся до API
+Connections
+З'єднання
+Service
+Послуги
+Server URL
+Адреса сервера
+API Key
+Ключ API
+Model
+Зразок
+Custom System Prompt
+Користувацька системна підказка
+Test
+Тест
+# --- LLMConnectionConfigurationWindow.axaml.cs ---
+Rename
+Перейменувати
+Connected Successfully.
+Успішне підключення.
+API Key Required
+Потрібен ключ API
+Model Name required
+Потрібна назва зразка
+Server URL Required
+Потребується адреса серверу
+# --- LLMMessageStreamingJSBinding.cs ---
+Generation Cancelled
+Генерацію скасовано
+# --- LLMService.cs ---
+OpenAI
+OpenAI
+Custom...
+Користувацька...
+# --- LuceneWordWheel.cs ---
+Loading...
+Завантаження...
+# --- MainWindow.axaml ---
+_File
+_Файл
+View...
+Перегляд...
+Export Search Results...
+Експортувати результати пошуку...
+Print...
+Друк...
+Launch at Startup
+Запуск при стартапі
+_Exit
+_Вихід
+_AI
+_ШІ
+_AI Connections
+_ШІ З'єднання
+_MCP Servers
+_MCP сервер
+Show System Prompt
+Показати системний запит
+Export Conversation...
+Експортувати розмову
+Import Conversation...
+Імпортувати розмову
+History...
+Історія...
+Report...
+Звіт...
+_Index
+_Індекс
+Manage Indexes...
+Керувати індексами
+_View
+_Перегляд
+Theme
+Тема
+Dark
+Темний
+Light
+Світлий
+System
+Система
+High Contrast
+Підвищена контрастність
+Layout
+Розташування
+Horizontal
+Горизонтальний
+Vertical
+Вертикальний
+Language
+Мова
+English
+Англійська
+Pseudo Locale
+Псевдолокація
+From File...
+З файлу...
+Word List
+Список слів
+About
+Про сайт
+List...
+Список...
+Register...
+Зареєструвати...
+Results Settings...
+Налаштування результатів...
+Copy Results...
+Скопіювати результат...
+Viewer Settings...
+Налаштування перегляду...
+Document Metadata
+Метадані документа
+View in folder
+Переглянути в папці
+Previous Hit
+Попередній збіг
+Next Hit
+Наступний збіг
+Key
+Ключ
+Value
+Значення
+# --- MainWindow.axaml.cs ---
+Import Conversation
+Імпортувати розмову
+Note:
+Запис:
+Must provide a filename or check append date.
+Повинні надати назву файлу або перевірити додаток
+Query: 
+Запит:
+Filename:
+Назва файлу:
+Select output folder
+Оберіть вихідну папку
+Enter a query
+Введіть запит
+An error occurred
+Сталася помилка
+Show location
+Показати місцезнаходження
+Location not available
+Місцезнаходження недоступне
+There is no metadata to display.
+Немає метаданних для відображення
+# --- MainWindowViewModel.cs ---
+File \"%s\" not found
+Файл \″%s\″ не знайдено
+# --- MCP_SearchServerTool.cs ---
+Search an index for documents.
+Пошук індексу для документів
+The name of the user's index to search
+Назва індекса користувача для пошуку
+The Search Query to perform. Supports the Lucene Search Syntax
+Пошуковий запит для виконання. Підтримує
+Returns the names of all indexes that can be searched.
+Повертає назви всіх індексів які можуть
+# --- MCPConnectionConfigurationWindow.axaml ---
+Configure MCP Servers
+Налаштувати сервери MCP
+Configured Servers
+Налаштовані сервери
+Configuration
+Конфігурація
+Save
+Зберегти
+# --- MCPConnectionConfigurationWindow.axaml.cs ---
+Running
+Працює
+Not Running
+Не працює
+Server Stopped
+Сервер зупинився
+Invalid Configuration
+Невірна конфігурація
+Enter a valid MCP Server Configuration
+Введіть коректну конфігурацію сервера MCP
+\"{0}\" already exists.
+\"{0}\" вже існує.
+Server must be given a unique name.
+У сервера повинна бути унікальна назва.
+# --- MessageControl.axaml ---
+Browser Debug...
+Дебагінг браузера...
+Stop Generation
+Зупинити генерацію
+Notes
+Записи
+Delete Message
+Видалити повідомлення
+Copy Message
+Копіювати повідомлення
+Note
+Запис
+# --- NewIndexWindow.axaml ---
+Index Name
+Назва індексу
+Index Contents
+Зміст індексу
+Include All
+Додати усі
+# --- NewIndexWindow.axaml.cs ---
+Index name required.
+Потребується назва індекса.
+Select data to be indexed.
+Оберіть інформацію для індексації.
+Select at least one content type to index.
+Оберіть принаймні один тип контенту для індексації.
+# --- NewIndexWindowViewModel.cs ---
+Update Index
+Оновити індекс
+Create Index
+Створити індекс
+# --- PerplexityModel.cs ---
+sonar
+Сонар
+sonar-pro
+Сонар-про
+sonar-reasoning
+Сонар-обгрунтування
+sonar-reasoning-pro
+Сонар-обгрунтування-про
+llama-3.1-sonar-small-128k-online
+Лама-3.1-сонар-маленький-128т-онлайн
+llama-3.1-sonar-large-128k-online
+Лама-3.1-сонар-великий-128т-онлайн
+llama-3.1-sonar-huge-128k-online
+Лама-3.1-сонар-величезний-128т-онлайн
+# --- PluginsWindow.axaml ---
+Plugins
+Плагіни
+Close
+Закрити
+Add...
+Додати...
+# --- PluginsWindow.axaml.cs ---
+Remove Plugin {0}?
+Видалити плагін {0}?
+Open Plugin File
+Відкрити файл плагіну
+Could not install plugin
+Не вдалося завантажити плагін
+# --- Program.cs ---
+Scheduled Index of {0} is starting...
+Запланована індексація {0} починається...
+# --- ProgressCalculator.cs ---
+Calculating...
+Обчислюється...
+{0} day(s) remaining
+{0} день(і/ів) залишилося(вся) 
+{0} hour(s) remaining
+{0} година(ин/ини) залишил(а)ося 
+{0} minute(s) remaining
+{0} хвилин(а/и) залишил(а)ося 
+{0} second(s) remaining
+{0} секунд(а/и) залишил(а)ося 
+# --- RegistrationWindow.axaml ---
+Serial
+Серійний
+Order Online
+Замовити онлайн
+Enter your Serial Number
+Введіть свій серійний номер
+Invalid Serial Number
+Невірний серійний номер
+# --- ResultsSettingsWindow.axaml ---
+Results Settings
+Налаштування результатів
+Column Width
+Ширина стовпців
+Fit to content
+Підігнати до вмісту
+Fit to window
+Підігнати під вікно
+Set Manually
+Встановити саморучно
+Key Words in Context
+Ключові слова у контексті
+Show
+Відобразити
+Colour...
+Колір...
+Limit Results
+Обмеження результатів
+# --- ResultsSettingsWindow.axaml.cs ---
+Select at least one column
+Оберіть принаймні один стовпець
+# --- ScheduleUtils.cs ---
+Scheduled Automatic Index Update of {0}
+Запланована автоматична індексація оновлення {0}
+# --- SearchControl.axaml ---
+AI Mode
+Режим ШІ
+AND
+І
+OR
+Або
+NOT
+Не
+Stemming
+Стеммінг
+Any
+Будь-який
+Boolean
+Логічний
+Search Document Metadata
+Пошук метаданих документа
+# --- SearchFilterWindow.axaml ---
+# --- SearchResultsReportWindow.axaml ---
+Search Results Report
+Пошук у звіті результатів
+Rows
+Рядки
+File list only
+Окремий список файлів
+Full text
+Повний текст
+Hits in context
+Збігів у контексті
+Words
+Слова
+Output template
+Шаблон виводу
+Run report...
+Демонструвати звіт...
+Run
+Запустити
+Open when done
+Відкрити після завершення
+# --- SearchSettingsViewModel.cs ---
+None
+Жодний
+Double Metaphone
+Подвійний метафон
+# --- SearchSettingsWindow.axaml ---
+Use List
+Список використання
+Stemming Language
+Мова стеммінгу
+English Porter
+Портування до англійської
+List Index Contents on Empty Query
+Список змісту індекса у пустому запиті
+Search as you Type
+Шукайте під час друкування
+English WordNet
+Англійський WordNet
+Synonym files:
+Синонимічні файли:
+Synonym Groups
+Синонимічні групи:
+Sort
+Сортувати
+Expansion
+Розширення
+Edit...
+Редагувати...
+# --- SearchSettingsWindow.axaml.cs ---
+%GROUP% will be deleted.
+%Group% буде видалено
+Delete Synonyms Group?
+Видалити синонимічну групу?
+Rename Synonyms Group
+Переіменувати синонимічну групу
+Synonym Group Name
+Назва синонимічної групи
+New Synonyms Group
+нова синонимічна група
+Name
+Ім'я
+Check at least one Synonym file from the drop down.
+Перевірити принаймні одну синонимічну групу з
+No list file supplied
+Не надано файлу списку
+File does not exist
+Файла не існує
+# --- TaskDialogWindow.axaml.cs ---
+Something went wrong. Retry?
+Щось пішло не так. Спробувати ще раз?
+Retry
+Спробувати ще раз
+# --- TaskScheduleWindow.axaml ---
+Schedule Index
+Запланувати індекс
+Starting:
+Починається:
+Repeat Every:
+Повторювати кожний:
+# --- TaskScheduleWindowViewModel.cs ---
+Enter starting date.
+Введіть початкову дату.
+Select the repeat interval.
+Оберіть інтервал повторювання
+Day(s)
+День(ів)
+Week(s)
+Тиждень(ів)
+# --- TextInputDialog.axaml ---
+# --- TikaServer.cs ---
+# --- UpdateIndexWindow.axaml ---
+Manage Indexes
+Керування індексами
+Index
+Індекс
+Schedule Index...
+Запланувати індексацію...
+Cancel Schedule
+Відмінити розклад
+Rebuild...
+Відбудувати...
+# --- UpdateIndexWindow.axaml.cs ---
+Rename Index
+Переіменувати індекс
+Delete
+Видалити
+Delete this index.
+Видалити цей індекс.
+Schedule: Every {0} at {1} from {2}
+Розклад: кожні {0} на {1} від {2}
+Not Scheduled.
+Не заплановано.
+{0} Document(s)
+{0} документа(ів)
+No Index Selected.
+Індекс не обрано
+# --- Utils.cs ---
+RFC4646
+uk-UA
+# --- ViewerSettingsWindow.axaml ---
+Viewer Settings
+Налаштування перегляду
+Cancel
+Скасувати
+View Large Files
+Відображати великі файли
+Mb
+Мегабайти
+Fully
+Повністю
+First page only
+Тільки перша сторінка
+In Report View
+У перегляді звіту
+Amount of context
+Кількість контексту
+PDF
+PDF
+Viewer
+Глядач
+Adobe Acrobat
+Adobe Acrobat
+Plain Text
+Звичайний текст
+View File Types
+Переглянути типи файлів
+New...
+Новий...
+Rename...
+Перейменувати...
+Hit Highlight
+Виділення збігів
+Unformatted Text
+неформатований текст
+No word wrap
+Без переносу слів
+# --- ViewerSettingsWindowViewModel.cs ---

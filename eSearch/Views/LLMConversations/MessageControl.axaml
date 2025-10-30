@@ -16,6 +16,8 @@
 	</Design.DataContext>
 	<Border 
 		Background="{DynamicResource SystemChromeLowColor}"
+		BorderThickness="1 1 1 1"
+		BorderBrush="{DynamicResource SystemChromeMediumColor}"
 		CornerRadius="10"
 		Padding="15"
 		Margin="5">
@@ -33,6 +35,22 @@
 						<Image Source="{Binding I[icons8-information-16.png]}"
 							   Width="16"
 							   Height="16"/>
+					</Button>
+					<!-- Visibility for regenerate controlled in code-behind -->
+					<Button x:Name="buttonRegenerateResponse"
+							Width="30"
+							Height="30"
+							Classes="TransparentBtn"
+							ToolTip.Tip="{Binding S[Regenerate]}">
+						<Button.IsVisible>
+							<MultiBinding Converter="{x:Static BoolConverters.And}">
+								<Binding Path="IsRegenerateButtonVisible"/>
+								<Binding Path="DataContext.IsFinishedStreaming"/>
+							</MultiBinding>
+						</Button.IsVisible>
+						<Image Source="{Binding I[icons8-restart-32.png]}"
+							Width="16"
+							Height="16"/>
 					</Button>
 					<Button x:Name="buttonStopGeneration"
 							Width="30"
@@ -83,10 +101,10 @@
 							   Height="16"/>
 						</StackPanel>
 					</Button>
+					
 				</StackPanel>
 				<Label 
 					Content="{Binding Role, Converter={StaticResource TitleCaseConverter}}"
-					
 				/>
 
 			</DockPanel>

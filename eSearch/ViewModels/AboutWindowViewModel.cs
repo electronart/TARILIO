@@ -42,6 +42,14 @@ namespace eSearch.ViewModels
             }
         }
 
+        public string LLamaBackend
+        {
+            get
+            {
+                return Program.LLAMA_BACKEND;
+            }
+        }
+
         public bool IsSerialButtonVisible
         {
             get

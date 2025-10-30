@@ -1,12 +1,20 @@
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Data;
+using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using com.cybozu.labs.langdetect.util;
+using DynamicData;
 using eSearch.ViewModels;
+using ReactiveUI;
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,6 +32,16 @@ public partial class MessageControl : UserControl
         remove => RemoveHandler(RemoveRequestedEvent, value);
     }
 
+    public static readonly RoutedEvent<RoutedEventArgs> RegenerateRequestedEvent =
+        RoutedEvent.Register<MessageControl, RoutedEventArgs>(
+            nameof(RegenerateRequested), RoutingStrategies.Bubble);
+
+    public event EventHandler<RoutedEventArgs> RegenerateRequested
+    {
+        add => AddHandler(RegenerateRequestedEvent, value);
+        remove => RemoveHandler(RegenerateRequestedEvent, value);
+    }
+
 
     public MessageControl()
     {
@@ -33,11 +51,91 @@ public partial class MessageControl : UserControl
         buttonCopyMessage.Click     += ButtonCopyMessage_Click;
         buttonDeleteMessage.Click   += ButtonDeleteMessage_Click;
         buttonStopGeneration.Click  += ButtonStopGeneration_Click;
-
+        buttonRegenerateResponse.Click += ButtonRegenerateResponse_Click;
         NotesEditTextBox.LostFocus  += NotesEditTextBox_LostFocus;
         // queryTextBox.AddHandler(InputElement.KeyDownEvent, QueryTextBox_KeyDown, RoutingStrategies.Tunnel);
         NotesEditTextBox.AddHandler(InputElement.KeyDownEvent, NotesEditTextBox_KeyDown, RoutingStrategies.Tunnel);
+
+        List<IBinding> regenerateResponseBindings =
+        [
+            this.GetObservable(IsRegenerateButtonVisibleProperty).ToBinding(),
+            new Binding("IsFinishedStreaming"),
+        ];
+        buttonRegenerateResponse[!Button.IsVisibleProperty] = 
+            new MultiBinding { 
+                Converter = BoolConverters.And, 
+                Bindings = regenerateResponseBindings
+            };
+
     }
+
+    
+
+    public static readonly StyledProperty<bool> IsRegenerateButtonVisibleProperty = AvaloniaProperty.Register<MessageControl, bool>(nameof(IsRegenerateButtonVisible), defaultValue: true);
+
+    public bool IsRegenerateButtonVisible
+    {
+        get => GetValue(IsRegenerateButtonVisibleProperty);
+        set => SetValue(IsRegenerateButtonVisibleProperty, value);
+    }
+
+    /// <summary>
+    /// Returns true if this control is the last child of its parent
+    /// And the role is 'assistant'
+    /// </summary>
+    /// <returns></returns>
+    private bool IsElegibleForRegenerate()
+    {
+        if (Parent is Panel panel)
+        {
+            var children = panel.Children;
+            int index = children.IndexOf(this);
+            if (index == children.Count - 1)
+            {
+                // This is the last child.
+                if (DataContext is LLMMessageViewModel messageVM)
+                {
+                    if (messageVM.Role == "assistant")
+                    {
+                        // Last child and role is assistant.
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private void UpdateButtonVisibility()
+    {
+        IsRegenerateButtonVisible = IsElegibleForRegenerate();
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        if (Parent is Panel panel)
+        {
+            ((AvaloniaList<Control>)panel.Children).CollectionChanged += Children_CollectionChanged;
+        }
+        UpdateButtonVisibility();
+    }
+
+    private void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        UpdateButtonVisibility();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        if (Parent is Panel panel)
+        {
+            ((AvaloniaList<Control>)panel.Children).CollectionChanged -= Children_CollectionChanged;
+        }
+        base.OnDetachedFromVisualTree(e);
+    }
+
+
 
     private void NotesEditTextBox_KeyDown(object? sender, KeyEventArgs e)
     {
@@ -88,6 +186,12 @@ public partial class MessageControl : UserControl
     private void ButtonDeleteMessage_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         var args = new RoutedEventArgs(RemoveRequestedEvent);
+        RaiseEvent(args);
+    }
+
+    private void ButtonRegenerateResponse_Click(object? sender, RoutedEventArgs e)
+    {
+        var args = new RoutedEventArgs(RegenerateRequestedEvent);
         RaiseEvent(args);
     }
 

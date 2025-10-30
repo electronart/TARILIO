@@ -4,6 +4,7 @@ using eSearch.Models;
 using eSearch.Models.AI;
 using eSearch.Models.Configuration;
 using eSearch.Utils;
+using Newtonsoft.Json;
 using NPOI.OpenXmlFormats.Spreadsheet;
 using ReactiveUI;
 using sun.tools.tree;
@@ -11,7 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using S = eSearch.ViewModels.TranslationsViewModel;
@@ -20,6 +23,28 @@ namespace eSearch.ViewModels
 {
     public class LLMConnectionWindowViewModel : ViewModelBase
     {
+        public LLMConnectionWindowViewModel()
+        {
+            DuplicateCommand = ReactiveCommand.Create(Duplicate);
+        }
+
+        public ReactiveCommand<Unit, Unit> DuplicateCommand { get; }
+
+        private void Duplicate()
+        {
+            if (SelectedConnection == null) return;
+            string id = SelectedConnection.Id;
+            string s = JsonConvert.SerializeObject(SelectedConnection, Formatting.Indented);
+            var duplicate = JsonConvert.DeserializeObject<AISearchConfiguration>(s);
+            duplicate.Id = Guid.NewGuid().ToString();
+            Program.ProgramConfig.AISearchConfigurations.Add(duplicate);
+            Program.SaveProgramConfig();
+
+            var refreshed = FromProgramConfiguration();
+            AvailableConnections.Clear();
+            AvailableConnections.AddRange(refreshed.AvailableConnections);
+            SelectedConnection = AvailableConnections.First(c => c.Id == id);
+        }
 
         public static LLMConnectionWindowViewModel FromProgramConfiguration()
         {
@@ -32,6 +57,8 @@ namespace eSearch.ViewModels
             {
                 viewModel.ShowConnectionForm = false;
             }
+            
+            viewModel.IsServerRunning = Program.RunningLocalLLMServer != null;
             return viewModel;
         }
 
@@ -59,14 +86,43 @@ namespace eSearch.ViewModels
             PreviousID = aiSearchConfig.Id;
             PreviousDisplayName = aiSearchConfig.CustomDisplayName ?? string.Empty;
             SelectedPerplexityModel = AvailablePerplexityModels.SingleOrDefault(m => m.Value == aiSearchConfig.PerplexityModel, AvailablePerplexityModels[0]);
+            LocalModelSelected = aiSearchConfig.LocalLLMConfiguration?.ModelPath ?? null;
+
+            LLMGenerationConfiguration generationConfig = aiSearchConfig.GenerationConfiguration ?? new LLMGenerationConfiguration();
+            GenerationParameters = LLMGenerationParametersViewModel.FromConfiguration(generationConfig);
         }
 
         public string? PreviousID = null;
         public string? PreviousDisplayName = null;
 
 
+        public bool IsServerRunning
+        {
+            get
+            {
+                return _isServerRunning;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _isServerRunning, value);
+            }
+        }
+
+        private bool _isServerRunning = false;
+
+
         public AISearchConfiguration ToAiSearchConfiguration()
         {
+
+            LocalLLMConfiguration localLLMConfig = null; // Null by default for non local LLM's.
+            if (this.SelectedService == LLMService.LocalModel)
+            {
+                localLLMConfig = new LocalLLMConfiguration
+                {
+                    ModelPath = this.LocalModelSelected ?? throw new Exception("No model selected"),
+                };
+            }
+
             AISearchConfiguration aiSearchConfiguration = new AISearchConfiguration()
             {
                 APIKey = Models.Utils.Base64Encode(this.APIKey),
@@ -74,7 +130,8 @@ namespace eSearch.ViewModels
                 ServerURL = this.ServerURL,
                 PerplexityModel = this.SelectedPerplexityModel?.Value ?? PerplexityModel.Small,
                 Model = this.EnteredModelName,
-                SystemPromptRole = this.SelectedSystemPromptRole
+                SystemPromptRole = this.SelectedSystemPromptRole,
+                LocalLLMConfiguration = localLLMConfig
             };
             if (!string.IsNullOrWhiteSpace(CustomSystemPrompt))
             {
@@ -114,6 +171,19 @@ namespace eSearch.ViewModels
 
         private AISearchConfiguration? _selectedConnection = null;
 
+        public LLMGenerationParametersViewModel? GenerationParameters
+        {
+            get
+            {
+                return _generationParameters;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _generationParameters, value);
+            }
+        }
+
+        private LLMGenerationParametersViewModel? _generationParameters = null;
 
         public bool ShowConnectionForm
         {
@@ -182,6 +252,72 @@ namespace eSearch.ViewModels
             }
         }
 
+        /// <summary>
+        /// Names of available local model files.
+        /// </summary>
+        public ObservableCollection<string> LocalModelsAvailable
+        {
+            get
+            {
+                if (_localModelsAvailable == null)
+                {
+                    _localModelsAvailable = new ObservableCollection<string>();
+                    _localModelsAvailable.AddRange(LoadedLocalLLM.GetAvailableModels());
+                    
+                }
+                return _localModelsAvailable;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _localModelsAvailable, value);
+            }
+        }
+
+        private ObservableCollection<string>? _localModelsAvailable = null;
+
+        public string? LocalModelSelected
+        {
+            get
+            {
+                return _localModelSelected;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _localModelSelected, value);
+            }
+        }
+
+        private string? _localModelSelected = null;
+
+        public bool HideLocalModelDropDown
+        {
+            get
+            {
+                return _hideLocalModelDropDown;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _hideLocalModelDropDown, value);
+            }
+        }
+
+        private bool _hideLocalModelDropDown = true;
+
+
+        public bool HideModelNameTextBox
+        {
+            get
+            {
+                return _hideModelNameTextBox;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _hideModelNameTextBox, value);
+            }
+        }
+
+        private bool _hideModelNameTextBox = false;
+
         [Required]
         public LLMService SelectedService { 
             get
@@ -190,9 +326,6 @@ namespace eSearch.ViewModels
             }
             set
             {
-
-                HideAPIKey = ( value == LLMService.Ollama || value == LLMService.LMStudio );
-
                 switch(value)
                 {
                     case LLMService.Custom:
@@ -414,5 +547,21 @@ namespace eSearch.ViewModels
 
 
 
+    }
+
+    public class DesignLLMConnectionWindowViewModel : LLMConnectionWindowViewModel
+    {
+        public DesignLLMConnectionWindowViewModel()
+        {
+            this.AvailableConnections.Add(new AISearchConfiguration
+            {
+                APIKey = "Hidden field value",
+                LLMService = LLMService.Custom,
+                ServerURL = "http://example.com/v1",
+                Model = "big-model-120B",
+                CustomSystemPrompt = "You are a helpful robot assistant. Every 5 words, say either 'beep' or 'boop'"
+            });
+            this.SelectedConnection = this.AvailableConnections[0];
+        }
     }
 }

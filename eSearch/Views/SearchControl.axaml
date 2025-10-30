@@ -6,7 +6,7 @@
 			 xmlns:localView="clr-namespace:eSearch.Views;assembly=eSearch"
 			 xmlns:customCtrl="clr-namespace:eSearch.CustomControls;assembly=eSearch"
 			 xmlns:myConverters="clr-namespace:eSearch.Converters;assembly=eSearch"
-			 mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="150"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="150"
 			 x:Class="eSearch.Views.SearchControl"
 			 
 			 >
@@ -18,64 +18,101 @@
 		<myConverters:SearchTextBoxHeightConverter x:Key="SearchTextBoxHeightConverter"/>
 		<myConverters:SearchControlsVerticalAlignmentConverter x:Key="SearchControlsVerticalAlignmentConverter"/>
 	</UserControl.Resources>
+	<Border x:Name="SearchControlBorder" IsHitTestVisible="True" Background="Transparent">
 	<StackPanel Orientation="Vertical">
 		<DockPanel></DockPanel>
-		<DockPanel x:Name="SearchBoxRow" 
+		<Grid x:Name="SearchBoxRow" 
 				   KeyboardNavigation.TabNavigation="Local" 
 				   VerticalAlignment="Center"
+				   ColumnDefinitions="Auto,*,Auto,Auto"
+				   RowDefinitions="Auto,Auto"
 				   >
 			<ComboBox
+			    x:Name="ComboBoxSearchSource"
 				ItemsSource="{Binding AvailableSearchSources}"
 				SelectedItem="{Binding SelectedSearchSource}"
-				Width="200"
+				Width="280"
 				DockPanel.Dock="Left"
 				Height="35"
 				Margin="5"
 				TabIndex="1"
+				Grid.Row="1"
+				Grid.Column="0"
 				VerticalAlignment="{Binding Session.Query.UseAISearch, Converter={StaticResource SearchControlsVerticalAlignmentConverter}}"/>
-			<StackPanel 
-				DockPanel.Dock="Right" Orientation="Horizontal" 
-				HorizontalAlignment="Right" Margin="5" 
-				Spacing="5"
-				VerticalAlignment="{Binding Session.Query.UseAISearch, Converter={StaticResource SearchControlsVerticalAlignmentConverter}}">
-				<Button Height="35" Width="35" Command="{Binding ClickSearchSubmit}"
+			<Button 
+					x:Name="ButtonSearchSubmit"
+					Height="35" Width="35" Command="{Binding ClickSearchSubmit}"
+						Grid.Column="2"
+						Grid.Row="1"
 						Background="Transparent"
 						IsDefault="True">
 					<Image Source="{Binding I[icons8-search-32.png]}"
 					Width="18"
 					Height="18"
 					/>
-				</Button>
-				
-				<!--
-				<Button Height="35" Width="35" Command="{Binding ClickSearchFilters}" IsEnabled="False">
-					<Image Source="{Binding I[icons8-filter-32.png]}"
+				</Button>				
+			<ToggleButton 
+					Grid.Column="3"
+					Grid.Row="1"
+					Width="35" Height="35"
+					HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+					IsChecked="{Binding Session.Query.UseAISearch}"
+					ToolTip.Tip="{Binding S[AI~Mode]}"
+					IsEnabled="{Binding IsAISearchButtonEnabled}"
+					Background="Transparent"
+					>
+					<Image 
+						Source="{Binding I[icons8-ai-32.png]}"
+						Width="16"
+						Height="16"
+					/>
+				</ToggleButton>
+			<ToggleButton 
+					x:Name="ToggleButtonSearchMetadata"
+					Grid.Row="0"
+					Grid.Column="2"
+					Width="35" Height="35" 
+					HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+					IsChecked="{Binding Session.Query.SearchWithinDocumentMetadata}"
+					IsEnabled="{Binding !Session.Query.UseAISearch}"
+					IsVisible="{Binding !Session.Query.UseAISearch}"
+					ToolTip.Tip="{Binding S[Search~Document~Metadata]}"
+					Background="Transparent"
+				>
+					<Image Source="{Binding I[icons8-information-16.png]}"
+					Width="16"
+					Height="16"/>
+				</ToggleButton>
+				<Button 
+					x:Name="ButtonSearchSettings"
+					Grid.Column="3"
+					Grid.Row="0"
+					Height="35" Width="35" Command="{Binding OnClickSearchSettings}"
+					IsEnabled="{Binding !Session.Query.UseAISearch}"
+					IsVisible="{Binding !Session.Query.UseAISearch}"
+					ToolTip.Tip="{Binding S[Search~Settings]}"
+					Background="Transparent"
+					>
+					<Image Source="{Binding I[icons8-settings-32.png]}"
 					Width="18"
 					Height="18"
 					/>
 				</Button>
-				-->
-				
-				<ToggleButton Width="35" Height="35"
-							  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-							  IsChecked="{Binding Session.Query.UseAISearch}"
-							  ToolTip.Tip="{Binding S[AI~Mode]}"
-							  IsEnabled="{Binding IsAISearchButtonEnabled}"
-							  Background="Transparent"
-							  >
-					<Image Source="{Binding I[icons8-ai-32.png]}"
-					Width="16"
-					Height="16"/>
-				</ToggleButton>
-			</StackPanel>
-			<StackPanel Orientation="Vertical">
-				<StackPanel
+			<StackPanel
+					Grid.Row="0"
+					Grid.Column="1"
 					IsVisible="{Binding !Session.Query.UseAISearch}"
 					Orientation="Horizontal" HorizontalAlignment="Center" Spacing="5" Margin="5">
 					<Button MinWidth="50" x:Name="BtnAND"	Content="{Binding S[AND]}"/>
 					<Button MinWidth="50" x:Name="BtnOR"	Content="{Binding S[OR]}"/>
 					<Button MinWidth="50" x:Name="BtnNOT"	Content="{Binding S[NOT]}"/>
 				</StackPanel>
+			<StackPanel 
+			x:Name="StackPanelCenterTextBoxAndOrNot"
+			Grid.Row="1"
+			Grid.Column="1"
+			Orientation="Vertical">
+				
 				<customCtrl:ClearableTextBox
 					x:Name="QueryTextBox"
 					Classes="ClearableVoice"
@@ -91,7 +128,7 @@
 					KeyboardNavigation.TabNavigation="Local"
 					/>
 			</StackPanel>
-		</DockPanel>
+		</Grid>
 		<DockPanel x:Name="StemmingSynonymsRow"  
 				   HorizontalAlignment="Stretch"
 				   IsVisible="{Binding !Session.Query.UseAISearch}"
@@ -116,36 +153,12 @@
 				<RadioButton GroupName="RadioAllAnyBoolean2" IsVisible="False"
 							 IsChecked="{Binding IsRadioRAABBoolChecked}" Content="{Binding S[Boolean]}" 
 							 IsEnabled="{Binding AreRAABRadiosEnabled}"/>
-				<StackPanel Orientation="Horizontal" Spacing="5">
-				<ToggleButton Width="35" Height="35" 
-							  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-							  IsChecked="{Binding Session.Query.SearchWithinDocumentMetadata}"
-							  IsEnabled="{Binding !Session.Query.UseAISearch}"
-							  ToolTip.Tip="{Binding S[Search~Document~Metadata]}"
-							  Background="Transparent"
-							  >
-					<Image Source="{Binding I[icons8-information-16.png]}"
-					Width="16"
-					Height="16"/>
-				</ToggleButton>
-					<!-- button goes here -->
-					<Button Height="35" Width="35" Command="{Binding OnClickSearchSettings}"
-						IsEnabled="{Binding !Session.Query.UseAISearch}"
-						ToolTip.Tip="{Binding S[Search~Settings]}"
-						Background="Transparent"
-						>
-						<Image Source="{Binding I[icons8-settings-32.png]}"
-						Width="18"
-						Height="18"
-					/>
-					</Button>
-				
-					
+				<StackPanel Orientation="Horizontal" Spacing="5">	
 				</StackPanel>
-				
 				<!-- Hidden!! -->
 			</StackPanel>
 		</DockPanel>
 	</StackPanel>
+	</Border>
 </UserControl>
 

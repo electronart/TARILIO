@@ -37,16 +37,20 @@ Score
 [Šçööŕéé]
 Close
 [Çļööšéé]
-Copy Response...
-[Çööþýý Ŕééšþööñšéé···]
-Copy Document...
-[Çööþýý Ðööçûûɱééñţ···]
+Export
+[ÉÉẋþööŕţ]
+An error occurred
+[ÅÅñ ééŕŕööŕ ööççûûŕŕééð]
 Help
 [Ĥééļþ]
+Copy Document...
+[Çööþýý Ðööçûûɱééñţ···]
 Copy Conversation
 [Çööþýý Çööñṽééŕšååţîîööñ]
 Error
 [ÉÉŕŕööŕ]
+eSearch
+[ééŠééååŕçĥ]
 Plugins
 [Þļûûĝîîñš]
 Remove
@@ -75,8 +79,6 @@ Synonyms
 [Šýýñööñýýɱš]
 New...
 [Ñééŵ···]
-eSearch
-[ééŠééååŕçĥ]
 Delete
 [Ðééļééţéé]
 Update...
@@ -87,6 +89,8 @@ Something went wrong
 [Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ]
 Delete {0}?
 [Ðééļééţéé {0}¿]
+Not Scheduled.
+[Ñööţ Šçĥééðûûļééð·]
 Delete...
 [Ðééļééţéé···]
 # --- AboutWindow.axaml --- 
@@ -106,6 +110,9 @@ Expired {0}
 Serial: None
 [Šééŕîîååļ∶ Ñööñéé]
 # --- ColorPickerWindow.axaml --- 
+# --- Completions.cs --- 
+Sorry, the model didn't generate a response. Try rephrasing your query.
+[Šööŕŕýý، ţĥéé ɱööðééļ ðîîðñ´ţ ĝééñééŕååţéé åå ŕééšþööñšéé· Ţŕýý ŕééþĥŕååšîîñĝ ýýööûûŕ ǫûûééŕýý·]
 # --- CompletionStreamingJSBinding.cs --- 
 # --- CopyConversationWindow.axaml --- 
 Transcript:
@@ -172,8 +179,6 @@ Source Code
 # --- ExportConversationWindow.axaml --- 
 Export Conversation
 [ÉÉẋþööŕţ Çööñṽééŕšååţîîööñ]
-Export
-[ÉÉẋþööŕţ]
 Export as
 [ÉÉẋþööŕţ ååš]
 File
@@ -248,6 +253,27 @@ Maximum file size (MB)
 [Ṁååẋîîɱûûɱ ƒîîļéé šîîžéé (ṀƁ)]
 Case sensitive
 [Çååšéé šééñšîîţîîṽéé]
+# --- IndexStatusControlViewModel.cs --- 
+Updated: {0}
+[ÛÛþðååţééð∶ {0}]
+Scheduled
+[Šçĥééðûûļééð]
+Just now
+[Ĵûûšţ ñööŵ]
+1 Minute ago
+[① Ṁîîñûûţéé ååĝöö]
+{0} Minutes ago
+[{0} Ṁîîñûûţééš ååĝöö]
+1 Hour ago
+[① Ĥööûûŕ ååĝöö]
+{0} Hours ago
+[{0} Ĥööûûŕš ååĝöö]
+1 Day ago
+[① Ðååýý ååĝöö]
+{0} Days ago
+[{0} Ðååýýš ååĝöö]
+Over a Month ago
+[ÖÖṽééŕ åå Ṁööñţĥ ååĝöö]
 # --- IndexTask.cs --- 
 Opening Index
 [ÖÖþééñîîñĝ ÎÎñðééẋ]
@@ -289,11 +315,19 @@ API Key
 [ÅÅÞÎÎ Ķééýý]
 Model
 [Ṁööðééļ]
+Import
+[ÎÎɱþööŕţ]
 Custom System Prompt
 [Çûûšţööɱ Šýýšţééɱ Þŕööɱþţ]
 Test
 [Ţééšţ]
 # --- LLMConnectionConfigurationWindow.axaml.cs --- 
+An error occurred.
+[ÅÅñ ééŕŕööŕ ööççûûŕŕééð·]
+Export Prompt
+[ÉÉẋþööŕţ Þŕööɱþţ]
+Import Prompt
+[ÎÎɱþööŕţ Þŕööɱþţ]
 Rename
 [Ŕééñååɱéé]
 Connected Successfully.
@@ -304,6 +338,8 @@ Model Name required
 [Ṁööðééļ Ñååɱéé ŕééǫûûîîŕééð]
 Server URL Required
 [Šééŕṽééŕ ÛÛŔĻ Ŕééǫûûîîŕééð]
+No Model Selected
+[Ñöö Ṁööðééļ Šééļééçţééð]
 # --- LLMMessageStreamingJSBinding.cs --- 
 Generation Cancelled
 [Ĝééñééŕååţîîööñ Çååñçééļļééð]
@@ -312,6 +348,13 @@ OpenAI
 [ÖÖþééñÅÅÎÎ]
 Custom...
 [Çûûšţööɱ···]
+Local Model
+[Ļööçååļ Ṁööðééļ]
+# --- LLMStatusControlViewModel.cs --- 
+Tools:
+[Ţööööļš∶]
+{0} MCP Server(s) failed to start.
+[{0} ṀÇÞ Šééŕṽééŕ(š) ƒååîîļééð ţöö šţååŕţ·]
 # --- LuceneWordWheel.cs --- 
 Loading...
 [Ļööååðîîñĝ···]
@@ -330,6 +373,8 @@ _Exit
 [‿ÉÉẋîîţ]
 _AI
 [‿ÅÅÎÎ]
+Import LLMs...
+[ÎÎɱþööŕţ ĻĻṀš···]
 _AI Connections
 [‿ÅÅÎÎ Çööññééçţîîööñš]
 _MCP Servers
@@ -378,8 +423,6 @@ Word List
 [Ŵööŕð Ļîîšţ]
 About
 [ÅÅƀööûûţ]
-List...
-[Ļîîšţ···]
 Register...
 [Ŕééĝîîšţééŕ···]
 Results Settings...
@@ -401,6 +444,36 @@ Key
 Value
 [Ṽååļûûéé]
 # --- MainWindow.axaml.cs --- 
+Download Model
+[Ðööŵñļööååð Ṁööðééļ]
+HuggingFace Model ID
+[ĤûûĝĝîîñĝƑååçéé Ṁööðééļ ÎÎÐ]
+Model ID Required
+[Ṁööðééļ ÎÎÐ Ŕééǫûûîîŕééð]
+Must provide HuggingFace Model ID to download a model
+[Ṁûûšţ þŕööṽîîðéé ĤûûĝĝîîñĝƑååçéé Ṁööðééļ ÎÎÐ ţöö ðööŵñļööååð åå ɱööðééļ]
+No Valid Models Found
+[Ñöö Ṽååļîîð Ṁööðééļš Ƒööûûñð]
+No Valid Models were found in the provided repository.\nProvide a repository containing compatible models
+[Ñöö Ṽååļîîð Ṁööðééļš ŵééŕéé ƒööûûñð îîñ ţĥéé þŕööṽîîðééð ŕééþööšîîţööŕýý·∖ñÞŕööṽîîðéé åå ŕééþööšîîţööŕýý çööñţååîîñîîñĝ çööɱþååţîîƀļéé ɱööðééļš]
+Downloading Model
+[Ðööŵñļööååðîîñĝ Ṁööðééļ]
+Model downloaded
+[Ṁööðééļ ðööŵñļööååðééð]
+Click to setup
+[Çļîîçķ ţöö šééţûûþ]
+Download failed
+[Ðööŵñļööååð ƒååîîļééð]
+Token Required
+[Ţööķééñ Ŕééǫûûîîŕééð]
+Provide Authentication Token to access this model
+[Þŕööṽîîðéé ÅÅûûţĥééñţîîçååţîîööñ Ţööķééñ ţöö ååççééšš ţĥîîš ɱööðééļ]
+Token
+[Ţööķééñ]
+Invalid Token
+[ÎÎñṽååļîîð Ţööķééñ]
+The token provided was rejected by HuggingFace
+[Ţĥéé ţööķééñ þŕööṽîîðééð ŵååš ŕééĵééçţééð ƀýý ĤûûĝĝîîñĝƑååçéé]
 Import Conversation
 [ÎÎɱþööŕţ Çööñṽééŕšååţîîööñ]
 Note:
@@ -415,8 +488,6 @@ Select output folder
 [Šééļééçţ ööûûţþûûţ ƒööļðééŕ]
 Enter a query
 [ÉÉñţééŕ åå ǫûûééŕýý]
-An error occurred
-[ÅÅñ ééŕŕööŕ ööççûûŕŕééð]
 Show location
 [Šĥööŵ ļööçååţîîööñ]
 Location not available
@@ -424,6 +495,8 @@ Location not available
 There is no metadata to display.
 [Ţĥééŕéé îîš ñöö ɱééţååðååţåå ţöö ðîîšþļååýý·]
 # --- MainWindowViewModel.cs --- 
+Copy Response...
+[Çööþýý Ŕééšþööñšéé···]
 File \"%s\" not found
 [Ƒîîļéé ∖″‰š∖″ ñööţ ƒööûûñð]
 # --- MCP_SearchServerTool.cs --- 
@@ -472,6 +545,9 @@ Copy Message
 [Çööþýý Ṁééššååĝéé]
 Note
 [Ñööţéé]
+# --- ModelChooserWindow.axaml --- 
+Select Model to Download
+[Šééļééçţ Ṁööðééļ ţöö Ðööŵñļööååð]
 # --- NewIndexWindow.axaml --- 
 Index Name
 [ÎÎñðééẋ Ñååɱéé]
@@ -523,6 +599,12 @@ Could not install plugin
 # --- Program.cs --- 
 Scheduled Index of {0} is starting...
 [Šçĥééðûûļééð ÎÎñðééẋ ööƒ {0} îîš šţååŕţîîñĝ···]
+Loading Model
+[Ļööååðîîñĝ Ṁööðééļ]
+Model Loaded
+[Ṁööðééļ Ļööååðééð]
+Error loading model
+[ÉÉŕŕööŕ ļööååðîîñĝ ɱööðééļ]
 # --- ProgressCalculator.cs --- 
 Calculating...
 [Çååļçûûļååţîîñĝ···]
@@ -586,6 +668,7 @@ Boolean
 Search Document Metadata
 [Šééååŕçĥ Ðööçûûɱééñţ Ṁééţååðååţåå]
 # --- SearchFilterWindow.axaml --- 
+# --- SearchFilterWindow2.axaml --- 
 # --- SearchResultsReportWindow.axaml --- 
 Search Results Report
 [Šééååŕçĥ Ŕééšûûļţš Ŕééþööŕţ]
@@ -654,6 +737,9 @@ No list file supplied
 [Ñöö ļîîšţ ƒîîļéé šûûþþļîîééð]
 File does not exist
 [Ƒîîļéé ðööééš ñööţ ééẋîîšţ]
+# --- TaskDialogWindow.axaml --- 
+eSearch
+[ééŠééååŕçĥ]
 # --- TaskDialogWindow.axaml.cs --- 
 Something went wrong. Retry?
 [Šööɱééţĥîîñĝ ŵééñţ ŵŕööñĝ· Ŕééţŕýý¿]
@@ -697,8 +783,6 @@ Delete this index.
 [Ðééļééţéé ţĥîîš îîñðééẋ·]
 Schedule: Every {0} at {1} from {2}
 [Šçĥééðûûļéé∶ ÉÉṽééŕýý {0} ååţ {1} ƒŕööɱ {2}]
-Not Scheduled.
-[Ñööţ Šçĥééðûûļééð·]
 {0} Document(s)
 [{0} Ðööçûûɱééñţ(š)]
 No Index Selected.
