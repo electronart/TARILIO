@@ -55,6 +55,10 @@ namespace eSearch
 
         public static bool WasLaunchedWithCreateLLMConnectionsDisabled = false;
 
+        // When true, only attempt to use LLamaSharp in CPU Mode, skip checking GPU's.
+        // Trouble with the GPU checks is that once LLamaSharp throws an exception the state is unrecoverable
+        public static bool WasLaunchedWithForceCPUOption = false;
+
         /// <summary>
         /// Could be "NONE" "CUDA 11", "CUDA 12", "VULKAN", "OPEN CL", "CPU"
         /// </summary>
@@ -122,7 +126,7 @@ namespace eSearch
             }
             #endregion
             // If we got this far it's not an indexing task, we're launching the UI.
-
+            WasLaunchedWithForceCPUOption = args.Contains("-forceCPU");
             
 
             BuildAvaloniaApp()
@@ -143,6 +147,10 @@ namespace eSearch
             return TimeSpan.FromMilliseconds(milliseconds);
         }
 
+        /// <summary>
+        /// May return FALLBACK_CPU, in this case restart eSearch with CPU only.
+        /// </summary>
+        /// <returns></returns>
         private static async Task<string?> init_llama_sharp()
         {
             // Wait for the window to open so we have a valid parent for this.
@@ -172,7 +180,14 @@ namespace eSearch
             }
             catch (Exception ex)
             {
-                errorMsg = ex.ToString();
+                if (!Program.WasLaunchedWithForceCPUOption)
+                {
+                    errorMsg = "FALLBACK_CPU";
+                }
+                else
+                {
+                    errorMsg = ex.ToString();
+                }
             }
 
             if (errorMsg != string.Empty)
