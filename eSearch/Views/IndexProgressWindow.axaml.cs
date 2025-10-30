@@ -93,8 +93,6 @@ namespace eSearch.Views
             await indexProgressWindow.ShowDialog(parent);
             var dialogResult = indexProgressWindow.DialogResult;
             return new Tuple<TaskDialogResult, IndexTask>(dialogResult, indexTask);
-            
-
         }
 
         private static void Bw_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
