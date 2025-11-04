@@ -793,7 +793,7 @@ namespace eSearch
                 {
                     if (_loadingProgramConfig == true)
                     {
-                        throw new Exception("Already loading program config...");
+                        throw new NullReferenceException("Already loading program config...");
                     }
                     _loadingProgramConfig = true;
                     if (File.Exists(ESEARCH_CONFIG_FILE))

@@ -3227,10 +3227,32 @@
                             "Property" = "8:_2D221BF129F74420AA2CE60A013303E1"
                                 "Folders"
                                 {
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_AB368395B4714B01A45D00867C4FF6CD"
+                                    {
+                                    "Name" = "8:System Prompts"
+                                    "AlwaysCreate" = "11:TRUE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_C54B4C8DAF994253B7B0AE278BD300F1"
+                                        "Folders"
+                                        {
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_4E63C82C6BF1446BB5AC8204FEB40EA6"
+                                            {
+                                            "Name" = "8:POML"
+                                            "AlwaysCreate" = "11:TRUE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_FF03943A97A841408FACCEB5727B6916"
+                                                "Folders"
+                                                {
+                                                }
+                                            }
+                                        }
+                                    }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_DC696160CBFA434A8E0387F35E4F90FF"
                                     {
                                     "Name" = "8:Language Models"
-                                    "AlwaysCreate" = "11:FALSE"
+                                    "AlwaysCreate" = "11:TRUE"
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
                                     "Property" = "8:_7079AAAF796C4684BA5D6D17E159BA9F"
@@ -3863,7 +3885,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6C7783675FE342F983AA3A89BB77A428"
             {
-            "SourcePath" = "8:..\\eSearch\\obj\\eSearch DEBUG\\net8.0\\win-x64\\apphost.exe"
+            "SourcePath" = "8:..\\eSearch\\obj\\TARILIO RELEASE\\net8.0\\win-x64\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5A28C29878D94098A4424E44BE28C9F8"

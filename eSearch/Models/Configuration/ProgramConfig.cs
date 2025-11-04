@@ -132,23 +132,33 @@ namespace eSearch.Models.Configuration
             }
             set 
             {
-
-                if (value)
+                try
                 {
-                    if (OperatingSystem.IsWindows())
+
+                    if (value)
                     {
-                        string fileName = GetStartupShortcutFilename();
-                        string? target = Environment.ProcessPath;
-                        if (target != null)
+                        if (OperatingSystem.IsWindows())
                         {
-                            WindowsShortcutHelper.CreateShortcut(fileName, target);
+                            string fileName = GetStartupShortcutFilename();
+                            string? target = Environment.ProcessPath;
+                            if (target != null)
+                            {
+                                WindowsShortcutHelper.CreateShortcut(fileName, target);
+                            }
                         }
                     }
-                } else
-                {
-                    if (File.Exists(GetStartupShortcutFilename()))
+                    else
                     {
-                        File.Delete(GetStartupShortcutFilename());
+                        if (File.Exists(GetStartupShortcutFilename()))
+                        {
+                            File.Delete(GetStartupShortcutFilename());
+                        }
+                    }
+                } catch (NullReferenceException nre)
+                {
+                    if (nre.Message == "Already loading program config...")
+                    {
+                        // Non fatal. Json deserializer is attempting to assign this, it shouldn't. TODO figure out how to exclude this from serialization
                     }
                 }
             }
