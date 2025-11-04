@@ -1,9 +1,8 @@
-﻿using eSearch.Interop;
+﻿
+using eSearch.Interop;
 using eSearch.Models.Documents.Parse;
 using eSearch.Models.Documents.Parse.ToxyParsers;
 using FileSignatures;
-using java.security;
-using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -315,7 +314,8 @@ namespace eSearch.Models.Documents
         /// <summary>
         /// Construct FileSystemDocument. This object gets reused for many documents for efficiency.
         /// </summary>
-        public FileSystemDocument() {
+        public FileSystemDocument()
+        {
 
         }
 
@@ -333,7 +333,7 @@ namespace eSearch.Models.Documents
         }
 
         public FileSystemDocument(
-            string identifier, string displayName, string text, string fileName, DateTime indexedDate, 
+            string identifier, string displayName, string text, string fileName, DateTime indexedDate,
             List<Metadata> metadata, string? htmlRender)
         {
             this._id = identifier;
@@ -359,7 +359,7 @@ namespace eSearch.Models.Documents
         {
             get
             {
-                if (_parser == null )
+                if (_parser == null)
                 {
                     ExtractDataFromDocument();
                 }
@@ -369,9 +369,10 @@ namespace eSearch.Models.Documents
 
         public string? DisplayName
         {
-            get {
+            get
+            {
                 if (_displayName == null) ExtractDataFromDocument();
-                return _displayName; 
+                return _displayName;
             }
         }
 
@@ -403,7 +404,8 @@ namespace eSearch.Models.Documents
                         var fileInfo = new FileInfo(FileName);
                         return fileInfo.Length;
                     }
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     Debug.WriteLine(ex.ToString());
                 }
@@ -464,7 +466,8 @@ namespace eSearch.Models.Documents
             get
             {
                 return _metadata;
-            } set
+            }
+            set
             {
                 _metadata = value.ToList();
             }
@@ -483,13 +486,15 @@ namespace eSearch.Models.Documents
                     if (CanHaveSubDocumentsOrExtractedFiles())
                     {
                         ExtractDataFromDocument();
-                    } else
+                    }
+                    else
                     {
                         _subDocuments = new List<IDocument>();
                     }
                 }
                 return _subDocuments;
-            } set
+            }
+            set
             {
                 _subDocuments = value;
             }
@@ -543,7 +548,8 @@ namespace eSearch.Models.Documents
             {
                 if (_htmlRender == null) ExtractDataFromDocument();
                 return _htmlRender;
-            } set
+            }
+            set
             {
                 _htmlRender = value;
             }
@@ -572,7 +578,8 @@ namespace eSearch.Models.Documents
                 _htmlRender = parseResult.HtmlRender ?? "";
                 _subDocuments = parseResult.SubDocuments;
                 TotalKnownSubDocuments = parseResult.TotalKnownSubDocuments;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
                 _text = ex.ToString();
@@ -631,7 +638,15 @@ namespace eSearch.Models.Documents
                                     if (format != null)
                                     {
                                         _fileType = format.Extension;
-                                        return format.Extension;
+                                        if (format.Extension == "zip" && extension != "zip")
+                                        {
+                                            // Many document formats are actually zip archives, but we shouldn't
+                                            // treat them as zip archives.
+                                        }
+                                        else
+                                        {
+                                            return format.Extension;
+                                        }
                                     }
                                 }
                             }
@@ -646,7 +661,8 @@ namespace eSearch.Models.Documents
                         {
 
                             _fileType = "Unknown";
-                        } else
+                        }
+                        else
                         {
                             _fileType = extension;
                         }

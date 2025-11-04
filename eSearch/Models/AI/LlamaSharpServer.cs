@@ -37,7 +37,7 @@ namespace eSearch.Models.AI
                 try
                 {
                     var builder = WebApplication.CreateBuilder();
-                    builder.WebHost.UseUrls(new string[] { $"http://localhost:{_port}" });
+                    builder.WebHost.UseUrls(new string[] { $"http://0.0.0.0:{_port}" });
                     _app = builder.Build();
 
                     // Map the completions endpoint
