@@ -40,7 +40,7 @@ namespace eSearch.Models.Documents.Parse
                 {
                     textContentsBuilder.Append("Slide ").Append(s + 1).Append(" - ").AppendLine(titles.Count > 0 ? titles[s] : "Untitled").AppendLine();
                     string[]? slideTexts = GetAllTextInSlide(presentationDocument, s);
-                    if (slideTexts == null)
+                    if (slideTexts != null)
                     {
                         foreach(string text in slideTexts)
                         {
