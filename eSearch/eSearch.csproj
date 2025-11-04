@@ -124,9 +124,6 @@
 		<None Remove="Assets\tiff_esearch_render.js" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Include="..\Tika\tika-app-2.9.0.jar" Link="tika-app-2.9.0.jar">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
 		<None Include="..\Tika\tika-server-standard-2.9.0.jar" Link="tika-server-standard-2.9.0.jar">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
