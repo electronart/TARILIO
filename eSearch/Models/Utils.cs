@@ -443,7 +443,7 @@ namespace eSearch.Models
 
             var res = UtfUnknown.CharsetDetector.DetectFromFile(filename);
             var resDetected = res.Detected;
-            if (resDetected.Confidence > 0)
+            if (resDetected?.Confidence > 0)
             {
                 return resDetected.Encoding;
             }
