@@ -1,4 +1,6 @@
 # TARILIO
+<img src="https://searchcloudone.com/wp-content/uploads/tarilio_header.png"/>
+
 Desktop full-text search information retrieval with integrated AI Assistant, MCP Client, Local LLM server, Hugging Face LLM downloads.
 
 []([https://badge.mcpx.dev?type=client](https://badge.mcpx.dev/?type=client) 'MCP Client')
