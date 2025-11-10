@@ -1,8 +1,11 @@
 ﻿using DocumentFormat.OpenXml.Presentation;
 using eSearch.Models.AI;
+using eSearch.Models.Documents;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -79,6 +82,33 @@ namespace eSearch.ViewModels
 
         private CancellationTokenSource? _cancellationSource = null;
         private DateTime? _startedMessageStream;
+
+        public async Task ParseAndApplyAttachments(IEnumerable<FileInfo> attachments)
+        {
+            await Task.Run(() =>
+            {
+                foreach (var attachment in attachments)
+                {
+                    FileSystemDocument fsd = new FileSystemDocument();
+                    fsd.SetDocument(attachment.FullName);
+                    var attachmentFileName = Path.GetFileName(attachment.FullName);
+                    try
+                    {
+                        var parseResult = fsd.GetParseResult();
+
+                        var attachmentTextContent = parseResult.TextContent;
+
+                        CachedParsedAttachments.Add(new LLMMessageAttachmentViewModel { Filename = attachmentFileName, ParsedText = attachmentTextContent });
+                    }
+                    catch (Exception ex)
+                    {
+                        CachedParsedAttachments.Add(new LLMMessageAttachmentViewModel { Filename = attachmentFileName, ParsedText = $"An error occurred parsing the users file: {ex.Message}" });
+                    }
+                }
+            });
+        }
+
+        public ObservableCollection<LLMMessageAttachmentViewModel> CachedParsedAttachments = new ObservableCollection<LLMMessageAttachmentViewModel>();
 
         /// <summary>
         /// Populated only when this message is a streaming API call to an LLM.

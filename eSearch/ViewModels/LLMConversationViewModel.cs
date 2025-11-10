@@ -29,9 +29,23 @@ namespace eSearch.ViewModels
             Conversation extractedConversation = new Conversation();
             foreach (var messageVM in Messages)
             {
+                
                 var message = messageVM.GetFinalMessage();
                 if (message != null)
                 {
+                    if (messageVM.CachedParsedAttachments.Count > 0)
+                    {
+                        foreach (var attachment in messageVM.CachedParsedAttachments)
+                        {
+                            string msgContent = $"The user has attached a file named {attachment.Filename}.";
+                            msgContent += "\nParsed Content:\n```txt\n";
+                            msgContent += attachment.ParsedText;
+                            msgContent += "\n```";
+                            var attachmentMsg = new Message { Content = msgContent, Model = message.Model, Role = "system" };
+                            extractedConversation.Messages.Add(attachmentMsg);
+                        }
+                    }
+
                     extractedConversation.Messages.Add(message);
                 }
             }

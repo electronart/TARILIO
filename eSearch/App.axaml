@@ -154,20 +154,12 @@
 				<Template>
 						<StackPanel Orientation="Horizontal" Spacing="5">
 							<Button
+							    Command="{Binding $parent[customCtrl:ClearableTextBox].AddAttachment}" 
 								Background="Transparent"
 								>
 								<Image Source="{Binding I[icons8-attach-32.png]}" 
 									   Width="16" Height="16"/>
 							</Button>
-							<Border Height="40" Margin="5" Padding="5" CornerRadius="20" Background="{DynamicResource SystemChromeMediumColor}">
-								<StackPanel Orientation="Horizontal" Spacing="5">
-									<Image Source="{Binding I[icons8-attach-32.png]}" Width="16" Height="16"/>
-									<Label VerticalContentAlignment="Center">My Presentation.pptx</Label>
-									<Button Background="Transparent">
-										<Image Source="{Binding I[icons8-close-32.png]}" Width="16" Height="16" />
-									</Button>
-								</StackPanel>
-							</Border>
 						</StackPanel>
 				</Template>
 			</Setter>

@@ -10,7 +10,9 @@ using ReactiveUI;
 using sun.misc;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -362,6 +364,16 @@ namespace eSearch.ViewModels
             }
            return strQuery;
         }
+
+
+        public ObservableCollection<FileInfo> AttachedFiles
+        {
+            get => _attachedFiles;
+            set => this.RaiseAndSetIfChanged(ref _attachedFiles, value);
+        }
+
+        private ObservableCollection<FileInfo> _attachedFiles = new ObservableCollection<FileInfo>();
+
 
         /// <summary>
         /// The connector. Eg All Words, Any Words, Boolean
