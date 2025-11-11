@@ -3,7 +3,7 @@
 "VSVersion" = "3:800"
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
 "IsWebType" = "8:FALSE"
-"ProjectName" = "8:eSearch Installer"
+"ProjectName" = "8:TARILIO Installer"
 "LanguageId" = "3:1033"
 "CodePage" = "3:1252"
 "UILanguageId" = "3:1033"
@@ -3390,7 +3390,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_5A28C29878D94098A4424E44BE28C9F8"
             {
-            "DefaultLocation" = "8:[ProgramFiles64Folder][Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[ProgramFiles64Folder][Manufacturer]\\eSearch"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -3426,9 +3426,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:eSearch"
+        "ProductName" = "8:TARILIO"
         "ProductCode" = "8:{D0C3E217-F012-4442-BB1B-664A72E9B25B}"
-        "PackageCode" = "8:{0E037448-1582-49BB-910E-BBBDFF76F3B1}"
+        "PackageCode" = "8:{0D73BDD0-DB64-405F-9B99-35C21CD2CA45}"
         "UpgradeCode" = "8:{4EE3EB0E-D78C-40EC-A3BC-19286DCE891E}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -3439,7 +3439,7 @@
         "Manufacturer" = "8:ElectronArt Design Ltd"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://electronart.co.uk"
-        "Title" = "8:eSearch Installer"
+        "Title" = "8:TARILIO Installer"
         "Subject" = "8:"
         "ARPCONTACT" = "8:ElectronArt Design Ltd"
         "Keywords" = "8:search, esearch, tarilio"
@@ -3550,7 +3550,7 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_4C4538BD8A36465781DBC7960E2A121D"
             {
-            "Name" = "8:eSearch"
+            "Name" = "8:TARILIO"
             "Arguments" = "8:"
             "Description" = "8:Desktop Search by ElectronArt Design Ltd"
             "ShowCmd" = "3:1"

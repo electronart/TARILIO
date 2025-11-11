@@ -43,11 +43,17 @@ Console.WriteLine($"This is a {configuration} Build - The version will be {dll_v
 
 Utils.SetMSIProductVersion(msi_file, dll_version_msi_version);
 
+#region We no longer use the eSearch name... MSI File should either be TARILIO or TARILIO PRO
+string branding = configuration;
+branding = branding.Replace("TARILIO", "TARILIO-PRO");
+branding = branding.Replace("eSearch", "TARILIO");
+#endregion
 
+string msi_file_name = branding + "-" + dll_version.Replace(" ", "-").Replace("(", "").Replace(")", "") + ".msi";
 
-string new_msi_file_path = Path.Combine( Path.GetDirectoryName(msi_file), 
-                                         configuration + " " + dll_version + ".msi");
-
+string new_msi_file_path = Path.Combine( Path.GetDirectoryName(msi_file), msi_file_name);
+new_msi_file_path.Replace(" ", "-");
+new_msi_file_path.Replace("(", "-");
 File.Copy(msi_file, new_msi_file_path);
 
 if (configuration.Contains("RELEASE"))
@@ -58,7 +64,7 @@ if (configuration.Contains("RELEASE"))
 
 // Finally, create a zip file.
 
-string zip_path = Path.Combine(Path.GetDirectoryName(msi_file), configuration + " " + dll_version + ".zip");
+string zip_path = Path.Combine(Path.GetDirectoryName(msi_file), Path.GetFileNameWithoutExtension(new_msi_file_path) + ".zip");
 Console.WriteLine($"Compressing {zip_path}");
 using (ZipArchive zip = ZipFile.Open(zip_path, ZipArchiveMode.Create))
 {

@@ -80,10 +80,7 @@ namespace eSearch
 #if TARILIO
             sb.Append("TARILIO");
 #else
-            sb.Append("eSearch");
-#endif
-#if STANDALONE
-            sb.Append(" Portable");
+            sb.Append("TARILIO");
 #endif
             return sb.ToString();
         }

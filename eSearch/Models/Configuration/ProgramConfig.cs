@@ -222,10 +222,10 @@ namespace eSearch.Models.Configuration
                 #if STANDALONE
                     if (search_only) 
                     { 
-                        productVersion += " Pro Portable (Search Only)";
+                        productVersion += " Pro Publish (Search Only)";
                     } else
                     {
-                        productVersion += " Pro Portable";
+                        productVersion += " Pro Publish";
                     }
                 #else
                     if (search_only) 
@@ -240,15 +240,15 @@ namespace eSearch.Models.Configuration
             {
                 // Not registered
                 #if STANDALONE
-                    productVersion += " Lite Portable";
+                    productVersion += " Lite Publish";
                 #else
                     productVersion += " Lite";
                 #endif
             }
             #else
-                string productVersion = "eSearch Pro";
+                string productVersion = "TARILIO"; // Previously eSearch Pro
             #if STANDALONE
-                productVersion += " Portable";
+                productVersion += " Publish";
                 #endif
             #endif
 
