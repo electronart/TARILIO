@@ -74,10 +74,13 @@ namespace eSearch.Models.Documents.Parse
                 {
                     var words = page.GetWords();
                     var blocks = DocstrumBoundingBoxes.Instance.GetBlocks(words);
+                    var pageContents = new StringBuilder();
                     foreach (var block in blocks)
                     {
-                        textContent[page.Number - 1] = block.Text;
+                        pageContents.AppendLine(block.Text);
+                        
                     }
+                    textContent[page.Number - 1] = pageContents.ToString();
                 });
 
                 parseResult.Title = document.Information.Title ?? parseResult.Title;
