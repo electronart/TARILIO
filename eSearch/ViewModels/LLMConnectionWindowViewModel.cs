@@ -1,31 +1,33 @@
-﻿using com.sun.org.apache.xml.@internal.security.keys.keyresolver.implementations;
+﻿
 using DynamicData;
 using eSearch.Models;
 using eSearch.Models.AI;
 using eSearch.Models.Configuration;
 using eSearch.Utils;
 using Newtonsoft.Json;
-using NPOI.OpenXmlFormats.Spreadsheet;
 using ReactiveUI;
-using sun.tools.tree;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
 using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
 using S = eSearch.ViewModels.TranslationsViewModel;
 
 namespace eSearch.ViewModels
 {
     public class LLMConnectionWindowViewModel : ViewModelBase
     {
+
+        
+
         public LLMConnectionWindowViewModel()
         {
+            
             DuplicateCommand = ReactiveCommand.Create(Duplicate);
+
+            
         }
 
         public ReactiveCommand<Unit, Unit> DuplicateCommand { get; }

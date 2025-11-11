@@ -1,15 +1,18 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 using eSearch.Models.AI;
 using eSearch.ViewModels;
 using eSearch.Views;
+using ReactiveUI;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace eSearch;
 
-public partial class LocalLLMServerWindow : Window
+public partial class LocalLLMServerWindow : ReactiveWindow<LocalServerWindowViewModel>
 {
 
     public LocalLLMServerWindow()
@@ -28,7 +31,7 @@ public partial class LocalLLMServerWindow : Window
 
     private void LocalLLMServerWindow_Closed(object? sender, System.EventArgs e)
     {
-        
+
     }
 
     private void UI_Update()
@@ -49,10 +52,12 @@ public partial class LocalLLMServerWindow : Window
                 Program.RunningLocalLLMServer = null;
                 UI_Update();
             }
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             await TaskDialogWindow.OKDialog("Error", ex.ToString(), this);
-        } finally
+        }
+        finally
         {
             UI_Update();
         }
@@ -80,12 +85,26 @@ public partial class LocalLLMServerWindow : Window
                 await server.StartAsync();
                 Program.RunningLocalLLMServer = server;
             }
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             await TaskDialogWindow.OKDialog("Error", ex.ToString(), this);
-        } finally
+        }
+        finally
         {
             UI_Update();
+        }
+    }
+
+    private async void ButtonCopyAddress_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (DataContext is LocalServerWindowViewModel vm && Clipboard != null)
+        {
+            await Clipboard.SetTextAsync(vm.DetectedIPAddress);
+            vm.JustCopiedAddress = true;
+            await Task.Delay(TimeSpan.FromSeconds(3));
+            vm.JustCopiedAddress = false;
+
         }
     }
 }
