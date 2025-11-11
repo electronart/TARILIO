@@ -27,7 +27,7 @@ NOTE: eSearch Pro and Portable version 1.1.9439 (04 November 2025) will be the l
 
 NOTE: eSearch Pro and Portable versions 1.1.9288 (6 June 2025) and earlier revert to eSearch Lite after 30 days. Later versions under the open-source license no longer require a serial number and will continue to remain fully functional and free of charge for private, non-commercial use or commercial 30-day evaluation use.
 
-TARILIO PRO versions contain additional closed-source code and are for commercial use. They require a serial number or will revert to the private, non-commercial eSearch/TARILIO version after 30-days, they also revert after 1 year unless the license/serial is renewed. You can evaluate using the eSearch/TARILO versions above, and install the TARILIO PRO version later, it will recognise your configurations, saved settings, indexes, etc.
+TARILIO PRO versions contain additional closed-source code and are for commercial use. They require a serial number or will revert to a TARILIO Lite version after 30-days, they also revert after 1 year unless the license/serial is renewed. You can evaluate using the eSearch/TARILO versions above, and install the TARILIO PRO version later, it will recognise your configurations, saved settings, indexes, etc.
 
 [TARILIO Pro](https://dtsearch.co.uk/news/product/tarilio-pro/) 1.1.9439 (Released 04 Nov 2025) 
 
