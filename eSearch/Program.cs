@@ -17,6 +17,7 @@ using eSearch.Models.Indexing;
 using eSearch.Models.Localization;
 using eSearch.Models.Logging;
 using eSearch.Models.Plugins;
+using eSearch.Utils;
 using eSearch.ViewModels;
 using eSearch.ViewModels.StatusUI;
 using eSearch.Views;
@@ -123,6 +124,34 @@ namespace eSearch
             }
             #endregion
             // If we got this far it's not an indexing task, we're launching the UI.
+            #region Handle the case that this is an elevated firewall rules launch
+            if (args.Contains("--firewall-add-exception"))
+            {
+                // We are launched as admin solely to change firewall rules..
+                if (OperatingSystem.IsWindows())
+                {
+                    try
+                    {
+                        var defender = new WindowsDefenderHelper();
+                        defender.AddFirewallException();
+                        Environment.Exit(0);
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                        Environment.Exit(1);
+                        return;
+                    }
+                } else
+                {
+                    Console.WriteLine("This is windows only");
+                    Environment.Exit(2);
+                    return;
+                }
+            }
+            #endregion
+
             WasLaunchedWithForceCPUOption = args.Contains("-forceCPU");
             
 

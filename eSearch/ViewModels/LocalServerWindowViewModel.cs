@@ -29,9 +29,10 @@ namespace eSearch.ViewModels
                 var refreshInterval = TimeSpan.FromSeconds(10);
                 Observable
                     .Timer(TimeSpan.FromSeconds(1), refreshInterval)
-                    .Subscribe(x =>
+                    .Subscribe(async x =>
                     {
                         UpdateIPAddress();
+                        await UpdateFirewallStatus();
                     })
                     .DisposeWith(disposables);
             });
@@ -56,6 +57,17 @@ namespace eSearch.ViewModels
                 DetectedIPAddress = "No local IPv4 address found.";
             }
             #endregion
+        }
+
+        private async Task UpdateFirewallStatus()
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                var helper = new WindowsDefenderHelper();
+                var allowed = await helper.IsAllowedThroughFirewall();
+                IsFirewallAllowed = allowed;
+            }
+            // TODO OS Work
         }
 
         public string DetectedIPAddress
@@ -107,8 +119,15 @@ namespace eSearch.ViewModels
             }
         }
 
-        
-
         private ObservableCollection<LogItem>? _logItems = null;
+
+        // Null when loading..
+        public bool? IsFirewallAllowed
+        {
+            get => _isFirewallAllowed;
+            set => this.RaiseAndSetIfChanged(ref _isFirewallAllowed, value);
+        }
+
+        private bool? _isFirewallAllowed = null;
     }
 }

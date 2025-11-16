@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="using:eSearch.ViewModels"
-        mc:Ignorable="d" Width="600" Height="550"
+        mc:Ignorable="d" Width="600" Height="600"
         x:Class="eSearch.LocalLLMServerWindow"
 		ExtendClientAreaToDecorationsHint="True"
         Title="LocalLLMServerWindow"
@@ -87,7 +87,39 @@
 							<NumericUpDown Value="{Binding Port}" Width="200" 
 										   DockPanel.Dock="Right" Minimum="0" Maximum="65535" 
 										   IsEnabled="{Binding !IsServerRunning}"/>
-							<Label>Port</Label>
+							<Label Content="{Binding S[Port]}"/>
+						</DockPanel>
+						<DockPanel>
+							<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+								<Label 
+									IsVisible="{Binding IsFirewallAllowed, Converter={x:Static ObjectConverters.IsNull}}"
+									Content="{Binding S[Loading...]}">
+								</Label>
+								
+								<StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding !!IsFirewallAllowed}">
+									<Image Source="{Binding I[icons8-done-32.png]}" Width="16" Height="16"/>		
+									<Label Content="{Binding S[Allowed]}" VerticalContentAlignment="Center"/>
+								</StackPanel>
+								<StackPanel Orientation="Vertical" Spacing="10">
+									<StackPanel.IsVisible>
+										<MultiBinding Converter="{x:Static BoolConverters.And}">
+											<Binding Path="IsFirewallAllowed" Converter="{x:Static ObjectConverters.IsNotNull}"/>
+											<Binding Path="!IsFirewallAllowed"/>
+										</MultiBinding>
+									</StackPanel.IsVisible>
+									<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+										<Label Content="&#9888;" VerticalContentAlignment="Center"/>
+										<Label Content="{Binding S[Not~Allowed]}" VerticalContentAlignment="Center"/>
+									</StackPanel>
+									<Button MinWidth="150" HorizontalContentAlignment="Stretch" x:Name="BtnAddFirewallException" Click="BtnAddFirewallException_Click">
+										<Panel>
+											<Image Source="{Binding I[icons8-windows-defender-48.png]}" Width="16" Height="16" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+											<Label Content="{Binding S[Add~Rule]}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+										</Panel>
+									</Button>
+								</StackPanel>
+							</StackPanel>
+							<Label Content="{Binding S[Firewall~Status]}"/>
 						</DockPanel>
 						<Label Content="{Binding S[Logs]}"/>
 						<ListBox Height="250"
