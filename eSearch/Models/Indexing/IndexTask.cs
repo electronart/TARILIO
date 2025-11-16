@@ -1,4 +1,5 @@
-﻿using eSearch.Interop;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using eSearch.Interop;
 using eSearch.Interop.Indexing;
 using eSearch.Models.Configuration;
 using eSearch.Models.DataSources;
@@ -50,6 +51,11 @@ namespace eSearch.Models.Indexing
         private string _progressStatus  = "";
 
         private long _currentBatchSize = 0L;
+
+        // For debugging queue contention
+        private long _documentsProduced      = 0;
+        private long _documentsPreloaded     = 0;
+        private long _documentsFlushed       = 0;
 
         public int GetProgress()
         {
@@ -142,14 +148,14 @@ namespace eSearch.Models.Indexing
                 _progressStatus = S.Get("Opening Index");
 
                 // Null when index all file types.
-                ConcurrentBag<string>? indexedExtensions = null;
+                HashSet<string>? indexedExtensions = null;
 
 
                 if (indexConfig != null)
                 {
                     if (indexConfig.SelectedFileExtensions != null)
                     {
-                        indexedExtensions = new ConcurrentBag<string>(indexConfig.SelectedFileExtensions);
+                        indexedExtensions = new HashSet<string>(indexConfig.SelectedFileExtensions);
                     } else
                     {
                         indexedExtensions = null;
@@ -172,8 +178,8 @@ namespace eSearch.Models.Indexing
                     var workers = new List<Task>();
 
                     #region Set up workers for preloading documents
-                    int numProcessorsToUse = Math.Clamp(Environment.ProcessorCount, 1, 8);
-                    for (int i = 0; i < numProcessorsToUse; i++)
+                    int numWorkers = 50;
+                    for (int i = 0; i < numWorkers; i++)
                     {
                         #region Check for Pause / Cancel
                         mrse.WaitOne(); // This is the point where the thread will pause if Pause() has been called.
@@ -191,7 +197,6 @@ namespace eSearch.Models.Indexing
                             while (!docProcessingQueue.IsCompleted)
                             {
                                 mrse.WaitOne();  // Pause here too
-                                Thread.Yield();
                                 if (docProcessingQueue.TryTake(out var docToParse, TimeSpan.FromMilliseconds(500)))
                                 {
                                     try
@@ -200,13 +205,23 @@ namespace eSearch.Models.Indexing
                                         // Do this before preloading to avoid preloading documents unecessarily.
                                         if (indexedExtensions != null)
                                         {
-                                            string fileType = docToParse.FileType; // Performance - Calling this results in IO due to magic number check.
-                                            if (!indexedExtensions.Contains(fileType)
-                                                && fileType != "Database Record"        // Eg. Contents of a CSV File.
-                                                )
+                                            string? fileTypeFast = docToParse.FileName != null ? Path.GetExtension(docToParse.FileName).Replace(".","").ToLower() : null;
+                                            if (fileTypeFast != null)
                                             {
-                                                // Skip - Not an indexed extension.
-                                                continue;
+                                                if (!indexedExtensions.Contains(fileTypeFast)) {
+                                                    continue;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                string fileType = docToParse.FileType; // Performance - Calling this results in IO due to magic number check.
+                                                if (!indexedExtensions.Contains(fileType)
+                                                    && fileType != "Database Record"        // Eg. Contents of a CSV File.
+                                                    )
+                                                {
+                                                    // Skip - Not an indexed extension.
+                                                    continue;
+                                                }
                                             }
                                         }
                                         #endregion
@@ -233,6 +248,7 @@ namespace eSearch.Models.Indexing
                                         {
                                             readyDocQueue.Enqueue(docToParse); // It's ready to be be parsed now.
                                             Interlocked.Add(ref _currentBatchSize, docToParse.FileSize); // Thread safe addition
+                                            Interlocked.Increment(ref _documentsPreloaded);
                                         }
                                         else
                                         {
@@ -283,9 +299,47 @@ namespace eSearch.Models.Indexing
                             await Task.Delay(updateFrequency);
                         }
                     }));
+                    // An additional one to do debug logging on queue contention
+#if DEBUG
+                    workers.Add(Task.Run(async () =>
+                    {
+                        var sw = Stopwatch.StartNew();
+                        var last = new
+                        {
+                            Time = DateTime.UtcNow,
+                            Produced = _documentsProduced,
+                            Preloaded = _documentsPreloaded,
+                            Flushed = _documentsFlushed
+                        };
+
+                        while (!docProcessingQueue.IsCompleted)
+                        {
+                            await Task.Delay(TimeSpan.FromSeconds(8));
+                            var now = DateTime.UtcNow;
+                            double elapsedSec = (now - last.Time).TotalSeconds;
+
+                            long prodDelta = _documentsProduced - last.Produced;
+                            long preloadDelta = _documentsPreloaded - last.Preloaded;
+                            long flushDelta = _documentsFlushed - last.Flushed;
+
+                            double prodRate = prodDelta / elapsedSec;
+                            double preloadRate = preloadDelta / elapsedSec;
+                            double flushRate = flushDelta / elapsedSec;
+
+                            Debug.WriteLine(
+                                $"[Pipeline Metrics] " +
+                                $"\nInQ={docProcessingQueue.Count,4}/1000  " +
+                                $"\nReadyQ={readyDocQueue.Count,6}  " +
+                                $"\nBatchMB={_currentBatchSize / 1048576,4}  " +
+                                $"\nRates → Produce:{prodRate,6:F1}/s  Preload:{preloadRate,6:F1}/s  Flush:{flushRate,6:F1}/s");
+
+                            last = new { Time = now, Produced = _documentsProduced, Preloaded = _documentsPreloaded, Flushed = _documentsFlushed };
+                        }
+                    }));
+#endif
                     #endregion
 
-                    IDocument document = null;
+                    IDocument? document = null;
                     bool isDiscoveryComplete;
                     long max_batch_size_bytes = ( (long)(MemoryUtils.GetRecommendedRAMBufferSizeMB() * 1048576) / 2 ); // * 1048576 converts mb to bytes
 
@@ -294,7 +348,6 @@ namespace eSearch.Models.Indexing
                     do
                     {
                         mrse.WaitOne();
-                        Thread.Yield();
                         if (Cancelling)
                         {
                             Logger.Log(Severity.INFO, "Index task was cancelled");
@@ -340,6 +393,7 @@ namespace eSearch.Models.Indexing
                             }
 
                             docProcessingQueue.Add(document);
+                            Interlocked.Increment(ref _documentsProduced);
                         }
                         #endregion
                         if (document == null && !isDiscoveryComplete)
@@ -474,6 +528,7 @@ namespace eSearch.Models.Indexing
                         Logger.Log(Severity.ERROR, $"Skipped {failure.Key.FileName} Due to a Parse Error", failure.Value);
                     }
                     Interlocked.Add(ref IndexedDocuments, batch.Count);  // Thread-safe
+                    Interlocked.Add(ref _documentsFlushed, batch.Count);
                     foreach (var indexedDocument in batch)
                     {
                         Interlocked.Add(ref _currentBatchSize, -indexedDocument.FileSize); // This is actually subtract
