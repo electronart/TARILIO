@@ -4,17 +4,17 @@ The eSearch Project  is licensed under a modified version of the Apache License 
 
 1. Definitions
 
-"eSearch Project": Includes eSearch Pro, eSearch Lite and eSearch Portable versions and compatible plugins.
+"eSearch Project": Includes TARILIO, TARILIO Portable, (Previously named eSearch Pro, and eSearch Portable ) versions and compatible plugins.
 "Apache License 2.0" : https://www.apache.org/licenses/LICENSE-2.0.txt
 "Community Edition": The eSearch Project software distributed under Apache 2.0.
-"Commercial Use": Any use case defined in Section 3.2 requiring a paid license.
+"Commercial Use": Any use case defined in Section 3.2 requiring a paid license. 
 "TARILIO Brand": TARILIO is a registered trademark of ElectronArt Design Ltd. CRN: 01796515.
 
 
 2. License Grants
 
 Community Edition: Licensed under Apache License 2.0 with Additional Terms (Section 3).
-Commercial Edition: Available under a separate proprietary license (contact support@electronart.co.uk for details).
+Commercial Edition: TARILIO Pro, TARILIO Publish, TARILIO Portable, TARILIO Lite available under a separate proprietary license (contact support@electronart.co.uk for details).
 
 3. Additional Terms to Apache 2.0
 
@@ -31,7 +31,7 @@ Modification + Distribution: You distribute modified code (directly or as SaaS) 
   (a) Serve enterprise clients (>5 users )
   (b) Integrate into hardware/products for sale.
   (c) Government/education procurement involving sensitive data.
-Brand Usage: Use the TARILIO Brand in any product, service, or promotion.
+  (d) Brand Usage: Use the TARILIO Brand in any product, service, or promotion.
 
 3.3 Contributor Agreement
 
