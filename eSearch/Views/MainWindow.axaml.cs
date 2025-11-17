@@ -118,7 +118,7 @@ namespace eSearch.Views
         {
             string? exeDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
             if (exeDir == null) return;
-            string guide_path = Path.Combine(exeDir, "help", "eSearch-Pro-User-Guide.pdf");
+            string guide_path = Path.Combine(exeDir, "help", "Tarilio-User-Guide.pdf");
             if (File.Exists(guide_path))
             {
                 var uri = new System.Uri(guide_path);
