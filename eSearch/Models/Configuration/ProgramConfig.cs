@@ -215,40 +215,40 @@ namespace eSearch.Models.Configuration
         public string GetProductTagText()
         {
             #if TARILIO
-            string productVersion = "TARILIO";
-            if (Program.ProgramConfig.IsProgramRegistered())
-            {
-                bool search_only = (TARILIO.ProductSerials.isValidSerial(Program.ProgramConfig.Serial, out var ignored) == TARILIO.ProductSerials.SerialValidationResult.SearchOnly);
+                string productVersion = "TARILIO";
+                if (Program.ProgramConfig.IsProgramRegistered())
+                {
+                    bool search_only = (TARILIO.ProductSerials.isValidSerial(Program.ProgramConfig.Serial, out var ignored) == TARILIO.ProductSerials.SerialValidationResult.SearchOnly);
+                    #if STANDALONE
+                        if (search_only) 
+                        { 
+                            productVersion += " Publish";
+                        } else
+                        {
+                            productVersion += " Portable";
+                        }
+                    #else
+                        if (search_only) 
+                        { 
+                            productVersion += " Pro (Search Only)";
+                        } else {
+                            productVersion += " Pro";
+                        }
+                    #endif
+                }
+                else
+                {
+                    // Not registered
+                    #if STANDALONE
+                        productVersion += " Lite Portable";
+                    #else
+                        productVersion += " Lite";
+                    #endif
+                }
+            #else       // eSearch Build
+                string productVersion = "TARILIO"; // Previously eSearch Pro
                 #if STANDALONE
-                    if (search_only) 
-                    { 
-                        productVersion += " Pro Portable (Search Only)";
-                    } else
-                    {
-                        productVersion += " Pro Portable";
-                    }
-                #else
-                    if (search_only) 
-                    { 
-                        productVersion += " Pro (Search Only)";
-                    } else {
-                        productVersion += " Pro";
-                    }
-                #endif
-            }
-            else
-            {
-                // Not registered
-                #if STANDALONE
-                    productVersion += " Lite Portable";
-                #else
-                    productVersion += " Lite";
-                #endif
-            }
-            #else
-                string productVersion = "eSearch Pro";
-            #if STANDALONE
-                productVersion += " Portable";
+                    productVersion += " Portable";
                 #endif
             #endif
 

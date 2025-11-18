@@ -929,7 +929,7 @@ namespace eSearch.ViewModels
         public async void PressF1()
         {
             string? exeDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? string.Empty);
-            string helpFilePath = Path.Combine(exeDir ?? "", "help", "eSearch-Pro-User-Guide.pdf");
+            string helpFilePath = Path.Combine(exeDir ?? "", "help", "Tarilio-User-Guide.pdf");
             if (File.Exists(helpFilePath))
             {
                 var uri = new System.Uri(helpFilePath);

@@ -558,33 +558,44 @@ namespace eSearch.Models.Documents
         private string? _htmlRender = null;
 
 
+        private volatile bool _extracted = false;
+        private object _extractLock = new object();
+
         public void ExtractDataFromDocument()
         {
-            _text = null;
-            _displayName = null;
-            _id = null;
+            if (_extracted) return;
+            lock (_extractLock)
+            {
+                if (_extracted) return;
+                _text = null;
+                _displayName = null;
+                _id = null;
 
-            try
-            {
-                ParseResult parseResult = GetParseResult();
-                //Debug.WriteLine("Parsed Output:");
-                //Debug.WriteLine(parseResult.TextContent);
-                _text = parseResult.TextContent;
-                _displayName = parseResult.Title;
-                _metadata = parseResult.Metadata;
-                _parser = parseResult.ParserName;
-                _shouldSkipIndexingThisDocument = parseResult.SkipIndexingDocument;
-                _extractedFiles = parseResult.ExtractedFiles;
-                _htmlRender = parseResult.HtmlRender ?? "";
-                _subDocuments = parseResult.SubDocuments;
-                TotalKnownSubDocuments = parseResult.TotalKnownSubDocuments;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                _text = ex.ToString();
-                _displayName = Path.GetFileName(path);
-                _shouldSkipIndexingThisDocument = IDocument.SkipReason.ParseError;
+                try
+                {
+                    ParseResult parseResult = GetParseResult();
+                    //Debug.WriteLine("Parsed Output:");
+                    //Debug.WriteLine(parseResult.TextContent);
+                    _text = parseResult.TextContent;
+                    _displayName = parseResult.Title;
+                    _metadata = parseResult.Metadata;
+                    _parser = parseResult.ParserName;
+                    _shouldSkipIndexingThisDocument = parseResult.SkipIndexingDocument;
+                    _extractedFiles = parseResult.ExtractedFiles;
+                    _htmlRender = parseResult.HtmlRender ?? "";
+                    _subDocuments = parseResult.SubDocuments;
+                    TotalKnownSubDocuments = parseResult.TotalKnownSubDocuments;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.ToString());
+                    _text = ex.ToString();
+                    _displayName = Path.GetFileName(path);
+                    _shouldSkipIndexingThisDocument = IDocument.SkipReason.ParseError;
+                } finally
+                {
+                    _extracted = true;
+                }
             }
         }
 

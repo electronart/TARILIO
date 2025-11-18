@@ -17,7 +17,7 @@ namespace eSearch.Interop
         /// <remarks>
         /// !Notice! <br></br>
         /// On returning false, check IsDiscoveryComplete() - If true, end of the index, otherwise <b>more documents may be returned later.</b></remarks>
-        void GetNextDoc(out IDocument document, out bool isDiscoveryComplete);
+        void GetNextDoc(out IDocument? document, out bool isDiscoveryComplete);
 
         /// <summary>
         /// Get how far through the datasource we've gotten.

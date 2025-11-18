@@ -8,6 +8,7 @@
 		xmlns:localView="clr-namespace:eSearch.Views;assembly=eSearch"
 		xmlns:converters="clr-namespace:eSearch.Converters;assembly=eSearch"
 		xmlns:llmctrls="clr-namespace:eSearch.Views.LLMConversations;assembly=eSearch"
+        xmlns:localViews="using:eSearch.Views"
 		xmlns:statusctrl="clr-namespace:eSearch.Views.StatusUI;assembly=eSearch"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="eSearch.Views.MainWindow"
@@ -35,9 +36,6 @@
 		</Style>
 		
 	</Window.Styles>
-	<Window.KeyBindings>
-		<KeyBinding Gesture="F1" Command="{Binding PressF1}"/>
-	</Window.KeyBindings>
 	<Design.DataContext>
 		<!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->

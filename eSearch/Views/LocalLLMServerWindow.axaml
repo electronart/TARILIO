@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="using:eSearch.ViewModels"
-        mc:Ignorable="d" Width="600" Height="500"
+        mc:Ignorable="d" Width="600" Height="600"
         x:Class="eSearch.LocalLLMServerWindow"
 		ExtendClientAreaToDecorationsHint="True"
         Title="LocalLLMServerWindow"
@@ -42,21 +42,87 @@
 								 />
 							</Button>
 						</StackPanel>
-						<StackPanel>
+						<StackPanel DockPanel.Dock="Left">
 							<Label Content="{Binding S[Server~Status]}" FontWeight="SemiBold" FontSize="18"/>
-							<Label Content="{Binding S[Running]}" IsVisible="{Binding IsServerRunning}"/>
-							<Label Content="{Binding S[Not~Running]}" IsVisible="{Binding !IsServerRunning}"/>
+							<StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsServerRunning}">
+								<Label FontWeight="Bold" Foreground="GreenYellow" Content="&#8226;"></Label>
+								<Label Content="{Binding S[Running]}"/>	
+							</StackPanel>
+							
+							
+							<StackPanel Orientation="Horizontal" Spacing="5" IsVisible="{Binding !IsServerRunning}">
+								<Label FontWeight="Bold" Foreground="OrangeRed" Content="&#8226;"></Label>
+								<Label Content="{Binding S[Not~Running]}"/>
+							</StackPanel>
 						</StackPanel>
+						<Border
+								IsVisible="{Binding IsServerRunning}"
+								BorderThickness="0.8"
+								Opacity="0.8"
+								BorderBrush="{DynamicResource SystemBaseMediumLowColor}"
+								Height="40" HorizontalAlignment="Center" 
+								Padding="20,5" Margin="5" CornerRadius="20">
+							<StackPanel Orientation="Horizontal" Spacing="10" DockPanel.Dock="Right">
+								<SelectableTextBlock Text="{Binding DetectedIPAddress}" VerticalAlignment="Center"/>
+								<Button Width="30" Height="30" Background="Transparent" 
+										Click="ButtonCopyAddress_Click" IsEnabled="{Binding !JustCopiedAddress}">
+									<Panel>
+									<Image 
+										   IsVisible="{Binding !JustCopiedAddress}"
+										   Source="{Binding I[icons8-copy-16.png]}" 
+										   Width="16" Height="16"
+									/>
+									<Image Source="{Binding I[icons8-done-32.png]}"
+									   IsVisible="{Binding JustCopiedAddress}"
+									   Width="16"
+									   Height="16"
+									/>
+									</Panel>
+								</Button>
+							</StackPanel>
+						</Border>
 					</DockPanel>
 					<StackPanel Margin="0,20" x:Name="SettingsPanel" Spacing="10">
 						<DockPanel>
 							<NumericUpDown Value="{Binding Port}" Width="200" 
 										   DockPanel.Dock="Right" Minimum="0" Maximum="65535" 
 										   IsEnabled="{Binding !IsServerRunning}"/>
-							<Label>Port</Label>
+							<Label Content="{Binding S[Port]}"/>
+						</DockPanel>
+						<DockPanel>
+							<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+								<Label 
+									IsVisible="{Binding IsFirewallAllowed, Converter={x:Static ObjectConverters.IsNull}}"
+									Content="{Binding S[Loading...]}">
+								</Label>
+								
+								<StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding !!IsFirewallAllowed}">
+									<Image Source="{Binding I[icons8-done-32.png]}" Width="16" Height="16"/>		
+									<Label Content="{Binding S[Allowed]}" VerticalContentAlignment="Center"/>
+								</StackPanel>
+								<StackPanel Orientation="Vertical" Spacing="10">
+									<StackPanel.IsVisible>
+										<MultiBinding Converter="{x:Static BoolConverters.And}">
+											<Binding Path="IsFirewallAllowed" Converter="{x:Static ObjectConverters.IsNotNull}"/>
+											<Binding Path="!IsFirewallAllowed"/>
+										</MultiBinding>
+									</StackPanel.IsVisible>
+									<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+										<Label Content="&#9888;" VerticalContentAlignment="Center"/>
+										<Label Content="{Binding S[Not~Allowed]}" VerticalContentAlignment="Center"/>
+									</StackPanel>
+									<Button MinWidth="150" HorizontalContentAlignment="Stretch" x:Name="BtnAddFirewallException" Click="BtnAddFirewallException_Click">
+										<Panel>
+											<Image Source="{Binding I[icons8-windows-defender-48.png]}" Width="16" Height="16" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+											<Label Content="{Binding S[Add~Rule]}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+										</Panel>
+									</Button>
+								</StackPanel>
+							</StackPanel>
+							<Label Content="{Binding S[Firewall~Status]}"/>
 						</DockPanel>
 						<Label Content="{Binding S[Logs]}"/>
-						<ListBox Height="200"
+						<ListBox Height="250"
 								 ItemsSource="{Binding LogItems}">
 							<ListBox.ItemTemplate>
 								<DataTemplate>

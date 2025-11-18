@@ -11,14 +11,22 @@ using eSearch.Models.Configuration;
 using eSearch.Interop;
 using static eSearch.Interop.ILogger;
 using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace eSearch.Models.DataSources
 {
-    public class DirectoryDataSource : IDataSource, ISupportsIndexConfigurationDataSource
+    public class DirectoryDataSource : IDataSource,
+        ISupportsIndexConfigurationDataSource
     {
         
 
         public Directory[]              Directories = [];
+        private ConcurrentQueue<(string Path, bool Recursive)> _directoriesToProcess = new();
+        private List<Task>              _discoveryTasks = new List<Task>();
+        private int                     _activeDiscoveryWorkers = 0;
+
         private ConcurrentQueue<string> _discoveredFilePaths = new ConcurrentQueue<string>();
 
         public DirectoryDataSource(Directory[] startDirectories) {
@@ -26,7 +34,6 @@ namespace eSearch.Models.DataSources
         }
 
         #region File/Folder Discovery Work Tracking
-        private BackgroundWorker?   _discoveryWorker;
         private int                 _totalDiscoveredFiles;
 
         /// <summary>
@@ -45,6 +52,8 @@ namespace eSearch.Models.DataSources
         private int _iterationTotalFilesIterated = 0;
         private string _iterationStatus = string.Empty;
         #endregion
+
+        private CancellationTokenSource _discoveryCts = new CancellationTokenSource();
 
 
         private IEnumerable<IDocument>? _SubDocuments   = null;
@@ -102,15 +111,9 @@ namespace eSearch.Models.DataSources
                 _SubDocumentsRecursiveEnumerator = null;
                 #endregion
                 #region init discovery/initial directory/current file list in dir if not yet initialized
-                
-                if (_discoveryWorker == null)
+                if (_discoveryTasks.Count == 0)
                 {
-                    Debug.WriteLine("Starting Worker..");
-                    _discoveryWorker = new BackgroundWorker();
-                    _discoveryWorker.DoWork += _discoveryWorker_DoWork;
-                    _discoveryWorker.RunWorkerCompleted += _discoveryWorker_RunWorkerCompleted;
-                    _discoveryWorker.WorkerSupportsCancellation = true;
-                    _discoveryWorker.RunWorkerAsync();
+                    StartParallelDiscovery();
                     document = null;
                     return;
                 }
@@ -184,45 +187,40 @@ namespace eSearch.Models.DataSources
             }
         }
 
-        private void _discoveryWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        private void StartParallelDiscovery()
         {
-            _discoveryFinished = true;
-        }
+            foreach(var directory in Directories)
+            {
+                _directoriesToProcess.Enqueue((directory.Path,directory.Recursive));   
+            }
 
-        private void _discoveryWorker_DoWork(object? sender, DoWorkEventArgs e)
-        {
-            try
+            int workerCount = Math.Max(1, Math.Min(16, Environment.ProcessorCount));
+            _activeDiscoveryWorkers = workerCount;
+            for (int i = 0; i < workerCount; i++)
             {
-                foreach (var directory in Directories)
-                {
-                    _discoverDirectory(directory.Path, directory.Recursive);
-                }
-            } catch (Exception ex)
-            {
-                _logger?.Log(Severity.ERROR, "Unhandled error discovering directories", ex);
+                _discoveryTasks.Add(Task.Run(() => DiscoveryWorker(_discoveryCts.Token)));
             }
         }
 
-        private void _discoverDirectory(string initialPath, bool recursive)
+        private void DiscoveryWorker(CancellationToken token)
         {
-            try
+            while (
+                !token.IsCancellationRequested &&
+                _directoriesToProcess.TryDequeue(out var currentDir))
             {
-                // Use a stack for iterative traversal
-                Stack<string> directoryStack = new Stack<string>();
-                directoryStack.Push(initialPath);
-
-                var enumerationOptions = new EnumerationOptions
+                bool recursive = currentDir.Recursive;
+                if (token.IsCancellationRequested) break;
+                try
                 {
-                    RecurseSubdirectories = false,  // We handle recursion manually
-                    IgnoreInaccessible = true
-                };
 
-                while (directoryStack.Count > 0)
-                {
-                    string currentPath = directoryStack.Pop();
-                    _discoveryStatus = "Discovering " + currentPath;
+                    var enumerationOptions = new EnumerationOptions
+                    {
+                        RecurseSubdirectories = false,  // We handle recursion manually
+                        IgnoreInaccessible = true
+                    };
 
-                    DirectoryInfo dirInfo = new DirectoryInfo(currentPath);
+
+                    DirectoryInfo dirInfo = new DirectoryInfo(currentDir.Path);
 
                     try
                     {
@@ -268,18 +266,18 @@ namespace eSearch.Models.DataSources
                             #endregion
                             if (!skip)
                             {
-                                ++_totalDiscoveredFiles;
+                                Interlocked.Increment(ref _totalDiscoveredFiles);
                                 _discoveredFilePaths.Enqueue(file.FullName);  // Enqueue path directly
                             }
                         }
                     }
                     catch (SecurityException sex)
                     {
-                        _logger?.Log(Severity.WARNING, "Access Denied (1): " + currentPath, sex);
+                        _logger?.Log(Severity.WARNING, "Access Denied (1): " + currentDir, sex);
                     }
                     catch (DirectoryNotFoundException)
                     {
-                        _logger?.Log(Severity.WARNING, "No Such Directory: " + currentPath);
+                        _logger?.Log(Severity.WARNING, "No Such Directory: " + currentDir);
                     }
 
                     // Discover subdirs if recursive
@@ -290,19 +288,23 @@ namespace eSearch.Models.DataSources
                             foreach (var subDir in dirInfo.EnumerateDirectories("*", enumerationOptions))
                             {
                                 if (subDir.Attributes.HasFlag(FileAttributes.Hidden) || subDir.Name.StartsWith(".") || subDir.Attributes.HasFlag(FileAttributes.System)) continue;
-                                directoryStack.Push(subDir.FullName);  // Push path, not object
+                                _directoriesToProcess.Enqueue((subDir.FullName, recursive));
                             }
                         }
                         catch (Exception ex)
                         {  // Consolidated catch
-                            _logger?.Log(Severity.WARNING, "Access Denied or Error: " + currentPath, ex);
+                            _logger?.Log(Severity.WARNING, "Access Denied or Error: " + currentDir, ex);
                         }
                     }
+                } catch (Exception ex) when (ex is UnauthorizedAccessException || ex is IOException)
+                {
+                    _logger?.Log(Severity.WARNING, "Access denied or error scanning: " + currentDir);
                 }
             }
-            catch (Exception e)
+
+            if (Interlocked.Decrement(ref _activeDiscoveryWorkers) == 0)
             {
-                _logger?.Log(Severity.ERROR, "Unhandled Error whilst discovering directory " + initialPath, e);
+                _discoveryFinished = true;
             }
         }
 
@@ -328,15 +330,15 @@ namespace eSearch.Models.DataSources
             _iterationTotalFilesIterated = 0;
             _iterationStatus = string.Empty;
 
+            _discoveryCts.Cancel();
+            Task.WhenAll(_discoveryTasks).Wait();
+            _discoveryCts = new CancellationTokenSource();
+            _discoveryTasks.Clear();
+            _directoriesToProcess = new ConcurrentQueue<(string Path, bool Recursive)>();
+            _activeDiscoveryWorkers = 0;
+            _discoveryFinished = false;
 
-            if (_discoveryWorker != null)
-            {
-                _discoveryWorker.CancelAsync();
-                _discoveryWorker.Dispose();
-                _discoveryWorker = null;
-            }
 
-            _discoveryWorker = null;
             _totalDiscoveredFiles = 0;
             _discoveryFinished = false;
             _discoveryStatus = string.Empty;

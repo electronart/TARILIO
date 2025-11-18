@@ -111,9 +111,14 @@ namespace eSearch.Views
 
         private void MenuItemHelpUserGuide_Click(object? sender, RoutedEventArgs e)
         {
+            LaunchUserGuide();
+        }
+
+        private void LaunchUserGuide()
+        {
             string? exeDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
             if (exeDir == null) return;
-            string guide_path = Path.Combine(exeDir, "docs", "eSearch-Pro-User-Guide.pdf");
+            string guide_path = Path.Combine(exeDir, "help", "Tarilio-User-Guide.pdf");
             if (File.Exists(guide_path))
             {
                 var uri = new System.Uri(guide_path);
@@ -736,6 +741,12 @@ namespace eSearch.Views
                 if (e.Key == Key.V && e.KeyModifiers.HasFlag(KeyModifiers.Control) && e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                 {
                     mwvm.IsVoiceInputActive = !mwvm.IsVoiceInputActive;
+                    e.Handled = true;
+                    return;
+                }
+                if (e.Key == Key.F1)
+                {
+                    LaunchUserGuide();
                     e.Handled = true;
                     return;
                 }
