@@ -19,9 +19,9 @@ To report an issue or contribute, see [CONTRIBUTING.md](https://github.com/elect
 ## Builds
 If you only want to install and run the latest public releases, we will continue to post them here:
 
-[eSearch Pro](https://dtsearch.co.uk/news/product/esearch-pro/)  1.1.9439 (Released 04 Nov 2025)
+[eSearch Pro](https://dtsearch.co.uk/news/product/esearch-pro/)  1.1.9452 (Released 17 Nov 2025)
 
-[eSearch Portable](https://dtsearch.co.uk/news/product/esearch-portable/) 1.1.9439 (Released 04 Nov 2025)
+[eSearch Portable](https://dtsearch.co.uk/news/product/esearch-portable/) 1.1.9452 (Released 17 Nov 2025)
 
 NOTE: eSearch Pro and Portable version 1.1.9439 (04 November 2025) will be the last builds that use the 'eSearch' working title. Future open source versions will use the TARILIO brand, the commercially licensed version will continue to be named TARILIO PRO.
 
