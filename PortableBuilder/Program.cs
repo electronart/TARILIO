@@ -51,7 +51,7 @@ namespace PortableBuilder
                 ),
                 new FolderCopy(
                     $"./bin/{configuration}/net8.0/win-x64/",
-                    $"./bin/{configuration}/TempDir/eSearchPortable"
+                    $"./bin/{configuration}/TempDir/TARILIO-Portable"
                 ),                
             };
 
@@ -104,10 +104,10 @@ namespace PortableBuilder
             {
                 Directory.CreateDirectory(TargetDir);
             }
-            string targetZip = Path.Combine(TargetDir, $"{configuration} {version}.zip");
+            string targetZip = Path.Combine(TargetDir, $"{configuration.Replace("eSearch","TARILIO").Replace(" ","-")}-{version.Replace(" ", "-").Replace("(","").Replace(")","")}.zip");
             ZipFile.CreateFromDirectory(SourceDir, targetZip);
             Console.WriteLine("Zip saved to " + targetZip);
-            RevealInFolderCrossPlatform(targetZip);
+            RevealInFolderCrossPlatform( Path.GetFullPath(targetZip) );
         }
 
 
@@ -164,7 +164,7 @@ namespace PortableBuilder
                 {
                     Process fileOpener = new Process();
                     fileOpener.StartInfo.FileName = "explorer";
-                    fileOpener.StartInfo.Arguments = "/select," + path + "\"";
+                    fileOpener.StartInfo.Arguments = "/select,\"" + path + "\"";
                     fileOpener.Start();
                     fileOpener.WaitForExit();
                     return;

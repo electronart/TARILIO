@@ -19,9 +19,9 @@ To report an issue or contribute, see [CONTRIBUTING.md](https://github.com/elect
 ## Builds
 If you only want to install and run the latest public releases, we will continue to post them here:
 
-[eSearch Pro](https://dtsearch.co.uk/news/product/esearch-pro/)  1.1.9439 (Released 04 Nov 2025)
+[TARILIO](https://tarilio.com/wp-content/uploads/2025/11/TARILIO-RELEASE-1-1-9452-28652.zip)  1.1.9452 (Released 17 Nov 2025)
 
-[eSearch Portable](https://dtsearch.co.uk/news/product/esearch-portable/) 1.1.9439 (Released 04 Nov 2025)
+[TARILIO Portable](https://tarilio.com/wp-content/uploads/2025/11/TARILIO-PORTABLE-1-1-9452-29775.zip) 1.1.9452 (Released 17 Nov 2025)
 
 NOTE: eSearch Pro and Portable version 1.1.9439 (04 November 2025) will be the last builds that use the 'eSearch' working title. Future open source versions will use the TARILIO brand, the commercially licensed version will continue to be named TARILIO PRO.
 
@@ -29,7 +29,7 @@ NOTE: eSearch Pro and Portable versions 1.1.9288 (6 June 2025) and earlier rever
 
 TARILIO PRO versions contain additional closed-source code and are for commercial use. They require a serial number or will revert to a TARILIO Lite version after 30-days, they also revert after 1 year unless the license/serial is renewed. You can evaluate using the eSearch/TARILO versions above, and install the TARILIO PRO version later, it will recognise your configurations, saved settings, indexes, etc.
 
-[TARILIO Pro](https://dtsearch.co.uk/news/product/tarilio-pro/) 1.1.9439 (Released 04 Nov 2025) 
+[TARILIO Pro]() 1.1.9452 (Released 17 Nov 2025) 
 
 ## Translation
 If you want to translate the user interface, use Language File Editor (LFE)
