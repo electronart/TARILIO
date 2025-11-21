@@ -104,7 +104,15 @@ namespace PortableBuilder
             {
                 Directory.CreateDirectory(TargetDir);
             }
-            string targetZip = Path.Combine(TargetDir, $"{configuration} {version}.zip");
+
+            #region brand workaround
+            // TODO Currently our build configurations don't match our product brand names..
+            string zipName = configuration;
+            configuration.Replace("eSearch PORTABLE", "TARILIO PORTABLE");
+
+            #endregion
+
+            string targetZip = Path.Combine(TargetDir, $"{configuration}-{version.Replace(".","-").Replace("(","").Replace(")","").Replace(" ","-")}.zip");
             ZipFile.CreateFromDirectory(SourceDir, targetZip);
             Console.WriteLine("Zip saved to " + targetZip);
             RevealInFolderCrossPlatform(targetZip);
