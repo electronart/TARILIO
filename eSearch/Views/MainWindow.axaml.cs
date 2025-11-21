@@ -2092,10 +2092,15 @@ namespace eSearch.Views
                             Model = Program.ProgramConfig.GetSelectedConfiguration()?.GetDisplayedModelName() ?? string.Empty
                         };
                         var userMessageVM = new LLMMessageViewModel(userMessage);
-                        mwvm.CurrentLLMConversation.Messages.Add(new LLMMessageViewModel(userMessage));
+                        mwvm.CurrentLLMConversation.Messages.Add(userMessageVM);
                         if (mwvm.Session.Query.AttachedFiles.Count > 0)
                         {
-                            await userMessageVM.ParseAndApplyAttachments(mwvm.Session.Query.AttachedFiles);
+                            
+                            foreach(var attachmentNfo in mwvm.Session.Query.AttachedFiles)
+                            {
+                                userMessageVM.Attachments.Add(new LLMMessageAttachmentViewModel(attachmentNfo.FullName));
+                            }
+                            mwvm.Session.Query.AttachedFiles.Clear();
                         }
                         ContinueConversation();
                         mwvm.Session.Query.Query = string.Empty; // Clear the query on submission.
@@ -2111,10 +2116,10 @@ namespace eSearch.Views
         {
             if (DataContext is MainWindowViewModel mwvm && mwvm.SelectedSearchSource?.Source is AISearchConfiguration aiSearchConfiguration)
             {
-                var conversation = mwvm.CurrentLLMConversation?.ExtractConversation() ?? new Models.AI.Conversation();
+                var conversation = mwvm.CurrentLLMConversation ?? new LLMConversationViewModel(new Conversation());
                 CancellationTokenSource cancellationSource = new CancellationTokenSource();
                 CancellationToken cancellationToken = cancellationSource.Token;
-                var stream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfiguration, conversation, null, cancellationToken);
+                var stream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfiguration, conversation, cancellationToken);
                 var responseMsg = new LLMMessageViewModel("assistant", stream, cancellationSource);
                 mwvm.CurrentLLMConversation?.Messages.Add(responseMsg);
             }

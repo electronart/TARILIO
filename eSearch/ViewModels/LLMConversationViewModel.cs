@@ -33,19 +33,14 @@ namespace eSearch.ViewModels
                 var message = messageVM.GetFinalMessage();
                 if (message != null)
                 {
-                    if (messageVM.CachedParsedAttachments.Count > 0)
+                    if (messageVM.Attachments.Count > 0)
                     {
-                        foreach (var attachment in messageVM.CachedParsedAttachments)
+                        message.AttachmentPaths = new List<string>();
+                        foreach(var attachmentVM in messageVM.Attachments)
                         {
-                            string msgContent = $"The user has attached a file named {attachment.Filename}.";
-                            msgContent += "\nParsed Content:\n```txt\n";
-                            msgContent += attachment.ParsedText;
-                            msgContent += "\n```";
-                            var attachmentMsg = new Message { Content = msgContent, Model = message.Model, Role = "system" };
-                            extractedConversation.Messages.Add(attachmentMsg);
+                            message.AttachmentPaths.Add(attachmentVM.FilePath);
                         }
                     }
-
                     extractedConversation.Messages.Add(message);
                 }
             }

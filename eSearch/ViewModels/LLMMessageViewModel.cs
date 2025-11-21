@@ -83,32 +83,24 @@ namespace eSearch.ViewModels
         private CancellationTokenSource? _cancellationSource = null;
         private DateTime? _startedMessageStream;
 
-        public async Task ParseAndApplyAttachments(IEnumerable<FileInfo> attachments)
+        public ObservableCollection<LLMMessageAttachmentViewModel> Attachments
         {
-            await Task.Run(() =>
-            {
-                foreach (var attachment in attachments)
+            get {
+                if (ExistingMessage?.AttachmentPaths != null 
+                    && ExistingMessage.AttachmentPaths.Count > 0
+                    && _attachments.Count == 0)
                 {
-                    FileSystemDocument fsd = new FileSystemDocument();
-                    fsd.SetDocument(attachment.FullName);
-                    var attachmentFileName = Path.GetFileName(attachment.FullName);
-                    try
+                    foreach(var attachmentPath in ExistingMessage?.AttachmentPaths)
                     {
-                        var parseResult = fsd.GetParseResult();
-
-                        var attachmentTextContent = parseResult.TextContent;
-
-                        CachedParsedAttachments.Add(new LLMMessageAttachmentViewModel { Filename = attachmentFileName, ParsedText = attachmentTextContent });
-                    }
-                    catch (Exception ex)
-                    {
-                        CachedParsedAttachments.Add(new LLMMessageAttachmentViewModel { Filename = attachmentFileName, ParsedText = $"An error occurred parsing the users file: {ex.Message}" });
+                        _attachments.Add(new LLMMessageAttachmentViewModel(attachmentPath));
                     }
                 }
-            });
+                return _attachments;
+            }
+            set => this.RaiseAndSetIfChanged(ref _attachments, value);
         }
 
-        public ObservableCollection<LLMMessageAttachmentViewModel> CachedParsedAttachments = new ObservableCollection<LLMMessageAttachmentViewModel>();
+        private ObservableCollection<LLMMessageAttachmentViewModel> _attachments = new ObservableCollection<LLMMessageAttachmentViewModel>();
 
         /// <summary>
         /// Populated only when this message is a streaming API call to an LLM.

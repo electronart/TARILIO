@@ -22,6 +22,20 @@
 		Padding="15"
 		Margin="5">
 		<StackPanel>
+			<ScrollViewer>
+				<ItemsRepeater ItemsSource="{Binding Attachments}" IsVisible="{Binding !!Attachments}">
+					<ItemsRepeater.ItemTemplate>
+						<DataTemplate>
+							<Border Background="{DynamicResource SystemChromeMediumColor}" CornerRadius="10" Padding="10" Margin="10">
+								<StackPanel Orientation="Horizontal" Spacing="5">
+									<Image Source="{Binding I[icons8-attach-32.png]}" Width="16" Height="16"/>
+									<Label Content="{Binding Filename}"/>
+								</StackPanel>
+							</Border>
+						</DataTemplate>
+					</ItemsRepeater.ItemTemplate>
+				</ItemsRepeater>
+			</ScrollViewer>
 			<DockPanel>
 				<StackPanel 
 					DockPanel.Dock="Right"
