@@ -154,6 +154,7 @@
 				<Template>
 						<StackPanel Orientation="Horizontal" Spacing="5">
 							<Button
+								IsVisible="{Binding $parent[Window].DataContext.Session.Query.UseAISearch}"
 							    Command="{Binding $parent[customCtrl:ClearableTextBox].AddAttachment}" 
 								Background="Transparent"
 								>
