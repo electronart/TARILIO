@@ -19,7 +19,7 @@ To report an issue or contribute, see [CONTRIBUTING.md](https://github.com/elect
 ## Builds
 If you only want to install and run the latest public releases, we will continue to post them here:
 
-[TARILIO](https://dtsearch.co.uk/news/product/tarilio/)  1.1.9452 (Released 17 Nov 2025)
+[TARILIO](https://tarilio.com/wp-content/uploads/2025/11/TARILIO-RELEASE-1-1-9452-28652.zip)  1.1.9452 (Released 17 Nov 2025)
 
 [TARILIO Portable](https://dtsearch.co.uk/news/product/tarilio-portable/) 1.1.9452 (Released 17 Nov 2025)
 
