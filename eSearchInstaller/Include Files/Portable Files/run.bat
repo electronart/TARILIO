@@ -1,9 +1,9 @@
 @echo off
 REM This will ensure old data is used if user has renamed ProgramData to ProgramDataOLD
 
-set "program_data=%eSearchPortable\\ProgramData"
-set "program_data_old=%eSearchPortable\\ProgramDataOLD"
-set "program_data_new=%eSearchPortable\\ProgramDataNEW"
+set "program_data=%TARILIO-Portable\\ProgramData"
+set "program_data_old=%TARILIO-Portable\\ProgramDataOLD"
+set "program_data_new=%TARILIO-Portable\\ProgramDataNEW"
 
 if exist "%program_data_old%" (
     if exist "%program_data%" (
@@ -16,4 +16,4 @@ if exist "%program_data_old%" (
     echo %program_data_old% does not exist
 )
 
-start "" /d "eSearchPortable" "eSearch.exe"
+start "" /d "TARILIO-Portable" "eSearch.exe"
