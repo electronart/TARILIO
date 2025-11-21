@@ -21,7 +21,7 @@ If you only want to install and run the latest public releases, we will continue
 
 [TARILIO](https://tarilio.com/wp-content/uploads/2025/11/TARILIO-RELEASE-1-1-9452-28652.zip)  1.1.9452 (Released 17 Nov 2025)
 
-[TARILIO Portable](https://dtsearch.co.uk/news/product/tarilio-portable/) 1.1.9452 (Released 17 Nov 2025)
+[TARILIO Portable](https://tarilio.com/wp-content/uploads/2025/11/TARILIO-PORTABLE-1-1-9452-29775.zip) 1.1.9452 (Released 17 Nov 2025)
 
 NOTE: eSearch Pro and Portable version 1.1.9439 (04 November 2025) will be the last builds that use the 'eSearch' working title. Future open source versions will use the TARILIO brand, the commercially licensed version will continue to be named TARILIO PRO.
 
