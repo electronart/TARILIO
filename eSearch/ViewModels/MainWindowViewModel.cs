@@ -603,6 +603,10 @@ namespace eSearch.ViewModels
                 Program.ProgramConfig.ViewerConfig.ReportViewContextAmount  = newSettings.ReportViewContextAmount;
                 Program.ProgramConfig.ViewerConfig.ReportViewContextTypeOption = newSettings.OptionReportViewContextType;
                 Program.SaveProgramConfig();
+                // Cause the result to be refreshed with the new viewer settings.
+                var priorResult = SelectedResult;
+                SelectedResult = null;
+                SelectedResult = priorResult;
             }
             return true;
         }
