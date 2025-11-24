@@ -31,6 +31,13 @@ TARILIO PRO versions contain additional closed-source code and are for commercia
 
 [TARILIO Pro](https://tarilio.com/) 1.1.9452 (Released 17 Nov 2025) 
 
+## Plugins
+The full-text search functionality can be extended to support other data online (e.g. Box, SQL) or in the filesystem using plugins.
+
+You can create your own plugin - instructions are here: [https://github.com/electronart/S3-Sample-Plugin/wiki/TARILIO-Plugins](https://github.com/electronart/S3-Sample-Plugin/wiki/TARILIO-Plugins)
+
+All contributions welcome!
+
 ## Translation
 If you want to translate the user interface, use Language File Editor (LFE)
 
