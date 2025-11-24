@@ -180,6 +180,11 @@ namespace eSearch.Models.Configuration
         /// <returns></returns>
         public bool IsProgramRegistered()
         {
+#if STANDALONE
+            bool standalone = true;
+#else
+            bool standalone = false;
+#endif
 #if LITE
             return false;
 #endif
@@ -192,7 +197,7 @@ namespace eSearch.Models.Configuration
                 }
                 return false;
             }
-            var serialValidity = TARILIO.ProductSerials.isValidSerial(Serial, out string year);
+            var serialValidity = TARILIO.ProductSerials.isValidSerial(Serial, out string year, standalone);
             if (serialValidity == TARILIO.ProductSerials.SerialValidationResult.Valid
              || serialValidity == TARILIO.ProductSerials.SerialValidationResult.SearchOnly   
                 )
@@ -214,11 +219,16 @@ namespace eSearch.Models.Configuration
 
         public string GetProductTagText()
         {
-            #if TARILIO
-                string productVersion = "TARILIO";
+#if STANDALONE
+            bool standalone = true;
+#else
+            bool standalone = false;
+#endif
+#if TARILIO
+            string productVersion = "TARILIO";
                 if (Program.ProgramConfig.IsProgramRegistered())
                 {
-                    bool search_only = (TARILIO.ProductSerials.isValidSerial(Program.ProgramConfig.Serial, out var ignored) == TARILIO.ProductSerials.SerialValidationResult.SearchOnly);
+                    bool search_only = (TARILIO.ProductSerials.isValidSerial(Program.ProgramConfig.Serial, out var ignored, standalone) == TARILIO.ProductSerials.SerialValidationResult.SearchOnly);
                     #if STANDALONE
                         if (search_only) 
                         { 
