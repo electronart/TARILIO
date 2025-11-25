@@ -38,6 +38,7 @@ namespace eSearch.Models.Documents
         // Think maybe making the extensions static would be better and then only construct the Parser that we need per document rather than all of them.
         private readonly List<IParser> Parsers = new List<IParser>
         {
+            new MsgReaderParser(),
             new CSVParser_Sep(),
             new EconvoParser(),
             //new CSVParser(),

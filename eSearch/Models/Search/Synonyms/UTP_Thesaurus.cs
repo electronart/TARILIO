@@ -8,32 +8,6 @@ using System.Xml;
 
 namespace eSearch.Models.Search.Synonyms
 {
-    /*
-        Example of what UTP Synonyms file looks like:-
-		The 'name' field is ignored and is purely for UI, does not affect search in any way.
-		The 'synonyms' field shows list of synonyms.
-
-		<?xml version="1.0" encoding="UTF-8" ?>
-		<dtSearchUserThesaurus>
-			<Item>
-				<Name>Personal computer</Name>
-				<Synonyms>"Personal computer" PC laptop</Synonyms>
-			</Item>
-			<Item>
-				<Name>how much</Name>
-				<Synonyms>"how much is" "what's the price of" "what's the cost of" "how much does"</Synonyms>
-			</Item>
-			<Item>
-				<Name>Guilder</Name>
-				<Synonyms>ƒ Guilder Lira</Synonyms>
-			</Item>
-			<Item>
-				<Name>sing expand</Name>
-				<Synonyms>sing sang sung</Synonyms>
-			</Item>
-		</dtSearchUserThesaurus>
-	*/
-
 
 	/// <summary>
 	/// Represents the contents of a single User Thesaurus XML File.

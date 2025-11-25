@@ -324,8 +324,14 @@ namespace eSearch.Views
                         return;
                 }
             }
-
-            string extension = Path.GetExtension(result.FileName).ToLower().Substring(1);
+            string extension;
+            try
+            {
+                extension = Path.GetExtension(result.FileName).ToLower().Substring(1); // Can throw on no extension..
+            } catch
+            {
+                extension = "unknown";
+            }
 
 
             if (extension == "pdf" && File.Exists(result.FilePath))

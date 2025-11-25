@@ -36,7 +36,7 @@ namespace eSearch.Models.Search.Stemming
         }
 
         // Based on
-        // https://support.dtsearch.com/webhelp/dtsearch/Stemming_rules_format.htm
+        // https://searchcloudone.com/stemming/
         // 3+ies -> Y
         // 4+ing ->
         // etc.

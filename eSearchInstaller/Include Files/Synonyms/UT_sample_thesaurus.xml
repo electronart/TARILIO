@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<dtSearchUserThesaurus>
+<UserThesaurus>
   <Item>
     <Name>brandy</Name>
     <Synonyms>brandy cognac</Synonyms>
@@ -24,4 +24,4 @@
     <Name>whisky</Name>
     <Synonyms>whisky bourbon scotch</Synonyms>
   </Item>
-</dtSearchUserThesaurus>
+</UserThesaurus>

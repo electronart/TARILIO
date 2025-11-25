@@ -278,7 +278,17 @@ namespace eSearch.Models.Indexing
 
                             _maxProgress = totalDiscoveredDocs;
                             _progress = RetrievedDocuments;
-                            string strTimeRemaining = ProgressCalculator.GetHumanFriendlyTimeRemainingLocalizablePrecise(startTime, Source.GetProgress());
+                            string strTimeRemaining = "";
+                            try
+                            {
+                                strTimeRemaining = ProgressCalculator.GetHumanFriendlyTimeRemainingLocalizablePrecise(startTime, Source.GetProgress());
+                            } catch (Exception ex)
+                            {
+#if DEBUG
+                                Debug.WriteLine($"Exception calculating time remaining: {ex.Message}");
+#endif
+                                // Non fatal.
+                            }
 
                             readyDocQueue.TryPeek(out var document);
 

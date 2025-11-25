@@ -68,6 +68,11 @@ namespace eSearch.ViewModels
         {
             get
             {
+#if STANDALONE
+                bool standalone = true;
+#else
+            bool standalone = false;
+#endif
 #if LITE
                    return "";
 #endif
@@ -81,7 +86,7 @@ namespace eSearch.ViewModels
                     return "";
                 }
 
-                var status = TARILIO.ProductSerials.isValidSerial(Program.ProgramConfig.Serial, out string year);
+                var status = TARILIO.ProductSerials.isValidSerial(Program.ProgramConfig.Serial, out string year, standalone);
 
                 if (status == TARILIO.ProductSerials.SerialValidationResult.SearchOnly)
                 {
