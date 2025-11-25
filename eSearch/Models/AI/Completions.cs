@@ -1,4 +1,5 @@
-﻿using eSearch.Interop.AI;
+﻿using DocumentFormat.OpenXml.Linq;
+using eSearch.Interop.AI;
 using eSearch.Models.Configuration;
 using eSearch.Models.Documents;
 using eSearch.Models.Documents.Parse;
@@ -430,37 +431,73 @@ namespace eSearch.Models.AI
             var chatHistory = new MSK.ChatCompletion.ChatHistory();
 
 
-
+            StringBuilder messageBuilder = new StringBuilder();
 
             foreach (var message in conversationVM.Messages)
             {
                 #region Handle attachments, if any
+
                 if (message.Attachments.Count > 0)
                 {
                     List<MSK.TextContent> txtAttachments = new List<TextContent>();
                     foreach (var attachment in message.Attachments)
                     {
-                        var txtContent = await attachment.ParseOrGetCachedParsedText() ;
+                        var parseResult = await attachment.ParseOrGetCachedParseResult();
                         var fileName = attachment.Filename;
-                        Dictionary<string, object?> metaData = new Dictionary<string, object?>
+                        messageBuilder.AppendLine("<<ATTACHMENT>>");
+                        if (parseResult != null)
                         {
-                            { "Filename", Path.GetFileName(fileName) }
-                        };
-                        TextContent content = new TextContent { Text = txtContent, Metadata = metaData };
-                        txtAttachments.Add(content);
-                    }
-
-                    var attachmentCollection = new ChatMessageContentItemCollection();
-                    foreach (var attachment in txtAttachments)
-                    {
-                        attachmentCollection.Add(attachment);
-                    }
-
-                    foreach (var attachment in txtAttachments)
-                    {
-                        chatHistory.Add(new ChatMessageContent(MSK.ChatCompletion.AuthorRole.User, attachmentCollection));
+                            messageBuilder.AppendLine("<<METADATA>>");
+                            foreach (var metaData in parseResult.Metadata)
+                            {
+                                if (!metaData.Key.StartsWith("_"))
+                                {
+                                    messageBuilder.AppendLine($"{metaData.Key} : {metaData.Value}");
+                                }
+                            }
+                            messageBuilder.AppendLine("<</METADATA>>");
+                            messageBuilder.AppendLine("<<CONTENT>>");
+                            string content = parseResult.TextContent;
+                            messageBuilder.AppendLine(parseResult.TextContent);
+                            messageBuilder.AppendLine("<</CONTENT>>");
+                        }
+                        else
+                        {
+                            messageBuilder.AppendLine("Error: Unable to Parse this file.");
+                        }
+                        messageBuilder.AppendLine("<</ATTACHMENT>>");
                     }
                 }
+
+                messageBuilder.AppendLine(message.GetFinalMessage()?.Content ?? "??");
+
+
+                //if (message.Attachments.Count > 0)
+                //{
+                //    List<MSK.TextContent> txtAttachments = new List<TextContent>();
+                //    foreach (var attachment in message.Attachments)
+                //    {
+                //        var txtContent = await attachment.ParseOrGetCachedParsedText() ;
+                //        var fileName = attachment.Filename;
+                //        Dictionary<string, object?> metaData = new Dictionary<string, object?>
+                //        {
+                //            { "Filename", Path.GetFileName(fileName) }
+                //        };
+                //        TextContent content = new TextContent { Text = txtContent, Metadata = metaData };
+                //        txtAttachments.Add(content);
+                //    }
+
+                //    var attachmentCollection = new ChatMessageContentItemCollection();
+                //    foreach (var attachment in txtAttachments)
+                //    {
+                //        attachmentCollection.Add(attachment);
+                //    }
+
+                //    foreach (var attachment in txtAttachments)
+                //    {
+                //        chatHistory.Add(new ChatMessageContent(MSK.ChatCompletion.AuthorRole.User, attachmentCollection));
+                //    }
+                //}
                 #endregion
                 chatHistory.AddMessage(
                     message.Role switch
@@ -470,7 +507,7 @@ namespace eSearch.Models.AI
                         "assistant" => MSK.ChatCompletion.AuthorRole.Assistant,
                         _ => throw new ArgumentException($"Invalid role: {message.Role}")
                     },
-                    message.GetFinalMessage()?.Content ?? "??"
+                    messageBuilder.ToString()
                 );
                 
             }
@@ -573,16 +610,29 @@ namespace eSearch.Models.AI
                     List<MSK.TextContent> txtAttachments = new List<TextContent>();
                     foreach (var attachment in msg.Attachments)
                     {
-                        var txtContent = await attachment.ParseOrGetCachedParsedText();
+                        var parseResult = await attachment.ParseOrGetCachedParseResult();
                         var fileName = attachment.Filename;
-                        messageBuilder.AppendLine("<ATTACHMENT>");
-                        messageBuilder.AppendLine("Filename:");
-                        messageBuilder.AppendLine(fileName);
-                        messageBuilder.AppendLine("Contents:");
-                        messageBuilder.AppendLine("```");
-                        messageBuilder.AppendLine(txtContent);
-                        messageBuilder.AppendLine("```");
-                        messageBuilder.AppendLine("</ATTACHMENT>");
+                        messageBuilder.AppendLine("<<ATTACHMENT>>");
+                        if (parseResult != null)
+                        {
+                            messageBuilder.AppendLine("<<METADATA>>");
+                            foreach (var metaData in parseResult.Metadata)
+                            {
+                                if (!metaData.Key.StartsWith("_"))
+                                {
+                                    messageBuilder.AppendLine($"{metaData.Key} : {metaData.Value}");
+                                }
+                            }
+                            messageBuilder.AppendLine("<</METADATA>>");
+                            messageBuilder.AppendLine("<<CONTENT>>");
+                            string content = parseResult.TextContent;
+                            messageBuilder.AppendLine(parseResult.TextContent);
+                            messageBuilder.AppendLine("<</CONTENT>>");
+                        } else
+                        {
+                            messageBuilder.AppendLine("Error: Unable to Parse this file.");
+                        }
+                        messageBuilder.AppendLine("<</ATTACHMENT>>");
                     }
                 }
                 #endregion

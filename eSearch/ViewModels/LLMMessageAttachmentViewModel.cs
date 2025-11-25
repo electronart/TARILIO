@@ -1,4 +1,5 @@
 ﻿using eSearch.Models.Documents;
+using eSearch.Models.Documents.Parse;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -40,23 +41,18 @@ namespace eSearch.ViewModels
         /// Blocking method. Attempts to parse the document and retrieve its parsed contents.
         /// </summary>
         /// <returns></returns>
-        public async Task<string> ParseOrGetCachedParsedText()
+        public async Task<ParseResult> ParseOrGetCachedParseResult()
         {
-            if (_parsedAttachmentText == null)
+            if (_parsedAttachment == null)
             {
                 // Not yet parsed.
                 FileSystemDocument fsd = new FileSystemDocument();
                 fsd.SetDocument(FilePath);
-                await fsd.PreloadDocument();
-                var parseResult = fsd.GetParseResult();
-                StringBuilder sb = new StringBuilder();
-                string textContent = fsd.Text ?? "TARILIO Could not extract text contents from this file.";
-                sb.AppendLine(textContent);
-                _parsedAttachmentText = sb.ToString();
+                _parsedAttachment = fsd.GetParseResult();
             }
-            return _parsedAttachmentText;
+            return _parsedAttachment;
         }
 
-        private string? _parsedAttachmentText = null;
+        private ParseResult? _parsedAttachment = null;
     }
 }
