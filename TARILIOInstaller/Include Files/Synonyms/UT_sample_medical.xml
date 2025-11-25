@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<dtSearchUserThesaurus>
+<UserThesaurus>
   <Item>
     <Name>toxemia</Name>
     <Synonyms>toxemia "blood poisoning"</Synonyms>
@@ -16,4 +16,4 @@
     <Name>methamphetamine</Name>
     <Synonyms>methamphetamine speed d-desoxyephedrine Methedrine Desoxyn "crystal meth" Meth</Synonyms>
   </Item>
-</dtSearchUserThesaurus>
+</UserThesaurus>
