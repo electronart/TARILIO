@@ -56,42 +56,53 @@ namespace eSearch.Models.Documents.Parse
             { 
                extension = extension.Substring(1); // Remove the period.
             }
-            var tFile = TagLib.File.Create(filePath);
-
-            var title = Path.GetFileNameWithoutExtension(filePath);
-
-            List<IMetaData> ParsedMetadata = new List<IMetaData>();
-
-            var metadataDict = ParseToKeyValuesRecursive("", tFile.Tag);
-            foreach(var item in metadataDict)
+            try
             {
-                string key = item.Key;
-                string value = item.Value;
-                if (key == "Title") // Do not add title to metadata list. Instead just populate the title field.
+                var tFile = TagLib.File.Create(filePath);
+
+                var title = Path.GetFileNameWithoutExtension(filePath);
+
+                List<IMetaData> ParsedMetadata = new List<IMetaData>();
+
+                var metadataDict = ParseToKeyValuesRecursive("", tFile.Tag);
+                foreach (var item in metadataDict)
                 {
-                    if (value.ToLower() != "untitled")
+                    string key = item.Key;
+                    string value = item.Value;
+                    if (key == "Title") // Do not add title to metadata list. Instead just populate the title field.
                     {
-                        title = value;
+                        if (value.ToLower() != "untitled")
+                        {
+                            title = value;
+                        }
                     }
-                } else
-                {
-                    ParsedMetadata.Add(new Metadata { Key = key, Value = value });
+                    else
+                    {
+                        ParsedMetadata.Add(new Metadata { Key = key, Value = value });
+                    }
                 }
-            }
 
-            if (ImageDimensionsUtils.TryGetImageDimensions(filePath, extension, out var dimensions))
-            {
-                ParsedMetadata.Add(new Metadata { Key = "Width", Value = dimensions.Item1 + "" });
-                ParsedMetadata.Add(new Metadata { Key = "Height", Value = dimensions.Item2 + "" });
-            }
+                if (ImageDimensionsUtils.TryGetImageDimensions(filePath, extension, out var dimensions))
+                {
+                    ParsedMetadata.Add(new Metadata { Key = "Width", Value = dimensions.Item1 + "" });
+                    ParsedMetadata.Add(new Metadata { Key = "Height", Value = dimensions.Item2 + "" });
+                }
 
-            parseResult = new ParseResult
+                parseResult = new ParseResult
+                {
+                    Title = title,
+                    Metadata = ParsedMetadata,
+                    ParserName = "Media Parser (TagLibSharp)",
+                    TextContent = ""
+                };
+            } catch (Exception ex)
             {
-                Title = title,
-                Metadata = ParsedMetadata,
-                ParserName = "Media Parser (TagLibSharp)",
-                TextContent = ""
-            };
+#if DEBUG
+                Debug.WriteLine($"Error Parsing {filePath}: {ex.Message}");
+                Debug.WriteLine(ex.ToString());
+#endif
+                throw;
+            }
         }
 
         /// <summary>
