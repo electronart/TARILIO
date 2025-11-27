@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
-<dtSearchUserThesaurus>
+<UserThesaurus>
 	<Item>
 		<Name>Ab initio</Name>
 		<Synonyms>"Ab initio"  "from the beginning" </Synonyms>
@@ -12,4 +12,4 @@
 		<Name>Mala fides</Name>
 		<Synonyms>"Mala fides" "bad faith"</Synonyms>
 	</Item>
-</dtSearchUserThesaurus>
+</UserThesaurus>

@@ -1,8 +1,11 @@
 ﻿using DocumentFormat.OpenXml.Presentation;
 using eSearch.Models.AI;
+using eSearch.Models.Documents;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -79,6 +82,25 @@ namespace eSearch.ViewModels
 
         private CancellationTokenSource? _cancellationSource = null;
         private DateTime? _startedMessageStream;
+
+        public ObservableCollection<LLMMessageAttachmentViewModel> Attachments
+        {
+            get {
+                if (ExistingMessage?.AttachmentPaths != null 
+                    && ExistingMessage.AttachmentPaths.Count > 0
+                    && _attachments.Count == 0)
+                {
+                    foreach(var attachmentPath in ExistingMessage?.AttachmentPaths)
+                    {
+                        _attachments.Add(new LLMMessageAttachmentViewModel(attachmentPath));
+                    }
+                }
+                return _attachments;
+            }
+            set => this.RaiseAndSetIfChanged(ref _attachments, value);
+        }
+
+        private ObservableCollection<LLMMessageAttachmentViewModel> _attachments = new ObservableCollection<LLMMessageAttachmentViewModel>();
 
         /// <summary>
         /// Populated only when this message is a streaming API call to an LLM.

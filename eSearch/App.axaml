@@ -134,7 +134,7 @@
 			
 			<Setter Property="InnerRightContent">
 				<Template>
-					<Button Content="Clear" 
+					<Button
 							Focusable="False"
 							Command="{Binding $parent[customCtrl:ClearableTextBox].Cleary}" 
 							Background="Transparent"
@@ -149,20 +149,26 @@
 			</Setter>
 		</Style>
 		<Style Selector="TextBox.ClearableVoice">
-			<!--
+
 			<Setter Property="InnerLeftContent">
 				<Template>
-						<Border Classes="Shortcut" Margin="5"
-								IsVisible="{Binding !$parent[customCtrl:ClearableTextBox].IsFocused}">
-							<TextBlock>/</TextBlock>
-						</Border>
+						<StackPanel Orientation="Horizontal" Spacing="5">
+							<Button
+								IsVisible="{Binding $parent[Window].DataContext.Session.Query.UseAISearch}"
+							    Command="{Binding $parent[customCtrl:ClearableTextBox].AddAttachment}" 
+								Background="Transparent"
+								>
+								<Image Source="{Binding I[icons8-attach-32.png]}" 
+									   Width="16" Height="16"/>
+							</Button>
+						</StackPanel>
 				</Template>
 			</Setter>
-			-->
+
 			<Setter Property="InnerRightContent">
 				<Template>
 					<StackPanel Orientation="Horizontal" Spacing="5">
-						<Button Content="Clear"
+						<Button
 								Command="{Binding $parent[customCtrl:ClearableTextBox].Cleary}"
 								Background="Transparent"
 								IsVisible="{Binding $parent[customCtrl:ClearableTextBox].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
@@ -173,7 +179,7 @@
 								Height="16"
 							/>
 						</Button>
-						<ToggleButton Content="Voice"
+						<ToggleButton
 									  Background="Transparent"
 									  IsChecked="{Binding $parent[Window].DataContext.IsVoiceInputActive}"
 									  TabIndex="2"

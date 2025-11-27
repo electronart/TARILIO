@@ -75,27 +75,45 @@ namespace eSearch.Models.Documents.Parse
             return string.Empty;
         }
 
+        private static ushort ReadBigEndianUInt16(BinaryReader br)
+        {
+            var bytes = br.ReadBytes(2);
+            if (bytes.Length < 2) throw new EndOfStreamException();
+            return (ushort)((bytes[0] << 8) | bytes[1]);
+        }
+
         private static bool GetJpegDimensions(BinaryReader br, out uint width, out uint height)
         {
             width = height = 0;
             br.BaseStream.Position = 0;
 
-            if (br.ReadUInt16() != 0xD8FF) return false; // Big-endian for 0xFFD8 SOI marker
+            // SOI marker
+            if (ReadBigEndianUInt16(br) != 0xFFD8)
+                return false;
 
             while (true)
             {
-                ushort marker = br.ReadUInt16();
-                if (marker == 0xD9FF) return false; // EOI, no dimensions found
+                ushort marker = ReadBigEndianUInt16(br);
 
-                ushort len = br.ReadUInt16(); // Big-endian
-                if (marker >= 0xC0FF && marker <= 0xCFFF && marker != 0xC4FF && marker != 0xC8FF && marker != 0xCCFF) // SOF markers
+                if (marker == 0xFFD9)   // EOI before finding a SOF
+                    return false;
+
+                ushort len = ReadBigEndianUInt16(br);
+                if (len < 2)
+                    return false;       // invalid segment; protects against infinite loops
+
+                // SOF0–SOF15 but excluding DHT, JPG, DAC
+                if (marker >= 0xFFC0 && marker <= 0xFFCF &&
+                    marker != 0xFFC4 && marker != 0xFFC8 && marker != 0xFFCC)
                 {
-                    br.ReadByte(); // Precision
-                    height = SwapEndian(br.ReadUInt16());
-                    width = SwapEndian(br.ReadUInt16());
+                    br.ReadByte(); // precision
+                    height = ReadBigEndianUInt16(br);
+                    width = ReadBigEndianUInt16(br);
                     return true;
                 }
-                br.BaseStream.Position += len - 2; // Skip segment
+
+                // Skip remainder of the segment
+                br.BaseStream.Seek(len - 2, SeekOrigin.Current);
             }
         }
 

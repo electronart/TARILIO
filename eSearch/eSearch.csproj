@@ -208,7 +208,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\eSearchInterop\eSearch.Interop.csproj" />
 
-		<Reference Condition="$(DefineConstants.Contains('TARILIO'))" Include="TARILIO">
+		<Reference Condition="$(Configuration.Contains('TARILIO'))" Include="TARILIO">
 			<!-- TARILIO_SOLUTION_PATH is an environment variable on the system. -->
 			<HintPath>$(TARILIO_SOLUTION_PATH)\TARILIO\bin\TARILIO RELEASE\net8.0\TARILIO.dll</HintPath>
 		</Reference>

@@ -57,6 +57,9 @@ namespace eSearch.Models.Indexing
         private long _documentsPreloaded     = 0;
         private long _documentsFlushed       = 0;
 
+        // Shared across tasks..
+        private string? _recentDocumentName = "";
+
         public int GetProgress()
         {
             return _progress;
@@ -170,6 +173,7 @@ namespace eSearch.Models.Indexing
                  * It is rethrown intentionally (view catch logic)
                  */
                 Index.OpenWrite(!append);
+                _progressStatus = String.Format(S.Get("Indexing {0}"), ""); // The {0} is just to avoid creating another translation string here
 
                 try
                 {
@@ -249,6 +253,7 @@ namespace eSearch.Models.Indexing
                                             readyDocQueue.Enqueue(docToParse); // It's ready to be be parsed now.
                                             Interlocked.Add(ref _currentBatchSize, docToParse.FileSize); // Thread safe addition
                                             Interlocked.Increment(ref _documentsPreloaded);
+                                            Interlocked.Exchange(ref _recentDocumentName, docToParse.FileName);
                                         }
                                         else
                                         {
@@ -271,31 +276,36 @@ namespace eSearch.Models.Indexing
                     #region An additional worker in charge of updating progress display
                     workers.Add(Task.Run( async () =>
                     {
-                        TimeSpan updateFrequency = TimeSpan.FromMilliseconds(250);
+                        TimeSpan updateFrequency = TimeSpan.FromMilliseconds(100);
                         while (!docProcessingQueue.IsCompleted)
                         {
                             int totalDiscoveredDocs = Source.GetTotalDiscoveredDocuments();
 
                             _maxProgress = totalDiscoveredDocs;
                             _progress = RetrievedDocuments;
-                            string strTimeRemaining = ProgressCalculator.GetHumanFriendlyTimeRemainingLocalizablePrecise(startTime, Source.GetProgress());
-
-                            readyDocQueue.TryPeek(out var document);
-
-                            if (document?.FileName != null)
+                            string strTimeRemaining = "";
+                            try
                             {
-                                string currentDoc = RetrievedDocuments.ToString("N0");
-                                string totalDocs = totalDiscoveredDocs.ToString("N0");
-
-                                _progressStatus = String.Format(
-                                    S.Get("Indexing {0}"),
-                                    Path.GetFileName(document.FileName)
-                                )
-                                    + "\n" + currentDoc + " / " + totalDocs
-                                    + "\n" + strTimeRemaining;
-
-
+                                strTimeRemaining = ProgressCalculator.GetHumanFriendlyTimeRemainingLocalizablePrecise(startTime, Source.GetProgress());
+                            } catch (Exception ex)
+                            {
+#if DEBUG
+                                Debug.WriteLine($"Exception calculating time remaining: {ex.Message}");
+#endif
+                                // Non fatal.
                             }
+
+
+                            string currentDoc = RetrievedDocuments.ToString("N0");
+                            string totalDocs = totalDiscoveredDocs.ToString("N0");
+
+                            _progressStatus = String.Format(
+                                S.Get("Indexing {0}"),
+                                Path.GetFileName(_recentDocumentName)
+                            )
+                                + "\n" + currentDoc + " / " + totalDocs
+                                + "\n" + strTimeRemaining;
+
                             await Task.Delay(updateFrequency);
                         }
                     }));

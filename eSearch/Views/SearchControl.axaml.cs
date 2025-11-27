@@ -4,6 +4,7 @@ using eSearch.CustomControls;
 using eSearch.ViewModels;
 using org.apache.http.auth;
 using System.Diagnostics;
+using System.IO;
 
 namespace eSearch.Views
 {
@@ -30,6 +31,17 @@ namespace eSearch.Views
             if (e.WidthChanged)
             {
                 ResponsiveLayoutUpdate(e.NewSize.Width);
+            }
+        }
+
+        public void RemoveAttachment(object fileInfo)
+        {
+            if (fileInfo is FileInfo nfo)
+            {
+                if (DataContext is MainWindowViewModel mwvm)
+                {
+                    mwvm.Session.Query.AttachedFiles.Remove(nfo);
+                }
             }
         }
 

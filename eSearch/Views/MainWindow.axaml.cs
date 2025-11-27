@@ -2051,50 +2051,59 @@ namespace eSearch.Views
                         return;
                     }
 
-                    if (mwvm.CurrentLLMConversation == null)
+                    if (mwvm.SelectedSearchSource?.Source is AISearchConfiguration aiSearchConfiguration)
                     {
-                        // Starting New Conversation
-                        try
+                        if (mwvm.CurrentLLMConversation == null)
                         {
-                            aiSearchCancellationTokenSource = new CancellationTokenSource();
-                            if (mwvm.SelectedSearchSource == null) throw new Exception("No Source Selected");
-                            if (mwvm.SelectedSearchSource?.Source is AISearchConfiguration aiSearchConfiguration)
+                            // Starting New Conversation
+                            try
                             {
-                                var conversationStarter = Completions.GetDefaultConversationStarter(aiSearchConfiguration);
-                                mwvm.CurrentLLMConversation = new LLMConversationViewModel(conversationStarter);
-                                browser.RenderLLMConversation(aiSearchConfiguration, conversationStarter);
-                                browser.AddQueryToExistingLLMConversation(query);
-                                
-                                DocumentCopyButton.IsEnabled = true;
-                                mwvm.Session.Query.Query = string.Empty; // Clear the query on submission.
+                                aiSearchCancellationTokenSource = new CancellationTokenSource();
+
+                                    var conversationStarter = Completions.GetDefaultConversationStarter(aiSearchConfiguration);
+                                    mwvm.CurrentLLMConversation = new LLMConversationViewModel(conversationStarter);
+                                    browser.RenderLLMConversation(aiSearchConfiguration, conversationStarter);
+                                    //browser.AddQueryToExistingLLMConversation(query);
+
+                                    DocumentCopyButton.IsEnabled = true;
+                                    mwvm.Session.Query.Query = string.Empty; // Clear the query on submission.
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                browser.RenderBlankPageThemeColored();
+                                mwvm.ShowHitNavigation = false;
+                                return;
+                            }
+                            catch (Exception ex)
+                            {
+                                var html = "<p>" + HttpUtility.HtmlEncode(ex.Message) + "</p>";
+                                browser.RenderHtmlBody(html, false);
+                                mwvm.ShowHitNavigation = false;
                             }
                         }
-                        catch (OperationCanceledException)
-                        {
-                            browser.RenderBlankPageThemeColored();
-                            mwvm.ShowHitNavigation = false;
-                            return;
-                        }
-                        catch (Exception ex)
-                        {
-                            var html = "<p>" + HttpUtility.HtmlEncode(ex.Message) + "</p>";
-                            browser.RenderHtmlBody(html, false);
-                            mwvm.ShowHitNavigation = false;
-                        }
-                    } else
-                    {
+                        //} else
+                        //{
                         // Continuing existing conversation...
-                        if (mwvm.SelectedSearchSource?.Source is AISearchConfiguration aiSearchConfiguration)
+
+                        var userMessage = new Message
                         {
-                            var userMessage = new Message { 
-                                Role = "user", 
-                                Content = mwvm.Session.Query.Query, 
-                                Model = Program.ProgramConfig.GetSelectedConfiguration()?.GetDisplayedModelName() ?? string.Empty 
-                            };
-                            mwvm.CurrentLLMConversation.Messages.Add(new LLMMessageViewModel(userMessage));
-                            ContinueConversation();
-                            mwvm.Session.Query.Query = string.Empty; // Clear the query on submission.
+                            Role = "user",
+                            Content = mwvm.Session.Query.Query,
+                            Model = Program.ProgramConfig.GetSelectedConfiguration()?.GetDisplayedModelName() ?? string.Empty
+                        };
+                        var userMessageVM = new LLMMessageViewModel(userMessage);
+                        mwvm.CurrentLLMConversation.Messages.Add(userMessageVM);
+                        if (mwvm.Session.Query.AttachedFiles.Count > 0)
+                        {
+                            
+                            foreach(var attachmentNfo in mwvm.Session.Query.AttachedFiles)
+                            {
+                                userMessageVM.Attachments.Add(new LLMMessageAttachmentViewModel(attachmentNfo.FullName));
+                            }
+                            mwvm.Session.Query.AttachedFiles.Clear();
                         }
+                        ContinueConversation();
+                        mwvm.Session.Query.Query = string.Empty; // Clear the query on submission.
                     }
                 }
             }
@@ -2107,10 +2116,10 @@ namespace eSearch.Views
         {
             if (DataContext is MainWindowViewModel mwvm && mwvm.SelectedSearchSource?.Source is AISearchConfiguration aiSearchConfiguration)
             {
-                var conversation = mwvm.CurrentLLMConversation?.ExtractConversation() ?? new Models.AI.Conversation();
+                var conversation = mwvm.CurrentLLMConversation ?? new LLMConversationViewModel(new Conversation());
                 CancellationTokenSource cancellationSource = new CancellationTokenSource();
                 CancellationToken cancellationToken = cancellationSource.Token;
-                var stream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfiguration, conversation, null, cancellationToken);
+                var stream = Completions.GetCompletionStreamViaMCPAsync(aiSearchConfiguration, conversation, cancellationToken);
                 var responseMsg = new LLMMessageViewModel("assistant", stream, cancellationSource);
                 mwvm.CurrentLLMConversation?.Messages.Add(responseMsg);
             }

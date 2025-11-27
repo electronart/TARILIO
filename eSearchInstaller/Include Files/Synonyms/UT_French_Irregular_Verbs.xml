@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dtSearchUserThesaurus>
+<UserThesaurus>
   <Item>
     <Name>aller</Name>
     <Synonyms>aller aille ailles vais vas va allons allez vont irai iras ira irons irez iront</Synonyms>
@@ -72,4 +72,4 @@
     <Name>lire</Name>
     <Synonyms>lire lis lu lus</Synonyms>
   </Item>
-</dtSearchUserThesaurus>
+</UserThesaurus>

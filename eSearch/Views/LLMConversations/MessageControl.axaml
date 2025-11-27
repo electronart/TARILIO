@@ -22,6 +22,7 @@
 		Padding="15"
 		Margin="5">
 		<StackPanel>
+			
 			<DockPanel>
 				<StackPanel 
 					DockPanel.Dock="Right"
@@ -108,6 +109,26 @@
 				/>
 
 			</DockPanel>
+			<ScrollViewer>
+				<ItemsRepeater ItemsSource="{Binding Attachments}" IsVisible="{Binding !!Attachments}">
+					<ItemsRepeater.Layout>
+						<StackLayout Spacing="10" Orientation="Horizontal"/>
+					</ItemsRepeater.Layout>
+					<ItemsRepeater.ItemTemplate>
+						<DataTemplate>
+							<Border 
+								Background="{DynamicResource SystemChromeMediumColor}" 
+								ToolTip.Tip="{Binding FilePath}"
+								CornerRadius="20" Padding="10,5,10,5">
+								<StackPanel Orientation="Horizontal" Spacing="5">
+									<Image Source="{Binding I[icons8-attach-32.png]}" Width="16" Height="16"/>
+									<Label Content="{Binding Filename}"/>
+								</StackPanel>
+							</Border>
+						</DataTemplate>
+					</ItemsRepeater.ItemTemplate>
+				</ItemsRepeater>
+			</ScrollViewer>
 			<localView:HtmlDocumentControl 
 				x:Name="MessageCEFViewer"
 				MinHeight="25"/>

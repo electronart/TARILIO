@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<dtSearchUserThesaurus>
+<UserThesaurus>
   <Item>
     <Name>jeans</Name>
     <Synonyms>jeans Levis Wrangler Sherman Lee Diesel Dockers</Synonyms>
@@ -8,4 +8,4 @@
     <Name>Shoes</Name>
     <Synonyms>shoes "Hush Puppies" Nike "Dr. Martens" "Doc Martens" Ugg Scholl Reebok</Synonyms>
   </Item>
-</dtSearchUserThesaurus>
+</UserThesaurus>

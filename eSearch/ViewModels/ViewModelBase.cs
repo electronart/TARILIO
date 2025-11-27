@@ -96,9 +96,14 @@ namespace eSearch.ViewModels
         {
             get
             {
+#if STANDALONE
+                bool standalone = true;
+#else
+            bool standalone = false;
+#endif
 #if TARILIO
                 return Program.WasLaunchedWithSearchOnlyArgument 
-                    || TARILIO.ProductSerials.isValidSerial(Program.ProgramConfig.Serial, out var yearMonth) == TARILIO.ProductSerials.SerialValidationResult.SearchOnly;
+                    || TARILIO.ProductSerials.isValidSerial(Program.ProgramConfig.Serial, out var yearMonth, standalone) == TARILIO.ProductSerials.SerialValidationResult.SearchOnly;
 #else
                 return Program.WasLaunchedWithSearchOnlyArgument;
 #endif

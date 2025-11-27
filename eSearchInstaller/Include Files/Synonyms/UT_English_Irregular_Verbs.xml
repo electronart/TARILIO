@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<dtSearchUserThesaurus>
+<UserThesaurus>
   <Item>
     <Name>abide</Name>
     <Synonyms>abide abode</Synonyms>
@@ -932,4 +932,4 @@
     <Name>write</Name>
     <Synonyms>write wrote written</Synonyms>
   </Item>
-</dtSearchUserThesaurus>
+</UserThesaurus>

@@ -49,7 +49,7 @@ branding = branding.Replace("TARILIO", "TARILIO-PRO");
 branding = branding.Replace("eSearch", "TARILIO");
 #endregion
 
-string msi_file_name = branding.Replace(" ", "-") + "-" + dll_version.Replace(" ", "-").Replace("(", "").Replace(")", "") + ".msi";
+string msi_file_name = branding.Replace(" ", "-") + "-" + dll_version.Replace(" ", "-").Replace("(", "").Replace(")", "").Replace(".","-") + ".msi";
 
 string new_msi_file_path = Path.Combine( Path.GetDirectoryName(msi_file), msi_file_name);
 new_msi_file_path.Replace(" ", "-");

@@ -1,16 +1,20 @@
-﻿using eSearch.Interop.AI;
+﻿using DocumentFormat.OpenXml.Linq;
+using eSearch.Interop.AI;
 using eSearch.Models.Configuration;
 using eSearch.Models.Documents;
 using eSearch.Models.Documents.Parse;
 using eSearch.Models.Logging;
 using eSearch.Utils;
+using eSearch.ViewModels;
 using LLama;
 using LLama.Abstractions;
+using LLama.Batched;
 using LLama.Common;
 using LLama.Native;
 using LLama.Sampling;
 using LLamaSharp.SemanticKernel;
 using LLamaSharp.SemanticKernel.ChatCompletion;
+using Lucene.Net.QueryParsers.Flexible.Standard.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
@@ -319,15 +323,26 @@ namespace eSearch.Models.AI
         public static async IAsyncEnumerable<string> GetCompletionStreamViaMCPAsync(
         AISearchConfiguration aiConfig,
         Conversation conversation,
-        IEnumerable<FileSystemDocument>? attachments,
         CancellationToken cancellationToken = default)
+        {
+            var conversationVM = new LLMConversationViewModel(conversation);
+            await foreach (var token in GetCompletionStreamViaMCPAsync(aiConfig, conversationVM, cancellationToken))
+            {
+                yield return token;
+            }
+        }
+
+        public static async IAsyncEnumerable<string> GetCompletionStreamViaMCPAsync(
+            AISearchConfiguration aiConfig,
+            LLMConversationViewModel conversationVM,
+            CancellationToken cancellationToken = default)
         {
             var generationConfig = (aiConfig.GenerationConfiguration != null) ? aiConfig.GenerationConfiguration : new LLMGenerationConfiguration();
             var inferenceParams = GetInferenceParamsBasedOnConfig(generationConfig);
             if (aiConfig.LocalLLMConfiguration != null)
             {
                 // Using LocalLama
-                await foreach(var token in GetCompletionViaLocalLLM(aiConfig.LocalLLMConfiguration, conversation, inferenceParams, cancellationToken))
+                await foreach (var token in GetCompletionViaLocalLLM(aiConfig.LocalLLMConfiguration, conversationVM, inferenceParams, cancellationToken))
                 {
                     yield return token;
                 }
@@ -406,7 +421,7 @@ namespace eSearch.Models.AI
             if (useKernelPlugins)
             {
 #pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-//                settings.ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions;
+                //                settings.ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions;
                 settings.FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(options: new() { RetainArgumentTypes = true });
 
             }
@@ -414,12 +429,76 @@ namespace eSearch.Models.AI
 
             // Convert conversation to Semantic Kernel format
             var chatHistory = new MSK.ChatCompletion.ChatHistory();
-            
 
 
+            StringBuilder messageBuilder = new StringBuilder();
 
-            foreach (var message in conversation.Messages)
+            foreach (var message in conversationVM.Messages)
             {
+                #region Handle attachments, if any
+
+                if (message.Attachments.Count > 0)
+                {
+                    List<MSK.TextContent> txtAttachments = new List<TextContent>();
+                    foreach (var attachment in message.Attachments)
+                    {
+                        var parseResult = await attachment.ParseOrGetCachedParseResult();
+                        var fileName = attachment.Filename;
+                        messageBuilder.AppendLine("<<ATTACHMENT>>");
+                        if (parseResult != null)
+                        {
+                            messageBuilder.AppendLine("<<METADATA>>");
+                            foreach (var metaData in parseResult.Metadata)
+                            {
+                                if (!metaData.Key.StartsWith("_"))
+                                {
+                                    messageBuilder.AppendLine($"{metaData.Key} : {metaData.Value}");
+                                }
+                            }
+                            messageBuilder.AppendLine("<</METADATA>>");
+                            messageBuilder.AppendLine("<<CONTENT>>");
+                            string content = parseResult.TextContent;
+                            messageBuilder.AppendLine(parseResult.TextContent);
+                            messageBuilder.AppendLine("<</CONTENT>>");
+                        }
+                        else
+                        {
+                            messageBuilder.AppendLine("Error: Unable to Parse this file.");
+                        }
+                        messageBuilder.AppendLine("<</ATTACHMENT>>");
+                    }
+                }
+
+                messageBuilder.AppendLine(message.GetFinalMessage()?.Content ?? "??");
+
+
+                //if (message.Attachments.Count > 0)
+                //{
+                //    List<MSK.TextContent> txtAttachments = new List<TextContent>();
+                //    foreach (var attachment in message.Attachments)
+                //    {
+                //        var txtContent = await attachment.ParseOrGetCachedParsedText() ;
+                //        var fileName = attachment.Filename;
+                //        Dictionary<string, object?> metaData = new Dictionary<string, object?>
+                //        {
+                //            { "Filename", Path.GetFileName(fileName) }
+                //        };
+                //        TextContent content = new TextContent { Text = txtContent, Metadata = metaData };
+                //        txtAttachments.Add(content);
+                //    }
+
+                //    var attachmentCollection = new ChatMessageContentItemCollection();
+                //    foreach (var attachment in txtAttachments)
+                //    {
+                //        attachmentCollection.Add(attachment);
+                //    }
+
+                //    foreach (var attachment in txtAttachments)
+                //    {
+                //        chatHistory.Add(new ChatMessageContent(MSK.ChatCompletion.AuthorRole.User, attachmentCollection));
+                //    }
+                //}
+                #endregion
                 chatHistory.AddMessage(
                     message.Role switch
                     {
@@ -428,36 +507,9 @@ namespace eSearch.Models.AI
                         "assistant" => MSK.ChatCompletion.AuthorRole.Assistant,
                         _ => throw new ArgumentException($"Invalid role: {message.Role}")
                     },
-                    message.Content
+                    messageBuilder.ToString()
                 );
-                if (message.Role == "system")
-                {
-                    #region Handle attachments, if any
-                    if (attachments != null && attachments.Any())
-                    {
-                        List<MSK.TextContent> txtAttachments = new List<TextContent>();
-                        foreach (var attachment in attachments)
-                        {
-                            var txtContent = attachment.Text; // HEAVY This will trigger the parser to extract contents if its not already parsed.
-                            var fileName = Path.GetFileName(attachment.FileName);
-                            Dictionary<string, object?> metaData = new Dictionary<string, object?>();
-                            metaData.Add("Filename", Path.GetFileName(fileName));
-                            TextContent content = new TextContent { Text = txtContent, Metadata = metaData };
-                            txtAttachments.Add(content);
-                        }
-
-                        var attachmentCollection = new ChatMessageContentItemCollection();
-                        foreach (var attachment in txtAttachments)
-                        {
-                            attachmentCollection.Add(attachment);
-                        }
-                        foreach (var attachment in txtAttachments)
-                        {
-                            chatHistory.Add(new ChatMessageContent(MSK.ChatCompletion.AuthorRole.System, attachmentCollection));
-                        }
-                    }
-                    #endregion
-                }
+                
             }
 
             // Get chat completion service
@@ -514,7 +566,7 @@ namespace eSearch.Models.AI
 
         public static async IAsyncEnumerable<string> GetCompletionViaLocalLLM(
             LocalLLMConfiguration llmConfig, 
-            Conversation conversation,
+            LLMConversationViewModel conversationVM,
             IInferenceParams inferenceParams,
             CancellationToken cancellationToken = default,
             LoadedLocalLLM llm = null)
@@ -540,9 +592,54 @@ namespace eSearch.Models.AI
             }
             var executor = new InteractiveExecutor(llm.GetNewContext(),logger);
             var chatHistory = new LLama.Common.ChatHistory();
-            for (int i = 0; i < conversation.Messages.Count - 1; i++)
+            List<(LLama.Common.AuthorRole role, string message)> messages = new();
+            for (int i = 0; i < conversationVM.Messages.Count; i++)
             {
-                var msg = conversation.Messages[i];
+                
+                var msg = conversationVM.Messages[i];
+
+                if (i == conversationVM.Messages.Count - 1 && msg.Role == "assistant")
+                {
+                    // The last message is an assistant message.. probably the loading message in the view model, ignore it.
+                    break;
+                }
+                StringBuilder messageBuilder = new StringBuilder();
+                #region Append Attachments to the message, if any.
+                if (msg.Attachments.Count > 0)
+                {
+                    List<MSK.TextContent> txtAttachments = new List<TextContent>();
+                    foreach (var attachment in msg.Attachments)
+                    {
+                        var parseResult = await attachment.ParseOrGetCachedParseResult();
+                        var fileName = attachment.Filename;
+                        messageBuilder.AppendLine("<<ATTACHMENT>>");
+                        if (parseResult != null)
+                        {
+                            messageBuilder.AppendLine("<<METADATA>>");
+                            foreach (var metaData in parseResult.Metadata)
+                            {
+                                if (!metaData.Key.StartsWith("_"))
+                                {
+                                    messageBuilder.AppendLine($"{metaData.Key} : {metaData.Value}");
+                                }
+                            }
+                            messageBuilder.AppendLine("<</METADATA>>");
+                            messageBuilder.AppendLine("<<CONTENT>>");
+                            string content = parseResult.TextContent;
+                            messageBuilder.AppendLine(parseResult.TextContent);
+                            messageBuilder.AppendLine("<</CONTENT>>");
+                        } else
+                        {
+                            messageBuilder.AppendLine("Error: Unable to Parse this file.");
+                        }
+                        messageBuilder.AppendLine("<</ATTACHMENT>>");
+                    }
+                }
+                #endregion
+                #region Append Actual Message to the message..
+                messageBuilder.AppendLine(msg.GetFinalMessage()?.Content ?? "INTERNAL ERROR");
+
+                #endregion
                 LLama.Common.AuthorRole role = msg.Role switch
                 {
                     "system" =>     LLama.Common.AuthorRole.System,
@@ -550,11 +647,17 @@ namespace eSearch.Models.AI
                     "assistant" =>  LLama.Common.AuthorRole.Assistant,
                     _ => throw new ArgumentException($"Invalid role: {msg.Role}")
                 };
-                chatHistory.AddMessage(role, msg.Content);
+
+                messages.Add( (role, messageBuilder.ToString()) );
+                //chatHistory.AddMessage(role, messageBuilder.ToString());
             }
 
-            var lastMsg = conversation.Messages.Last();
-            var userMessage = new LLama.Common.ChatHistory.Message(LLama.Common.AuthorRole.User, lastMsg.Content);
+            for (int i = 0; i < messages.Count - 1; i++)
+            {
+                chatHistory.AddMessage(messages[i].role, messages[i].message)   ;
+            }
+
+            
 
             // Create chat session with history
             var session = new ChatSession(executor, chatHistory);
@@ -566,12 +669,13 @@ namespace eSearch.Models.AI
             int chars = 0;
             int maxRetries = 5;
             int retries = 0;
-            
+
 
         retryPoint:
             // Stream the response tokens
-            
-            await foreach (var token in session.ChatAsync(userMessage, inferenceParams, cancellationToken))
+            var finalMsg = new LLama.Common.ChatHistory.Message(messages.Last().role, messages.Last().message);
+
+            await foreach (var token in session.ChatAsync(finalMsg, inferenceParams, cancellationToken))
             {
                 chars += token?.Length ?? 0;
                 yield return token ?? "";

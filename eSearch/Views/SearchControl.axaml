@@ -6,7 +6,7 @@
 			 xmlns:localView="clr-namespace:eSearch.Views;assembly=eSearch"
 			 xmlns:customCtrl="clr-namespace:eSearch.CustomControls;assembly=eSearch"
 			 xmlns:myConverters="clr-namespace:eSearch.Converters;assembly=eSearch"
-			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="150"
+			 mc:Ignorable="d" d:DesignWidth="1200"
 			 x:Class="eSearch.Views.SearchControl"
 			 
 			 >
@@ -127,8 +127,30 @@
 					AcceptsReturn="True"
 					KeyboardNavigation.TabNavigation="Local"
 					/>
+				
 			</StackPanel>
 		</Grid>
+		<ItemsRepeater 
+			ItemsSource="{Binding Session.Query.AttachedFiles}" 
+			IsVisible="{Binding Session.Query.AttachedFiles.Count}"
+			>
+			<ItemsRepeater.Layout>
+				<StackLayout Spacing="10" Orientation="Horizontal" />
+			</ItemsRepeater.Layout>
+			<ItemsRepeater.ItemTemplate>
+				<DataTemplate>
+					<Border Height="40" Margin="5" Padding="5" CornerRadius="20" Background="{DynamicResource SystemChromeMediumColor}">
+						<StackPanel Orientation="Horizontal" Spacing="5">
+							<Image Source="{Binding $parent[Window].DataContext.I[icons8-attach-32.png]}" Width="16" Height="16"/>
+							<Label VerticalContentAlignment="Center" Content="{Binding Name}"></Label>
+							<Button Background="Transparent" Command="{Binding $parent[localView:SearchControl].RemoveAttachment}" CommandParameter="{Binding .}">
+								<Image Source="{Binding $parent[Window].DataContext.I[icons8-close-32.png]}" Width="16" Height="16" />
+							</Button>
+						</StackPanel>
+					</Border>
+				</DataTemplate>
+			</ItemsRepeater.ItemTemplate>
+		</ItemsRepeater>
 		<DockPanel x:Name="StemmingSynonymsRow"  
 				   HorizontalAlignment="Stretch"
 				   IsVisible="{Binding !Session.Query.UseAISearch}"

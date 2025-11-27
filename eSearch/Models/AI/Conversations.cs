@@ -72,6 +72,11 @@ namespace eSearch.Models.AI
         private string? _machine = null;
 
         public string Note = string.Empty;
+
+        /// <summary>
+        /// If not null, a list of attached files (The filesystem paths to the files)
+        /// </summary>
+        public List<string>? AttachmentPaths { get; set; } = null;
     }
 
     public class Conversation

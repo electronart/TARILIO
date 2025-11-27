@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<dtSearchUserThesaurus>
+<UserThesaurus>
   <Item>
     <Name>aufschrecken</Name>
     <Synonyms>aufschrecken schrickst schrickt schrak schreckte aufgeschreckt</Synonyms>
@@ -732,4 +732,4 @@
     <Name>zwingen</Name>
     <Synonyms>zwingen zwang gezwungen</Synonyms>
   </Item>
-</dtSearchUserThesaurus>
+</UserThesaurus>

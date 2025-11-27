@@ -91,11 +91,17 @@ namespace DesktopSearch2.Views
 
         private bool ValidateSerial()
         {
+            
+#if STANDALONE
+            bool standalone = true;
+#else
+            bool standalone = false;
+#endif
 #if TARILIO
             string serial = GetSerial();
             if (serial != "")
             {
-                var serialType = TARILIO.ProductSerials.isValidSerial(serial, out string year);
+                var serialType = TARILIO.ProductSerials.isValidSerial(serial, out string year, standalone);
                 if (serialType == TARILIO.ProductSerials.SerialValidationResult.Valid || serialType == TARILIO.ProductSerials.SerialValidationResult.SearchOnly)
                 {
                     labelSerialError.IsVisible = false;

@@ -20,9 +20,33 @@ namespace eSearch.Views
             BtnOK.Click += BtnOK_Click;
             BtnCancel.Click += BtnCancel_Click;
 
+            BtnColumnsAll.Click += BtnColumnsAll_Click;
+            BtnColumnsNone.Click += BtnColumnsNone_Click;
             KeyUp += ResultsSettingsWindow_KeyUp;
 
             LabelValidationErrors.Content = string.Empty;
+        }
+
+        private void BtnColumnsNone_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (DataContext is ResultsSettingsWindowViewModel vm)
+            {
+                foreach(var column in vm.AvailableColumns)
+                {
+                    column.IsChecked = false;
+                }
+            }
+        }
+
+        private void BtnColumnsAll_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (DataContext is ResultsSettingsWindowViewModel vm)
+            {
+                foreach(var column in vm.AvailableColumns)
+                {
+                    column.IsChecked = true;
+                }
+            }
         }
 
         private void ResultsSettingsWindow_KeyUp(object? sender, Avalonia.Input.KeyEventArgs e)

@@ -53,6 +53,8 @@ public partial class LocalLLMServerWindow : ReactiveWindow<LocalServerWindowView
             {
                 await Program.RunningLocalLLMServer.StopAsync();
                 Program.RunningLocalLLMServer = null;
+                Program.ProgramConfig.LocalLLMServerConfig.Running = false;
+                Program.SaveProgramConfig();
                 UI_Update();
             }
         }
@@ -82,8 +84,10 @@ public partial class LocalLLMServerWindow : ReactiveWindow<LocalServerWindowView
                 if (port > 0)
                 {
                     Program.ProgramConfig.LocalLLMServerConfig.Port = port;
-                    Program.SaveProgramConfig();
+                    
                 }
+                Program.ProgramConfig.LocalLLMServerConfig.Running = true;
+                Program.SaveProgramConfig();
                 LocalLLMServer server = new LocalLLMServer(port);
                 await server.StartAsync();
                 Program.RunningLocalLLMServer = server;

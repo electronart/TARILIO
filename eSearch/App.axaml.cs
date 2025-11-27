@@ -29,6 +29,7 @@ using DocumentFormat.OpenXml.Drawing;
 using Avalonia.Threading;
 using eSearch.Models.Logging;
 using eSearch.ViewModels.StatusUI;
+using eSearch.Models.AI;
 //using ControlCatalog.Models;
 //using ControlCatalog.Pages;
 #endregion
@@ -287,7 +288,11 @@ namespace eSearch
                                 llama_exception = ex;
                             }
                         });
+
                         Task.WaitAll(initLLamaSharp, initTikaTask, initProgramConfig);
+
+                        
+
                         #endregion
                         // Here's where the initialization logic goes that needs to appear before the main window...
                         var upTime = Program.GetSystemUptime();
@@ -323,6 +328,10 @@ namespace eSearch
                             Environment.Exit(0);
                             return;
                         }
+
+                        // If we got this far, LlamaSharp is OK.
+
+                        
 
                         await Dispatcher.UIThread.InvokeAsync(async () =>
                         {
@@ -383,6 +392,7 @@ namespace eSearch
                         });
                         #endregion
 
+                        
 
                         await Dispatcher.UIThread.InvokeAsync(async () =>
                         {
@@ -452,6 +462,29 @@ namespace eSearch
                             }
                             #endregion
                         });
+
+                        if (Program.ProgramConfig.LocalLLMServerConfig?.Running ?? false)
+                        {
+                            await Task.Run(async () =>
+                            {
+                                try
+                                {
+                                    LocalLLMServer server = new LocalLLMServer(Program.ProgramConfig.LocalLLMServerConfig.Port);
+                                    await server.StartAsync();
+                                    Program.RunningLocalLLMServer = server;
+                                }
+                                catch (Exception ex)
+                                {
+                                    await Dispatcher.UIThread.InvokeAsync(async () =>
+                                    {
+                                        await TaskDialogWindow.ExceptionDialog("Error Starting Server", ex, desktop.MainWindow);
+                                    });
+                                }
+                            });
+                        }
+
+
+
                     } catch (Exception ex)
                     {
                         await Dispatcher.UIThread.InvokeAsync(async () =>

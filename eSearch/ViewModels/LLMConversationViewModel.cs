@@ -29,9 +29,18 @@ namespace eSearch.ViewModels
             Conversation extractedConversation = new Conversation();
             foreach (var messageVM in Messages)
             {
+                
                 var message = messageVM.GetFinalMessage();
                 if (message != null)
                 {
+                    if (messageVM.Attachments.Count > 0)
+                    {
+                        message.AttachmentPaths = new List<string>();
+                        foreach(var attachmentVM in messageVM.Attachments)
+                        {
+                            message.AttachmentPaths.Add(attachmentVM.FilePath);
+                        }
+                    }
                     extractedConversation.Messages.Add(message);
                 }
             }
