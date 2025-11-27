@@ -65,6 +65,27 @@ namespace eSearch.ViewModels
         }
 
 
+        public int SelectedTabIndex
+        {
+            get => _selectedTabIndex;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _selectedTabIndex, value);
+                IsSelectedTabAdvanced = (value == 1);
+            }
+        }
+
+        private int _selectedTabIndex = 0;
+
+        public bool IsSelectedTabAdvanced
+        {
+            get => _isSelectedTabAdvanced;
+            set => this.RaiseAndSetIfChanged(ref _isSelectedTabAdvanced, value);
+        }
+
+        private bool _isSelectedTabAdvanced = false;
+
+
 
         public void PopulateValuesFromConfiguration(AISearchConfiguration aiSearchConfig)
         {

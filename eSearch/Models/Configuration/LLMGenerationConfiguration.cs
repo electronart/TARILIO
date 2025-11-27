@@ -43,7 +43,8 @@ namespace eSearch.Models.Configuration
                 PenaltyPresence = viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(PenaltyPresence)).Value,
                 Seed = viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(Seed)).Value,
                 MinP = viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(MinP)).Value,
-                PenaltyRepetitionRange = viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(PenaltyRepetitionRange)).Value
+                PenaltyRepetitionRange = viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(PenaltyRepetitionRange)).Value,
+                MaxTokens = (int)viewModel.SliderProperties.First(s => s.InternalPropertyName == nameof(MaxTokens)).Value,
             };
             return config;
         }
