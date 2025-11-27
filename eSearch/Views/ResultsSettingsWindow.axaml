@@ -2,13 +2,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="780" d:DesignHeight="550"
+        mc:Ignorable="d"
         x:Class="eSearch.Views.ResultsSettingsWindow"
 		xmlns:viewmodels="clr-namespace:eSearch.ViewModels;assembly=eSearch"
 		xmlns:behaviours="clr-namespace:eSearch.Behaviours;assembly=eSearch"
         Title="Results Settings"
 		Width="780"
-		Height="550"
+		Height="600"
 		ExtendClientAreaToDecorationsHint="True"
 		WindowStartupLocation="CenterOwner"
 		CanResize="False">
@@ -53,8 +53,27 @@
 									</StackPanel>
 								</DataTemplate>
 							</ListBox.ItemTemplate>
+							<ListBox.Styles>
+								<Style Selector="ListBoxItem">
+									<Setter Property="ContextFlyout">
+										<Setter.Value>
+											<MenuFlyout>
+												<MenuItem Header="{Binding $parent[Window].DataContext.S[Move~to~Top]}"
+														  Command="{Binding $parent[Window].DataContext.MoveToTop}"
+														  CommandParameter="{Binding}"/>
+												<MenuItem Header="{Binding $parent[Window].DataContext.S[Move~to~Bottom]}" 
+														  Command="{Binding $parent[Window].DataContext.MoveToBottom}"
+														  CommandParameter="{Binding}"/>
+											</MenuFlyout>	
+										</Setter.Value>	
+									</Setter>
+								</Style>	
+							</ListBox.Styles>
 						</ListBox>
-						
+						<Grid ColumnDefinitions="*,5,*" Margin="5,0">
+							<Button Grid.Column="0" x:Name="BtnColumnsAll" Content="{Binding S[All]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+							<Button Grid.Column="2" x:Name="BtnColumnsNone" Content="{Binding S[None]}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+						</Grid>
 					</StackPanel>
 					<StackPanel Margin="5" Grid.Column="1" Spacing="5">
 						<StackPanel Spacing="5" Margin="5">

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,11 @@ namespace eSearch.ViewModels
 {
     public class ResultsSettingsWindowViewModel : ViewModelBase
     {
+        public ReactiveCommand<CheckBoxItemViewModel, Unit> MoveToTop { get; }
+
+        public ReactiveCommand<CheckBoxItemViewModel, Unit> MoveToBottom { get; }
+
+
         public ResultsSettingsWindowViewModel() {
             AvailableColumns.Add(new CheckBoxItemViewModel
             {
@@ -59,6 +65,9 @@ namespace eSearch.ViewModels
                     IsChecked = column.Visible
                 });
             }
+
+            MoveToTop = ReactiveCommand.Create<CheckBoxItemViewModel>(_MoveToTop);
+            MoveToBottom = ReactiveCommand.Create<CheckBoxItemViewModel>(_MoveToBottom);
         }
 
         public ObservableCollection<CheckBoxItemViewModel> AvailableColumns
@@ -74,6 +83,25 @@ namespace eSearch.ViewModels
         }
 
         private ObservableCollection<CheckBoxItemViewModel> _availableColumns = new ObservableCollection<CheckBoxItemViewModel>();
+
+        
+        private void _MoveToTop(CheckBoxItemViewModel item)
+        {
+            if (item == null || !AvailableColumns.Contains(item)) return;
+
+            AvailableColumns.Remove(item);
+            AvailableColumns.Insert(0, item);
+        }
+
+        private void _MoveToBottom(CheckBoxItemViewModel item)
+        {
+            if (item == null || !AvailableColumns.Contains(item)) return;
+
+            AvailableColumns.Remove(item);
+            AvailableColumns.Add(item);
+        }
+
+
 
         public enum ColumnWidthOption
         {
