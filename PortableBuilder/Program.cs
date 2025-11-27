@@ -104,7 +104,7 @@ namespace PortableBuilder
             {
                 Directory.CreateDirectory(TargetDir);
             }
-            string targetZip = Path.Combine(TargetDir, $"{configuration.Replace("eSearch","TARILIO").Replace(" ","-")}-{version.Replace(" ", "-").Replace("(","").Replace(")","")}.zip");
+            string targetZip = Path.Combine(TargetDir, $"{configuration.Replace("eSearch","TARILIO").Replace(" ","-")}-{version.Replace(" ", "-").Replace("(","").Replace(")","").Replace(".","-")}.zip");
             ZipFile.CreateFromDirectory(SourceDir, targetZip);
             Console.WriteLine("Zip saved to " + targetZip);
             RevealInFolderCrossPlatform( Path.GetFullPath(targetZip) );
