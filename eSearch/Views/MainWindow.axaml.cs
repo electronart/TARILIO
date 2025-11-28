@@ -1194,7 +1194,9 @@ namespace eSearch.Views
         {
             if (DataContext is MainWindowViewModel mwvm)
             {
-                var res = await ResultsSettingsWindow.ShowDialog(mwvm.Columns.ToArray(), mwvm.IndexLibrary.GetConfiguration(mwvm.SelectedIndex).ColumnSizingMode, mwvm.Session.Query);
+                var ixConfig = mwvm.SelectedIndex != null ? mwvm.IndexLibrary.GetConfiguration(mwvm.SelectedIndex) : null;
+                var columnSizingMode = ixConfig != null ? ixConfig.ColumnSizingMode : ResultsSettingsWindowViewModel.ColumnWidthOption.WidthContent;
+                var res = await ResultsSettingsWindow.ShowDialog(mwvm.Columns.ToArray(), columnSizingMode, mwvm.Session.Query);
                 if (res.Item1 == TaskDialogResult.OK)
                 {
                     var newSettings = res.Item2;
@@ -1721,15 +1723,18 @@ namespace eSearch.Views
                             if (selectedWheelItemIndex != null && selectedWheelItemIndex != -1)
                             {
                                 // Wheel has something selected. Check if its suitable for typeahead.
-                                var wheelWord = mwvm.Wheel?.WheelWords[selectedWheelItemIndex ?? 0].Word;
-                                if (!string.IsNullOrWhiteSpace(wheelWord))
+                                if (mwvm.Wheel?.WheelWords.Count > 0)
                                 {
-                                    if (wheelWord.ToLower().StartsWith(lastWordStartSequence.ToLower()))
+                                    var wheelWord = mwvm.Wheel?.WheelWords[selectedWheelItemIndex ?? 0].Word;
+                                    if (!string.IsNullOrWhiteSpace(wheelWord))
                                     {
-                                        if (wheelWord.Length > lastWordStartSequence.Length)
+                                        if (wheelWord.ToLower().StartsWith(lastWordStartSequence.ToLower()))
                                         {
-                                            string seq = wheelWord.Substring(lastWordStartSequence.Length);
-                                            await SetSearchTypeAhead(seq);
+                                            if (wheelWord.Length > lastWordStartSequence.Length)
+                                            {
+                                                string seq = wheelWord.Substring(lastWordStartSequence.Length);
+                                                await SetSearchTypeAhead(seq);
+                                            }
                                         }
                                     }
                                 }

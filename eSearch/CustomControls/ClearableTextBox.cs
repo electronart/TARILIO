@@ -47,6 +47,7 @@ namespace eSearch.CustomControls
                         mwvm.Session.Query.AttachedFiles.Add(fileNfo);
                     }
                 }
+                this.Focus();
             }
         }
     }

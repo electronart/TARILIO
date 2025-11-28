@@ -238,6 +238,7 @@
 													Height="30"
 													x:Name="ResultsSettingsButton"
 													Classes="TransparentBtn"
+													IsEnabled="{Binding SelectedIndex, Converter={x:Static ObjectConverters.IsNotNull}}"
 													Padding="0"
 													ToolTip.Tip="{Binding S[Results~Settings...]}"
 													>
