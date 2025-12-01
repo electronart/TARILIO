@@ -53,7 +53,7 @@ If you want to translate the user interface, use Language File Editor (LFE)
 
 If you need technical support, have suggestions for improvement, or want to report bugs, email: [support@electronart.co.uk](support@electronart.co.uk)
 
-## Invite to our [TARILIO DISCORD channel](https://discord.gg/pjZw27sD)
+Invite to our [TARILIO DISCORD channel](https://discord.gg/pjZw27sD)
 
 ## Build Instructions
 [View Build Instructions](https://github.com/electronart/esearch-project/wiki/Build-Instructions)
