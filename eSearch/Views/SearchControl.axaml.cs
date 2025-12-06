@@ -3,6 +3,7 @@ using Avalonia.Controls.Primitives;
 using eSearch.CustomControls;
 using eSearch.ViewModels;
 using org.apache.http.auth;
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -12,7 +13,9 @@ namespace eSearch.Views
     {
 
         private const double NarrowThreshold = 900;
+        private const double UltraNarrowThreshold = 520;
         private bool _isWide = true; // Initial assumption; will update on first size change.
+        private bool _isUltraNarrow = false;
 
         public SearchControl()
         {
@@ -49,6 +52,7 @@ namespace eSearch.Views
         {
             Debug.WriteLine($"Width: {width}");
             var newIsWide = width >= NarrowThreshold;
+            var newIsUltraNarrow = width <= UltraNarrowThreshold;
             if (newIsWide != _isWide)
             {
                 _isWide = newIsWide;
@@ -79,6 +83,23 @@ namespace eSearch.Views
 
 
                 }
+            }
+
+            if (newIsUltraNarrow != _isUltraNarrow)
+            {
+                _isUltraNarrow = newIsUltraNarrow;
+                if (!_isUltraNarrow)
+                {
+                    ComboBoxSearchSource.Width = 280;
+                    DockPanel.SetDock(StackPanelStemmingSynonymsSoundex, Dock.Left);
+                } else
+                {
+                    DockPanel.SetDock(StackPanelStemmingSynonymsSoundex, Dock.Top);
+                }
+            }
+            if (_isUltraNarrow)
+            {
+                ComboBoxSearchSource.Width = Math.Max( (280 - (UltraNarrowThreshold - width)), 100);
             }
         }
 

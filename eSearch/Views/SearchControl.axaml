@@ -6,7 +6,7 @@
 			 xmlns:localView="clr-namespace:eSearch.Views;assembly=eSearch"
 			 xmlns:customCtrl="clr-namespace:eSearch.CustomControls;assembly=eSearch"
 			 xmlns:myConverters="clr-namespace:eSearch.Converters;assembly=eSearch"
-			 mc:Ignorable="d" d:DesignWidth="1200"
+			 mc:Ignorable="d" d:DesignWidth="600"
 			 x:Class="eSearch.Views.SearchControl"
 			 
 			 >
@@ -103,9 +103,9 @@
 					Grid.Column="1"
 					IsVisible="{Binding !Session.Query.UseAISearch}"
 					Orientation="Horizontal" HorizontalAlignment="Center" Spacing="5" Margin="5">
-					<Button MinWidth="50" x:Name="BtnAND"	Content="{Binding S[AND]}"/>
-					<Button MinWidth="50" x:Name="BtnOR"	Content="{Binding S[OR]}"/>
-					<Button MinWidth="50" x:Name="BtnNOT"	Content="{Binding S[NOT]}"/>
+					<Button MinWidth="50" x:Name="BtnAND"	Content="{Binding S[AND]}" HorizontalContentAlignment="Center"/>
+					<Button MinWidth="50" x:Name="BtnOR"	Content="{Binding S[OR]}" HorizontalContentAlignment="Center"/>
+					<Button MinWidth="50" x:Name="BtnNOT"	Content="{Binding S[NOT]}" HorizontalContentAlignment="Center"/>
 				</StackPanel>
 			<StackPanel 
 			x:Name="StackPanelCenterTextBoxAndOrNot"
@@ -155,7 +155,7 @@
 				   HorizontalAlignment="Stretch"
 				   IsVisible="{Binding !Session.Query.UseAISearch}"
 				   >
-			<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="20" Margin="5">
+			<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="20" Margin="5" x:Name="StackPanelStemmingSynonymsSoundex">
 				
 				<CheckBox Content="{Binding S[Stemming]}" IsChecked="{Binding Session.Query.UseStemming}"
 						  IsEnabled="{Binding !Session.Query.UseAISearch}"/>
@@ -165,7 +165,7 @@
 						  IsEnabled="{Binding !Session.Query.UseAISearch}"/>
 
 			</StackPanel>
-			<StackPanel Spacing="20" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+			<StackPanel Spacing="20" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5" x:Name="StackPanelAllWordsAny">
 				<RadioButton GroupName="RadioAllAnyBoolean0" 
 							 IsChecked="{Binding IsRadioRAABAllWordsChecked}" 
 							 Content="{Binding S[All]}" IsEnabled="{Binding AreRAABRadiosEnabled}"/>
