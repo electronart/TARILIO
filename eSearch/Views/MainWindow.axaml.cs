@@ -8,6 +8,7 @@ using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -64,6 +65,10 @@ namespace eSearch.Views
 
             this.DataContextChanged += MainWindow_DataContextChanged;
 
+            ResultsGrid2.AddHandler(KeyDownEvent, ResultsGrid2_KeyDown, RoutingStrategies.Tunnel);
+            AddHandler(KeyDownEvent, MainWindow_KeyDown, RoutingStrategies.Tunnel);
+
+            /*
             menuItemSearchAISearch.Click += MenuItemSearchAISearch_Click;
             menuItemSearchMCPServers.Click += MenuItemSearchMCPServers_Click;
             menuItemAIExportConversation.Click += MenuItemAIExportConversation_Click;
@@ -80,16 +85,17 @@ namespace eSearch.Views
             ConversationCopyButton.Click += ConversationCopyButton_Click;
 
             menuAppearanceHighContrast.Click += MenuAppearanceHighContrast_Click;
+            
 
 
-            AddHandler(KeyDownEvent, MainWindow_KeyDown, RoutingStrategies.Tunnel);
+
             //this.KeyDown += MainWindow_KeyDown;
 
             menuItemLaunchAtStartup.Click += MenuItemLaunchAtStartup_Click;
             menuItemLaunchAtStartupCheckbox.IsChecked = Program.ProgramConfig.LaunchAtStartup;
 
             //ResultsGrid2.KeyUp += ResultsGrid2_KeyUp;
-            ResultsGrid2.AddHandler(KeyDownEvent, ResultsGrid2_KeyDown, RoutingStrategies.Tunnel);
+            
 
             MenuItemDebugMCPListTools.Click += MenuItemDebugMCPListTools_Click;
             menuItemShowSystemPrompt.Click += MenuItemShowSystemPrompt_Click;
@@ -99,6 +105,8 @@ namespace eSearch.Views
             menuItemAIImportLLMs.Click += MenuItemAIImportLLMs_Click;
 
             menuItemDebugStatusTest.Click += MenuItemDebugStatusTest_Click;
+            menuItemHelpUserGuide.Click += MenuItemHelpUserGuide_Click;
+            */
 
             Program.OnLanguageChanged += Program_OnLanguageChanged;
 
@@ -106,7 +114,79 @@ namespace eSearch.Views
             this.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
             MainUIDockPanel.AddHandler(PointerPressedEvent, MWSearchControl_PointerPressed, RoutingStrategies.Tunnel);
 
-            menuItemHelpUserGuide.Click += MenuItemHelpUserGuide_Click;
+            
+
+            this.Resized += MainWindow_Resized;
+
+            // Populate flyout with clones after XAML is loaded
+            var sharedItems = Resources["SharedMenuItems"] as object[];
+            if (sharedItems != null)
+            {
+                foreach (var item in sharedItems)
+                {
+                    MainMenuHamburger.Items.Add(CloneMenuElement(item));
+                }
+            }
+
+
+        }
+
+        private object CloneMenuElement(object original)
+        {
+            if (original is MenuItem originalItem)
+            {
+                var clone = new MenuItem
+                {
+                    Header = originalItem.Header, // Copies binding or value
+                    Icon = originalItem.Icon,
+                    Command = originalItem.Command,
+                    CommandParameter = originalItem.CommandParameter,
+                    IsEnabled = originalItem.IsEnabled, // Copies initial value/bindings if bound
+                    IsVisible = originalItem.IsVisible,
+                    InputGesture = originalItem.InputGesture
+                    // Add more properties if you use them (e.g., Classes, ToolTip)
+                };
+
+                // Recurse for subitems
+                foreach (var subItem in originalItem.Items)
+                {
+                    clone.Items.Add(CloneMenuElement(subItem));
+                }
+
+                return clone;
+            }
+            else if (original is Separator)
+            {
+                return new Separator();
+            }
+
+            // Fallback for other types (e.g., custom items)
+            return original;
+        }
+
+
+
+
+        private void MainWindow_Resized(object? sender, WindowResizedEventArgs e)
+        {
+            // TODO I was having trouble with this whilst experimenting, setting the items source doesn't seem to
+            // affect the menus. Once shrunk and expanded again, an exception is thrown.
+            if (e.ClientSize.Width > 800)
+            {
+                if (MainMenu.IsVisible == false)
+                {
+                    MainMenu.IsVisible = true;
+                    MainMenuMini.IsVisible = false;   
+                }
+            } else
+            {
+                if (MainMenuMini.IsVisible == false)
+                {
+                    MainMenu.IsVisible = false;
+                    MainMenuMini.IsVisible = true;
+
+                }
+            }
         }
 
         private void MenuItemHelpUserGuide_Click(object? sender, RoutedEventArgs e)
@@ -700,7 +780,7 @@ namespace eSearch.Views
         {
             Program.ProgramConfig.LaunchAtStartup = !Program.ProgramConfig.LaunchAtStartup;
             Program.SaveProgramConfig();
-            menuItemLaunchAtStartupCheckbox.IsChecked = Program.ProgramConfig.LaunchAtStartup;
+            //menuItemLaunchAtStartupCheckbox.IsChecked = Program.ProgramConfig.LaunchAtStartup;
         }
 
         private async void MenuItemPlugins_Click(object? sender, RoutedEventArgs e)

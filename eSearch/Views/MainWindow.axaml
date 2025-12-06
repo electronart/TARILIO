@@ -1,7 +1,9 @@
 <Window xmlns="https://github.com/avaloniaui"
+        xmlns:mrrr="using:System.Collections.Generic"
+		xmlns:scg="clr-namespace:System.Collections;assembly=mscorlib"
+		xmlns:system="using:System"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:eSearch.ViewModels"
-		
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:eSearch.ViewModels;assembly=eSearch"
@@ -21,6 +23,100 @@
 		>
 	<Window.Resources>
 		<converters:BoolToStringConverter x:Key="BoolToStringConverter"/>
+		<DataTemplate DataType="local:MenuItemModel" x:Key="DataTemplateMenuItemModel">
+			<MenuItem Header="{Binding Header}"
+					  Command="{Binding Command}"
+					  IsVisible="{Binding IsVisible}"
+					  IsEnabled="{Binding IsEnabled}"/>
+		</DataTemplate>
+		<DataTemplate DataType="local:CheckBoxMenuItemModel" x:Key="DataTemplateCheckboxMenuItemModel">
+			<MenuItem Header="{Binding Header}"
+					  Command="{Binding Command}"
+					  IsVisible="{Binding IsVisible}"
+					  IsEnabled="{Binding IsEnabled}">
+				<MenuItem.Icon>
+					<CheckBox BorderThickness="0" IsHitTestVisible="False" IsChecked="{Binding IsChecked}"/>
+				</MenuItem.Icon>
+			</MenuItem>
+		</DataTemplate>
+		<DataTemplate DataType="local:SeperatorModel" x:Key="DataTemplateSeperator">
+			<Separator />
+		</DataTemplate>
+		<mrrr:List x:Key="MainMenuItems" x:TypeArguments="system:Object">
+			<MenuItem Header="{Binding S[_File]}">
+            <MenuItem Header="{Binding S[Export~Search~Results...]}" 
+                      Command="{Binding MenuFileExportSearchResults}"
+                      IsEnabled="{Binding !Session.Query.UseAISearch}"/>
+            <MenuItem Header="{Binding S[Print...]}" Command="{Binding MenuFilePrint}"/>
+            
+            <Separator/>
+            <MenuItem Header="{Binding S[Launch~at~Startup]}" IsChecked="{Binding IsLaunchAtStartupEnabled}" />
+            <MenuItem Header="{Binding S[_Exit]}" Command="{Binding MenuFileExit}"/>
+        </MenuItem>
+        <MenuItem Header="{Binding S[_AI]}" IsEnabled="{Binding Session.Query.UseAISearch}">
+            <MenuItem Header="{Binding S[Import~LLMs...]}"/>
+            <MenuItem Header="{Binding S[_AI~Connections]}" 
+                      IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
+                      />
+            <MenuItem Header="{Binding S[_MCP~Servers]}"
+                      IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
+                      />
+            <MenuItem Header="{Binding S[Show~System~Prompt]}"/>
+            <Separator/>
+            <MenuItem Header="{Binding S[Export~Conversation...]}"/>
+            <MenuItem Header="{Binding S[Import~Conversation...]}"/>
+        </MenuItem>
+        <MenuItem Header="{Binding S[_Index]}">
+            <MenuItem.IsEnabled>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Path="!ProgramIsRunningInSearchOnlyMode" />
+                    <Binding Path="!Session.Query.UseAISearch" />
+                    <Binding Path="!IsIndexLoading"/>
+                </MultiBinding>
+            </MenuItem.IsEnabled>
+            <MenuItem Header="{Binding S[New...]}"  IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
+            <MenuItem Header="{Binding S[Update...]}" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
+            <Separator/>
+            <MenuItem Header="{Binding S[Manage~Indexes...]}" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
+        </MenuItem>
+        <MenuItem Header="{Binding S[_View]}">
+            <MenuItem Header="{Binding S[Theme]}">
+                <MenuItem Header="{Binding S[Dark]}" Command="{Binding MenuAppearanceDark}"/>
+                <MenuItem Header="{Binding S[Light]}" Command="{Binding MenuAppearanceLight}"/>
+                <MenuItem Header="{Binding S[System]}" Command="{Binding MenuAppearanceSystem}"/>
+                <Separator/>
+                <MenuItem Header="{Binding S[High~Contrast]}"/>
+            </MenuItem>
+            <MenuItem Header="{Binding S[Layout]}">
+                <MenuItem Header="{Binding S[Horizontal]}" 
+                          IsEnabled="{Binding !Session.Query.UseAISearch}"
+                          Command="{Binding MenuLayoutHorizontal}"/>
+                <MenuItem Header="{Binding S[Vertical]}"
+                          IsEnabled="{Binding !Session.Query.UseAISearch}"
+                          Command="{Binding MenuLayoutVertical}"/>
+            </MenuItem>
+            <MenuItem Header="{Binding S[Language]}">
+                <MenuItem Header="{Binding S[English]}" Command="{Binding MenuLanguageEnglish}"/>
+                <MenuItem IsVisible="False" Header="{Binding S[Pseudo~Locale]}" Command="{Binding MenuLanguagePsuedo}"/>
+                <MenuItem Header="{Binding S[From~File...]}" Command="{Binding MenuLanguageFromFile}"/>
+            </MenuItem>
+            <MenuItem Header="{Binding S[Word~List]}" Command="{Binding ToggleWheel}"/>
+        </MenuItem>
+        <MenuItem Header="{Binding S[Plugins]}"/>
+        <MenuItem Header="{Binding S[Help]}">
+            <MenuItem Header="{Binding S[User~Guide]}"/>
+            <MenuItem Header="{Binding S[About]}" Command="{Binding HelpAboutApplication}"/>
+        </MenuItem>
+        <MenuItem Header="Debug" IsVisible="{Binding IsDebugBuild}">
+            <MenuItem Header="DateTime Issue Test" Command="{Binding MenuDebugDateTime}"/>
+            <MenuItem Header="Show Browser Debug" Command="{Binding ShowBrowserDebug}"/>
+            <MenuItem Header="Relative Path Test" Command="{Binding MenuDebugExpandPaths}"/>
+            <MenuItem Header="DialogTest" Command="{Binding MenuDebugDialogTest}"/>
+            <MenuItem Header="List tools to console" />
+            <MenuItem Header="List Avail Models" />
+            <MenuItem Header="StatusTest Add"/>
+        </MenuItem>
+		</mrrr:List>
 	</Window.Resources>
 	<Window.Styles>
 		<!-- TransparencyLevelHint="AcrylicBlur" -->
@@ -34,7 +130,6 @@
 		<Style Selector="Window[WindowState=Maximized]">
 			<Setter Property="Padding" Value="8" />
 		</Style>
-		
 	</Window.Styles>
 	<Design.DataContext>
 		<!-- This only sets the DataContext for the previewer in an IDE,
@@ -46,134 +141,19 @@
 			<DockPanel DockPanel.Dock="Top" x:Name="MenuOnly">
 				<StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="10,5" Spacing="5">
 					<Image Source="{Binding ProductIcon}" Width="20" Height="20"/>
-					<Menu x:Name="MainMenu" MinWidth="340" Height="35" HorizontalAlignment="Left" TabIndex="0">
-						<MenuItem Header="{Binding S[_File]}">
-							<!--<MenuItem Header="{Binding S[View...]}"/>-->
-							<MenuItem Header="{Binding S[Export~Search~Results...]}" 
-									  Command="{Binding MenuFileExportSearchResults}"
-									  IsEnabled="{Binding !Session.Query.UseAISearch}"/>
-							<MenuItem Header="{Binding S[Print...]}" Command="{Binding MenuFilePrint}"/>
-						
-							<Separator/>
-							<MenuItem Header="{Binding S[Launch~at~Startup]}" x:Name="menuItemLaunchAtStartup">
-								<MenuItem.Icon>
-									<CheckBox BorderThickness="0"
-											  IsHitTestVisible="False"
-											  x:Name="menuItemLaunchAtStartupCheckbox"/>
-								</MenuItem.Icon>
-							</MenuItem>
-							<MenuItem Header="{Binding S[_Exit]}" Command="{Binding MenuFileExit}"/>
-						</MenuItem>
-						<MenuItem Header="{Binding S[_AI]}"
-								  IsEnabled="{Binding Session.Query.UseAISearch}"
-								  >
-							<MenuItem Header="{Binding S[Import~LLMs...]}" x:Name="menuItemAIImportLLMs"/>
-							<MenuItem Header="{Binding S[_AI~Connections]}" 
-									  x:Name="menuItemSearchAISearch"
-									  IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
-									  />
-							<MenuItem Header="{Binding S[_MCP~Servers]}"
-									  x:Name="menuItemSearchMCPServers"
-									  IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
-									  />
-							<MenuItem Header="{Binding S[Show~System~Prompt]}" x:Name="menuItemShowSystemPrompt">
-								<MenuItem.Icon>
-									<CheckBox BorderThickness="0"
-											  IsHitTestVisible="False"
-											  IsChecked="{Binding Session.Query.ShowSystemPrompt}"/>
-								</MenuItem.Icon>
-							</MenuItem>
-							<Separator/>
-							<MenuItem 
-								Header="{Binding S[Export~Conversation...]}"
-								x:Name="menuItemAIExportConversation"/>
-							<MenuItem
-								Header="{Binding S[Import~Conversation...]}"
-								x:Name="menuItemAIImportConversation"/>
+					<Menu x:Name="MainMenuMini" IsVisible="False">
+						<MenuItem Width="50" x:Name="MainMenuHamburger">
+							<MenuItem.Header>
+								<Image Source="{Binding I[icons8-menu-32.png]}"
+									Width="16"
+									Height="16"
+									/>
+							</MenuItem.Header>
 							
-							<!--<MenuItem Header="{Binding S[History...]}"/>-->
-							<!--<MenuItem Header="{Binding S[Report...]}" Command="{Binding DebugExportSearchReport}"/>-->
 						</MenuItem>
-						<MenuItem Header="{Binding S[_Index]}">
-							<MenuItem.IsEnabled>
-								<MultiBinding Converter="{x:Static BoolConverters.And}">
-									<Binding Path="!ProgramIsRunningInSearchOnlyMode" />
-									<Binding Path="!Session.Query.UseAISearch" />
-									<Binding Path="!IsIndexLoading"/>
-								</MultiBinding>
-							</MenuItem.IsEnabled>
-							<MenuItem Header="{Binding S[New...]}" x:Name="menuItemIndexNew" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
-							<MenuItem Header="{Binding S[Update...]}" x:Name="menuItemIndexUpdate" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
-							<Separator/>
-							<MenuItem Header="{Binding S[Manage~Indexes...]}" x:Name="menuItemIndexManageIndexes"  IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
-						</MenuItem>
-						<MenuItem Header="{Binding S[_View]}">
-							<MenuItem Header="{Binding S[Theme]}">
-								<MenuItem Header="{Binding S[Dark]}" Command="{Binding MenuAppearanceDark}"/>
-								<MenuItem Header="{Binding S[Light]}" Command="{Binding MenuAppearanceLight}"/>
-								<MenuItem Header="{Binding S[System]}" Command="{Binding MenuAppearanceSystem}"/>
-								<Separator/>
-								<MenuItem Header="{Binding S[High~Contrast]}" x:Name="menuAppearanceHighContrast">
-									<MenuItem.Icon>
-										<CheckBox BorderThickness="0"
-												  IsHitTestVisible="False"
-												  IsChecked="{Binding IsThemeHighContrast}"/>
-									</MenuItem.Icon>
-								</MenuItem>
-							</MenuItem>
-							<MenuItem Header="{Binding S[Layout]}">
-								<MenuItem Header="{Binding S[Horizontal]}" 
-										  IsEnabled="{Binding !Session.Query.UseAISearch}"
-										  Command="{Binding MenuLayoutHorizontal}">
-									<MenuItem.Icon>
-										<CheckBox BorderThickness="0"
-												  IsHitTestVisible="False"
-												  IsChecked="{Binding IsLayoutHorizontal}">
-										</CheckBox>
-									</MenuItem.Icon>
-								</MenuItem>
-								<MenuItem Header="{Binding S[Vertical]}"
-										  IsEnabled="{Binding !Session.Query.UseAISearch}"
-										  Command="{Binding MenuLayoutVertical}">
-									<MenuItem.Icon>
-										<CheckBox BorderThickness="0"
-												  IsHitTestVisible="False"
-												  IsChecked="{Binding IsLayoutVertical}">
-										</CheckBox>
-									</MenuItem.Icon>
-								</MenuItem>
-							</MenuItem>
-							<MenuItem Header="{Binding S[Language]}">
-								<MenuItem Header="{Binding S[English]}" Command="{Binding MenuLanguageEnglish}"/>
-								<MenuItem IsVisible="False" Header="{Binding S[Pseudo~Locale]}" Command="{Binding MenuLanguagePsuedo}"/>
-								<MenuItem Header="{Binding S[From~File...]}" Command="{Binding MenuLanguageFromFile}"/>
-							</MenuItem>
-							<MenuItem Header="{Binding S[Word~List]}" Command="{Binding ToggleWheel}">
-								<MenuItem.Icon>
-									<CheckBox BorderThickness="0"
-											  IsHitTestVisible="False"
-											  IsChecked="{Binding ShowWordWheel}">
-
-									</CheckBox>
-								</MenuItem.Icon>
-							</MenuItem>
-						</MenuItem>
-						<MenuItem Header="{Binding S[Plugins]}" x:Name="menuItemPlugins"/>
-						<MenuItem Header="{Binding S[Help]}">
-							<MenuItem Header="{Binding S[User~Guide]}" x:Name="menuItemHelpUserGuide"/>
-							<MenuItem Header="{Binding S[About]}" Command="{Binding HelpAboutApplication}"></MenuItem>
-						</MenuItem>
-						<MenuItem Header="Debug" IsVisible="{Binding IsDebugBuild}">
-							<MenuItem Header="DateTime Issue Test" Command="{Binding MenuDebugDateTime}"></MenuItem>
-							<MenuItem Header="Show Browser Debug" Command="{Binding ShowBrowserDebug}"/>
-							<MenuItem Header="Relative Path Test" Command="{Binding MenuDebugExpandPaths}"/>
-							<MenuItem Header="DialogTest" Command="{Binding MenuDebugDialogTest}"/>
-							<MenuItem Header="MCP">
-								<MenuItem Header="List tools to console" x:Name="MenuItemDebugMCPListTools"/>
-							</MenuItem>
-							<MenuItem Header="List Avail Models" x:Name="menuItemDebugListModels"/>
-							<MenuItem Header="StatusTest Add" x:Name="menuItemDebugStatusTest"/>
-						</MenuItem>
+					</Menu>
+					<Menu x:Name="MainMenu" MinWidth="340" Height="35" HorizontalAlignment="Left" TabIndex="0" ItemsSource="{StaticResource MainMenuItems}">
+						
 					</Menu>
 				</StackPanel>
 				<Button 
