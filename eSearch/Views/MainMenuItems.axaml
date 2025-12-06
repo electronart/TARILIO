@@ -48,21 +48,33 @@
             <MenuItem Header="{Binding S[Print...]}" Command="{Binding MenuFilePrint}"/>
             
             <Separator/>
-            <MenuItem Header="{Binding S[Launch~at~Startup]}" IsChecked="{Binding IsLaunchAtStartupEnabled}" />
+            <MenuItem Header="{Binding S[Launch~at~Startup]}"
+                      Command="{Binding ToggleLaunchAtStartup}"
+                      IsChecked="{Binding IsLaunchAtStartupEnabled}">
+                <MenuItem.Icon>
+					<CheckBox IsChecked="{Binding IsLaunchAtStartupEnabled}" IsHitTestVisible="False" Margin="0"/>
+                </MenuItem.Icon>
+            </MenuItem>
             <MenuItem Header="{Binding S[_Exit]}" Command="{Binding MenuFileExit}"/>
         </MenuItem>
         <MenuItem Header="{Binding S[_AI]}" IsEnabled="{Binding Session.Query.UseAISearch}">
-            <MenuItem Header="{Binding S[Import~LLMs...]}"/>
+            <MenuItem Header="{Binding S[Import~LLMs...]}" Command="{Binding $parent[Window].MenuItemAIImportLLMs}"/>
             <MenuItem Header="{Binding S[_AI~Connections]}" 
                       IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
+                      Command="{Binding $parent[Window].MenuItemAIConnections}"
                       />
             <MenuItem Header="{Binding S[_MCP~Servers]}"
+                      Command="{Binding $parent[Window].MenuItemAIMCPServers}"
                       IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
                       />
-            <MenuItem Header="{Binding S[Show~System~Prompt]}"/>
+            <MenuItem Header="{Binding S[Show~System~Prompt]}" Command="{Binding ToggleSystemPrompt}">
+                <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding Session.Query.ShowSystemPrompt}" IsHitTestVisible="False" Margin="0"/>
+                </MenuItem.Icon>
+            </MenuItem>
             <Separator/>
-            <MenuItem Header="{Binding S[Export~Conversation...]}"/>
-            <MenuItem Header="{Binding S[Import~Conversation...]}"/>
+            <MenuItem Header="{Binding S[Export~Conversation...]}" Command="{Binding $parent[Window].MenuItemAIExportConversation}"/>
+            <MenuItem Header="{Binding S[Import~Conversation...]}" Command="{Binding $parent[Window].MenuItemAIImportConversation}"/>
         </MenuItem>
         <MenuItem Header="{Binding S[_Index]}">
             <MenuItem.IsEnabled>
@@ -72,10 +84,10 @@
                     <Binding Path="!IsIndexLoading"/>
                 </MultiBinding>
             </MenuItem.IsEnabled>
-            <MenuItem Header="{Binding S[New...]}"  IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
-            <MenuItem Header="{Binding S[Update...]}" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
+            <MenuItem Header="{Binding S[New...]}"  IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}" Command="{Binding $parent[Window].MenuItemIndexNew}"/>
+            <MenuItem Header="{Binding S[Update...]}" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}" Command="{Binding $parent[Window].MenuItemIndexUpdate}"/>
             <Separator/>
-            <MenuItem Header="{Binding S[Manage~Indexes...]}" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
+            <MenuItem Header="{Binding S[Manage~Indexes...]}" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}" Command="{Binding $parent[Window].MenuItemManageIndexes}"/>
         </MenuItem>
         <MenuItem Header="{Binding S[_View]}">
             <MenuItem Header="{Binding S[Theme]}">
@@ -83,7 +95,11 @@
                 <MenuItem Header="{Binding S[Light]}" Command="{Binding MenuAppearanceLight}"/>
                 <MenuItem Header="{Binding S[System]}" Command="{Binding MenuAppearanceSystem}"/>
                 <Separator/>
-                <MenuItem Header="{Binding S[High~Contrast]}"/>
+                <MenuItem Header="{Binding S[High~Contrast]}" Command="{Binding $parent[Window].MenuAppearanceHighContrast}">
+                    <MenuItem.Icon>
+						<CheckBox IsChecked="{Binding IsThemeHighContrast}" IsHitTestVisible="False" Margin="0"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="{Binding S[Layout]}">
                 <MenuItem Header="{Binding S[Horizontal]}" 
@@ -100,9 +116,9 @@
             </MenuItem>
             <MenuItem Header="{Binding S[Word~List]}" Command="{Binding ToggleWheel}"/>
         </MenuItem>
-        <MenuItem Header="{Binding S[Plugins]}"/>
+        <MenuItem Header="{Binding S[Plugins]}" Command="{Binding $parent[Window].MenuItemPlugins}"/>
         <MenuItem Header="{Binding S[Help]}">
-            <MenuItem Header="{Binding S[User~Guide]}"/>
+            <MenuItem Header="{Binding S[User~Guide]}" Command="{Binding $parent[Window].MenuItemHelpUserGuide}"/>
             <MenuItem Header="{Binding S[About]}" Command="{Binding HelpAboutApplication}"/>
         </MenuItem>
         <MenuItem Header="Debug" IsVisible="{Binding IsDebugBuild}">

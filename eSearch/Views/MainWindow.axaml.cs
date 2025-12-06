@@ -187,7 +187,7 @@ namespace eSearch.Views
             }
         }
 
-        private void MenuItemHelpUserGuide_Click(object? sender, RoutedEventArgs e)
+        public void MenuItemHelpUserGuide()
         {
             LaunchUserGuide();
         }
@@ -233,7 +233,7 @@ namespace eSearch.Views
             }
         }
 
-        private async void MenuItemAIImportLLMs_Click(object? sender, RoutedEventArgs e)
+        public async void MenuItemAIImportLLMs()
         {
             if (DataContext is MainWindowViewModel mwvm)
             {
@@ -256,7 +256,7 @@ namespace eSearch.Views
                             NavigateUri = new Uri("https://huggingface.co/models?pipeline_tag=text-generation&library=gguf&sort=trending"),
                             Padding = new Thickness(0),
                             Margin = new Thickness(0),
-                            
+
                         }
                     }
                 };
@@ -273,7 +273,7 @@ namespace eSearch.Views
                     string[] parts = modelID.Split(new char[] { '/' });
                     if (parts.Length != 2 || (parts[0].Trim().Length == 0 || parts[1].Trim().Length == 0))
                     {
-                        await TaskDialogWindow.OKDialog(S.Get("Invalid Model ID"), S.Get("Provide a valid Model ID. Eg in the format bartowski/gemma-2-2b-it-GGUF"),this);
+                        await TaskDialogWindow.OKDialog(S.Get("Invalid Model ID"), S.Get("Provide a valid Model ID. Eg in the format bartowski/gemma-2-2b-it-GGUF"), this);
                         goto retryModelID;
                     }
                 retryFetchModels:
@@ -387,9 +387,9 @@ namespace eSearch.Views
                         catch (Exception ex)
                         {
                             downloadProgress.ProgressChanged -= progressHandler;
-                            statusVM.StatusTitle    = S.Get("Download failed");
+                            statusVM.StatusTitle = S.Get("Download failed");
                             statusVM.StatusMessage = null;
-                            statusVM.StatusError    = ex.Message;
+                            statusVM.StatusError = ex.Message;
                             statusVM.StatusProgress = null; // Hide progress bar.
                             statusVM.CancelAction = null;
                             statusVM.DismissAction = () =>
@@ -430,6 +430,17 @@ namespace eSearch.Views
             }
         }
 
+        public async void MenuItemAIConnections()
+        {
+            await LLMConnectionConfigurationWindow.ShowDialog(this);
+            init_searchSources();
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                mwvm.Session.Query.UseAISearch = true;
+            }
+        }
+
+
         private void Program_OnLanguageChanged(object? sender, EventArgs e)
         {
             try
@@ -466,15 +477,7 @@ namespace eSearch.Views
             }
         }
 
-        private void MenuItemShowSystemPrompt_Click(object? sender, RoutedEventArgs e)
-        {
-            if (DataContext is MainWindowViewModel mwvm)
-            {
-                mwvm.Session.Query.ShowSystemPrompt = !mwvm.Session.Query.ShowSystemPrompt;
-            }
-        }
-
-        private async void MenuItemAIImportConversation_Click(object? sender, RoutedEventArgs e)
+        public async void MenuItemAIImportConversation()
         {
             try
             {
@@ -570,7 +573,7 @@ namespace eSearch.Views
             }
         }
 
-        private async void MenuItemAIExportConversation_Click(object? sender, RoutedEventArgs e)
+        public async void MenuItemAIExportConversation()
         {
             try
             {
@@ -645,7 +648,7 @@ namespace eSearch.Views
             Debug.WriteLine("-- End of List--");
         }
 
-        private async void MenuItemSearchMCPServers_Click(object? sender, RoutedEventArgs e)
+        public async void MenuItemAIMCPServers()
         {
             await MCPConnectionConfigurationWindow.ShowDialog(this);
         }
@@ -774,14 +777,7 @@ namespace eSearch.Views
             }
         }
 
-        private void MenuItemLaunchAtStartup_Click(object? sender, RoutedEventArgs e)
-        {
-            Program.ProgramConfig.LaunchAtStartup = !Program.ProgramConfig.LaunchAtStartup;
-            Program.SaveProgramConfig();
-            //menuItemLaunchAtStartupCheckbox.IsChecked = Program.ProgramConfig.LaunchAtStartup;
-        }
-
-        private async void MenuItemPlugins_Click(object? sender, RoutedEventArgs e)
+        public async void MenuItemPlugins()
         {
             await PluginsWindow.ShowPluginWindowDialog(this);
         }
@@ -831,15 +827,10 @@ namespace eSearch.Views
             }
         }
 
-        private async void MenuItemSearchAISearch_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            await LLMConnectionConfigurationWindow.ShowDialog(this);
-            init_searchSources();
-            if (DataContext is MainWindowViewModel mwvm)
-            {
-                mwvm.Session.Query.UseAISearch = true;
-            }
-        }
+
+
+
+        
 
         /// <summary>
         /// The currently set typeAhead.
@@ -994,7 +985,7 @@ namespace eSearch.Views
             }
         }
 
-        private void MenuAppearanceHighContrast_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        public void MenuAppearanceHighContrast()
         {
             if (Application.Current is          App  app 
                 && DataContext is MainWindowViewModel mwvm)
@@ -1316,7 +1307,7 @@ namespace eSearch.Views
             }
         }
 
-        private async void MenuItemIndexManageIndexes_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        public async void MenuItemManageIndexes()
         {
             if (DataContext is MainWindowViewModel mwvm)
             {
@@ -1338,7 +1329,7 @@ namespace eSearch.Views
             }
         }
 
-        private async void MenuItemIndexUpdate_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        public async void MenuItemIndexUpdate()
         {
             if (DataContext is MainWindowViewModel mwvm)
             {
@@ -1359,7 +1350,7 @@ namespace eSearch.Views
             }
         }
 
-        private async void MenuItemIndexNew_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        public async void MenuItemIndexNew()
         {
             if (DataContext is MainWindowViewModel mwvm)
             {
@@ -1446,7 +1437,7 @@ namespace eSearch.Views
                         _selectedIndexStatusViewer.StatusProgress = null; // Hide the progress bar since we're done loading.
                         _selectedIndexStatusViewer.ClickAction = () =>
                         {
-                            MenuItemIndexManageIndexes_Click(this, null);
+                            MenuItemManageIndexes();
                         };
                     }
 
@@ -1669,7 +1660,7 @@ namespace eSearch.Views
                         IndexStatusControlViewModel vm = new IndexStatusControlViewModel(mwvm.SelectedIndex);
                         vm.ClickAction = () =>
                         {
-                            MenuItemIndexManageIndexes_Click(this, null);
+                            MenuItemManageIndexes();
                         };
                         SetMainStatusViewModel(vm);
                     } else

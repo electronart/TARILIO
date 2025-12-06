@@ -174,6 +174,32 @@ namespace eSearch.ViewModels
             }
         }
 
+
+        public void ToggleLaunchAtStartup()
+        {
+            Program.ProgramConfig.LaunchAtStartup = !Program.ProgramConfig.LaunchAtStartup;
+            Program.SaveProgramConfig();
+            IsLaunchAtStartupEnabled = Program.ProgramConfig.LaunchAtStartup;
+        }
+
+        public bool IsLaunchAtStartupEnabled
+        {
+            get
+            {
+                if (_isLaunchAtStartupEnabled == null)
+                {
+                    _isLaunchAtStartupEnabled = Program.ProgramConfig.LaunchAtStartup;
+                }
+                return (bool)_isLaunchAtStartupEnabled;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _isLaunchAtStartupEnabled, value);
+            }
+        }
+
+        private bool? _isLaunchAtStartupEnabled = null; // Null until loaded.
+
         
 
         private LLMConversationViewModel? _currentLLMConversation;
@@ -794,6 +820,11 @@ namespace eSearch.ViewModels
             {
                 return (!Program.WasLaunchedWithCreateLLMConnectionsDisabled);
             }
+        }
+
+        public void ToggleSystemPrompt()
+        {
+            Session.Query.ShowSystemPrompt = !Session.Query.ShowSystemPrompt;
         }
 
         public bool LocalLLMIsModelLoading
