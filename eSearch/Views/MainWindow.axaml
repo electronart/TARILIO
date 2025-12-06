@@ -23,100 +23,6 @@
 		>
 	<Window.Resources>
 		<converters:BoolToStringConverter x:Key="BoolToStringConverter"/>
-		<DataTemplate DataType="local:MenuItemModel" x:Key="DataTemplateMenuItemModel">
-			<MenuItem Header="{Binding Header}"
-					  Command="{Binding Command}"
-					  IsVisible="{Binding IsVisible}"
-					  IsEnabled="{Binding IsEnabled}"/>
-		</DataTemplate>
-		<DataTemplate DataType="local:CheckBoxMenuItemModel" x:Key="DataTemplateCheckboxMenuItemModel">
-			<MenuItem Header="{Binding Header}"
-					  Command="{Binding Command}"
-					  IsVisible="{Binding IsVisible}"
-					  IsEnabled="{Binding IsEnabled}">
-				<MenuItem.Icon>
-					<CheckBox BorderThickness="0" IsHitTestVisible="False" IsChecked="{Binding IsChecked}"/>
-				</MenuItem.Icon>
-			</MenuItem>
-		</DataTemplate>
-		<DataTemplate DataType="local:SeperatorModel" x:Key="DataTemplateSeperator">
-			<Separator />
-		</DataTemplate>
-		<mrrr:List x:Key="MainMenuItems" x:TypeArguments="system:Object">
-			<MenuItem Header="{Binding S[_File]}">
-            <MenuItem Header="{Binding S[Export~Search~Results...]}" 
-                      Command="{Binding MenuFileExportSearchResults}"
-                      IsEnabled="{Binding !Session.Query.UseAISearch}"/>
-            <MenuItem Header="{Binding S[Print...]}" Command="{Binding MenuFilePrint}"/>
-            
-            <Separator/>
-            <MenuItem Header="{Binding S[Launch~at~Startup]}" IsChecked="{Binding IsLaunchAtStartupEnabled}" />
-            <MenuItem Header="{Binding S[_Exit]}" Command="{Binding MenuFileExit}"/>
-        </MenuItem>
-        <MenuItem Header="{Binding S[_AI]}" IsEnabled="{Binding Session.Query.UseAISearch}">
-            <MenuItem Header="{Binding S[Import~LLMs...]}"/>
-            <MenuItem Header="{Binding S[_AI~Connections]}" 
-                      IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
-                      />
-            <MenuItem Header="{Binding S[_MCP~Servers]}"
-                      IsEnabled="{Binding IsAIConnectionsMenuEnabled}"
-                      />
-            <MenuItem Header="{Binding S[Show~System~Prompt]}"/>
-            <Separator/>
-            <MenuItem Header="{Binding S[Export~Conversation...]}"/>
-            <MenuItem Header="{Binding S[Import~Conversation...]}"/>
-        </MenuItem>
-        <MenuItem Header="{Binding S[_Index]}">
-            <MenuItem.IsEnabled>
-                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                    <Binding Path="!ProgramIsRunningInSearchOnlyMode" />
-                    <Binding Path="!Session.Query.UseAISearch" />
-                    <Binding Path="!IsIndexLoading"/>
-                </MultiBinding>
-            </MenuItem.IsEnabled>
-            <MenuItem Header="{Binding S[New...]}"  IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
-            <MenuItem Header="{Binding S[Update...]}" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
-            <Separator/>
-            <MenuItem Header="{Binding S[Manage~Indexes...]}" IsEnabled="{Binding !ProgramIsRunningInSearchOnlyMode}"/>
-        </MenuItem>
-        <MenuItem Header="{Binding S[_View]}">
-            <MenuItem Header="{Binding S[Theme]}">
-                <MenuItem Header="{Binding S[Dark]}" Command="{Binding MenuAppearanceDark}"/>
-                <MenuItem Header="{Binding S[Light]}" Command="{Binding MenuAppearanceLight}"/>
-                <MenuItem Header="{Binding S[System]}" Command="{Binding MenuAppearanceSystem}"/>
-                <Separator/>
-                <MenuItem Header="{Binding S[High~Contrast]}"/>
-            </MenuItem>
-            <MenuItem Header="{Binding S[Layout]}">
-                <MenuItem Header="{Binding S[Horizontal]}" 
-                          IsEnabled="{Binding !Session.Query.UseAISearch}"
-                          Command="{Binding MenuLayoutHorizontal}"/>
-                <MenuItem Header="{Binding S[Vertical]}"
-                          IsEnabled="{Binding !Session.Query.UseAISearch}"
-                          Command="{Binding MenuLayoutVertical}"/>
-            </MenuItem>
-            <MenuItem Header="{Binding S[Language]}">
-                <MenuItem Header="{Binding S[English]}" Command="{Binding MenuLanguageEnglish}"/>
-                <MenuItem IsVisible="False" Header="{Binding S[Pseudo~Locale]}" Command="{Binding MenuLanguagePsuedo}"/>
-                <MenuItem Header="{Binding S[From~File...]}" Command="{Binding MenuLanguageFromFile}"/>
-            </MenuItem>
-            <MenuItem Header="{Binding S[Word~List]}" Command="{Binding ToggleWheel}"/>
-        </MenuItem>
-        <MenuItem Header="{Binding S[Plugins]}"/>
-        <MenuItem Header="{Binding S[Help]}">
-            <MenuItem Header="{Binding S[User~Guide]}"/>
-            <MenuItem Header="{Binding S[About]}" Command="{Binding HelpAboutApplication}"/>
-        </MenuItem>
-        <MenuItem Header="Debug" IsVisible="{Binding IsDebugBuild}">
-            <MenuItem Header="DateTime Issue Test" Command="{Binding MenuDebugDateTime}"/>
-            <MenuItem Header="Show Browser Debug" Command="{Binding ShowBrowserDebug}"/>
-            <MenuItem Header="Relative Path Test" Command="{Binding MenuDebugExpandPaths}"/>
-            <MenuItem Header="DialogTest" Command="{Binding MenuDebugDialogTest}"/>
-            <MenuItem Header="List tools to console" />
-            <MenuItem Header="List Avail Models" />
-            <MenuItem Header="StatusTest Add"/>
-        </MenuItem>
-		</mrrr:List>
 	</Window.Resources>
 	<Window.Styles>
 		<!-- TransparencyLevelHint="AcrylicBlur" -->
@@ -149,12 +55,27 @@
 									Height="16"
 									/>
 							</MenuItem.Header>
-							
+							<MenuItem>
+								<MenuItem.Template>
+									<ControlTemplate>
+										<localView:MainMenuItems Classes="HamburgerMenu">
+											
+										</localView:MainMenuItems>	
+									</ControlTemplate>
+								</MenuItem.Template>
+							</MenuItem>
 						</MenuItem>
 					</Menu>
+
+					
+					<localView:MainMenuItems x:Name="MainMenu">
+						
+					</localView:MainMenuItems>
+					<!--
 					<Menu x:Name="MainMenu" MinWidth="340" Height="35" HorizontalAlignment="Left" TabIndex="0" ItemsSource="{StaticResource MainMenuItems}">
 						
 					</Menu>
+					-->
 				</StackPanel>
 				<Button 
 					DockPanel.Dock="Right"  Margin="0,0,150,0" Padding="15,5"

@@ -119,16 +119,14 @@ namespace eSearch.Views
             this.Resized += MainWindow_Resized;
 
             // Populate flyout with clones after XAML is loaded
-            var sharedItems = Resources["SharedMenuItems"] as object[];
-            if (sharedItems != null)
-            {
-                foreach (var item in sharedItems)
-                {
-                    MainMenuHamburger.Items.Add(CloneMenuElement(item));
-                }
-            }
-
-
+            //var sharedItems = Resources["MainMenuItems"];
+            //if (sharedItems is List<Object> sharedItemsList)
+            //{
+            //    foreach (var item in sharedItemsList)
+            //    {
+            //        MainMenuHamburger.Items.Add(CloneMenuElement(item));
+            //    }
+            //}
         }
 
         private object CloneMenuElement(object original)
@@ -176,7 +174,7 @@ namespace eSearch.Views
                 if (MainMenu.IsVisible == false)
                 {
                     MainMenu.IsVisible = true;
-                    MainMenuMini.IsVisible = false;   
+                    MainMenuMini.IsVisible = false;
                 }
             } else
             {
