@@ -1,4 +1,6 @@
-﻿using Avalonia.Media.Imaging;
+﻿using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,18 +16,27 @@ namespace eSearch.ViewModels
         // TODO Icon view mode maybe...
     }
 
-    public class ResultsViewModeItem
+    public class ResultsViewModeItem : ViewModelBase
     {
+
         public ResultsViewMode Mode { get; }
-        public string DisplayName { get; }
+        public string DisplayNameKey { get; }
+        public string IconKey { get; }
 
-        public Bitmap Icon { get; }
+        public IImage Icon => I[IconKey];
+        public string DisplayName => S[DisplayNameKey];
 
-        public ResultsViewModeItem(ResultsViewMode mode, string displayName, Bitmap icon)
+        public ResultsViewModeItem(
+            ResultsViewMode mode,
+            string displayNameKey,
+            string iconKey)
         {
-            this.Mode = mode;
-            this.DisplayName = displayName;
-            this.Icon = icon;
+            Mode = mode;
+            DisplayNameKey = displayNameKey;
+            IconKey = iconKey;
+
+            S.PropertyChanged += (_, __) => this.RaisePropertyChanged(nameof(DisplayName));
+            I.PropertyChanged += (_, __) => this.RaisePropertyChanged(nameof(Icon));
         }
     }
 }

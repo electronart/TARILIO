@@ -109,8 +109,8 @@ namespace eSearch.ViewModels
                 if (_availableResultViewModes == null)
                 {
                     _availableResultViewModes = new ObservableCollection<ResultsViewModeItem> {
-                        new(ResultsViewMode.Grid, S.Get("Grid"), I["icons8-grid-32.png"] ),
-                        new(ResultsViewMode.Content, S.Get("Content"), I["icons8-content-32.png"])
+                        new(ResultsViewMode.Grid, "Grid", "icons8-grid-32.png" ),
+                        new(ResultsViewMode.Content, "Content", "icons8-content-32.png")
                     };
                 }
                 return _availableResultViewModes;

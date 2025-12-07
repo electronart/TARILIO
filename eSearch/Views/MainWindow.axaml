@@ -170,6 +170,11 @@
 											BorderBrush="{DynamicResource SystemChromeHighColor}">
 										<DockPanel Height="30">
 											<StackPanel DockPanel.Dock="Right" >
+												<!-- The following invisible labels are necessary - They are to make the combobox strings translateable. Our I18N Software searches for the Binding S[... -->
+												<Label IsVisible="False" Content="{Binding S[Grid]}"/>
+												<Label IsVisible="False" Content="{Binding S[Content]}"/>
+												<Label IsVisible="False" Content="{Binding S[Layout]}"/>
+												<!-- END  -->
 												<ComboBox 
 														x:Name="ResultsViewSelectComboBox" 
 														Height="24" VerticalAlignment="Center" 
