@@ -11,8 +11,8 @@ namespace eSearch.ViewModels
 {
     public enum ResultsViewMode
     {
-        Grid,
-        Content,
+        Grid = 0,
+        Content = 1,
         // TODO Icon view mode maybe...
     }
 
