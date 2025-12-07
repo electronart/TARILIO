@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using TagLib;
 using TagLib.IFD;
 using TagLib.Image;
@@ -58,35 +59,51 @@ namespace eSearch.Models.Documents.Parse
             }
             try
             {
-                var tFile = TagLib.File.Create(filePath);
+                
 
                 var title = Path.GetFileNameWithoutExtension(filePath);
-
                 List<IMetaData> ParsedMetadata = new List<IMetaData>();
 
-                var metadataDict = ParseToKeyValuesRecursive("", tFile.Tag);
-                foreach (var item in metadataDict)
+                #region Try to extract Metadata using TagLibSharp
+                try
                 {
-                    string key = item.Key;
-                    string value = item.Value;
-                    if (key == "Title") // Do not add title to metadata list. Instead just populate the title field.
+                    var tFile = TagLib.File.Create(filePath);
+                    
+                    var metadataDict = ParseToKeyValuesRecursive("", tFile.Tag);
+                    foreach (var item in metadataDict)
                     {
-                        if (value.ToLower() != "untitled")
+                        string key = item.Key;
+                        string value = item.Value;
+                        if (key == "Title") // Do not add title to metadata list. Instead just populate the title field.
                         {
-                            title = value;
+                            if (value.ToLower() != "untitled")
+                            {
+                                title = value;
+                            }
+                        }
+                        else
+                        {
+                            ParsedMetadata.Add(new Metadata { Key = key, Value = value });
                         }
                     }
-                    else
+                } catch (Exception ex)
+                {
+#if DEBUG
+                    // TODO This can happen a lot on JPG's 
+                    Debug.WriteLine($"Exception using TagLibSharp to Parse File: {ex.ToString()}");
+#endif
+                }
+                #endregion
+                #region Try to fetch dimensions for images
+                if (ImageExtensions.Contains(extension))
+                {
+                    if (ImageDimensionsUtils.TryGetImageDimensions(filePath, extension, out var dimensions))
                     {
-                        ParsedMetadata.Add(new Metadata { Key = key, Value = value });
+                        ParsedMetadata.Add(new Metadata { Key = "Width", Value = dimensions.Item1 + "" });
+                        ParsedMetadata.Add(new Metadata { Key = "Height", Value = dimensions.Item2 + "" });
                     }
                 }
-
-                if (ImageDimensionsUtils.TryGetImageDimensions(filePath, extension, out var dimensions))
-                {
-                    ParsedMetadata.Add(new Metadata { Key = "Width", Value = dimensions.Item1 + "" });
-                    ParsedMetadata.Add(new Metadata { Key = "Height", Value = dimensions.Item2 + "" });
-                }
+                #endregion
 
                 parseResult = new ParseResult
                 {

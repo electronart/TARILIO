@@ -207,6 +207,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\eSearchInterop\eSearch.Interop.csproj" />
+		<ProjectReference Include="..\ShellThumbs\ShellThumbs.csproj" />
 
 		<Reference Condition="$(Configuration.Contains('TARILIO'))" Include="TARILIO">
 			<!-- TARILIO_SOLUTION_PATH is an environment variable on the system. -->

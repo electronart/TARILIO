@@ -165,13 +165,77 @@
 											</Button>
 										</StackPanel>
 									</Border>
+									<Border DockPanel.Dock="Top"
+											BorderThickness="0 0 0 1"
+											BorderBrush="{DynamicResource SystemChromeHighColor}">
+										<DockPanel Height="30">
+											<StackPanel DockPanel.Dock="Right" >
+												<ComboBox 
+														x:Name="ResultsViewSelectComboBox" 
+														Height="24" VerticalAlignment="Center" 
+														ItemsSource="{Binding AvailableResultViewModes}"
+														SelectedItem="{Binding SelectedResultViewMode}"
+														BorderBrush="Transparent"
+														Background="Transparent"
+														Margin="5"
+														Padding="0"
+														MinHeight="0">
+													<ComboBox.ItemTemplate>
+														<DataTemplate>
+															<StackPanel Orientation="Horizontal" Spacing="10" Opacity="0.8">
+																<Image Source="{Binding Icon}" Width="22" Height="22" Opacity="0.8"/>
+																<TextBlock Text="{Binding DisplayName}"/>
+															</StackPanel>
+														</DataTemplate>
+													</ComboBox.ItemTemplate>
+													<ComboBox.SelectionBoxItemTemplate>
+														<DataTemplate>
+															<StackPanel Orientation="Horizontal" Spacing="10" Opacity="0.8">
+																<Image Source="{Binding Icon}" Width="22" Height="22" Opacity="0.8" VerticalAlignment="Center"/>
+																<TextBlock Height="22" Text="{Binding $parent[Window].DataContext.S[Layout]}" VerticalAlignment="Center"/>
+															</StackPanel>
+														</DataTemplate>
+													</ComboBox.SelectionBoxItemTemplate>
+												</ComboBox>
+											</StackPanel>
+											<Label VerticalAlignment="Center" Opacity="0.8" Margin="5" Padding="0" Content="{Binding ResultsCountLabelText}"/>
+										</DockPanel>
+									</Border>
+									<Panel>
+										<ListBox x:Name="ResultsContentView" 
+													ItemsSource="{Binding Results}" 
+													SelectedItem="{Binding SelectedResult}"
+													SelectedItems="{Binding SelectedResults}"
+													SelectionMode="Multiple"
+													IsVisible="{Binding ShowResultsContentView}"
+													Background="Transparent">
+											<ListBox.ItemsPanel>
+												<ItemsPanelTemplate>
+													<VirtualizingStackPanel Orientation="Vertical"/>
+												</ItemsPanelTemplate>
+											</ListBox.ItemsPanel>
+											<ListBox.ItemTemplate>
+												<DataTemplate>
+												<DockPanel>
+													<Image DockPanel.Dock="Left" Source="{Binding ThumbnailMedium}" Width="96" Height="96" Margin="5"/>
+													<StackPanel>
+														<StackPanel Spacing="10" Orientation="Horizontal" Margin="5,5,5,0">
+															<TextBlock Text="{Binding FileName}" FontSize="22" VerticalAlignment="Bottom"/>
+															<TextBlock Text="{Binding FileSizeHumanFriendly}" Opacity="0.5" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
+														</StackPanel>
+														<TextBlock Text="{Binding FilePath}" FontSize="15" Opacity="0.8" Margin="5,0,5,5"/>
+														<TextBlock Inlines="{Binding FormattedContextForContentView}" FontSize="15" Opacity="0.7" Margin="5,5,5,5"/>
+													</StackPanel>
+												</DockPanel>
+												</DataTemplate>
+											</ListBox.ItemTemplate>
+										</ListBox>
 
-									<Grid x:Name="SearchResultsGridWrapper">
 										<TreeDataGrid
+										IsVisible="{Binding ShowResultsGridView}"
 										x:Name="ResultsGrid2"
 										CanUserResizeColumns="True"
 										CanUserSortColumns="True"
-									
 										>
 											<TreeDataGrid.Styles>
 												<Style Selector="TreeDataGridRow">
@@ -182,7 +246,7 @@
 												</Style>
 											</TreeDataGrid.Styles>
 										</TreeDataGrid>
-									</Grid>
+									</Panel>
 								</DockPanel>
 								<GridSplitter 
 									x:Name="ResultsDocumentSplitter" 

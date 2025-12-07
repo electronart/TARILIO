@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace eSearch.Models.Search
 {
-    public class LuceneSearchResultProvider : IVirtualReadOnlyObservableCollectionProvider<ResultViewModel>, IDataColumnSortable
+    public class LuceneSearchResultProvider : IVirtualReadOnlyObservableCollectionProvider<ResultViewModel>, IDataColumnSortable, IVirtualSupportsCount
     {
         public required LuceneIndex     LuceneIndex;
         public required QueryViewModel  QueryViewModel;

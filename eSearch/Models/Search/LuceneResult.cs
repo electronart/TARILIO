@@ -136,7 +136,14 @@ namespace eSearch.Models.Search
         {
             get
             {
-                return "TODO";
+                string[] hits = GetHitsInContext(1, "<<HIT>>", "<</HIT>>");
+                if (hits.Length > 0)
+                {
+                    return hits[0];
+                } else
+                {
+                    return "";
+                }
             }
         }
 

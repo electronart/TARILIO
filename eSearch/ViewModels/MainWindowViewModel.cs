@@ -34,6 +34,12 @@ namespace eSearch.ViewModels
 
         public event EventHandler ColumnSettingsChanged;
 
+        public MainWindowViewModel()
+        {
+            
+        }
+
+        
 
         [JsonProperty]
         public SessionViewModel Session { 
@@ -94,6 +100,71 @@ namespace eSearch.ViewModels
         }
 
         private bool _areRAABRadiosEnabled = false;
+
+        // ResultViewModes control whether a grid of results or content view is shown for results (and possibly more modes later..)
+
+        public ObservableCollection<ResultsViewModeItem> AvailableResultViewModes
+        {
+            get {
+                if (_availableResultViewModes == null)
+                {
+                    _availableResultViewModes = new ObservableCollection<ResultsViewModeItem> {
+                        new(ResultsViewMode.Grid, S.Get("Grid"), I["icons8-grid-32.png"] ),
+                        new(ResultsViewMode.Content, S.Get("Content"), I["icons8-content-32.png"])
+                    };
+                }
+                return _availableResultViewModes;
+            }
+            set => this.RaiseAndSetIfChanged(ref _availableResultViewModes, value);
+        }
+
+        private ObservableCollection<ResultsViewModeItem>? _availableResultViewModes = null;
+
+        public ResultsViewModeItem SelectedResultViewMode
+        {
+            get {
+                if (_selectedResultViewMode == null)
+                {
+                    _selectedResultViewMode = AvailableResultViewModes[0];
+                }
+                return _selectedResultViewMode;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _selectedResultViewMode, value);
+                ShowResultsGridView = value.Mode == ResultsViewMode.Grid;
+                ShowResultsContentView = value.Mode == ResultsViewMode.Content;
+            }
+        }
+
+        private ResultsViewModeItem? _selectedResultViewMode = null;
+
+        public string ResultsCountLabelText
+        {
+            get => _resultsCountLabelText;
+            set => this.RaiseAndSetIfChanged(ref _resultsCountLabelText, value);
+
+        }
+
+        private string _resultsCountLabelText = string.Empty;
+
+
+        public bool ShowResultsGridView
+        {
+            get => _showResultsGrid;
+            set => this.RaiseAndSetIfChanged(ref _showResultsGrid, value);
+        }
+
+        private bool _showResultsGrid = true;
+
+        public bool ShowResultsContentView
+        {
+            get => _showResultsContentView;
+            set => this.RaiseAndSetIfChanged(ref _showResultsContentView, value);
+        }
+
+        private bool _showResultsContentView = false;
+
 
         public TrulyObservableCollection<ProgressViewModel> OngoingTasks
         {

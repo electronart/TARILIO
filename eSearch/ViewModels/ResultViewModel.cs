@@ -1,16 +1,26 @@
-﻿using eSearch.Models.Documents.Parse;
+﻿using Avalonia.Controls.Documents;
+using Avalonia.Media.Imaging;
+using Avalonia.Threading;
+using eSearch.Models.Documents.Parse;
 using eSearch.Models.Search;
 using eSearch.Utils;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace eSearch.ViewModels
 {
     public class ResultViewModel : ViewModelBase
     {
+
+        private static SemaphoreSlim fieldLoadingSemaphore = new SemaphoreSlim(8, 8);
         private readonly IResult _result;
 
         public ResultViewModel(IResult result)
@@ -68,6 +78,8 @@ namespace eSearch.ViewModels
             }
         }
 
+        
+
         public string FileSizeHumanFriendly
         {
             get
@@ -92,6 +104,52 @@ namespace eSearch.ViewModels
         public int Score => _result.Score;
         public string Context => _result.Context;
 
+
+        public InlineCollection? FormattedContextForContentView
+        {
+            get
+            {
+                if (_loadContextTask == null)
+                {
+                    _loadContextTask = new Task(() =>
+                    {
+                        try
+                        {
+                            ObservableCollection<Inline> formattedContext = new ObservableCollection<Inline>();
+                            var context = _result.GetHitsInContextAsRuns(2);
+                            Dispatcher.UIThread.Invoke(() =>
+                            {
+                                foreach (var chunk in context)
+                                {
+                                    var run = new Avalonia.Controls.Documents.Run { Text = chunk.Text };
+                                    if (chunk.IsHit)
+                                    {
+                                        run.FontWeight = Avalonia.Media.FontWeight.Bold;
+                                    }
+                                    _formattedContextForContentView.Add(run);
+                                }
+                            });
+                        } catch (Exception ex)
+                        {
+#if DEBUG
+                            Debug.WriteLine($"Error Getting Context as Runs: {ex.Message}");
+#endif  
+                        }
+                        
+                    });
+                    _loadContextTask.Start();
+                }
+                return _formattedContextForContentView;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _formattedContextForContentView, value);
+            }
+        }
+
+        private Task? _loadContextTask = null;
+
+        private InlineCollection? _formattedContextForContentView = new InlineCollection();
 
         /// <summary>
         /// Do not use SET - This is an avalonia hack
@@ -331,5 +389,60 @@ namespace eSearch.ViewModels
         {
             return _result.GetHighlightRanges(textToHighlight);
         }
+
+        public Bitmap? ThumbnailMedium
+        {
+            get {
+                if (_loadThumbnailMediumTask == null)
+                {
+                    // Not yet attempted to load the thumbnail, start the task.
+                    _loadThumbnailMediumTask = new Task(async () =>
+                    {
+                        int retries = 0;
+                    retryPoint:
+                        fieldLoadingSemaphore.Wait();
+                        
+                    
+                        try
+                        {
+                        
+                            var thumb = WindowsAvaloniaThumbnailProvider.GetMediumThumbnail(FilePath);
+                            ThumbnailMedium = thumb;
+
+
+                        }
+                        catch (COMException com)
+                        {
+                            ++retries;
+                            if (retries < 3)
+                            {
+                                await Task.Delay(TimeSpan.FromSeconds(3));
+                                goto retryPoint;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+#if DEBUG
+                            Debug.WriteLine($"Error Fetching Thumbnail: {ex.Message}");
+#endif
+                        }
+                        finally
+                        {
+                            fieldLoadingSemaphore.Release();
+                        }
+                    });
+                    _loadThumbnailMediumTask.Start();
+                }
+                return _thumbnailMedium;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _thumbnailMedium, value);
+            }
+        }
+
+        
+        private Task?   _loadThumbnailMediumTask = null;
+        private Bitmap? _thumbnailMedium = null;
     }
 }

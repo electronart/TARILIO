@@ -235,6 +235,8 @@ namespace eSearch.Models.Configuration
             }
         }
 
+        public ResultsViewMode ResultsViewMode { get; set; } = ResultsViewMode.Grid;
+
         private IndexSchedule? _automaticUpdates = null;
 
         

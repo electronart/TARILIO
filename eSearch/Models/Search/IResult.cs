@@ -1,9 +1,11 @@
-﻿using eSearch.Interop;
+﻿using DocumentFormat.OpenXml.ExtendedProperties;
+using eSearch.Interop;
 using eSearch.Models.Documents;
 using eSearch.Models.Documents.Parse;
 using eSearch.Models.Indexing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,6 +63,52 @@ namespace eSearch.Models.Search
 
         public string[] GetHitsInContext(int maxParagraphs, string beforeHit, string afterHit);
 
+        public IEnumerable<Run> GetHitsInContextAsRuns(int maxParagraphs)
+        {
+
+            string[] hitsInContextParagraphs = GetHitsInContext(maxParagraphs, "<<HIT>>", "<</HIT>>");
+            foreach (var paragraph in hitsInContextParagraphs)
+            {
+                int index = 0;
+
+                while (index < paragraph.Length)
+                {
+                    int start = paragraph.IndexOf("<<HIT>>", index, StringComparison.Ordinal);
+                    if (start < 0)
+                    {
+                        // No more hits: return the remainder as non-hit text
+                        var tail = paragraph.Substring(index);
+                        if (tail.Length > 0)
+                            yield return new Run(tail, false);
+                        break;
+                    }
+
+                    // Emit the non-hit segment before the hit
+                    if (start > index)
+                    {
+                        yield return new Run(paragraph.Substring(index, start - index), false);
+                    }
+
+                    // Move past the start tag
+                    int hitContentStart = start + "<<HIT>>".Length;
+
+                    int end = paragraph.IndexOf("<</HIT>>", hitContentStart, StringComparison.Ordinal);
+                    if (end < 0)
+                    {
+                        // Malformed input: treat the rest as hit text
+                        yield return new Run(paragraph.Substring(hitContentStart), true);
+                        break;
+                    }
+
+                    // Emit the hit content
+                    yield return new Run(paragraph.Substring(hitContentStart, end - hitContentStart), true);
+
+                    // Move past the end tag
+                    index = end + "<</HIT>>".Length;
+                }
+            }
+        }
+
         /// <summary>
         /// The parser that was used to index the text contents of the document in this result.
         /// </summary>
@@ -87,5 +135,17 @@ namespace eSearch.Models.Search
         /// <param name="textToHighlight"></param>
         /// <returns></returns>
         public List<(int Start, int End)> GetHighlightRanges(string textToHighlight);
+
+        public class Run
+        {
+            public Run(string text, bool isHit)
+            {
+                this.Text = text;
+                this.IsHit = isHit;
+            }
+
+            public readonly string Text;
+            public readonly bool   IsHit;
+        }
     }
 }

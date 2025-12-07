@@ -74,6 +74,10 @@ namespace eSearch.Models.Search
 
         public int IndexOf(object? value)
         {
+            if (value is ResultViewModel rvm)
+            {
+                return IndexOf(rvm);
+            }
             throw new NotSupportedException();
         }
 

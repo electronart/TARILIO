@@ -1,6 +1,7 @@
 ﻿using eSearch.Interop;
 using eSearch.Models.DataSources;
 using eSearch.Models.Indexing;
+using eSearch.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +14,12 @@ namespace eSearch.Models.Configuration
 {
     public interface IIndexConfiguration
     {
+
+        /// <summary>
+        /// How Results were last shown in this index. Could either be 'Grid' or 'Content' (or more options if we add them)
+        /// </summary>
+        public ResultsViewMode ResultsViewMode { get; set; }
+
         public ObservableCollection<DataColumn> ColumnDisplaySettings
         {
             get; set;

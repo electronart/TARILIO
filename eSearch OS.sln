@@ -1,21 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eSearch", "eSearch\eSearch.csproj", "{61DECB9A-BC60-46F9-A899-3396AC81C51B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eSearch.Interop", "eSearchInterop\eSearch.Interop.csproj", "{22010C17-9997-4D96-8DCB-6A492A2A89C2}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "eSearch Installer", "eSearchInstaller\eSearch_installer.vdproj", "{ACABCAAA-7339-4922-B9E9-12DB8520B024}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TARILIO Installer", "eSearchInstaller\eSearch_installer.vdproj", "{ACABCAAA-7339-4922-B9E9-12DB8520B024}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TARILIO Installer", "TARILIOInstaller\TARILIO_installer.vdproj", "{336E2207-0906-4527-A2E4-FA44121740A3}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TARILIO Pro Installer", "TARILIOInstaller\TARILIO_installer.vdproj", "{336E2207-0906-4527-A2E4-FA44121740A3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer Helper", "Installer Helper\Installer Helper.csproj", "{3433278F-CB47-4A5E-8F78-1E8A4D959B95}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableBuilder", "PortableBuilder\PortableBuilder.csproj", "{66816459-88EA-47E4-B599-017A60D9ACE2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer Custom Actions", "Installer Custom Actions\Installer Custom Actions.csproj", "{ABC5E2DD-9C2B-4C2B-8E27-6679B9545AB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShellThumbs", "ShellThumbs\ShellThumbs.csproj", "{6AB08D67-E47C-4D95-9256-B18884C06830}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,8 +119,27 @@ Global
 		{ABC5E2DD-9C2B-4C2B-8E27-6679B9545AB8}.TARILIO PORTABLE|Any CPU.Build.0 = Debug|Any CPU
 		{ABC5E2DD-9C2B-4C2B-8E27-6679B9545AB8}.TARILIO RELEASE|Any CPU.ActiveCfg = Debug|Any CPU
 		{ABC5E2DD-9C2B-4C2B-8E27-6679B9545AB8}.TARILIO RELEASE|Any CPU.Build.0 = Debug|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.eSearch DEBUG|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.eSearch DEBUG|Any CPU.Build.0 = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.eSearch PORTABLE DEBUG|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.eSearch PORTABLE DEBUG|Any CPU.Build.0 = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.eSearch PORTABLE|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.eSearch PORTABLE|Any CPU.Build.0 = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.eSearch RELEASE|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.eSearch RELEASE|Any CPU.Build.0 = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.TARILIO DEBUG|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.TARILIO DEBUG|Any CPU.Build.0 = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.TARILIO PORTABLE DEBUG|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.TARILIO PORTABLE DEBUG|Any CPU.Build.0 = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.TARILIO PORTABLE|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.TARILIO PORTABLE|Any CPU.Build.0 = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.TARILIO RELEASE|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB08D67-E47C-4D95-9256-B18884C06830}.TARILIO RELEASE|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A8961244-A70B-47BA-8741-6D13707BF51D}
 	EndGlobalSection
 EndGlobal

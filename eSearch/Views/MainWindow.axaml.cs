@@ -68,45 +68,10 @@ namespace eSearch.Views
             ResultsGrid2.AddHandler(KeyDownEvent, ResultsGrid2_KeyDown, RoutingStrategies.Tunnel);
             AddHandler(KeyDownEvent, MainWindow_KeyDown, RoutingStrategies.Tunnel);
 
-            /*
-            menuItemSearchAISearch.Click += MenuItemSearchAISearch_Click;
-            menuItemSearchMCPServers.Click += MenuItemSearchMCPServers_Click;
-            menuItemAIExportConversation.Click += MenuItemAIExportConversation_Click;
-            menuItemAIImportConversation.Click += MenuItemAIImportConversation_Click;
-
-            menuItemPlugins.Click += MenuItemPlugins_Click;
-
-            menuItemIndexNew.Click += MenuItemIndexNew_Click;
-            menuItemIndexUpdate.Click += MenuItemIndexUpdate_Click;
-            menuItemIndexManageIndexes.Click += MenuItemIndexManageIndexes_Click;
             ResultsSettingsButton.Click += ResultsSettingsButton_Click;
             ResultsCopyButton.Click += ResultsCopyButton_Click;
             DocumentCopyButton.Click += DocumentCopyButton_Click;
             ConversationCopyButton.Click += ConversationCopyButton_Click;
-
-            menuAppearanceHighContrast.Click += MenuAppearanceHighContrast_Click;
-            
-
-
-
-            //this.KeyDown += MainWindow_KeyDown;
-
-            menuItemLaunchAtStartup.Click += MenuItemLaunchAtStartup_Click;
-            menuItemLaunchAtStartupCheckbox.IsChecked = Program.ProgramConfig.LaunchAtStartup;
-
-            //ResultsGrid2.KeyUp += ResultsGrid2_KeyUp;
-            
-
-            MenuItemDebugMCPListTools.Click += MenuItemDebugMCPListTools_Click;
-            menuItemShowSystemPrompt.Click += MenuItemShowSystemPrompt_Click;
-
-            menuItemDebugListModels.Click += MenuItemDebugListModels_Click;
-
-            menuItemAIImportLLMs.Click += MenuItemAIImportLLMs_Click;
-
-            menuItemDebugStatusTest.Click += MenuItemDebugStatusTest_Click;
-            menuItemHelpUserGuide.Click += MenuItemHelpUserGuide_Click;
-            */
 
             Program.OnLanguageChanged += Program_OnLanguageChanged;
 
@@ -1903,7 +1868,7 @@ namespace eSearch.Views
         bool _searchResultsUpdating = false;
         bool _searchResultsSecondUpdateQueued = false;
 
-
+        
         
 
         /// <summary>
@@ -1952,6 +1917,21 @@ namespace eSearch.Views
                                         if (results != null)
                                         {
                                             mwvm.Results = results;
+                                            if (results is IVirtualSupportsCount supportsCount)
+                                            {
+                                                int count = supportsCount.Count;
+                                                if (count > 0)
+                                                {
+                                                    mwvm.ResultsCountLabelText = String.Format(S.Get("{0} Results"), supportsCount.Count.ToString("N0"));
+                                                }
+                                                else
+                                                {
+                                                    mwvm.ResultsCountLabelText = S.Get("No Results");
+                                                }
+                                            } else
+                                            {
+                                                mwvm.ResultsCountLabelText = string.Empty;
+                                            }
                                         }
                                     }
                                 }
