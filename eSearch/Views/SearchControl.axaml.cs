@@ -50,7 +50,6 @@ namespace eSearch.Views
 
         private void ResponsiveLayoutUpdate(double width)
         {
-            Debug.WriteLine($"Width: {width}");
             var newIsWide = width >= NarrowThreshold;
             var newIsUltraNarrow = width <= UltraNarrowThreshold;
             if (newIsWide != _isWide)
