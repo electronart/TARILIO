@@ -55,5 +55,7 @@ If you need technical support, have suggestions for improvement, or want to repo
 
 Invite to our [TARILIO DISCORD channel](https://discord.gg/pjZw27sD)
 
+[https://www.reddit.com/r/LocalLLM/](https://www.reddit.com/r/LocalLLM/)
+
 ## Build Instructions
 [View Build Instructions](https://github.com/electronart/esearch-project/wiki/Build-Instructions)
