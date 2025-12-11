@@ -890,7 +890,7 @@ namespace eSearch.Views
                                                 mwvm.Session.Query.Query = strQuery.Substring(0, strQuery.Length - _query_typeAhead.Length);
                                             }
                                             queryTextBox.ClearSelection();
-                                            await SetSearchTypeAhead(nextWord.Substring(lastWordStartSequence.Length));
+                                            SetSearchTypeAhead(nextWord.Substring(lastWordStartSequence.Length));
                                         }
 
                                     }
@@ -932,7 +932,7 @@ namespace eSearch.Views
 
         
 
-        private async Task SetSearchTypeAhead(string charSeq)
+        private void SetSearchTypeAhead(string charSeq)
         {
             if (DataContext is MainWindowViewModel mwvm)
             {
@@ -940,7 +940,7 @@ namespace eSearch.Views
                 string og_query = queryTextBox.Text;
                 string newQuery = queryTextBox.Text + charSeq;
 
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                Dispatcher.UIThread.Invoke(() =>
                 {
                     queryTextBox.Text = newQuery; // Only if not bound
                     queryTextBox.SelectAll();
@@ -1266,7 +1266,7 @@ namespace eSearch.Views
                         }
                         Program.SaveProgramConfig();
                         init_columns();
-                        UpdateSearchResults();
+                        SubmitQuery();
                     }
                 }
             }
@@ -1390,7 +1390,7 @@ namespace eSearch.Views
                     var init_wheel_task = init_wheel(index);
                     if (Program.ProgramConfig.SearchAsYouType && !PauseSearchUpdates)
                     {
-                        var searchTask = UpdateSearchResults();
+                        var searchTask = SubmitQuery();
                         await Task.WhenAll(init_wheel_task, searchTask); // Await both concurrently.
                     } else
                     {
@@ -1421,7 +1421,7 @@ namespace eSearch.Views
             if (Program.ProgramConfig.SearchAsYouType == false)
             {
                 // The clear button should update search results even when search as you type is disabled.
-                UpdateSearchResults();
+                SubmitQuery();
             }
         }
 
@@ -1757,21 +1757,26 @@ namespace eSearch.Views
                             if (selectedWheelItemIndex != null && selectedWheelItemIndex != -1)
                             {
                                 // Wheel has something selected. Check if its suitable for typeahead.
-                                if (mwvm.Wheel?.WheelWords.Count > 0)
-                                {
-                                    var wheelWord = mwvm.Wheel?.WheelWords[selectedWheelItemIndex ?? 0].Word;
-                                    if (!string.IsNullOrWhiteSpace(wheelWord))
+                                Task.Run(() => {
+                                    if (mwvm.Wheel?.WheelWords.Count > 0)
                                     {
-                                        if (wheelWord.ToLower().StartsWith(lastWordStartSequence.ToLower()))
+                                        var wheelWord = mwvm.Wheel?.WheelWords[selectedWheelItemIndex ?? 0].Word;
+                                        if (!string.IsNullOrWhiteSpace(wheelWord))
                                         {
-                                            if (wheelWord.Length > lastWordStartSequence.Length)
+                                            if (wheelWord.ToLower().StartsWith(lastWordStartSequence.ToLower()))
                                             {
-                                                string seq = wheelWord.Substring(lastWordStartSequence.Length);
-                                                await SetSearchTypeAhead(seq);
+                                                if (wheelWord.Length > lastWordStartSequence.Length)
+                                                {
+                                                    string seq = wheelWord.Substring(lastWordStartSequence.Length);
+                                                    Dispatcher.UIThread.Invoke(() =>
+                                                    {
+                                                        SetSearchTypeAhead(seq);
+                                                    });
+                                                }
                                             }
                                         }
                                     }
-                                }
+                                });
                             }
                         }
                         _query_previous = queryTextBox.Text ?? string.Empty;
@@ -1825,7 +1830,7 @@ namespace eSearch.Views
                 {
                     Debug.WriteLine("Query or query settings has changed. Performing search.");
                     // The search query has changed. Perform a new search on a background thread.
-                    UpdateSearchResults();
+                    SubmitQuery();
                 }
             }
         }
@@ -1856,7 +1861,7 @@ namespace eSearch.Views
                 _searchUpdatesPaused = value;
                 if (!_searchUpdatesPaused)
                 {
-                    UpdateSearchResults();
+                    SubmitQuery();
                 }
             }
         }
@@ -1869,51 +1874,72 @@ namespace eSearch.Views
         bool _searchResultsSecondUpdateQueued = false;
 
         
-        
+
 
         /// <summary>
         /// Cancels existing search. Starts a background worker to fetch new search results that eventually leads to UI update.
         /// 
         /// TODO Hack Currently public during transition to proper MWVM pattern
         /// </summary>
-        public async Task UpdateSearchResults()
+        public async Task SubmitQuery()
         {
-            
-            if (_searchResultsUpdating == true)
+            if (DataContext is MainWindowViewModel mwvm)
             {
-                _searchResultsSecondUpdateQueued = true;
-                return;
-            }
-            try
-            {
+                if (PauseSearchUpdates) return;
                 _searchResultsUpdating = true;
-                if (DataContext is MainWindowViewModel mwvm)
+                mwvm.Results = new EmptySearchResultsProvider();
+                if (!mwvm.Session.Query.UseAISearch)
                 {
-                    _searchWorker?.CancelAsync();
-                    if (PauseSearchUpdates) return;
-                    mwvm.Results = new EmptySearchResultsProvider();
-                    if (!mwvm.Session.Query.UseAISearch)
+                    // Searching an Index
+                    _searchCancellationTokenSource?.Cancel();
+                    _searchCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+                    _updateSearchResults(_searchCancellationTokenSource.Token);   
+                }
+                else
+                {
+                    // Submitting a query to AI
+                    DocumentCopyButton.IsEnabled = false;
+                    var selectedAIService = Program.ProgramConfig.GetSelectedConfiguration();
+                    if (selectedAIService != null)
                     {
-                        #region Do Work
-                        Exception ex = null;
-                        try
-                        {
+                        mwvm.ShowHitNavigation = false;
+                        DoAiSearchCompletion();
+                    }
+                }
+            }
+        }
 
-                            if (mwvm.SelectedIndex != null)
+
+        CancellationTokenSource?    _searchCancellationTokenSource = null;
+        private SemaphoreSlim       _searchSemaphore = new SemaphoreSlim(1,1);
+        private Task? _searchTask = null;
+
+        private void _updateSearchResults(CancellationToken cancellationToken)
+        {
+            if (DataContext is MainWindowViewModel mwvm)
+            {
+                #region Do Work
+                Exception ex = null;
+                try
+                {
+                    if (mwvm.SelectedIndex != null)
+                    {
+                        var strQuery = mwvm.Session.Query.Query;
+                        if (strQuery != null)
+                        {
+                            
+
+                            Task.Run(() =>
                             {
-                                var strQuery = mwvm.Session?.Query.Query;
-                                if (strQuery != null)
+                                _searchSemaphore.Wait();
+                                try
                                 {
                                     mwvm.SelectedIndex.OpenRead();
-
-
-                                    if (mwvm.Session?.Query != null)
+                                    IVirtualReadOnlyObservableCollectionProvider<ResultViewModel>? results = null;
+                                    results = mwvm.SelectedIndex.PerformSearch(mwvm.Session.Query, cancellationToken);
+                                    if (cancellationToken.IsCancellationRequested) return;
+                                    Dispatcher.UIThread.Invoke(() =>
                                     {
-                                        IVirtualReadOnlyObservableCollectionProvider<ResultViewModel>? results = null;
-                                        await Task.Run(() =>
-                                        {
-                                            results = mwvm.SelectedIndex.PerformSearch(mwvm.Session.Query);
-                                        });
                                         if (results != null)
                                         {
                                             mwvm.Results = results;
@@ -1928,55 +1954,38 @@ namespace eSearch.Views
                                                 {
                                                     mwvm.ResultsCountLabelText = S.Get("No Results");
                                                 }
-                                            } else
+                                            }
+                                            else
                                             {
                                                 mwvm.ResultsCountLabelText = string.Empty;
                                             }
                                         }
-                                    }
+                                    });
                                 }
-                            }
-                        }
-                        catch (Exception searchEx)
-                        {
-                            ex = searchEx;
-                        }
-                        #endregion
-                        #region After Work
-                        if (ex != null)
-                        {
-                            // No results/some kind of error - Null session, Null query or Null index perhaps
-                            Debug.WriteLine("Error during search");
-                            Debug.WriteLine("Because of an exception...");
-                            Debug.Write(ex.ToString());
-                        }
-                        #endregion
-                    }
-                    else
-                    {
-                        DocumentCopyButton.IsEnabled = false;
-                        var selectedAIService = Program.ProgramConfig.GetSelectedConfiguration();
-                        if (selectedAIService != null)
-                        {
-                            mwvm.ShowHitNavigation = false;
-                            DoAiSearchCompletion();
+                                catch (Exception ex)
+                                {
+#if DEBUG
+                                    Debug.WriteLine($"Error Performing Search: {ex.ToString()}");
+#endif
+                                }
+                                finally
+                                {
+                                    _searchSemaphore.Release();
+                                }
+                            });
                         }
                     }
                 }
-
-            } finally
-            {
-                _searchResultsUpdating = false;
-                if (_searchResultsSecondUpdateQueued)
+                catch (Exception ex2)
                 {
-                    _searchResultsSecondUpdateQueued = false;
-                    UpdateSearchResults();
+                    // No results/some kind of error - Null session, Null query or Null index perhaps
+                    Debug.WriteLine("Error during search");
+                    Debug.WriteLine("Because of an exception...");
+                    Debug.Write(ex2.ToString());
                 }
+                #endregion
             }
-
         }
-
-        private BackgroundWorker? _searchWorker;
 
         private async Task OpenSearchSettings()
         {
@@ -2033,7 +2042,7 @@ namespace eSearch.Views
                     mwvm.Session.Query.InvalidateCachedThesauri();
                     mwvm.Session.Query.StemmingRules = Program.ProgramConfig.StemmingConfig.LoadActiveStemmingRules(); // Reload stemming rules.
                                                                                                                        // Finally, perform a new query by indicating the query has changed.
-                    UpdateSearchResults();
+                    SubmitQuery();
                     // this.RaisePropertyChanged(nameof(Session.Query.Query));
                 }
             }
@@ -2443,7 +2452,7 @@ namespace eSearch.Views
                 {
                     mwvm.Session.Query.Query = e.Trim();
                     ResultsGrid2.Focus();
-                    UpdateSearchResults();
+                    SubmitQuery();
                 }
             }
         }

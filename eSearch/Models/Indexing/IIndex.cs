@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace eSearch.Models.Indexing
@@ -119,8 +120,9 @@ namespace eSearch.Models.Indexing
         /// Perform a search and get a paginator that can be used to iterate through search results.
         /// </summary>
         /// <param name="query"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public IVirtualReadOnlyObservableCollectionProvider<ResultViewModel> PerformSearch(QueryViewModel query);
+        public IVirtualReadOnlyObservableCollectionProvider<ResultViewModel> PerformSearch(QueryViewModel query, CancellationToken cancellationToken);
 
         /// <summary>
         /// Get the available columns of data that can be displayed.

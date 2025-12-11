@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static eSearch.Models.Search.LuceneWordWheel;
+using Avalonia.Threading;
 
 namespace eSearch.ViewModels
 {
@@ -133,17 +134,25 @@ namespace eSearch.ViewModels
             _wordWheel = new PlaceholderWordWheel();
         }
 
+        private object _wheelLookupLock = new object();
+
         public void SetNewStartSequence(string sequence)
         {
             if (_wordWheel != null)
             {
-                int idx = _wordWheel.GetBestMatchIndex(sequence);
-                this.RaisePropertyChanged(nameof(WheelWords));
-                SelectedItemIndex = idx;
+                Task.Run(() =>
+                {
+                    lock (_wheelLookupLock)
+                    {
+                        int idx = _wordWheel.GetBestMatchIndex(sequence);
+                        Dispatcher.UIThread.Invoke(() =>
+                        {
+                            this.RaisePropertyChanged(nameof(WheelWords));
+                            SelectedItemIndex = idx;
+                        });
+                    }
+                });
             }
-
         }
-
-
     }
 }

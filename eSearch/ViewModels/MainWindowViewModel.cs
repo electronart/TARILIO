@@ -935,7 +935,7 @@ namespace eSearch.ViewModels
         {
             if (Program.GetMainWindow() is MainWindow window)
             {
-                window.UpdateSearchResults(); // TODO HACK Breaks MWVM Pattern
+                window.SubmitQuery(); // TODO HACK Breaks MWVM Pattern
             }
         }
 
@@ -993,7 +993,7 @@ namespace eSearch.ViewModels
                 // Finally, perform a new query by indicating the query has changed.
                 if (Program.GetMainWindow() is MainWindow window)
                 {
-                    window.UpdateSearchResults(); // TODO quick HACK breaks MWVM pattern.
+                    window.SubmitQuery(); // TODO quick HACK breaks MWVM pattern.
                 }
             }
             return true;

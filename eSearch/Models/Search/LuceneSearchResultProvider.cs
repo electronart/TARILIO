@@ -10,17 +10,19 @@ using System.Diagnostics;
 using System.Linq;
 using System.Management;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace eSearch.Models.Search
 {
     public class LuceneSearchResultProvider : IVirtualReadOnlyObservableCollectionProvider<ResultViewModel>, IDataColumnSortable, IVirtualSupportsCount
     {
-        public required LuceneIndex     LuceneIndex;
-        public required QueryViewModel  QueryViewModel;
+        public required LuceneIndex         LuceneIndex;
+        public required QueryViewModel      QueryViewModel;
 
-        public required DataColumn?     SortColumn      = null;
-        public required bool            SortAscending   = true;
+        public required DataColumn?         SortColumn      = null;
+        public required bool                SortAscending   = true;
+        public required CancellationToken   CancellationToken;
 
 
         public ResultViewModel this[int index]
@@ -32,7 +34,9 @@ namespace eSearch.Models.Search
                 var cachedItem = PageCache.FirstOrDefault(cachePage => cachePage?.Page == page, null);
                 if (cachedItem == null)
                 {
-                    var nfo = LuceneIndex.GetLuceneResultsBlocking(QueryViewModel, page, SortColumn, SortAscending);
+
+                    var nfo = LuceneIndex.GetLuceneResultsBlocking(QueryViewModel, CancellationToken, page, SortColumn, SortAscending);
+                    
                     var results = nfo.Results;
                     if (_numKnownResults == null)
                     {

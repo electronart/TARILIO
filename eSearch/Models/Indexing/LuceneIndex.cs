@@ -33,6 +33,7 @@ using eSearch.Interop.Indexing;
 using Avalonia.Controls;
 using ConcurrentCollections;
 using System.Collections.Concurrent;
+using System.Threading;
 
 namespace eSearch.Models.Indexing
 {
@@ -484,7 +485,7 @@ namespace eSearch.Models.Indexing
 
         LCN.Search.Query _lcnQuery;
 
-        public IVirtualReadOnlyObservableCollectionProvider<ResultViewModel> PerformSearch(QueryViewModel query)
+        public IVirtualReadOnlyObservableCollectionProvider<ResultViewModel> PerformSearch(QueryViewModel query, CancellationToken cancellationToken)
         {
             DataColumn? sortColumn      = GetAvailableColumns().FirstOrDefault(c => c.Header == query.SortBy);
             bool sortAscending = query.SortAscending;
@@ -494,12 +495,13 @@ namespace eSearch.Models.Indexing
                 QueryViewModel = query,
                 SortColumn = sortColumn,
                 SortAscending = sortAscending,
+                CancellationToken = cancellationToken
             };
         }
 
         int LUCENE_MAX_RESULTS = 2147483391;
 
-        public LuceneResultsNfo GetLuceneResultsBlocking(QueryViewModel query, int page = 0, DataColumn? sortColumn = null, bool sortAscending = true)
+        public LuceneResultsNfo GetLuceneResultsBlocking(QueryViewModel query, CancellationToken cancellationToken, int page = 0, DataColumn? sortColumn = null, bool sortAscending = true)
         {
             List<ResultViewModel> results = new List<ResultViewModel>();
             ensureReaderOpen();
@@ -566,7 +568,8 @@ namespace eSearch.Models.Indexing
                     
                     
                 }
-                _indexSearcher?.Search(_lcnQuery, collector);
+                if (_indexSearcher == null) throw new NullReferenceException(nameof(_indexSearcher));
+                _indexSearcher.Search(_lcnQuery, collector);
 
                 totalResults = collector.TotalHits;
                 if (totalResults > 0)
@@ -577,24 +580,14 @@ namespace eSearch.Models.Indexing
 
                     if (_scoreDocs != null)
                     {
-                        int startIndex = (page * query.ResultsPerPage);
-                        int endIndex = Math.Min(startIndex + query.ResultsPerPage, limitResultsEndAt);
-                        int r = startIndex;
-                        int d = 0;
-                        while (r < endIndex && d < _scoreDocs.Length)
-                        {
-                            ScoreDoc scoreDoc = _scoreDocs[d];
-                            Document document = _indexSearcher.Doc(scoreDoc.Doc);
+                        Parallel.For(0, _scoreDocs.Length,
+                            new ParallelOptions { MaxDegreeOfParallelism = 8},
+                            index => {
+                            if (cancellationToken.IsCancellationRequested) return;
+                            ScoreDoc scoreDoc = _scoreDocs[index];
+                            Document document = _indexSearcher.Doc(scoreDoc.Doc); // This is heavy.
 
-
-
-                            //foreach(var field in document.Fields)
-                            //{
-                            // TODO
-                            //}
-                            //LCN.Analysis.Analyzer a = _searchAnalyser;
-
-                            int resultIndex = (page * query.ResultsPerPage) + d;
+                            int resultIndex = (page * query.ResultsPerPage) + index;
 
                             LuceneResult res = new LuceneResult
                                 (scoreDoc.Doc,
@@ -606,20 +599,15 @@ namespace eSearch.Models.Indexing
                                 this,
                                 resultIndex);
                             results.Add(new ResultViewModel(res));
-                            ++r;
-                            ++d;
-                        }
+                        });
+                        
+                        results = results.OrderBy(r => r.ResultIndex).ToList();
                     }
                     else
                     {
-                        Debug.WriteLine("!!!!!!!!!!!!!!!!!!!!! _topDocs is null....");
+                        Debug.WriteLine("_scoreDocs is null.");
                     }
                 }
-            }
-            catch (NullReferenceException nre)
-            {
-                // Hushing the compiler
-                Debug.WriteLine("Yay?");
             }
             catch (Exception ex)
             {

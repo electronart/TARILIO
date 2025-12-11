@@ -14,6 +14,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
@@ -89,7 +90,8 @@ namespace eSearch.Models.AI.MCP.Tools
             }
             var qvm = new QueryViewModel(); // Use the application defaults..
             qvm.Query = query;
-            var results = index.PerformSearch(qvm);
+            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            var results = index.PerformSearch(qvm,cts.Token);
             int i = 0;
 
             StringBuilder sb = new StringBuilder();
