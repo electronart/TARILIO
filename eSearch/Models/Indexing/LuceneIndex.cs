@@ -501,28 +501,22 @@ namespace eSearch.Models.Indexing
 
         int LUCENE_MAX_RESULTS = 2147483391;
 
-        public LuceneResultsNfo GetLuceneResultsBlocking(QueryViewModel query, CancellationToken cancellationToken, int page = 0, DataColumn? sortColumn = null, bool sortAscending = true)
+        public LuceneResultsNfo GetLuceneResultsBlocking(QueryViewModel query, CancellationToken cancellationToken, ScoreDoc? searchAfter, int resultIndexAfter, DataColumn? sortColumn = null, bool sortAscending = true)
         {
-            List<ResultViewModel> results = new List<ResultViewModel>();
             ensureReaderOpen();
-            int max_documents = Math.Min(
-                1024 * 1024, GetTotalDocuments());
-            max_documents  = Math.Min(
-                max_documents,
-                query.LimitResults? query.LimitResultsEndAt : LUCENE_MAX_RESULTS); // Additionally, cap max documents if using a results limit.
-            bool limitResults         = query.LimitResults;
-            int  limitResultsStartAt  = query.LimitResults ? query.LimitResultsStartAt : 0;
-            int  limitResultsEndAt    = query.LimitResults ? query.LimitResultsEndAt   : LUCENE_MAX_RESULTS;
 
-            
+            TopDocs? topDocs = null;
+            ScoreDoc? lastScoreDoc = null;
 
             int totalResults = 0;
+            LuceneResult[] localResults = Array.Empty<LuceneResult>();
 
             try
             {
                 _lcnQuery = GetLCNQuery(query);
 
-                ITopDocsCollector collector;
+                Sort sort = Sort.RELEVANCE;
+
                 if (sortColumn != null && sortColumn.BindTo != nameof(ResultViewModel.Score))
                 {
                     IFieldValueProcessor? fieldValueProcessor = null;
@@ -539,69 +533,64 @@ namespace eSearch.Models.Indexing
 
                     var internalSortFieldName = sortColumn.GetInternalFieldName();
 
-                    Sort? sort;
-
                     // TODO It would be nice to have a better way of handling non text columns...
                     if (sortColumn.Header != S.Get("Size"))
                     {
                         var comparer = new NumericStringComparerSource(sortAscending, fieldValueProcessor);
                         var sortField = new SortField(internalSortFieldName, comparer);
-                        sort = new Sort(sortField);
+                        sort = new Sort(sortField, SortField.FIELD_DOC);
                     } else
                     {
                         var sortField = new SortField(internalSortFieldName, SortFieldType.INT64, sortAscending);
-                        sort = new Sort(sortField);
+                        sort = new Sort(sortField, SortField.FIELD_DOC);
                     }
 
 
-                    
-                    collector = TopFieldCollector.Create(
-                        sort, 1024 * 1024, 
-                        fillFields: true, 
-                        trackDocScores: false, 
-                        trackMaxScore: false, 
-                        docsScoredInOrder: false
-                    );
+                }
+
+                if (_indexSearcher == null) throw new NullReferenceException(nameof(_indexSearcher));
+
+                
+                if (searchAfter == null) {
+                    topDocs = _indexSearcher.Search(_lcnQuery, query.ResultsPerPage, sort);
                 } else
                 {
-                    collector = TopScoreDocCollector.Create(max_documents, true);
-                    
-                    
+                    topDocs = _indexSearcher.SearchAfter(searchAfter, _lcnQuery, query.ResultsPerPage, sort);
                 }
-                if (_indexSearcher == null) throw new NullReferenceException(nameof(_indexSearcher));
-                _indexSearcher.Search(_lcnQuery, collector);
 
-                totalResults = collector.TotalHits;
+                totalResults = topDocs.TotalHits;
                 if (totalResults > 0)
-                {
-                    var topDocs = collector.GetTopDocs(limitResultsStartAt + (query.ResultsPerPage * page), query.ResultsPerPage);
+                {   
                     _scoreDocs = topDocs.ScoreDocs;
-
-
                     if (_scoreDocs != null)
                     {
+                        localResults = new LuceneResult[_scoreDocs.Length];
+                        lastScoreDoc = _scoreDocs.Last();
                         Parallel.For(0, _scoreDocs.Length,
-                            new ParallelOptions { MaxDegreeOfParallelism = 8},
-                            index => {
-                            if (cancellationToken.IsCancellationRequested) return;
-                            ScoreDoc scoreDoc = _scoreDocs[index];
-                            Document document = _indexSearcher.Doc(scoreDoc.Doc); // This is heavy.
+                            new ParallelOptions { MaxDegreeOfParallelism = 8 },
+                            index =>
+                            {
+                                try
+                                {
+                                    ScoreDoc scoreDoc = _scoreDocs[index];
 
-                            int resultIndex = (page * query.ResultsPerPage) + index;
+                                    int resultIndex = resultIndexAfter + index;
 
-                            LuceneResult res = new LuceneResult
-                                (scoreDoc.Doc,
-                                _indexSearcher,
-                                scoreDoc.Score,
-                                ToIDocument(document),
-                                _lcnQuery,
-                                GetSearchAnalyser(query),
-                                this,
-                                resultIndex);
-                            results.Add(new ResultViewModel(res));
-                        });
-                        
-                        results = results.OrderBy(r => r.ResultIndex).ToList();
+                                    LuceneResult res = new LuceneResult
+                                        (scoreDoc.Doc,
+                                        _indexSearcher,
+                                        scoreDoc.Score,
+                                        _lcnQuery,
+                                        GetSearchAnalyser(query),
+                                        this,
+                                        resultIndex);
+                                    localResults[index] = res;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.WriteLine($"Error handling result: {ex.Message}");
+                                }
+                            });
                     }
                     else
                     {
@@ -616,15 +605,23 @@ namespace eSearch.Models.Indexing
             }
             return new LuceneResultsNfo
             {
-                Results = results,
-                TotalResults = Math.Min(totalResults, max_documents)
+                Results = localResults,
+                TotalResults = totalResults,
+                LastScoreDoc = topDocs?.ScoreDocs.LastOrDefault() ?? null
             };
+        }
+
+        public Document? GetDocument(ScoreDoc scoreDoc)
+        {
+            return _indexSearcher?.Doc(scoreDoc.Doc);
         }
 
         public class LuceneResultsNfo
         {
-            public required List<ResultViewModel>   Results;
-            public required int                     TotalResults;
+            public required LuceneResult[] Results;
+            public required  int           TotalResults;
+            // NOTE: Only set if there actually was some results, otherwise may be null.
+            public required  ScoreDoc?     LastScoreDoc;
         }
 
         public void OpenRead()
@@ -824,7 +821,7 @@ namespace eSearch.Models.Indexing
             return hasSynonyms ? multiPhraseQuery : phraseQuery; // Only use multiPhrase query if we had synonyms, otherwise use phraseQuery to avoid performance impact.
         }
 
-        private IDocument ToIDocument(Document document)
+        public IDocument ToIDocument(Document document)
         {
             try
             {

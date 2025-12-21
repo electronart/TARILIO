@@ -713,10 +713,10 @@ namespace eSearch.Views
             //throw new System.NotImplementedException();
             Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                browser.IsVisible = true;
+                if (browser != null) browser.IsVisible = true;
             });
             string jsScript = Models.Utils.GetTextAsset("browser_init.js");
-            browser.ExecuteJavaScript(jsScript);
+            browser?.ExecuteJavaScript(jsScript);
         }
 
         private void Browser_LoadStart(object sender, Xilium.CefGlue.Common.Events.LoadStartEventArgs e)

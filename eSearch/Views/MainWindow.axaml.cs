@@ -1943,12 +1943,18 @@ namespace eSearch.Views
                                         if (results != null)
                                         {
                                             mwvm.Results = results;
-                                            if (results is IVirtualSupportsCount supportsCount)
+                                            if (results is IVirtualSupportsRangeInfo supportsRange)
                                             {
-                                                int count = supportsCount.Count;
-                                                if (count > 0)
+                                                supportsRange.GetRangeInformation(out int resultsStartAt, out int resultsEndAt, out int totalResults);
+                                                
+                                                if (totalResults > 0)
                                                 {
-                                                    mwvm.ResultsCountLabelText = String.Format(S.Get("{0} Results"), supportsCount.Count.ToString("N0"));
+                                                    mwvm.ResultsCountLabelText = String.Format(
+                                                        S.Get("{0} - {1} of {2} Results"), 
+                                                        (resultsStartAt + 1).ToString("N0"), 
+                                                        resultsEndAt.ToString("N0"), 
+                                                        totalResults.ToString("N0")
+                                                    );
                                                 }
                                                 else
                                                 {

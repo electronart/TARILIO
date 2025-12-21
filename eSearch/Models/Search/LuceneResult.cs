@@ -4,6 +4,7 @@ using eSearch.Interop;
 using eSearch.Models.Documents;
 using eSearch.Models.Documents.Parse;
 using eSearch.Models.Indexing;
+using eSearch.ViewModels;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Index;
@@ -26,14 +27,13 @@ using LCN = Lucene.Net;
 
 namespace eSearch.Models.Search
 {
-    internal class LuceneResult : IResult
+    public class LuceneResult : IResult
     {
         private int                     _resultIndex;
         private LuceneIndex             _index;
         private int                     _doc;
         private IndexSearcher           _searcher;
         private float                   _score;
-        private IDocument               _document;
         private LCN.Search.Query        _query;
         private LCN.Analysis.Analyzer   _analyzer;
 
@@ -59,7 +59,6 @@ namespace eSearch.Models.Search
             int doc, 
             IndexSearcher searcher, 
             float score, 
-            IDocument document,
             LCN.Search.Query query,
             LCN.Analysis.Analyzer analyzer,
             LuceneIndex index,
@@ -69,7 +68,6 @@ namespace eSearch.Models.Search
             _doc = doc;
             _searcher = searcher;
             _score = score;
-            _document = document;
             _query = query;
             _analyzer = analyzer;
             _index = index;
@@ -80,7 +78,6 @@ namespace eSearch.Models.Search
         {
             _searcher = null;
             _query = null;
-            _document = null;
             _analyzer = null;
             _index = null;
         }
@@ -151,7 +148,7 @@ namespace eSearch.Models.Search
         {
             get
             {
-                return _document;
+                return _index.ToIDocument(LuceneDocument);
             }
         }
 

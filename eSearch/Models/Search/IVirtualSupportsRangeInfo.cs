@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace eSearch.Models.Search
 {
-    public interface IVirtualSupportsCount
+    public interface IVirtualSupportsRangeInfo
     {
-        int Count { get; }
+        public void GetRangeInformation(out int ResultsStartAt, out int ResultsEndAt, out int totalResults);
     }
 }
