@@ -6,7 +6,10 @@
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="300"
              x:Class="eSearch.Views.HtmlDocumentControl"
 			 >
-	<DockPanel>
+	<Panel>
+	<DockPanel IsVisible="{Binding !., Source={x:Static Design.IsDesignMode}}">
 		<Decorator x:Name="browserWrapper"/>
 	</DockPanel>
+	<Label IsVisible="{x:Static Design.IsDesignMode}">This is a CEF control (Preview not available)</Label>
+	</Panel>
 </UserControl>

@@ -22,10 +22,9 @@ namespace eSearch.Models
         /// <param name="width">Column width in pixels</param>
         /// <param name="bindTo">What should be bound to in value cells under this column</param>
         /// <param name="customSortField">Internal Field that shall be used for sorting</param>
-        /// <param name="isLiteField">Field is a lite field that shows up in the filters UI.</param>
+        /// <param name="isPrimarySortField">Is a field that shows up in the primary sort drop-down list</param>
         public DataColumn(int displayIndex, string header, bool visible, int width = 250, 
-                          string bindTo = null, string? customSortField = null, 
-                          bool isLiteField = false)
+                          string bindTo = null, string? customSortField = null, bool isPrimarySortField = false)
         {
             this.DisplayIndex = displayIndex;
             this.Header = header;
@@ -33,6 +32,7 @@ namespace eSearch.Models
             this.Visible = visible;
             this.Width  = width;
             this.CustomSortField = customSortField;
+            this.IsPrimarySortField = isPrimarySortField;
         }
 
         public DataColumn() { }
@@ -48,7 +48,7 @@ namespace eSearch.Models
                 // File Name
                 new DataColumn(
                     1,S.Get("Name"),   
-                    true, 250, nameof(ResultViewModel.FileName), "_DocFSPath", true),
+                    true, 250, nameof(ResultViewModel.FileName), "_DocFSPath", false),
                 // Score
                 new DataColumn(
                     2,S.Get("Score"),  
@@ -56,19 +56,19 @@ namespace eSearch.Models
                 // Created
                 new DataColumn(
                     3,S.Get("Created"), 
-                    true, 200, nameof(ResultViewModel.CreatedDsp), "_DateCreated" ),
+                    true, 200, nameof(ResultViewModel.CreatedDsp), "_DateCreated", true ),
                 // Modified
                 new DataColumn(
                     4,S.Get("Modified"),
-                    true, 200, nameof(ResultViewModel.ModifiedDsp), "_DateModified"),
+                    true, 200, nameof(ResultViewModel.ModifiedDsp), "_DateModified", true),
                 // Indexed
                 new DataColumn(
                     5,S.Get("Indexed"), 
-                    true, 200, nameof(ResultViewModel.IndexedDsp), "_DateIndexed"),
+                    true, 200, nameof(ResultViewModel.IndexedDsp), "_DateIndexed", false),
                 // Accessed
                 new DataColumn(
                     6,S.Get("Accessed"),
-                    false, 200, nameof(ResultViewModel.AccessedDsp), "_DateAccessed"),
+                    false, 200, nameof(ResultViewModel.AccessedDsp), "_DateAccessed", false),
                 // Path
                 new DataColumn(
                     7,S.Get("Path"),   
@@ -76,11 +76,11 @@ namespace eSearch.Models
                 // File Size
                 new DataColumn(
                     8,S.Get("Size"),   
-                    true, 250, nameof(ResultViewModel.FileSizeHumanFriendly), "_FileSize"),
+                    true, 250, nameof(ResultViewModel.FileSizeHumanFriendly), "_FileSize", true),
                 // Parser
                 new DataColumn(
                     9,S.Get("Parser"), 
-                    false, 200, nameof(ResultViewModel.Parser), "_Parser", true),
+                    false, 200, nameof(ResultViewModel.Parser), "_Parser", false),
                 // File Type
                 new DataColumn(
                     10,S.Get("Type"),   
@@ -173,6 +173,14 @@ namespace eSearch.Models
         }
 
         private int _displayIndex = int.MaxValue;
+
+        public bool IsPrimarySortField
+        {
+            get => _isPrimarySortField;
+            set => this.RaiseAndSetIfChanged(ref _isPrimarySortField, value);
+        }
+
+        private bool _isPrimarySortField = false;
 
         /// <summary>
         /// Overriden

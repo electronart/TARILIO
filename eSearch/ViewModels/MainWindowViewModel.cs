@@ -23,6 +23,7 @@ using eSearch.Converters;
 using eSearch.Models.AI;
 using System.Reflection;
 using eSearch.ViewModels.StatusUI;
+using System.Reactive;
 
 
 namespace eSearch.ViewModels
@@ -36,9 +37,14 @@ namespace eSearch.ViewModels
 
         public MainWindowViewModel()
         {
-            
+            SortCommand = ReactiveCommand.Create<string>(col => {
+                Session.Query.SortBy = col;
+            });
         }
 
+        public ReactiveCommand<string, Unit> SortCommand { get; }
+
+        
         
 
         [JsonProperty]

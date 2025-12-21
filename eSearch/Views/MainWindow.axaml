@@ -169,7 +169,46 @@
 											BorderThickness="0 0 0 1"
 											BorderBrush="{DynamicResource SystemChromeHighColor}">
 										<DockPanel Height="30">
-											<StackPanel DockPanel.Dock="Right" >
+											<StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="10">
+												<DropDownButton x:Name="ResultsViewSortComboBox"
+														  Height="24" VerticalAlignment="Center"
+														  BorderBrush="Transparent"
+														  Background="Transparent"
+														  Margin="5"
+														  Padding="0"
+														  MinHeight="0">
+													<Button.Content>
+														<StackPanel Orientation="Horizontal" Spacing="10" Opacity="0.8" Margin="5,0,5,0">
+																<Image Source="{Binding I[icons8-sorting-arrows-32.png]}" Width="22" Height="22" Opacity="0.8" VerticalAlignment="Center"/>
+																<TextBlock Height="22" Text="Sort" VerticalAlignment="Center"/>
+															</StackPanel>
+													</Button.Content>
+													<Button.Flyout>
+														<MenuFlyout>
+															<MenuItem Header="Name" />
+															<MenuItem Header="Date modified" />
+															<MenuItem Header="Type" />
+
+															<MenuItem Header="More options" ItemsSource="{Binding Columns}">
+																<MenuItem.ItemTemplate>
+																	<DataTemplate>
+																		<MenuItem 
+																		Header="{Binding Header}"
+																		ToggleType="Radio"
+																		IsChecked="{Binding PlacementTarget.DataContext.Session.Query.SortBy, RelativeSource={RelativeSource AncestorType=MenuFlyout}, Converter={x:Static ObjectConverters.Equal},ConverterParameter={Binding Header}}"
+																		Command="{Binding PlacementTarget.DataContext.SortCommand, RelativeSource={RelativeSource AncestorType=MenuFlyout}}"
+																		CommandParameter="{Binding Header}"
+																		  />
+
+																	</DataTemplate>
+																</MenuItem.ItemTemplate>
+															</MenuItem>
+															<Separator/>
+															<MenuItem Header="Ascending"/>
+															<MenuItem Header="Descending"/>
+														</MenuFlyout>
+													</Button.Flyout>
+												</DropDownButton>
 												<!-- The following invisible labels are necessary - They are to make the combobox strings translateable. Our I18N Software searches for the Binding S[... -->
 												<Label IsVisible="False" Content="{Binding S[Grid]}"/>
 												<Label IsVisible="False" Content="{Binding S[Content]}"/>
