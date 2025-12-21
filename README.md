@@ -16,7 +16,7 @@ See Wiki - [Introduction](https://github.com/electronart/esearch-project/wiki)
 We welcome and value any contributions and collaborations.
 To report an issue or contribute, see [CONTRIBUTING.md](https://github.com/electronart/esearch-project/blob/master/CONTRIBUTING.md)
 
-## Builds
+## Releases
 If you only want to install and run the latest public releases, we will continue to post them here:
 
 [TARILIO](https://tarilio.com/product/tarilio/)  1.1.9463 (Released 28 Nov 2025)
