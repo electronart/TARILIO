@@ -17,6 +17,9 @@ We welcome and value any contributions and collaborations.
 To report an issue or contribute, see [CONTRIBUTING.md](https://github.com/electronart/esearch-project/blob/master/CONTRIBUTING.md)
 
 ## Releases
+
+[Release Notes - Private and public](https://searchcloudone.com/release-notes-esearch/)
+
 If you only want to install and run the latest public releases, we will continue to post them here:
 
 [TARILIO](https://tarilio.com/product/tarilio/)  1.1.9463 (Released 28 Nov 2025)
