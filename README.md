@@ -6,7 +6,8 @@ Desktop information retrieval with integrated AI Assistant, MCP Client, Local LL
 []([https://badge.mcpx.dev?type=client](https://badge.mcpx.dev/?type=client) 'MCP Client')
 <img src="https://badge.mcpx.dev?type=client" title="MCP Client"/>
   <img src="https://img.shields.io/badge/Windows-Desktop-0078D4?style=flat-square&logo=windows" alt="Windows"/>
-
+ <img src="https://img.shields.io/badge/License-Apache 2.0-green?style=flat-square" alt="Apache 2.0 License"/>
+</p>
 See Wiki - [Introduction](https://github.com/electronart/esearch-project/wiki)
 
 
